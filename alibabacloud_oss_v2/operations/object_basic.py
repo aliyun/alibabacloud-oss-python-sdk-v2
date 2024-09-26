@@ -5,6 +5,7 @@ from ..types import OperationInput, CaseInsensitiveDict
 from .. import serde
 from .. import serde_utils
 from .. import models
+from .. import defaults
 from .._client import _SyncClientImpl
 from ..io_utils import StreamBodyReader
 
@@ -21,6 +22,14 @@ def put_object(client: _SyncClientImpl, request: models.PutObjectRequest, **kwar
         PutObjectResult: The result for the PutObject operation.
     """
 
+    custom_serializer=[
+        serde_utils.add_content_type,
+        serde_utils.add_progress,
+    ]
+
+    if client.has_feature(defaults.FF_ENABLE_CRC64_CHECK_UPLOAD):
+        custom_serializer.append(serde_utils.add_crc_checker)
+
     op_input = serde.serialize_input(
         request=request,
         op_input=OperationInput(
@@ -29,11 +38,7 @@ def put_object(client: _SyncClientImpl, request: models.PutObjectRequest, **kwar
             bucket=request.bucket,
             key=request.key,
         ),
-        custom_serializer=[
-            serde_utils.add_content_type,
-            serde_utils.add_progress,
-            serde_utils.add_crc_checker,
-        ]
+        custom_serializer=custom_serializer
     )
 
     op_output = client.invoke_operation(op_input, **kwargs)
@@ -480,6 +485,12 @@ def upload_part(client: _SyncClientImpl, request: models.UploadPartRequest, **kw
         UploadPartResult: The result for the UploadPart operation.
     """
 
+    custom_serializer=[serde_utils.add_progress]
+
+    if client.has_feature(defaults.FF_ENABLE_CRC64_CHECK_UPLOAD):
+        custom_serializer.append(serde_utils.add_crc_checker)
+
+
     op_input = serde.serialize_input(
         request=request,
         op_input=OperationInput(
@@ -488,10 +499,7 @@ def upload_part(client: _SyncClientImpl, request: models.UploadPartRequest, **kw
             bucket=request.bucket,
             key=request.key,
         ),
-        custom_serializer=[
-            serde_utils.add_progress,
-            serde_utils.add_crc_checker,
-        ],
+        custom_serializer=custom_serializer
     )
 
     op_output = client.invoke_operation(op_input, **kwargs)
@@ -758,7 +766,7 @@ def get_symlink(client: _SyncClientImpl, request: models.GetSymlinkRequest, **kw
         request=request,
         op_input=OperationInput(
             op_name='GetSymlink',
-            method='PUT',
+            method='GET',
             bucket=request.bucket,
             key=request.key,
             parameters={

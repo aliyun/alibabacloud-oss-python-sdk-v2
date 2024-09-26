@@ -1848,7 +1848,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
         callback: Optional[str] = None,
         callback_var: Optional[str] = None,
         forbid_overwrite: Optional[bool] = None,
-        encoding_type: Optional[bool] = None,
+        encoding_type: Optional[str] = None,
         request_payer: Optional[str] = None,
         **kwargs: Any
     ) -> None:
@@ -2612,21 +2612,21 @@ class GetObjectTaggingResult(serde.ResultModel):
     def __init__(
         self,
         version_id: Optional[str] = None,
-        tags: Optional[List[Tag]] = None,
+        tag_set: Optional[TagSet] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             version_id (str, optional): Version of the object.
-            tags ([Tag], optional): A list of tags.
+            tag_set (TagSet, optional): The collection of tags.
         """
         super().__init__(**kwargs)
         self.version_id = version_id
-        self.tags = tags
+        self.tag_set = tag_set
 
     _attribute_map = {
         "version_id": {"tag": "output", "position": "header", "rename": "x-oss-version-id"},
-        "tags": {"tag": "xml", "rename": "TagSet.Tag", "type": "[Tag]"},
+        "tag_set": {"tag": "xml", "rename": "TagSet", "type": "TagSet"},
     }
 
     _dependency_map = {
@@ -2756,7 +2756,7 @@ class AsyncProcessObjectRequest(serde.RequestModel):
     _attribute_map = {
         "bucket": {"tag": "input", "position": "host", "required": True},
         "key": {"tag": "input", "position": "path", "required": True},
-        "process": {"tag": "input", "position": "nop", "rename": "x-async-oss-process", "required": True},
+        "process": {"tag": "input", "position": "nop", "rename": "x-oss-async-process", "required": True},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
     }
 

@@ -1,4 +1,4 @@
-from typing import Optional, Union
+from typing import Optional, Union, List
 from .types import CredentialsProvider, HttpClient, Retryer
 from . import defaults
 
@@ -23,6 +23,11 @@ class Config(object):
         enabled_redirect: Optional[bool] = None,
         use_cname: Optional[bool] = None,
         use_path_style: Optional[bool] = None,
+        proxy_host: Optional[str] = None,
+        disable_upload_crc64_check: Optional[bool] = None,
+        disable_download_crc64_check: Optional[bool] = None,
+        additional_headers: Optional[List[str]] = None,
+        user_agent: Optional[str] = None
     ) -> None:
         """
         Args:
@@ -53,6 +58,15 @@ class Config(object):
             use_internal_endpoint (bool, optional): You can use an internal endpoint to communicate between Alibaba Cloud services located 
                 within the same region over the internal network. You are not charged for the traffic generated over the internal network.
                 Set this to True to use a internal endpoint for the requests.
+            proxy_host: (str, optional): The proxy setting.
+            disable_upload_crc64_check: (bool, optional): Check data integrity of uploads via the crc64 by default.
+                This feature takes effect for put_object, append_object, upload_part, uploader.upload_from and uploader.upload_file
+                Set this to `true` to disable this feature.
+            disable_download_crc64_check: (bool, optional): Check data integrity of uploads via the crc64 by default.
+                This feature only takes effect for downloader.download_file, get_object_to_file.
+                Set this to `true` to disable this feature.
+            additional_headers: (List[str], optional): Additional signable headers.
+            user_agent: (str, optional): The optional user specific identifier appended to the User-Agent header.
         """
         self.region = region
         self.endpoint = endpoint
@@ -71,7 +85,11 @@ class Config(object):
         self.enabled_redirect = enabled_redirect
         self.use_cname = use_cname
         self.use_path_style = use_path_style
-
+        self.proxy_host = proxy_host
+        self.disable_upload_crc64_check = disable_upload_crc64_check
+        self.disable_download_crc64_check = disable_download_crc64_check
+        self.additional_headers = additional_headers
+        self.user_agent = user_agent
 
 def load_default() -> Config:
     """Using the SDK's default configuration"""

@@ -260,7 +260,7 @@ def add_process_action(request: serde.Model, op_input: OperationInput) -> Operat
     """
     Add process parameter to body.
     """
-    if not isinstance(request, ProcessObjectRequest, AsyncProcessObjectRequest):
+    if not isinstance(request, ProcessObjectRequest) and not isinstance(request, AsyncProcessObjectRequest):
         raise exceptions.SerializationError(error=f'Unsupport type {type(request)}')
 
     attr_map = cast(Dict, getattr(request, '_attribute_map'))
@@ -270,8 +270,7 @@ def add_process_action(request: serde.Model, op_input: OperationInput) -> Operat
     if key is None:
         raise exceptions.SerializationError(error='process filed is invalid')
 
-    op_input.body = f'{key}={request.process}'
-
+    op_input.body = f'{key}={request.process}'.encode()
     return op_input
 
 

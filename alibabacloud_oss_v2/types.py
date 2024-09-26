@@ -32,8 +32,8 @@ class Credentials:
     :type security_token: str
     :param security_token: The security token of the credentials.    
 
-    :type expiration: int
-    :param expiration: The token's expiration time in Unix time.    
+    :type expiration: datetime.datetime
+    :param expiration: The token's expiration time in utc.    
 
     """
 

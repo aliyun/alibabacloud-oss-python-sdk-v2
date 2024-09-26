@@ -2,7 +2,7 @@ import copy
 import time
 import base64
 import re
-from typing import Any, Optional, Dict, Iterable, IO, List, Union, cast
+from typing import Any, Optional, Dict, Iterable, List, Union, cast, Tuple, Iterator
 from urllib.parse import urlparse, ParseResult, urlencode, quote
 from xml.etree import ElementTree as ET
 from . import retry
@@ -30,15 +30,6 @@ from .types import (
     OperationOutput,
 )
 
-#Feature Flags
-FF_CORRECT_CLOCK_SKEW = 0x00000001
-FF_ENABLE_MD5 = 0x00000002
-FF_AUTO_DETECT_MIME_TYPE = 0x00000004
-FF_ENABLE_CRC64_CHECK_UPLOAD = 0x00000008
-FF_ENABLE_CRC64_CHECK_DOWNLOAD = 0x00000010
-
-FF_DEFAULT = (FF_CORRECT_CLOCK_SKEW + FF_AUTO_DETECT_MIME_TYPE +
-              FF_ENABLE_CRC64_CHECK_UPLOAD + FF_ENABLE_CRC64_CHECK_DOWNLOAD)
 
 class AddressStyle():
     """_summary_
@@ -55,14 +46,18 @@ class _MarkedBody:
     ) -> None:
         self._body = body
         self._io_curr: int = 0
+        self._is_fileobj = False
         if body is None:
             self._seekable = True
         elif isinstance(body, io_utils.TeeIterator):
             self._seekable = body.seekable()
+        elif utils.is_fileobj(body):
+            self._seekable = utils.is_seekable(body)
+            self._is_fileobj = True
+        elif isinstance(body, Iterator):
+            self._seekable = False
         elif isinstance(body, (str, bytes, Iterable)):
             self._seekable = True
-        elif isinstance(body, IO):
-            self._seekable = utils.is_seekable(body)
         else:
             self._seekable = False
 
@@ -80,7 +75,7 @@ class _MarkedBody:
         if self.is_seekable() is False:
             return
 
-        if isinstance(self._body, IO):
+        if self._is_fileobj:
             self._io_curr = self._body.tell()
 
     def reset(self) -> None:
@@ -91,6 +86,9 @@ class _MarkedBody:
 
         if isinstance(self._body, io_utils.TeeIterator):
             self._body.reset()
+
+        if self._is_fileobj:
+            self._body.seek(self._io_curr, 0)
 
 
 class _Options:
@@ -112,6 +110,7 @@ class _Options:
         response_stream: Optional[bool] = None,
         auth_method: Optional[str] = None,
         feature_flags: Optional[int] = None,
+        additional_headers: Optional[List[str]] = None,
     ) -> None:
         self.product = product
         self.region = region
@@ -126,19 +125,27 @@ class _Options:
         self.response_handlers = response_handlers or []
         self.response_stream= response_stream
         self.auth_method = auth_method
-        self.feature_flags = feature_flags or FF_DEFAULT
+        self.feature_flags = feature_flags or defaults.FF_DEFAULT
+        self.additional_headers = additional_headers
+
+
+class _InnerOptions:
+    """client runtime's information."""
+    def __init__(
+        self,
+        user_agent: str = None,
+    ) -> None:
+        self.user_agent = user_agent
+
 
 
 class _ClientImplMixIn:
     """Client implement"""
 
-    def resolve_config(self, config: Config) ->_Options:
+    def resolve_config(self, config: Config) ->Tuple[_Options, _InnerOptions]:
         """convert config into client's options"""
 
         options = _default_options(config)
-        # Logger
-
-        # Default UserAgent
 
         _resolve_endpoint(config, options)
         _resolve_retryer(config, options)
@@ -147,7 +154,11 @@ class _ClientImplMixIn:
         _resolve_feature_flags(config, options)
         self._resolve_httpclient(config, options) # pylint: disable=no-member
 
-        return options
+        inner = _InnerOptions()
+        #UserAgent
+        inner.user_agent = _build_user_agent(config)
+
+        return options, inner
 
     def resolve_kwargs(self, options: _Options, **kwargs):
         """client's configuration from user by key/value args"""
@@ -166,6 +177,7 @@ class _ClientImplMixIn:
         options.address_style = kwargs.get("address_style", options.address_style)
         options.readwrite_timeout = kwargs.get("readwrite_timeout", options.readwrite_timeout)
         options.auth_method = kwargs.get("auth_method", None)
+        options.additional_headers = kwargs.get("additional_headers", options.additional_headers)
 
 
     def resolve_operation_kwargs(self, options: _Options, **kwargs):
@@ -183,7 +195,7 @@ class _ClientImplMixIn:
     def verify_operation(self, op_input: OperationInput, options: _Options) -> None:
         """verify input and options"""
 
-        if options.endpoint is None:
+        if not options.endpoint:
             raise exceptions.ParamInvalidError(field="endpoint")
 
         if (op_input.bucket is not None and
@@ -201,7 +213,8 @@ class _ClientImplMixIn:
         _apply_operation_metadata(op_input, options)
 
 
-    def build_request_context(self, op_input: OperationInput, options: _Options) -> SigningContext:
+    def build_request_context(self, op_input: OperationInput, options: _Options, inner: _InnerOptions
+                              ) -> SigningContext:
         """_summary_
         """
         # host & path
@@ -218,6 +231,8 @@ class _ClientImplMixIn:
 
         # headers
         request.headers.update(op_input.headers or {})
+
+        request.headers.update({'User-Agent': inner.user_agent})
 
         # body
         body = op_input.body or b''
@@ -278,11 +293,12 @@ class _SyncClientImpl(_ClientImplMixIn):
     """Sync API Client for common API."""
 
     def __init__(self, config: Config, **kwargs) -> None:
-        options = self.resolve_config(config)
-        self.resolve_kwargs(options, kwargs=kwargs)
+        options, inner = self.resolve_config(config)
+        self.resolve_kwargs(options, **kwargs)
 
         self._config = config
         self._options = options
+        self._inner = inner
 
     def invoke_operation(self, op_input: OperationInput, **kwargs) -> OperationOutput:
         """_summary_
@@ -331,7 +347,10 @@ class _SyncClientImpl(_ClientImplMixIn):
         if config.readwrite_timeout:
             kwargs["readwrite_timeout"] = config.readwrite_timeout
 
-        options.http_client = transport.RequestsHttpClient(kwargs=kwargs)
+        if config.proxy_host:
+            kwargs["proxy_host"] = config.proxy_host
+
+        options.http_client = transport.RequestsHttpClient(**kwargs)
 
 
     def _apply_operation_options(self, options: _Options) -> None:
@@ -356,7 +375,7 @@ class _SyncClientImpl(_ClientImplMixIn):
         options.response_handlers = handlers
 
     def _sent_request(self, op_input: OperationInput, options: _Options) -> OperationOutput:
-        context = self.build_request_context(op_input, options)
+        context = self.build_request_context(op_input, options, self._inner)
         response = self._sent_http_request(context, options)
         output = OperationOutput(
             status=response.reason,
@@ -458,6 +477,7 @@ def _default_options(config: Config) -> _Options:
         credentials_provider=cast(
             CredentialsProvider, config.credentials_provider),
         http_client=cast(HttpClient, config.http_client),
+        additional_headers=config.additional_headers
     )
 
 
@@ -523,9 +543,13 @@ def _resolve_address_style(config: Config, options: _Options) -> None:
     options.address_style = style
 
 
-def _resolve_feature_flags(_1: Config, _2: _Options) -> None:
+def _resolve_feature_flags(config: Config, options: _Options) -> None:
     """flags for feature"""
+    if utils.safety_bool(config.disable_upload_crc64_check):
+        options.feature_flags = options.feature_flags & ~defaults.FF_ENABLE_CRC64_CHECK_UPLOAD
 
+    if utils.safety_bool(config.disable_download_crc64_check):
+        options.feature_flags = options.feature_flags & ~defaults.FF_ENABLE_CRC64_CHECK_DOWNLOAD
 
 def _apply_operation_metadata(op_input: OperationInput, options: _Options) -> None:
     handlers = op_input.op_metadata.get('opm-response-handler', None)
@@ -541,15 +565,17 @@ def _build_url(op_input: OperationInput, options: _Options) -> str:
     host = ""
     paths = []
     if op_input.bucket is None:
-        host = options.endpoint.hostname
+        host = options.endpoint.netloc
     else:
         if options.address_style == AddressStyle.Path:
-            host = options.endpoint.hostname
+            host = options.endpoint.netloc
             paths.append(op_input.bucket)
+            if op_input.key is None:
+                paths.append('')
         elif options.address_style == AddressStyle.CName:
-            host = options.endpoint.hostname
+            host = options.endpoint.netloc
         else:
-            host = f'{op_input.bucket}.{options.endpoint.hostname}'
+            host = f'{op_input.bucket}.{options.endpoint.netloc}'
 
     if op_input.key is not None:
         paths.append(quote(op_input.key))
@@ -610,3 +636,8 @@ def _to_service_error(response: HttpResponse) -> exceptions.ServiceError:
         error_fileds=error_fileds
     )
 
+def _build_user_agent(config: Config) -> str:
+    if config.user_agent:
+        return f'{utils.get_default_user_agent()}/{config.user_agent}'
+
+    return utils.get_default_user_agent()

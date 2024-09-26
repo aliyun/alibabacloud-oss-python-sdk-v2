@@ -254,19 +254,37 @@ class _TeeIteratorIter(TeeIterator):
     ) -> None:
         self._data = data
         self._writers = writers
-        self._seekable = True
         self._iter = None
+        self._seekable = not isinstance(self._data, Iterator)
+        self._check_type_done = False
+        self._cast_func = None
 
     def iter_bytes(self):
         """_summary_
         """
-        self._iter = iter(self._data)
+        if isinstance(self._data, Iterator):
+            self._iter = self._data
+        else:
+            self._iter = iter(self._data)
         return self
 
     def next(self):
         """_summary_
         """
-        return next(self._iter)
+        return self._to_bytes(next(self._iter))
+
+    def _to_bytes(self, d) -> bytes:
+        if  d is None:
+            return d
+        if not self._check_type_done:
+            self._check_type_done = True
+            if isinstance(d, str):
+                self._cast_func = lambda x: x.encode()
+
+        if self._cast_func:
+            return self._cast_func(d)
+
+        return d
 
 
 def is_seekable_io(fileobj):

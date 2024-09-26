@@ -8,7 +8,7 @@ sys.path.append(code_directory)
 import argparse
 import alibabacloud_oss_v2 as oss
 
-parser = argparse.ArgumentParser(description="delete object sample")
+parser = argparse.ArgumentParser(description="get symlink sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
@@ -31,7 +31,7 @@ def main():
 
     client = oss.Client(cfg)
 
-    result = client.delete_object(oss.DeleteObjectRequest(
+    result = client.get_symlink(oss.GetSymlinkRequest(
         bucket=args.bucket,
         key=args.key,
     ))
@@ -39,7 +39,8 @@ def main():
     print(f'status code: {result.status_code},'
           f' request id: {result.request_id},'
           f' version id: {result.version_id},' 
-          f' delete marker: {result.delete_marker},'
+          f' target: {result.target},' 
+          f' etag: {result.etag},'
     )
 
 if __name__ == "__main__":

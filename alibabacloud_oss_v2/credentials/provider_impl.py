@@ -1,5 +1,5 @@
 import os
-from typing import Optional
+from typing import Optional, Callable
 from ..types import Credentials, CredentialsProvider
 from ..exceptions import CredentialsEmptyError
 
@@ -56,3 +56,16 @@ class EnvironmentVariableCredentialsProvider(CredentialsProvider):
 
     def get_credentials(self) -> Credentials:
         return self._credentials
+
+class CredentialsProviderFunc(CredentialsProvider):
+    """Provides a helper wrapping a function value to satisfy the CredentialsProvider interface.
+    """
+
+    def __init__(
+        self,
+        func: Callable,
+    ) -> None:
+        self._func = func
+
+    def get_credentials(self) -> Credentials:
+        return self._func()

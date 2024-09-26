@@ -4,7 +4,8 @@ import copy
 from typing import Optional
 from .config import Config
 from .types import OperationInput, OperationOutput
-from ._client import _SyncClientImpl, FF_ENABLE_CRC64_CHECK_DOWNLOAD
+from ._client import _SyncClientImpl
+from .defaults import FF_ENABLE_CRC64_CHECK_DOWNLOAD
 from . import models
 from . import operations
 from . import exceptions

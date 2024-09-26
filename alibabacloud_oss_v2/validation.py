@@ -39,7 +39,7 @@ def is_valid_bucket_name(name: str) -> bool:
     if name[-1] == _HYPHEN:
         return False
 
-    if name[0] not in _ALPHA_NUM:
+    if name[0] == _HYPHEN:
         return False
 
     return set(name) <= _BUCKET_NAME_CHARS
@@ -53,6 +53,6 @@ def is_valid_object_name(name: str) -> bool:
     return True
 
 
-def is_valid_range(_: str) -> bool:
+def is_valid_range(value: str) -> bool:
     """Checks if the range is valid"""
-    return True
+    return value.startswith('bytes=')

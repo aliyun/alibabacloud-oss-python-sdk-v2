@@ -176,7 +176,7 @@ class TestAesCtr(unittest.TestCase):
         # iterator bytes
         cipher.no_bytes = True
         eiter = cipher.encrypt(example_data)
-        self.assertIsInstance(eiter, aes_ctr.IteratorEncryptor)
+        self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
         edata = b''
         for d in eiter:
             edata += d
@@ -185,7 +185,7 @@ class TestAesCtr(unittest.TestCase):
         # iterator str
         cipher.no_str = True
         eiter = cipher.encrypt('1234567890abcdefghijklmnopqrstuvwxyz')
-        self.assertIsInstance(eiter, aes_ctr.IteratorEncryptor)
+        self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
         edata = b''
         for d in eiter:
             edata += d

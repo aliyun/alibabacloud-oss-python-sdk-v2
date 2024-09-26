@@ -197,7 +197,7 @@ class ObjectNameInvalidError(BaseError):
     """
     Param Invalid Error.
     """
-    fmt = 'Bucket name is invalid.'
+    fmt = 'Object name is invalid.'
 
 
 class InconsistentError(BaseError):

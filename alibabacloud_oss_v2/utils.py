@@ -1,8 +1,11 @@
 """utils for sdk"""
 import io
-from typing import Optional, Any, MutableMapping, Tuple
+import platform
+from typing import Optional, Any, MutableMapping, Tuple, Dict
 import mimetypes
 import os.path
+from ._version import VERSION
+
 
 _EXTRA_TYPES_MAP = {
     ".js": "application/javascript",
@@ -58,12 +61,15 @@ def ensure_boolean(val):
 
 def merge_dicts(dict1, dict2, append_lists=False):
     """Given two dict, merge the second dict into the first.
-
     The dicts can have arbitrary nesting.
 
-    :param append_lists: If true, instead of clobbering a list with the new
+    Args:
+        dict1 (Dict): the first dict.
+        dict2 (Dict): the second dict.
+        append_lists (bool, optional): If true, instead of clobbering a list with the new
         value, append all of the new values onto the original list.
     """
+
     for key in dict2:
         if isinstance(dict2[key], dict):
             if key in dict1 and key in dict2:
@@ -157,6 +163,9 @@ def parse_content_range(content_range: str) -> Tuple[int, int, int]:
     if not content_range:
         raise ValueError("Invalid content-range header, it is none or empty.")
 
+    if not content_range.startswith('bytes '):
+        raise ValueError("Invalid content-range header, it dose not start with bytes.")
+
     vals = content_range.split(" ")[1].split("/")
 
     if len(vals) != 2:
@@ -186,7 +195,7 @@ def parse_content_range(content_range: str) -> Tuple[int, int, int]:
 
 def parse_content_length(headers: MutableMapping[str, str]) -> int:
     """Parses the length from the content length header"""
-    if not headers["Content-Length"]:
+    if not headers.get("Content-Length", None):
         raise ValueError("Missing content-length header.")
     size = int(headers["Content-Length"])
     if size <= 0:
@@ -242,3 +251,18 @@ def is_seekable(obj: Any) -> bool:
         except OSError:
             return False
     return False
+
+def is_fileobj(obj: Any) -> bool:
+    """Tests if this object has seek and tell method
+    Returns True if it is a file object, else False 
+    """
+    if hasattr(obj, 'seek') and hasattr(obj, 'tell'):
+        return True
+    return False
+
+def get_default_user_agent() -> str:
+    """Returns the default user agent string
+    """
+    sysinfo = f'{platform.system()}/{platform.release()}/{platform.machine()};{platform.python_version()}'
+    return f'alibabacloud-python-sdk-v2/{VERSION} ({sysinfo})'
+

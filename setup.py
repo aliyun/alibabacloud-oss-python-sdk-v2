@@ -5,14 +5,13 @@ setup module for Alibaba Cloud OSS SDK V2.
 import os
 from setuptools import setup, find_packages
 
-
-PACKAGE = "alibabacloud_oss_v2"
-NAME = "alibabacloud_oss_v2"
+PACKAGE_NAME = "alibabacloud-oss-v2"
+PACKAGE_FOLDER_PATH = PACKAGE_NAME.replace("-", "_")
 DESCRIPTION = "Alibaba Cloud OSS (Object Storage Service) SDK V2 for Python"
 AUTHOR = "Alibaba Cloud OSS SDK"
 AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-oss-python-sdk-v2"
-VERSION = __import__(PACKAGE).__version__
+VERSION = __import__(PACKAGE_FOLDER_PATH).__version__
 REQUIRES = [
     "requests>=2.18.4",
     "cryptography>=2.1.4",
@@ -28,7 +27,7 @@ if os.path.exists('./README.md'):
         LONG_DESCRIPTION = fp.read()
 
 setup(
-    name=NAME,
+    name=PACKAGE_NAME,
     version=VERSION,
     description=DESCRIPTION,
     long_description=LONG_DESCRIPTION,

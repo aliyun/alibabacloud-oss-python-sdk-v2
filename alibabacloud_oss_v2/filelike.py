@@ -8,6 +8,7 @@ from .types import StreamBody, BodyType
 from . import models
 from . import exceptions
 from . import utils
+from . import defaults
 
 
 DEFAULT_BUFFER_SIZE = 8 * 1024
@@ -360,9 +361,9 @@ class ReadOnlyFile:
 
         # prefetch parameters
         self._enable_prefetch = kwargs.get('enable_prefetch', False)
-        self._prefetch_num = kwargs.get('prefetch_num', 3)
-        self._chunk_size = kwargs.get('chunk_size', 6 * 1024 *1024)
-        self._prefetch_threshold = kwargs.get('prefetch_threshold', 20 * 1024 *1024)
+        self._prefetch_num = kwargs.get('prefetch_num', defaults.DEFAULT_PREFETCH_NUM)
+        self._chunk_size = kwargs.get('chunk_size', defaults.DEFAULT_PREFETCH_CHUNK_SIZE)
+        self._prefetch_threshold = kwargs.get('prefetch_threshold', defaults.DEFAULT_PREFETCH_THRESHOLD)
         self._block_size = kwargs.get('block_size', None)
 
         # aysnc readers for prefetch

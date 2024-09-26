@@ -8,12 +8,11 @@ sys.path.append(code_directory)
 import argparse
 import alibabacloud_oss_v2 as oss
 
-parser = argparse.ArgumentParser(description="delete object sample")
+parser = argparse.ArgumentParser(description="put bucket acl sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
-parser.add_argument('--key', help='The name of the object.', required=True)
-
+parser.add_argument('--acl', help='Specify the access permission ACL for the bucket.', required=True)
 
 def main():
 
@@ -31,15 +30,12 @@ def main():
 
     client = oss.Client(cfg)
 
-    result = client.delete_object(oss.DeleteObjectRequest(
+    result = client.put_bucket_acl(oss.PutBucketAclRequest(
         bucket=args.bucket,
-        key=args.key,
+        acl=args.acl,
     ))
-
     print(f'status code: {result.status_code},'
           f' request id: {result.request_id},'
-          f' version id: {result.version_id},' 
-          f' delete marker: {result.delete_marker},'
     )
 
 if __name__ == "__main__":

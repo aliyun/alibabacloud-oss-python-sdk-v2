@@ -15,34 +15,31 @@ def _iv_to_big_int(iv: bytes) -> int:
     iv_high_low_pair = struct.unpack(">QQ", iv)
     iv_big_int = iv_high_low_pair[0] << 64 | iv_high_low_pair[1]
     return iv_big_int
-
+  
 class IteratorEncryptor():
     """_summary_
     """
 
     def __init__(
         self,
-        iterable: Iterable,
+        iterator: Iterator,
         cipher_data: CipherData,
         counter: int
     ) -> None:
-        self._iterable = iterable
+        self._iterator = iterator
         self._cipher_data = cipher_data
         self._counter = counter
-        self._cipher = None
-        self._iter = None
+
+        ctr = Counter.new(_BLOCK_BITS_LEN, initial_value=self._counter)
+        self._cipher =  AES.new(self._cipher_data.key, AES.MODE_CTR, counter=ctr)
         self._finished = False
         self._remains_bytes = None
 
     def __iter__(self):
-        ctr = Counter.new(_BLOCK_BITS_LEN, initial_value=self._counter)
-        self._cipher =  AES.new(self._cipher_data.key, AES.MODE_CTR, counter=ctr)
-        self._iter = iter(self._iterable)
-        self._finished = False
-        self._remains_bytes = None
         return self
 
     def __next__(self):
+
         if self._finished:
             raise StopIteration
 
@@ -50,7 +47,7 @@ class IteratorEncryptor():
         self._remains_bytes = None
         try:
             while True:
-                d = next(self._iter)
+                d = next(self._iterator)
                 if isinstance(d, int):
                     d = d.to_bytes()
                 elif isinstance(d, str):
@@ -74,6 +71,26 @@ class IteratorEncryptor():
             if len(data) > 0:
                 return self._cipher.encrypt(data)
             raise err
+
+class IterableEncryptor():
+    """_summary_
+    """
+
+    def __init__(
+        self,
+        iterable: Iterable,
+        cipher_data: CipherData,
+        counter: int
+    ) -> None:
+        self._iterable = iterable
+        self._cipher_data = cipher_data
+        self._counter = counter
+
+    def __iter__(self):
+        return IteratorEncryptor(
+            iterator=iter(self._iterable),
+            cipher_data=self._cipher_data,
+            counter=self._counter)
 
 class FileLikeEncryptor():
     """_summary_
@@ -220,8 +237,11 @@ class _AesCtr:
         if hasattr(src, 'seek') and hasattr(src, 'read'):
             return FileLikeEncryptor(reader=src, cipher_data=self.cipher_data, offset=self.offset)
 
+        if isinstance(src, Iterator):
+            return IteratorEncryptor(iterator=src, cipher_data=self.cipher_data, counter=self.counter)
+
         if isinstance(src, Iterable):
-            return IteratorEncryptor(iterable=src, cipher_data=self.cipher_data, counter=self.counter)
+            return IterableEncryptor(iterable=src, cipher_data=self.cipher_data, counter=self.counter)
 
         raise TypeError(f'src is not str/bytes/file-like/Iterable type, got {type(src)}')
 

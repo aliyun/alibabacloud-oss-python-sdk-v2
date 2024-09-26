@@ -1,11 +1,12 @@
 import sys
 import os
-import argparse
-import alibabacloud_oss_v2 as oss
 
 # It is used only to execute sample code in the project directory
 code_directory = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(code_directory)
+
+import argparse
+import alibabacloud_oss_v2 as oss
 
 parser = argparse.ArgumentParser(description="list buckets sample")
 

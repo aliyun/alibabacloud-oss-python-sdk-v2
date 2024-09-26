@@ -123,7 +123,7 @@ class RequestsHttpClient(HttpClient):
             self._verify = False
         self._allow_redirects = kwargs.get("enabled_redirect", False)
         self._proxies = kwargs.get("proxy_host", None)
-        self._block_size = kwargs.get("block_size", defaults.DEFAULT_CHUNK_SIZE)
+        self._block_size = kwargs.get("block_size", defaults.DEFAULT_BLOCK_SIZE)
 
     def __enter__(self):
         self.open()

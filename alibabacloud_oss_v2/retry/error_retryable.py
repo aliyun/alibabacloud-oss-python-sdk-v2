@@ -76,7 +76,8 @@ class ClientErrorRetryable(ErrorRetryable):
         self._exceptions = set([
             exceptions.RequestError,
             exceptions.ResponseError,
-            exceptions.InconsistentError
+            exceptions.InconsistentError,
+            exceptions.CredentialsFetchError
         ])
 
 
