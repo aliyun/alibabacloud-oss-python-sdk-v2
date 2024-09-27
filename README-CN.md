@@ -2,32 +2,32 @@
 
 [![GitHub version](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2.svg)](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2)
 
-alibabacloud-oss-python-sdk-v2 is the Developer Preview for the v2 of the OSS SDK for the Python programming language
+alibabacloud-oss-python-sdk-v2 是OSS在Python编译语言下的第二版SDK, 处于开发预览版状态
 
-## [README in Chinese](README-CN.md)
+## [README in English](README-CN.md)
 
-## About
-> - This Python SDK is based on the official APIs of [Alibaba Cloud OSS](http://www.aliyun.com/product/oss/).
-> - Alibaba Cloud Object Storage Service (OSS) is a cloud storage service provided by Alibaba Cloud, featuring massive capacity, security, a low cost, and high reliability. 
-> - The OSS can store any type of files and therefore applies to various websites, development enterprises and developers.
-> - With this SDK, you can upload, download and manage data on any app anytime and anywhere conveniently. 
+## 关于
+> - 此Python SDK基于[阿里云对象存储服务](http://www.aliyun.com/product/oss/)官方API构建。
+> - 阿里云对象存储（Object Storage Service，简称OSS），是阿里云对外提供的海量，安全，低成本，高可靠的云存储服务。
+> - OSS适合存放任意文件类型，适合各种网站、开发企业及开发者使用。
+> - 使用此SDK，用户可以方便地在任何应用、任何时间、任何地点上传，下载和管理数据。
 
-## Running Environment
-> - Python 3.8 or above. 
+## 运行环境
+> - Python 3.8 及以上。
 
-## Installing
-### Install the pre release version through pip
+## 安装方法
+### 通过 pip 安装预发布版本
 ```bash
 $ pip install --pre alibabacloud-oss-v2
 ```
 
-### Install from the unzipped installer package directly
+### 通过解压后的安装程序包安装
 ```bash
 $ sudo python setup.py install
 ```
 
-## Getting Started
-#### List Bucket
+## 快速使用
+#### 获取存储空间列表（List Bucket）
 ```python
 import alibabacloud_oss_v2 as oss
 
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
 ```
 
-#### List Objects
+#### 获取文件列表（List Objects）
 ```python
 import alibabacloud_oss_v2 as oss
 
@@ -95,7 +95,7 @@ if __name__ == "__main__":
 
 ```
 
-#### Put Object
+#### 上传文件（Put Object）
 ```python
 import alibabacloud_oss_v2 as oss
 
@@ -132,16 +132,16 @@ if __name__ == "__main__":
 
 ```
 
-##  Complete Example
-More example projects can be found in the `sample` folder 
+## 更多示例
+请参看`sample`目录
 
-### Running Example
-> - Go to the sample code folder `sample`。
-> - Configure credentials values from the environment variables, like `export OSS_ACCESS_KEY_ID="your access key id"`, `export OSS_ACCESS_KEY_SECRET="your access key secrect"`
-> - Take list_buckets.python as an example，run `python list_buckets.python --region cn-hangzhou` command。
+### 运行示例
+> - 进入示例程序目录 `sample`。
+> - 通过环境变量，配置访问凭证, `export OSS_ACCESS_KEY_ID="your access key id"`, `export OSS_ACCESS_KEY_SECRET="your access key secrect"`。
+> - 以 list_buckets.go 为例，执行 `python list_buckets.python --region cn-hangzhou`。
 
-## Resources
-[Developer Guide](DEVGUIDE.md) - Use this document to learn how to get started and use this sdk.
+## 资源
+[开发者指南](DEVGUIDE-CN.md) - 参阅该指南，来帮助您安装、配置和使用该开发套件。
 
-## License
-> - Apache-2.0, see [license file](LICENSE)
+## 许可协议
+> - Apache-2.0, 请参阅 [许可文件](LICENSE)
