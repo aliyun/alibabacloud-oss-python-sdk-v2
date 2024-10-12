@@ -109,6 +109,14 @@ def main():
                   f' server time: {complete_resp.headers.get("x-oss-server-time")},'
                   )
 
+        print(f'method: {complete_pre_result.method},'
+              f' expiration: {complete_pre_result.expiration.strftime("%Y-%m-%dT%H:%M:%S.000Z")},'
+              f' url: {complete_pre_result.url}'
+              )
+
+        for key, value in complete_pre_result.signed_headers.items():
+            print(f'signed headers key: {key}, signed headers value: {value}')
+
 
 if __name__ == "__main__":
     main()

@@ -38,5 +38,13 @@ def main():
               f' request id: {result.headers.get("x-oss-request-id")},'
               )
 
+    print(f'method: {abort_result.method},'
+          f' expiration: {abort_result.expiration.fromtimestamp()},'
+          f' url: {abort_result.url}'
+    )
+
+    for key, value in abort_result.signed_headers.items():
+        print(f'signed headers key: {key}, signed headers value: {value}')
+
 if __name__ == "__main__":
     main()
