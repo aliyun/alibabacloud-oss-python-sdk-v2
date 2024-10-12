@@ -697,7 +697,7 @@ class Client:
         return Uploader(self, **kwargs)
 
     # file like objects
-    def appen_file(self, bucket: str, key: str,
+    def append_file(self, bucket: str, key: str,
                     request_payer: Optional[str] = None,
                     create_parameter: Optional[models.AppendObjectRequest] = None,
                     **kwargs) -> AppendOnlyFile:

@@ -19,7 +19,7 @@ class TestAppendOnlyFile(TestIntegration):
 
         # open empty
         append_f: oss.AppendOnlyFile = None
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             append_f = f
             self.assertEqual(0, f.tell())
             self.assertEqual(True, f.writable())
@@ -56,7 +56,7 @@ class TestAppendOnlyFile(TestIntegration):
 
         # open exist
         append_f: oss.AppendOnlyFile = None
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             self.assertEqual(len(mix_data), f.tell())
             f.write(b'123')
             append_f = f
@@ -77,7 +77,7 @@ class TestAppendOnlyFile(TestIntegration):
         key = 'append_file-flush-' + random_str(6)
         self.assertEqual(False, self.client.is_object_exist(self.bucket_name, key))
         append_f: oss.AppendOnlyFile = None
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             append_f = f
             self.assertEqual(0, f.tell())
             self.assertEqual(False, append_f.closed)
@@ -94,7 +94,7 @@ class TestAppendOnlyFile(TestIntegration):
         # open-close
         key = 'append_file-open-close-' + random_str(6)
         self.assertEqual(False, self.client.is_object_exist(self.bucket_name, key))
-        append_f = self.client.appen_file(self.bucket_name, key)
+        append_f = self.client.append_file(self.bucket_name, key)
         self.assertIsNotNone(append_f)
         self.assertEqual(False, append_f.closed)
         self.assertEqual(0, append_f.tell())
@@ -117,7 +117,7 @@ class TestAppendOnlyFile(TestIntegration):
         self.assertEqual(True, self.client.is_object_exist(self.bucket_name, key))
 
         try: 
-            self.client.appen_file(self.bucket_name, key)
+            self.client.append_file(self.bucket_name, key)
             self.fail('shoud not here')
         except Exception as err:
             self.assertIn('Not a appendable file', str(err))
@@ -126,7 +126,7 @@ class TestAppendOnlyFile(TestIntegration):
         append_f: oss.AppendOnlyFile = None
         key = 'new-append_file-' + random_str(6)
         self.assertFalse(self.client.is_object_exist(self.bucket_name, key))
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             self.assertEqual(0, f.tell())
             f.write(b'123')
             append_f = f
@@ -167,7 +167,7 @@ class TestAppendOnlyFile(TestIntegration):
         append_f: oss.AppendOnlyFile = None
         key = 'new-append_file-' + random_str(6)
         self.assertFalse(self.client.is_object_exist(self.bucket_name, key))
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             self.assertEqual(0, f.tell())
             try: 
                 f.write('123')
@@ -191,7 +191,7 @@ class TestAppendOnlyFile(TestIntegration):
 
         self.assertFalse(self.client.is_object_exist(self.bucket_name, key))
 
-        with self.client.appen_file(self.bucket_name, key) as f:
+        with self.client.append_file(self.bucket_name, key) as f:
             n = f.write_from(str_data)
             self.assertEqual(len(data1), n)
 
@@ -225,7 +225,7 @@ class TestAppendOnlyFile(TestIntegration):
             example_data = f.read()
 
         with open(filepath, 'rb') as f:
-            with self.client.appen_file(self.bucket_name, key) as ff:
+            with self.client.append_file(self.bucket_name, key) as ff:
                 n = ff.write_from(f)
                 self.assertEqual(len(example_data), n)
 
@@ -243,7 +243,7 @@ class TestAppendOnlyFile(TestIntegration):
         data = b'hello world'
         data1 = b'hello oss'
         data2 = b'just for test'
-        with self.client.appen_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
+        with self.client.append_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
             acl='public-read',
             storage_class='IA',
             content_type='plain/txt',
@@ -265,7 +265,7 @@ class TestAppendOnlyFile(TestIntegration):
         self.assertEqual('test', result.metadata.get('user'))
         self.assertEqual('plain/txt', result.content_type)
 
-        with self.client.appen_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
+        with self.client.append_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
             acl='public-read',
             storage_class='IA',
             content_type='plain/js',
