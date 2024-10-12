@@ -1,7 +1,7 @@
 import argparse
 import alibabacloud_oss_v2 as oss
 
-parser = argparse.ArgumentParser(description="downloader sample")
+parser = argparse.ArgumentParser(description="download to sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
@@ -35,19 +35,13 @@ def main():
     #                                 checkpoint_dir=args.file_path,
     #                                 verify_data=True)
 
-    result = down_loader.download_file(oss.GetObjectRequest(
-        bucket=args.bucket,
-        key=args.key,
-    ), filepath=args.file_path)
 
-    print(f'written: {result.written}')
-
-    # with open(args.file_path, 'wb') as f:
-    #     result = down_loader.download_to(oss.GetObjectRequest(
-    #         bucket=args.bucket,
-    #         key=args.key,
-    #     ), writer=f)
-    #     print(f'written: {result.written}')
+    with open(args.file_path, 'wb') as f:
+        result = down_loader.download_to(oss.GetObjectRequest(
+            bucket=args.bucket,
+            key=args.key,
+        ), writer=f)
+        print(f'written: {result.written}')
 
 
 
