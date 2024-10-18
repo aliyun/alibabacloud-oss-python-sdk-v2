@@ -1,4 +1,5 @@
 # pylint: skip-file
+import base64
 from typing import cast
 import os
 import tempfile
@@ -926,6 +927,121 @@ class TestObjectBasic(TestIntegration):
             self.assertEqual(403, serr.status_code)
             self.assertIn('PutObjectAcl', str(e))
             self.assertIn('Endpoint: PUT', str(e))
+
+
+    def test_select_object_csv(self):
+        def select_call_back(consumed_bytes, total_bytes=None):
+            print('Consumed Bytes:' + str(consumed_bytes) + '\n')
+
+        data = "name,school,company,age\nLora Francis,School,Staples Inc,27\n#Lora Francis,School,Staples Inc,27\nEleanor Little,School,\"Conectiv, Inc\",43\nRosie Hughes,School,Western Gas Resources Inc,44\nLawrence Ross,School,MetLife Inc.,24\n"
+        key = OBJECTNAME_PREFIX + random_str(16)
+        expression = 'select * from ossobject'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            acl=oss.ObjectACLType.PRIVATE,
+            body=data,
+            content_type='text/txt',
+        ))
+        self.assertEqual(200, result.status_code)
+
+        request = oss.SelectObjectRequest(
+            headers={'content-length': '422'},
+            bucket=self.bucket_name,
+            key=key,
+            select_request=oss.SelectRequest(
+                expression=base64.b64encode(expression.encode()).decode(),
+                input_serialization=oss.InputSerialization(
+                    compression_type=None,
+                    csv_input=oss.CSVInput(
+                        file_header_info='Ignore',
+                        record_delimiter=base64.b64encode('\n'.encode()).decode(),
+                        field_delimiter=base64.b64encode(','.encode()).decode(),
+                        quote_character=base64.b64encode('\"'.encode()).decode(),
+                        comment_character=base64.b64encode('#'.encode()).decode(),
+                        allow_quoted_record_delimiter=True,
+                    ),
+                ),
+                output_serialization=oss.OutputSerialization(
+                    csv_output=oss.CSVOutput(
+                        record_delimiter=base64.b64encode('\n'.encode()).decode(),
+                        field_delimiter=base64.b64encode(','.encode()).decode(),
+                        quote_character=base64.b64encode('\"'.encode()).decode(),
+                    ),
+                    output_raw_data=False,
+                    keep_all_columns=True,
+                    enable_payload_crc=True,
+                    output_header=False,
+                ),
+                options=oss.SelectOptions(
+                    skip_partial_data_record=False,
+                ),
+            ),
+            progress_callback=select_call_back,
+        )
+        result = self.client.select_object(request)
+        self.assertIsNotNone(result)
+        self.assertEqual(206, result.status_code)
+        content = b''
+        try:
+            for chunk in result.body:
+                content += chunk
+        except Exception as e:
+            print(e)
+        self.assertEqual(str(data.split('#')[1]).encode(), content)
+
+
+    def test_select_object_json(self):
+        data = "{\t\"name\":\"Eleanor Little\",\n\t\"age\":43,\n\t\"company\":\"Conectiv, Inc\"}\n{\t\"name\":\"Rosie Hughes\",\n\t\"age\":44,\n\t\"company\":\"Western Gas Resources Inc\"}\n"
+
+        key = OBJECTNAME_PREFIX + random_str(16)
+        expression = 'select * from ossobject as s where cast(s.age as int) > 40'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            acl=oss.ObjectACLType.PRIVATE,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        request = oss.SelectObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            select_request=oss.SelectRequest(
+                expression=base64.b64encode(expression.encode()).decode(),
+                input_serialization=oss.InputSerialization(
+                    compression_type=None,
+                    json_input=oss.JSONInput(
+                            type='LINES',
+                            parse_json_number_as_string=True,
+                    ),
+                ),
+                output_serialization=oss.OutputSerialization(
+                    json_output=oss.JSONOutput(
+                        record_delimiter=base64.b64encode('\n'.encode()).decode(),
+                    ),
+                    output_raw_data=False,
+                    keep_all_columns=True,
+                    enable_payload_crc=True,
+                    output_header=False,
+                ),
+                options=oss.SelectOptions(
+                    skip_partial_data_record=False,
+                ),
+            ),
+        )
+        result = self.client.select_object(request)
+        self.assertIsNotNone(result)
+        self.assertEqual(206, result.status_code)
+        content = b''
+        try:
+            for chunk in result.body:
+                content += chunk
+        except Exception as e:
+            print(e)
+
+        self.assertEqual(data.replace("\t", "").replace(",\n", ",").encode(), content)
+
 
 class TestMultipartUpload(TestIntegration):
     def test_multipart_upload_object(self):

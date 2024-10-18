@@ -903,3 +903,19 @@ class Client:
             raise err
 
         return result
+
+
+    # select_object
+    def select_object(self, request: models.SelectObjectRequest, **kwargs
+                         ) -> models.SelectObjectResult:
+        """
+        SelectObject Executes SQL statements to perform operations on an object and obtains the execution results.
+
+        Args:
+            request (SelectObjectRequest): Request parameters for SelectObject operation.
+
+        Returns:
+            SelectObjectResult: Response result for SelectObject operation.
+        """
+
+        return operations.select_object(self._client, request, **kwargs)
