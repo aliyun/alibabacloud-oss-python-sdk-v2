@@ -244,7 +244,7 @@ class TestBucketBasic(TestIntegration):
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('NoSuchBucket', serr.code)
 
-    def test_bucket_location(self):
+    def test_get_bucket_location(self):
         bucket_name = random_bucket_name()
         result = self.client.put_bucket(oss.PutBucketRequest(
             bucket=bucket_name,
@@ -267,7 +267,7 @@ class TestBucketBasic(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-    def test_put_bucket_location_fail(self):
+    def test_get_bucket_location_fail(self):
         bucket_name = random_bucket_name()
         try:
             self.invalid_client.get_bucket_location(oss.models.GetBucketLocationRequest(
