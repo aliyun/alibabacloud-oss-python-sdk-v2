@@ -268,6 +268,8 @@ class _ClientImplMixIn:
         if (expiration_time := op_input.op_metadata.get('expiration_time', None)) is not None:
             context.expiration_time = expiration_time
 
+        context.sub_resource = op_input.op_metadata.get("sub-resource", [])
+
         return context
 
     def retry_max_attempts(self, options: _Options) -> int:

@@ -166,6 +166,9 @@ class SignerV1(Signer):
                 value = unquote(value)
                 if key in self._subresource_key_set:
                     key_val_pairs.append((key, value))
+                elif key in signing_ctx.sub_resource:
+                    key_val_pairs.append((key, value))
+
             sorted_key_vals = []
             for key, value in sorted(key_val_pairs):
                 if len(value) > 0:

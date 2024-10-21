@@ -327,6 +327,7 @@ class SigningContext(object):
         self.string_to_sign = ''
         self.additional_headers = additional_headers
         self.expiration_time: Optional[datetime.datetime] = None
+        self.sub_resource: Optional[str] = []
 
 
 class Signer(abc.ABC):
