@@ -30,6 +30,7 @@ OBJECTNAME_PREFIX = "python-sdk-test-object-"
 
 _defaultClient :oss.Client = None
 _invalidAkClient :oss.Client = None
+_signV1Client :oss.Client = None
 
 
 class TestIntegration(unittest.TestCase):
@@ -37,6 +38,7 @@ class TestIntegration(unittest.TestCase):
     def setUpClass(cls):
         cls.client = get_default_client()
         cls.invalid_client = get_invalid_ak_client()
+        cls.signv1_client = get_signv1_client()
         cls.bucket_name = random_bucket_name()
         cls.client.put_bucket(oss.models.PutBucketRequest(bucket=cls.bucket_name))
 
@@ -70,6 +72,20 @@ def get_invalid_ak_client() -> oss.Client:
     _invalidAkClient = oss.Client(cfg)
 
     return _invalidAkClient
+
+def get_signv1_client() -> oss.Client:
+    global _signV1Client
+    if _signV1Client is not None:
+        return _signV1Client
+
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+    cfg.signature_version = 'v1'
+    cfg.region = REGION
+    cfg.endpoint = ENDPOINT
+    _signV1Client = oss.Client(cfg)
+
+    return _signV1Client
 
 def get_client(region:str, endpoint:str) -> oss.Client:
     cfg = oss.config.load_default()
