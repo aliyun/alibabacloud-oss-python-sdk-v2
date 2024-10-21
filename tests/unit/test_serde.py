@@ -1401,6 +1401,91 @@ class TestSerdeOperation(unittest.TestCase):
         self.assertEqual(datetime_utc, result.config.httptime_xml)
         self.assertEqual(datetime_utc, result.config.unixtime_xml)
 
+    def test_deserialize_response_outline_body_xml_new_datatime_type(self):
+
+        class Configuration(serde.Model):
+            def __init__(
+                self,
+                str_xml: Optional[str] = None,
+                int_xml: Optional[int] = None,
+                bool_xml: Optional[bool] = None,
+                float_xml: Optional[float] = None,
+                isotime_xml: Optional[datetime.datetime] = None,
+                httptime_xml: Optional[datetime.datetime] = None,
+                unixtime_xml: Optional[datetime.datetime] = None,                
+                **kwargs: Any
+            ) -> None:
+                super().__init__(**kwargs)
+                self.str_xml = str_xml
+                self.int_xml = int_xml
+                self.bool_xml = bool_xml
+                self.float_xml = float_xml
+                self.isotime_xml = isotime_xml
+                self.httptime_xml = httptime_xml
+                self.unixtime_xml = unixtime_xml
+            
+            _attribute_map = {
+                "str_xml": {"tag": "xml", "rename": "StrField"},
+                "int_xml": {"tag": "xml", "rename": "IntField", "type":"int"},
+                "bool_xml": {"tag": "xml", "rename": "BoolField", "type":"bool"},
+                "float_xml": {"tag": "xml", "rename": "FloatField", "type":"float"},
+                "isotime_xml": {"tag": "xml", "rename": "IsotimeField", "type":"datetime.datetime"},
+                "httptime_xml": {"tag": "xml", "rename": "HttptimeField", "type":"datetime.datetime,httptime"},
+                "unixtime_xml": {"tag": "xml", "rename": "UnixtimeField", "type":"datetime.datetime,unixtime"},
+            }
+
+            _xml_map = {'name':'Configuration'}
+
+
+        class PutApiResult(serde.ResultModel):
+            def __init__(
+                self,
+                config: Optional[Configuration] = None,
+                **kwargs: Any
+            ) -> None:
+                super().__init__(**kwargs)
+                self.config = config
+            
+            _attribute_map = {
+                "config": {"tag": "output", "position":"body", "type":"Configuration,xml"},
+            }
+            _dependency_map = {
+                "Configuration": {"new": lambda:Configuration()},
+            }
+
+        xml_data = r'''
+            <Configuration>
+                <StrField>str-1</StrField>
+                <IntField>1234</IntField>
+                <BoolField>true</BoolField>
+                <FloatField>3.5</FloatField>
+                <IsotimeField>2023-12-17T03:30:09.000000Z</IsotimeField>
+                <HttptimeField>Sun, 17 Dec 2023 03:30:09 GMT</HttptimeField>
+                <UnixtimeField>1702783809</UnixtimeField>
+            </Configuration>
+        '''
+
+        result = PutApiResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            headers= {},
+            http_response=HttpResponseStub(data=xml_data)
+        )
+        datetime_utc = datetime.datetime.fromtimestamp(1702783809, tz=datetime.timezone.utc)
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('', result.request_id)
+        self.assertEqual('str-1', result.config.str_xml)
+        self.assertEqual(1234, result.config.int_xml)
+        self.assertEqual(True, result.config.bool_xml)
+        self.assertEqual(3.5, result.config.float_xml)
+        self.assertEqual(datetime_utc, result.config.isotime_xml)
+        self.assertEqual(datetime_utc, result.config.httptime_xml)
+        self.assertEqual(datetime_utc, result.config.unixtime_xml)
+
 
     def test_deserialize_response_header(self):
         class PutApiResult(serde.ResultModel):
@@ -1432,6 +1517,71 @@ class TestSerdeOperation(unittest.TestCase):
                 "isotime_header": {"tag": "output", "position": "header", "rename": "x-oss-isotime", "type":"datetime"},
                 "httptime_header": {"tag": "output", "position": "header", "rename": "x-oss-httptime", "type":"datetime,httptime"},
                 "unixtime_header": {"tag": "output", "position": "header", "rename": "x-oss-unixtime", "type":"datetime,unixtime"},
+            }
+ 
+
+        result = PutApiResult()
+
+        headers = CaseInsensitiveDict({
+            'x-oss-str':'str-1', 
+            'x-oss-int':'123', 
+            'x-oss-bool':'false', 
+            'x-oss-float':'3.5', 
+            'x-oss-isotime':'2023-12-17T03:30:09.000000Z', 
+            'x-oss-httptime':'Sun, 17 Dec 2023 03:30:09 GMT', 
+            'x-oss-unixtime':'1702783809', 
+            'x-oss-request-id':'id-12345'
+        })
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            headers= headers,
+        )
+        datetime_utc = datetime.datetime.fromtimestamp(1702783809, tz=datetime.timezone.utc)
+        deserializer = [serde.deserialize_output_headers]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('id-12345', result.request_id)
+        self.assertEqual(8, len(result.headers.items()))
+        self.assertEqual('str-1', result.str_header)
+        self.assertEqual(123, result.int_header)
+        self.assertEqual(False, result.bool_header)
+        self.assertEqual(3.5, result.float_header)
+        self.assertEqual(datetime_utc, result.isotime_header)
+        self.assertEqual(datetime_utc, result.httptime_header)
+        self.assertEqual(datetime_utc, result.unixtime_header)
+
+    def test_deserialize_response_header_new_datetime_type(self):
+        class PutApiResult(serde.ResultModel):
+            def __init__(
+                self,
+                str_header: Optional[str] = None,
+                int_header: Optional[int] = None,
+                bool_header: Optional[bool] = None,
+                float_header: Optional[float] = None,
+                isotime_header: Optional[datetime.datetime] = None,
+                httptime_header: Optional[datetime.datetime] = None,
+                unixtime_header: Optional[datetime.datetime] = None,                
+                **kwargs: Any
+            ) -> None:
+                super().__init__(**kwargs)
+                self.str_header = str_header
+                self.int_header = int_header
+                self.bool_header = bool_header
+                self.float_header = float_header
+                self.isotime_header = isotime_header
+                self.httptime_header = httptime_header
+                self.unixtime_header = unixtime_header
+            
+            _attribute_map = {
+                "str_header": {"tag": "output", "position": "header", "rename": "x-oss-str"},
+                "int_header": {"tag": "output", "position": "header", "rename": "x-oss-int", "type":"int"},
+                "bool_header": {"tag": "output", "position": "header", "rename": "x-oss-bool", "type":"bool"},
+                "float_header": {"tag": "output", "position": "header", "rename": "x-oss-float", "type":"float"},
+                "isotime_header": {"tag": "output", "position": "header", "rename": "x-oss-isotime", "type":"datetime.datetime"},
+                "httptime_header": {"tag": "output", "position": "header", "rename": "x-oss-httptime", "type":"datetime.datetime,httptime"},
+                "unixtime_header": {"tag": "output", "position": "header", "rename": "x-oss-unixtime", "type":"datetime.datetime,unixtime"},
             }
  
 

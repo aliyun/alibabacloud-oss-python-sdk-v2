@@ -399,7 +399,7 @@ def _deserialize_xml_any(upper_obj: Model, elem: ET.Element, attr_types: List[st
         return int(elem.text)
     if attr_type == 'float':
         return float(elem.text)
-    if attr_type == 'datetime':
+    if 'datetime' in attr_type:
         return _deserialize_datetime(elem.text, attr_types)
 
     raise exceptions.DeserializationError(error=f'Unsupport type {attr_type}')
