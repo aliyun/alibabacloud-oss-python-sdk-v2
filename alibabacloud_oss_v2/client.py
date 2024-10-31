@@ -903,3 +903,101 @@ class Client:
             raise err
 
         return result
+
+
+    def list_access_points(self, request: models.ListAccessPointsRequest, **kwargs
+                           ) -> models.ListAccessPointsResult:
+        """
+        Queries the information about user-level or bucket-level access points.
+
+        Args:
+            request (ListAccessPointsRequest): Request parameters for ListAccessPoints operation.
+
+        Returns:
+            ListAccessPointsResult: Response result for ListAccessPoints operation.
+        """
+        return operations.list_access_points(self._client, request, **kwargs)
+
+
+    def get_access_point(self, request: models.GetAccessPointRequest, **kwargs
+                         ) -> models.GetAccessPointResult:
+        """
+        Queries the information about an access point.
+
+        Args:
+            request (GetAccessPointRequest): Request parameters for GetAccessPoint operation.
+
+        Returns:
+            GetAccessPointResult: Response result for GetAccessPoint operation.
+        """
+        return operations.get_access_point(self._client, request, **kwargs)
+
+
+    def get_access_point_policy(self, request: models.GetAccessPointPolicyRequest, **kwargs
+                                ) -> models.GetAccessPointPolicyResult:
+        """
+        Queries the configurations of an access point policy.
+
+        Args:
+            request (GetAccessPointPolicyRequest): Request parameters for GetAccessPointPolicy operation.
+
+        Returns:
+            GetAccessPointPolicyResult: Response result for GetAccessPointPolicy operation.
+        """
+        return operations.get_access_point_policy(self._client, request, **kwargs)
+
+
+    def delete_access_point_policy(self, request: models.DeleteAccessPointPolicyRequest, **kwargs
+                                   ) -> models.DeleteAccessPointPolicyResult:
+        """
+        Deletes an access point policy.
+
+        Args:
+            request (DeleteAccessPointPolicyRequest): Request parameters for DeleteAccessPointPolicy operation.
+
+        Returns:
+            DeleteAccessPointPolicyResult: Response result for DeleteAccessPointPolicy operation.
+        """
+        return operations.delete_access_point_policy(self._client, request, **kwargs)
+
+
+    def put_access_point_policy(self, request: models.PutAccessPointPolicyRequest, **kwargs
+                                ) -> models.PutAccessPointPolicyResult:
+        """
+        Configures an access point policy.
+
+        Args:
+            request (PutAccessPointPolicyRequest): Request parameters for PutAccessPointPolicy operation.
+
+        Returns:
+            PutAccessPointPolicyResult: Response result for PutAccessPointPolicy operation.
+        """
+        return operations.put_access_point_policy(self._client, request, **kwargs)
+
+
+    def delete_access_point(self, request: models.DeleteAccessPointRequest, **kwargs
+                            ) -> models.DeleteAccessPointResult:
+        """
+        Deletes an access point.
+
+        Args:
+            request (DeleteAccessPointRequest): Request parameters for DeleteAccessPoint operation.
+
+        Returns:
+            DeleteAccessPointResult: Response result for DeleteAccessPoint operation.
+        """
+        return operations.delete_access_point(self._client, request, **kwargs)
+
+
+    def create_access_point(self, request: models.CreateAccessPointRequest, **kwargs
+                            ) -> models.CreateAccessPointResult:
+        """
+        Creates an access point.
+
+        Args:
+            request (CreateAccessPointRequest): Request parameters for CreateAccessPoint operation.
+
+        Returns:
+            CreateAccessPointResult: Response result for CreateAccessPoint operation.
+        """
+        return operations.create_access_point(self._client, request, **kwargs)
