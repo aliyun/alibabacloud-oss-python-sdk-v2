@@ -16,6 +16,7 @@ from .models.service import *
 from .models.region import *
 from .models.bucket_basic import *
 from .models.object_basic import *
+from .models.access_point import *
 
 from .config import Config
 from .client import Client
