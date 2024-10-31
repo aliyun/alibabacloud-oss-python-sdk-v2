@@ -905,6 +905,7 @@ class Client:
         return result
 
 
+    # access point
     def list_access_points(self, request: models.ListAccessPointsRequest, **kwargs
                            ) -> models.ListAccessPointsResult:
         """
