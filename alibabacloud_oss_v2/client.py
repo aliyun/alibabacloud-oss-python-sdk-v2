@@ -1002,3 +1002,31 @@ class Client:
             CreateAccessPointResult: Response result for CreateAccessPoint operation.
         """
         return operations.create_access_point(self._client, request, **kwargs)
+
+    # bucket access monitor
+    def put_bucket_access_monitor(self, request: models.PutBucketAccessMonitorRequest, **kwargs
+                                  ) -> models.PutBucketAccessMonitorResult:
+        """
+        Modifies the access tracking status of a bucket.
+
+        Args:
+            request (PutBucketAccessMonitorRequest): Request parameters for PutBucketAccessMonitor operation.
+
+        Returns:
+            PutBucketAccessMonitorResult: Response result for PutBucketAccessMonitor operation.
+        """
+        return operations.put_bucket_access_monitor(self._client, request, **kwargs)
+
+
+    def get_bucket_access_monitor(self, request: models.GetBucketAccessMonitorRequest, **kwargs
+                                  ) -> models.GetBucketAccessMonitorResult:
+        """
+        Queries the access tracking status of a bucket.
+
+        Args:
+            request (GetBucketAccessMonitorRequest): Request parameters for GetBucketAccessMonitor operation.
+
+        Returns:
+            GetBucketAccessMonitorResult: Response result for GetBucketAccessMonitor operation.
+        """
+        return operations.get_bucket_access_monitor(self._client, request, **kwargs)
