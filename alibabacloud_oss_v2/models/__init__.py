@@ -5,3 +5,4 @@ from .region import *
 from .bucket_basic import *
 from .object_basic import *
 from .access_point import *
+from .bucket_access_monitor import *
