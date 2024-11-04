@@ -2630,7 +2630,7 @@ class GetObjectTaggingResult(serde.ResultModel):
     }
 
     _dependency_map = {
-        "Tag": {"new": lambda: Tag()},
+        "TagSet": {"new": lambda: TagSet()},
     }
 
     _xml_map = {"name":"Tagging"}

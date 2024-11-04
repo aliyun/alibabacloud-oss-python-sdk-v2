@@ -3237,3 +3237,966 @@ class TestListParts(unittest.TestCase):
         self.assertEqual('"7265F4D211B56873A381D321F586****"', result.parts[2].etag)
         self.assertEqual(1024, result.parts[2].size)
 
+
+class TestPutSymlink(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            target='KbGMxddWss',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNotNone(request.target)
+        self.assertIsNone(request.acl)
+        self.assertIsNone(request.storage_class)
+        self.assertIsNone(request.metadata)
+        self.assertIsNone(request.forbid_overwrite)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            target='KbGMxddWss',
+            acl='private',
+            storage_class='ColdArchive',
+            metadata={
+                "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "AES/CTR/NoPadding",
+                "client-side-encryption-wrap-alg": "RSA/NONE/PKCS1Padding",
+            },
+            forbid_overwrite=True,
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('KbGMxddWss', request.target)
+        self.assertEqual('private', request.acl)
+        self.assertEqual('ColdArchive', request.storage_class)
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", request.metadata.get("client-side-encryption-key"))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", request.metadata.get("client-side-encryption-start"))
+        self.assertEqual("AES/CTR/NoPadding", request.metadata.get("client-side-encryption-cek-alg"))
+        self.assertEqual("RSA/NONE/PKCS1Padding", request.metadata.get("client-side-encryption-wrap-alg"))
+        self.assertEqual(True, request.forbid_overwrite)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            target='KbGMxddWss',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertTrue(hasattr(request, 'target'))
+        self.assertEqual('KbGMxddWss', request.target)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            target='KbGMxddWss',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('KbGMxddWss', request.target)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            target='KbGMxddWss',
+            acl='private',
+            storage_class='ColdArchive',
+            metadata={
+                "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "AES/CTR/NoPadding",
+                "client-side-encryption-wrap-alg": "RSA/NONE/PKCS1Padding",
+            },
+            forbid_overwrite=True,
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutSymlink',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutSymlink', op_input.op_name)
+        self.assertEqual('PUT', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('KbGMxddWss', op_input.headers.get('x-oss-symlink-target'))
+        self.assertEqual('private', op_input.headers.get('x-oss-object-acl'))
+        self.assertEqual('ColdArchive', op_input.headers.get('x-oss-storage-class'))
+        self.assertEqual('nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=', request.metadata.get('client-side-encryption-key'))
+        self.assertEqual('De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=', request.metadata.get('client-side-encryption-start'))
+        self.assertEqual('AES/CTR/NoPadding', request.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual('RSA/NONE/PKCS1Padding', request.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual(True, bool(op_input.headers.get('x-oss-forbid-overwrite')))
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.PutSymlinkResult()
+        self.assertIsNone(result.version_id)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.PutSymlinkResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+
+        result = model.PutSymlinkResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.PutSymlinkResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
+class TestGetSymlink(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.GetSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNone(request.version_id)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.GetSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.version_id)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.GetSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.GetSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.GetSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='GetSymlink',
+            method='GET',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('GetSymlink', op_input.op_name)
+        self.assertEqual('GET', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', op_input.parameters.get('versionId'))
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.GetSymlinkResult()
+        self.assertIsNone(result.version_id)
+        self.assertIsNone(result.target)
+        self.assertIsNone(result.etag)
+        self.assertIsNone(result.metadata)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.GetSymlinkResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            target='_#B++ $M3T',
+            etag='"D41D8CD98F00B204E9800998ECF8****"',
+            metadata={
+                "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "AES/CTR/NoPadding",
+                "client-side-encryption-wrap-alg": "RSA/NONE/PKCS1Padding",
+            },
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertEqual('_#B++ $M3T', result.target)
+        self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result.metadata.get("client-side-encryption-key"))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result.metadata.get("client-side-encryption-start"))
+        self.assertEqual("AES/CTR/NoPadding", result.metadata.get("client-side-encryption-cek-alg"))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result.metadata.get("client-side-encryption-wrap-alg"))
+
+        result = model.GetSymlinkResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.GetSymlinkResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
+class TestPutObjectTagging(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.PutObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='tag-key1',
+                        value='tag-value1',
+                    ),model.Tag(
+                        key='tag-key2',
+                        value='tag-value2',
+                    )]
+                ),
+            ),
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNotNone(request.tagging)
+        self.assertIsNone(request.version_id)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.PutObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='tag-key1',
+                        value='tag-value1',
+                    ),model.Tag(
+                        key='tag-key2',
+                        value='tag-value2',
+                    )]
+                ),
+            ),
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('tag-key1', request.tagging.tag_set.tags[0].key)
+        self.assertEqual('tag-value1', request.tagging.tag_set.tags[0].value)
+        self.assertEqual('tag-key2', request.tagging.tag_set.tags[1].key)
+        self.assertEqual('tag-value2', request.tagging.tag_set.tags[1].value)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.version_id)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.PutObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='tag-key1',
+                        value='tag-value1',
+                    ),model.Tag(
+                        key='tag-key2',
+                        value='tag-value2',
+                    )]
+                ),
+            ),
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertTrue(hasattr(request, 'tagging'))
+        self.assertEqual('tag-key1', request.tagging.tag_set.tags[0].key)
+        self.assertEqual('tag-value1', request.tagging.tag_set.tags[0].value)
+        self.assertEqual('tag-key2', request.tagging.tag_set.tags[1].key)
+        self.assertEqual('tag-value2', request.tagging.tag_set.tags[1].value)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.PutObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='tag-key1',
+                        value='tag-value1',
+                    )]
+                ),
+            ),
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('tag-key1', request.tagging.tag_set.tags[0].key)
+        self.assertEqual('tag-value1', request.tagging.tag_set.tags[0].value)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.PutObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='tag-key1',
+                        value='tag-value1',
+                    ),model.Tag(
+                        key='tag-key2',
+                        value='tag-value2',
+                    )]
+                ),
+            ),
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutObjectTagging',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutObjectTagging', op_input.op_name)
+        self.assertEqual('PUT', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', op_input.parameters.get('versionId'))
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+        root = ET.fromstring(op_input.body)
+        self.assertEqual('Tagging', root.tag)
+        self.assertEqual('tag-key1', root.find('TagSet').findall('Tag')[0].findtext('Key'))
+        self.assertEqual('tag-value1', root.find('TagSet').findall('Tag')[0].findtext('Value'))
+        self.assertEqual('tag-key2', root.find('TagSet').findall('Tag')[1].findtext('Key'))
+        self.assertEqual('tag-value2', root.find('TagSet').findall('Tag')[1].findtext('Value'))
+
+    def test_constructor_result(self):
+        result = model.PutObjectTaggingResult()
+        self.assertIsNone(result.version_id)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.PutObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+
+        result = model.PutObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.PutObjectTaggingResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
+class TestGetObjectTagging(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.GetObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNone(request.version_id)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.GetObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.version_id)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.GetObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.GetObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.GetObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='GetObjectTagging',
+            method='GET',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('GetObjectTagging', op_input.op_name)
+        self.assertEqual('GET', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', op_input.parameters.get('versionId'))
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.GetObjectTaggingResult()
+        self.assertIsNone(result.version_id)
+        self.assertIsNone(result.tag_set)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.GetObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            tag_set=model.TagSet(
+                tags=[model.Tag(
+                    key='tag-key1',
+                    value='tag-value1',
+                ), model.Tag(
+                    key='tag-key2',
+                    value='tag-value2',
+                )]
+            ),
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertEqual('tag-key1', result.tag_set.tags[0].key)
+        self.assertEqual('tag-value1', result.tag_set.tags[0].value)
+        self.assertEqual('tag-key2', result.tag_set.tags[1].key)
+        self.assertEqual('tag-value2', result.tag_set.tags[1].value)
+
+        result = model.GetObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            invalid_field = 'invalid_field',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = r'''
+<Tagging>
+  <TagSet>
+    <Tag>
+      <Key>a</Key>
+      <Value>1</Value>
+    </Tag>
+    <Tag>
+      <Key>b</Key>
+      <Value>2</Value>
+    </Tag>
+  </TagSet>
+</Tagging>'''
+
+        result = model.GetObjectTaggingResult()
+        serde.deserialize_xml(xml_data=xml_data, obj=result)
+        self.assertEqual("a", result.tag_set.tags[0].key)
+        self.assertEqual("1", result.tag_set.tags[0].value)
+        self.assertEqual("b", result.tag_set.tags[1].key)
+        self.assertEqual("2", result.tag_set.tags[1].value)
+
+
+class DeleteObjectTagging(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.DeleteObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNone(request.version_id)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.DeleteObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.version_id)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.DeleteObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.DeleteObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.DeleteObjectTaggingRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='serde.',
+            method='POST',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('serde.', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', op_input.parameters.get('versionId'))
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.DeleteObjectTaggingResult()
+        self.assertIsNone(result.version_id)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.DeleteObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+
+        result = model.DeleteObjectTaggingResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.DeleteObjectTaggingResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
+class TestProcessObject(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.ProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNotNone(request.process)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.ProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('process-test', request.process)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.ProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertTrue(hasattr(request, 'process'))
+        self.assertEqual('process-test', request.process)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.ProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('process-test', request.process)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.ProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='ProcessObject',
+            method='POST',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('ProcessObject', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.ProcessObjectResult()
+        self.assertIsNone(result.bucket)
+        self.assertIsNone(result.file_size)
+        self.assertIsNone(result.key)
+        self.assertIsNone(result.process_status)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.ProcessObjectResult(
+            bucket='bucket_name',
+            file_size=30197,
+            key='example-object-2.jpg',
+            process_status='process_status-test',
+        )
+        self.assertEqual('bucket_name', result.bucket)
+        self.assertEqual(30197, result.file_size)
+        self.assertEqual('example-object-2.jpg', result.key)
+        self.assertEqual('process_status-test', result.process_status)
+
+        result = model.ProcessObjectResult(
+            process_status='process_status-test',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('process_status-test', result.process_status)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.ProcessObjectResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
+class TestAsyncProcessObject(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.AsyncProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.key)
+        self.assertIsNotNone(request.process)
+        self.assertIsNone(request.request_payer)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.AsyncProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('process-test', request.process)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.AsyncProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            invalid_field='invalid_field',
+        )
+        self.assertTrue(hasattr(request, 'bucket'))
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(hasattr(request, 'key'))
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertTrue(hasattr(request, 'process'))
+        self.assertEqual('process-test', request.process)
+        self.assertFalse(hasattr(request, 'invalid_field'))
+
+        request = model.AsyncProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            headers={'key1': 'value1'},
+            parameters={'parm1': 'value1'},
+            payload='hello world',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('process-test', request.process)
+        self.assertDictEqual({'key1': 'value1'}, request.headers)
+        self.assertDictEqual({'parm1': 'value1'}, request.parameters)
+        self.assertEqual('hello world', request.payload)
+
+    def test_serialize_request(self):
+        request = model.AsyncProcessObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            process='process-test',
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='AsyncProcessObject',
+            method='POST',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('AsyncProcessObject', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+
+    def test_constructor_result(self):
+        result = model.AsyncProcessObjectResult()
+        self.assertIsNone(result.event_id)
+        self.assertIsNone(result.task_id)
+        self.assertIsNone(result.process_request_id)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.AsyncProcessObjectResult(
+            event_id='vqI):RvM5j',
+            task_id=123,
+            process_request_id='R<XFkteab5',
+        )
+        self.assertEqual('vqI):RvM5j', result.event_id)
+        self.assertEqual(123, result.task_id)
+        self.assertEqual('R<XFkteab5', result.process_request_id)
+
+        result = model.AsyncProcessObjectResult(
+            process_request_id='R<XFkteab5',
+            invalid_field='invalid_field',
+        )
+        self.assertEqual('R<XFkteab5', result.process_request_id)
+        self.assertFalse(hasattr(result, 'invalid_field'))
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.AsyncProcessObjectResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+
