@@ -1030,3 +1030,32 @@ class Client:
             GetBucketAccessMonitorResult: Response result for GetBucketAccessMonitor operation.
         """
         return operations.get_bucket_access_monitor(self._client, request, **kwargs)
+
+
+    # bucket archive direct read
+    def get_bucket_archive_direct_read(self, request: models.GetBucketArchiveDirectReadRequest, **kwargs
+                                       ) -> models.GetBucketArchiveDirectReadResult:
+        """
+        查看存储空间归档直读状态
+
+        Args:
+            request (GetBucketArchiveDirectReadRequest): Request parameters for GetBucketArchiveDirectRead operation.
+
+        Returns:
+            GetBucketArchiveDirectReadResult: Response result for GetBucketArchiveDirectRead operation.
+        """
+        return operations.get_bucket_archive_direct_read(self._client, request, **kwargs)
+
+
+    def put_bucket_archive_direct_read(self, request: models.PutBucketArchiveDirectReadRequest, **kwargs
+                                       ) -> models.PutBucketArchiveDirectReadResult:
+        """
+        开启或关闭存储空间归档直读功能
+
+        Args:
+            request (PutBucketArchiveDirectReadRequest): Request parameters for PutBucketArchiveDirectRead operation.
+
+        Returns:
+            PutBucketArchiveDirectReadResult: Response result for PutBucketArchiveDirectRead operation.
+        """
+        return operations.put_bucket_archive_direct_read(self._client, request, **kwargs)
