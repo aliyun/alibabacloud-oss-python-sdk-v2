@@ -1036,7 +1036,7 @@ class Client:
     def get_bucket_archive_direct_read(self, request: models.GetBucketArchiveDirectReadRequest, **kwargs
                                        ) -> models.GetBucketArchiveDirectReadResult:
         """
-        查看存储空间归档直读状态
+        Queries whether real-time access of Archive objects is enabled for a bucket.
 
         Args:
             request (GetBucketArchiveDirectReadRequest): Request parameters for GetBucketArchiveDirectRead operation.
@@ -1050,7 +1050,7 @@ class Client:
     def put_bucket_archive_direct_read(self, request: models.PutBucketArchiveDirectReadRequest, **kwargs
                                        ) -> models.PutBucketArchiveDirectReadResult:
         """
-        开启或关闭存储空间归档直读功能
+        Enables or disables real-time access of Archive objects for a bucket.
 
         Args:
             request (PutBucketArchiveDirectReadRequest): Request parameters for PutBucketArchiveDirectRead operation.
