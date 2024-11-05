@@ -43,7 +43,7 @@ class TestBucketArchiveDirectRead(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-
+        self.assertEqual(True, result.archive_direct_read_configuration.enabled)
 
 
     def test_bucket_archive_direct_read_v1(self):
@@ -65,7 +65,7 @@ class TestBucketArchiveDirectRead(TestIntegration):
         result = self.signv1_client.put_bucket_archive_direct_read(oss.PutBucketArchiveDirectReadRequest(
             bucket=bucket_name,
             archive_direct_read_configuration=oss.ArchiveDirectReadConfiguration(
-                enabled=True,
+                enabled=False,
             ),
         ))
         self.assertEqual(200, result.status_code)
@@ -81,6 +81,7 @@ class TestBucketArchiveDirectRead(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        self.assertEqual(False, result.archive_direct_read_configuration.enabled)
 
 
     def test_bucket_archive_direct_read_fail(self):
