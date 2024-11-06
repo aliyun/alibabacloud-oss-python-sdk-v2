@@ -1059,3 +1059,72 @@ class Client:
             PutBucketArchiveDirectReadResult: Response result for PutBucketArchiveDirectRead operation.
         """
         return operations.put_bucket_archive_direct_read(self._client, request, **kwargs)
+
+
+    # cname
+    def create_cname_token(self, request: models.CreateCnameTokenRequest, **kwargs
+                           ) -> models.CreateCnameTokenResult:
+        """
+        Creates a CNAME token to verify the ownership of a domain name.
+
+        Args:
+            request (CreateCnameTokenRequest): Request parameters for CreateCnameToken operation.
+
+        Returns:
+            CreateCnameTokenResult: Response result for CreateCnameToken operation.
+        """
+        return operations.create_cname_token(self._client, request, **kwargs)
+
+    def get_cname_token(self, request: models.GetCnameTokenRequest, **kwargs
+                        ) -> models.GetCnameTokenResult:
+        """
+        Queries the created CNAME tokens.
+
+        Args:
+            request (GetCnameTokenRequest): Request parameters for GetCnameToken operation.
+
+        Returns:
+            GetCnameTokenResult: Response result for GetCnameToken operation.
+        """
+        return operations.get_cname_token(self._client, request, **kwargs)
+
+    def put_cname(self, request: models.PutCnameRequest, **kwargs
+                  ) -> models.PutCnameResult:
+        """
+        Maps a CNAME record to a bucket.
+
+        Args:
+            request (PutCnameRequest): Request parameters for PutCname operation.
+
+        Returns:
+            PutCnameResult: Response result for PutCname operation.
+        """
+        return operations.put_cname(self._client, request, **kwargs)
+
+
+    def list_cname(self, request: models.ListCnameRequest, **kwargs
+                   ) -> models.ListCnameResult:
+        """
+        Queries all CNAME records that are mapped to a bucket.
+
+        Args:
+            request (ListCnameRequest): Request parameters for ListCname operation.
+
+        Returns:
+            ListCnameResult: Response result for ListCname operation.
+        """
+        return operations.list_cname(self._client, request, **kwargs)
+
+
+    def delete_cname(self, request: models.DeleteCnameRequest, **kwargs
+                     ) -> models.DeleteCnameResult:
+        """
+        Deletes a CNAME record that is mapped to a bucket.
+
+        Args:
+            request (DeleteCnameRequest): Request parameters for DeleteCname operation.
+
+        Returns:
+            DeleteCnameResult: Response result for DeleteCname operation.
+        """
+        return operations.delete_cname(self._client, request, **kwargs)
