@@ -19,6 +19,7 @@ from .models.object_basic import *
 from .models.access_point import *
 from .models.bucket_access_monitor import *
 from .models.bucket_archive_direct_read import *
+from .models.bucket_cname import *
 
 from .config import Config
 from .client import Client
