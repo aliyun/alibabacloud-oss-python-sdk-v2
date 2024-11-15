@@ -1128,3 +1128,61 @@ class Client:
             DeleteCnameResult: Response result for DeleteCname operation.
         """
         return operations.delete_cname(self._client, request, **kwargs)
+
+
+    # bucket cors
+    def put_bucket_cors(self, request: models.PutBucketCorsRequest, **kwargs
+                        ) -> models.PutBucketCorsResult:
+        """
+        Configures cross-origin resource sharing (CORS) rules for a bucket.
+
+        Args:
+            request (PutBucketCorsRequest): Request parameters for PutBucketCors operation.
+
+        Returns:
+            PutBucketCorsResult: Response result for PutBucketCors operation.
+        """
+        return operations.put_bucket_cors(self._client, request, **kwargs)
+
+
+    def get_bucket_cors(self, request: models.GetBucketCorsRequest, **kwargs
+                        ) -> models.GetBucketCorsResult:
+        """
+        Queries the cross-origin resource sharing (CORS) rules that are configured for a bucket.
+
+        Args:
+            request (GetBucketCorsRequest): Request parameters for GetBucketCors operation.
+
+        Returns:
+            GetBucketCorsResult: Response result for GetBucketCors operation.
+        """
+        return operations.get_bucket_cors(self._client, request, **kwargs)
+
+
+    def delete_bucket_cors(self, request: models.DeleteBucketCorsRequest, **kwargs
+                           ) -> models.DeleteBucketCorsResult:
+        """
+        Disables the cross-origin resource sharing (CORS) feature and deletes all CORS rules for a bucket.
+
+        Args:
+            request (DeleteBucketCorsRequest): Request parameters for DeleteBucketCors operation.
+
+        Returns:
+            DeleteBucketCorsResult: Response result for DeleteBucketCors operation.
+        """
+        return operations.delete_bucket_cors(self._client, request, **kwargs)
+
+
+    def option_object(self, request: models.OptionObjectRequest, **kwargs
+                      ) -> models.OptionObjectResult:
+        """
+        Determines whether to send a cross-origin request. Before a cross-origin request is sent, the browser sends a preflight OPTIONS request that includes a specific origin, HTTP method, and header information to Object Storage Service (OSS) to determine whether to send the cross-origin request.
+
+        Args:
+            request (OptionObjectRequest): Request parameters for OptionObject operation.
+
+        Returns:
+            OptionObjectResult: Response result for OptionObject operation.
+        """
+        return operations.option_object(self._client, request, **kwargs)
+
