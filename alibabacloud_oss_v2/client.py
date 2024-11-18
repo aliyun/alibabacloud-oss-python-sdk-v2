@@ -1186,3 +1186,45 @@ class Client:
         """
         return operations.option_object(self._client, request, **kwargs)
 
+
+    # bucket_encryption
+    def put_bucket_encryption(self, request: models.PutBucketEncryptionRequest, **kwargs
+                              ) -> models.PutBucketEncryptionResult:
+        """
+        Configures encryption rules for a bucket.
+
+        Args:
+            request (PutBucketEncryptionRequest): Request parameters for PutBucketEncryption operation.
+
+        Returns:
+            PutBucketEncryptionResult: Response result for PutBucketEncryption operation.
+        """
+        return operations.put_bucket_encryption(self._client, request, **kwargs)
+
+
+    def get_bucket_encryption(self, request: models.GetBucketEncryptionRequest, **kwargs
+                              ) -> models.GetBucketEncryptionResult:
+        """
+        Queries the encryption rules configured for a bucket.
+
+        Args:
+            request (GetBucketEncryptionRequest): Request parameters for GetBucketEncryption operation.
+
+        Returns:
+            GetBucketEncryptionResult: Response result for GetBucketEncryption operation.
+        """
+        return operations.get_bucket_encryption(self._client, request, **kwargs)
+
+
+    def delete_bucket_encryption(self, request: models.DeleteBucketEncryptionRequest, **kwargs
+                                 ) -> models.DeleteBucketEncryptionResult:
+        """
+        Deletes encryption rules for a bucket.
+
+        Args:
+            request (DeleteBucketEncryptionRequest): Request parameters for DeleteBucketEncryption operation.
+
+        Returns:
+            DeleteBucketEncryptionResult: Response result for DeleteBucketEncryption operation.
+        """
+        return operations.delete_bucket_encryption(self._client, request, **kwargs)
