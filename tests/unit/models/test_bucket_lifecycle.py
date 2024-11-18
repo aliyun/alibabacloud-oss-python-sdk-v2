@@ -34,16 +34,16 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     noncurrent_version_expiration=model.NoncurrentVersionExpiration(
                         noncurrent_days=80479,
                     ),
-                    filter=model.Filter(
+                    filter=model.LifecycleRuleFilter(
                         object_size_greater_than=48877,
                         object_size_less_than=84934,
-                        filter_not=[model.Not(
+                        filter_not=[model.LifecycleRuleNot(
                             prefix='aaa',
                             tag=model.Tag(
                                 key='example-object-2.jpg',
                                 value=')7ro+EGjp0',
                             ),
-                        ), model.Not(
+                        ), model.LifecycleRuleNot(
                             prefix='bbb',
                             tag=model.Tag(
                                 key='example-object-3.jpg',
@@ -52,19 +52,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
                         )],
                     ),
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class=model.StorageClassType.COLDARCHIVE,
                         is_access_time=False,
                         return_to_std_when_visit=False,
                         allow_small_file=True,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class=model.StorageClassType.DEEPCOLDARCHIVE,
@@ -88,7 +88,7 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     atime_base=97611,
                     prefix='aaa',
                     status='OK',
-                    abort_multipart_upload=model.AbortMultipartUpload(
+                    abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=37348,
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                     ),
@@ -103,10 +103,10 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     noncurrent_version_expiration=model.NoncurrentVersionExpiration(
                         noncurrent_days=80479,
                     ),
-                    filter=model.Filter(
+                    filter=model.LifecycleRuleFilter(
                         object_size_greater_than=48877,
                         object_size_less_than=84934,
-                        filter_not=[model.Not(
+                        filter_not=[model.LifecycleRuleNot(
                             prefix='aaa',
                             tag=model.Tag(
                                 key='example-object-2.jpg',
@@ -115,19 +115,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
                         )],
                     ),
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class=model.StorageClassType.ARCHIVE,
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class=model.StorageClassType.COLDARCHIVE,
@@ -151,7 +151,7 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     atime_base=97611,
                     prefix='aaa',
                     status='OK',
-                    abort_multipart_upload=model.AbortMultipartUpload(
+                    abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=37348,
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                     ),
@@ -260,14 +260,14 @@ class TestPutBucketLifecycle(unittest.TestCase):
             allow_same_action_overlap='ijh7T<44,~',
             lifecycle_configuration=model.LifecycleConfiguration(
                 rules=[model.LifecycleRule(
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class='Standard',
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class='DeepColdArchive',
@@ -289,14 +289,14 @@ class TestPutBucketLifecycle(unittest.TestCase):
                         storage_class='Archive',
                     )],
                 ), model.LifecycleRule(
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class='ColdArchive',
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class='IA',
@@ -379,12 +379,12 @@ class TestPutBucketLifecycle(unittest.TestCase):
             lifecycle_configuration=model.LifecycleConfiguration(
                 rules=[model.LifecycleRule(
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=37348,
                         storage_class='Standard',
@@ -491,16 +491,16 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     noncurrent_version_expiration=model.NoncurrentVersionExpiration(
                         noncurrent_days=55959,
                     ),
-                    filter=model.Filter(
+                    filter=model.LifecycleRuleFilter(
                         object_size_greater_than=16967,
                         object_size_less_than=68626,
-                        filter_not=[model.Not(
+                        filter_not=[model.LifecycleRuleNot(
                             prefix='aaa',
                             tag=model.Tag(
                                 key='example-object-2.jpg',
                                 value=')7ro+EGjp0',
                             ),
-                        ), model.Not(
+                        ), model.LifecycleRuleNot(
                             prefix='bbb',
                             tag=model.Tag(
                                 key='example-object-3.jpg',
@@ -509,19 +509,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
                         )],
                     ),
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
                         is_access_time=False,
                         return_to_std_when_visit=True,
                         allow_small_file=False,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
@@ -545,7 +545,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     atime_base=69470,
                     prefix='aaa',
                     status='OK',
-                    abort_multipart_upload=model.AbortMultipartUpload(
+                    abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                     ),
@@ -560,10 +560,10 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     noncurrent_version_expiration=model.NoncurrentVersionExpiration(
                         noncurrent_days=55959,
                     ),
-                    filter=model.Filter(
+                    filter=model.LifecycleRuleFilter(
                         object_size_greater_than=16967,
                         object_size_less_than=68626,
-                        filter_not=[model.Not(
+                        filter_not=[model.LifecycleRuleNot(
                             prefix='aaa',
                             tag=model.Tag(
                                 key='example-object-2.jpg',
@@ -572,19 +572,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
                         )],
                     ),
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
-                    ), model.Transition(
+                    ), model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         storage_class=model.StorageClassType.STANDARD,
@@ -608,7 +608,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     atime_base=69470,
                     prefix='aaa',
                     status='OK',
-                    abort_multipart_upload=model.AbortMultipartUpload(
+                    abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                     ),
@@ -720,20 +720,20 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     noncurrent_version_expiration=model.NoncurrentVersionExpiration(
                         noncurrent_days=55959,
                     ),
-                    filter=model.Filter(
+                    filter=model.LifecycleRuleFilter(
                         object_size_greater_than=16967,
                         object_size_less_than=68626,
-                        filter_not=[model.Not(
+                        filter_not=[model.LifecycleRuleNot(
                             prefix='aaa',
                         )],
                     ),
                     id='0022012****',
-                    expiration=model.Expiration(
+                    expiration=model.LifecycleRuleExpiration(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
-                    transitions=[model.Transition(
+                    transitions=[model.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         days=12590,
                         storage_class='Archive',
@@ -751,7 +751,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     atime_base=69470,
                     prefix='aaa',
                     status='OK',
-                    abort_multipart_upload=model.AbortMultipartUpload(
+                    abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                     ),

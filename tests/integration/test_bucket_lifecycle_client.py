@@ -27,7 +27,7 @@ class TestBucketLifecycle(TestIntegration):
             bucket=bucket_name,
             lifecycle_configuration=oss.LifecycleConfiguration(
                 rules=[oss.LifecycleRule(
-                    transitions=[oss.Transition(
+                    transitions=[oss.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         storage_class='IA',
                         is_access_time=False,
@@ -86,7 +86,7 @@ class TestBucketLifecycle(TestIntegration):
             bucket=bucket_name,
             lifecycle_configuration=oss.LifecycleConfiguration(
                 rules=[oss.LifecycleRule(
-                    transitions=[oss.Transition(
+                    transitions=[oss.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         storage_class='IA',
                         is_access_time=False,
@@ -137,7 +137,7 @@ class TestBucketLifecycle(TestIntegration):
                 bucket=bucket_name,
                 lifecycle_configuration=oss.LifecycleConfiguration(
                     rules=[oss.LifecycleRule(
-                        transitions=[oss.Transition(
+                        transitions=[oss.LifecycleRuleTransition(
                             created_before_date=datetime.datetime.fromtimestamp(1702743657),
                             storage_class='IA',
                             is_access_time=False,

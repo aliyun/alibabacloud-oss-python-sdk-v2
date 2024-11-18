@@ -2,9 +2,10 @@ import datetime
 from typing import Optional, List, Any, Union
 from .. import serde
 from .enums import StorageClassType
+from .structs import Tag
 
 
-class Transition(serde.Model):
+class LifecycleRuleTransition(serde.Model):
     """
     The conversion of the storage class of objects that match the lifecycle rule when the objects expire. The storage class of the objects can be converted to IA, Archive, and ColdArchive. The storage class of Standard objects in a Standard bucket can be converted to IA, Archive, or Cold Archive. The period of time from when the objects expire to when the storage class of the objects is converted to Archive must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA. For example, if the validity period is set to 30 for objects whose storage class is converted to IA after the validity period, the validity period must be set to a value greater than 30 for objects whose storage class is converted to Archive.  Either Days or CreatedBeforeDate is required.
     """
@@ -49,34 +50,6 @@ class Transition(serde.Model):
         self.allow_small_file = allow_small_file
 
 
-class Tag(serde.Model):
-    """
-    The container used to store the tag that you want to configure.
-    """
-
-    _attribute_map = { 
-        'key': {'tag': 'xml', 'rename': 'Key', 'type': 'str'},
-        'value': {'tag': 'xml', 'rename': 'Value', 'type': 'str'},
-    }
-
-    _xml_map = {
-        'name': 'Tag'
-    }
-
-    def __init__(
-        self,
-        key: Optional[str] = None,
-        value: Optional[str] = None,
-        **kwargs: Any
-    ) -> None:
-        """
-        key (str, optional): The key of a tag. *   A tag key can be up to 64 bytes in length.*   A tag key cannot start with `http://`, `https://`, or `Aliyun`.*   A tag key must be UTF-8 encoded.*   A tag key cannot be left empty.
-        value (str, optional): The value of the tag that you want to add or modify. *   A tag value can be up to 128 bytes in length.*   A tag value must be UTF-8 encoded.*   The tag value can be left empty.
-        """
-        super().__init__(**kwargs)
-        self.key = key
-        self.value = value
-
 
 class NoncurrentVersionExpiration(serde.Model):
     """
@@ -103,7 +76,7 @@ class NoncurrentVersionExpiration(serde.Model):
         self.noncurrent_days = noncurrent_days
 
 
-class AbortMultipartUpload(serde.Model):
+class LifecycleRuleAbortMultipartUpload(serde.Model):
     """
     The delete operation that you want OSS to perform on the parts that are uploaded in incomplete multipart upload tasks when the parts expire.
     """
@@ -132,7 +105,7 @@ class AbortMultipartUpload(serde.Model):
         self.created_before_date = created_before_date
 
 
-class Expiration(serde.Model):
+class LifecycleRuleExpiration(serde.Model):
     """
     The delete operation to perform on objects based on the lifecycle rule. For an object in a versioning-enabled bucket, the delete operation specified by this parameter is performed only on the current version of the object.The period of time from when the objects expire to when the objects are deleted must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA or Archive.
     """
@@ -205,7 +178,7 @@ class NoncurrentVersionTransition(serde.Model):
         self.noncurrent_days = noncurrent_days
         self.storage_class = storage_class
 
-class Not(serde.Model):
+class LifecycleRuleNot(serde.Model):
     """
     The condition that is matched by objects to which the lifecycle rule does not apply.
     """
@@ -238,7 +211,7 @@ class Not(serde.Model):
         self.tag = tag
 
 
-class Filter(serde.Model):
+class LifecycleRuleFilter(serde.Model):
     """
     The container that stores the Not parameter that is used to filter objects.
     """
@@ -246,7 +219,7 @@ class Filter(serde.Model):
     _attribute_map = {
         'object_size_greater_than': {'tag': 'xml', 'rename': 'ObjectSizeGreaterThan', 'type': 'int'},
         'object_size_less_than': {'tag': 'xml', 'rename': 'ObjectSizeLessThan', 'type': 'int'},
-        'filter_not': {'tag': 'xml', 'rename': 'Not', 'type': '[Not]'},
+        'filter_not': {'tag': 'xml', 'rename': 'Not', 'type': '[LifecycleRuleNot]'},
     }
 
     _xml_map = {
@@ -254,20 +227,20 @@ class Filter(serde.Model):
     }
 
     _dependency_map = {
-        'Not': {'new': lambda: Not()},
+        'Not': {'new': lambda: LifecycleRuleNot()},
     }
 
     def __init__(
         self,
         object_size_greater_than: Optional[int] = None,
         object_size_less_than: Optional[int] = None,
-        filter_not: Optional[List[Not]] = None,
+        filter_not: Optional[List[LifecycleRuleNot]] = None,
         **kwargs: Any
     ) -> None:
         """
         object_size_greater_than (int, optional): This lifecycle rule only applies to files larger than this size.
         object_size_less_than (int, optional): This lifecycle rule only applies to files smaller than this size.
-        filter_not (List[Not], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
+        filter_not (List[LifecycleRuleNot], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
         """
         super().__init__(**kwargs)
         self.object_size_greater_than = object_size_greater_than
@@ -283,15 +256,15 @@ class LifecycleRule(serde.Model):
     _attribute_map = { 
         'tags': {'tag': 'xml', 'rename': 'Tag', 'type': '[Tag]'},
         'noncurrent_version_expiration': {'tag': 'xml', 'rename': 'NoncurrentVersionExpiration', 'type': 'NoncurrentVersionExpiration'},
-        'filter': {'tag': 'xml', 'rename': 'Filter', 'type': 'Filter'},
+        'filter': {'tag': 'xml', 'rename': 'Filter', 'type': 'LifecycleRuleFilter'},
         'id': {'tag': 'xml', 'rename': 'ID', 'type': 'str'},
-        'expiration': {'tag': 'xml', 'rename': 'Expiration', 'type': 'Expiration'},
-        'transitions': {'tag': 'xml', 'rename': 'Transition', 'type': '[Transition]'},
+        'expiration': {'tag': 'xml', 'rename': 'Expiration', 'type': 'LifecycleRuleExpiration'},
+        'transitions': {'tag': 'xml', 'rename': 'Transition', 'type': '[LifecycleRuleTransition]'},
         'noncurrent_version_transitions': {'tag': 'xml', 'rename': 'NoncurrentVersionTransition', 'type': '[NoncurrentVersionTransition]'},
         'atime_base': {'tag': 'xml', 'rename': 'AtimeBase', 'type': 'int'},
         'prefix': {'tag': 'xml', 'rename': 'Prefix', 'type': 'str'},
         'status': {'tag': 'xml', 'rename': 'Status', 'type': 'str'},
-        'abort_multipart_upload': {'tag': 'xml', 'rename': 'AbortMultipartUpload', 'type': 'AbortMultipartUpload'},
+        'abort_multipart_upload': {'tag': 'xml', 'rename': 'AbortMultipartUpload', 'type': 'LifecycleRuleAbortMultipartUpload'},
     }
 
     _xml_map = {
@@ -301,40 +274,40 @@ class LifecycleRule(serde.Model):
     _dependency_map = { 
         'Tag': {'new': lambda: Tag()},
         'NoncurrentVersionExpiration': {'new': lambda: NoncurrentVersionExpiration()},
-        'Filter': {'new': lambda: Filter()},
-        'Expiration': {'new': lambda: Expiration()},
-        'Transition': {'new': lambda: Transition()},
+        'Filter': {'new': lambda: LifecycleRuleFilter()},
+        'Expiration': {'new': lambda: LifecycleRuleExpiration()},
+        'Transition': {'new': lambda: LifecycleRuleTransition()},
         'NoncurrentVersionTransition': {'new': lambda: NoncurrentVersionTransition()},
-        'AbortMultipartUpload': {'new': lambda: AbortMultipartUpload()},
+        'AbortMultipartUpload': {'new': lambda: LifecycleRuleAbortMultipartUpload()},
     }
 
     def __init__(
         self,
         tags: Optional[List[Tag]] = None,
         noncurrent_version_expiration: Optional[NoncurrentVersionExpiration] = None,
-        filter: Optional[Filter] = None,
+        filter: Optional[LifecycleRuleFilter] = None,
         id: Optional[str] = None,
-        expiration: Optional[Expiration] = None,
-        transitions: Optional[List[Transition]] = None,
+        expiration: Optional[LifecycleRuleExpiration] = None,
+        transitions: Optional[List[LifecycleRuleTransition]] = None,
         noncurrent_version_transitions: Optional[List[NoncurrentVersionTransition]] = None,
         atime_base: Optional[int] = None,
         prefix: Optional[str] = None,
         status: Optional[str] = None,
-        abort_multipart_upload: Optional[AbortMultipartUpload] = None,
+        abort_multipart_upload: Optional[LifecycleRuleAbortMultipartUpload] = None,
         **kwargs: Any
     ) -> None:
         """
         tags (List[Tag], optional): The tag of the objects to which the lifecycle rule applies. You can specify multiple tags.
         noncurrent_version_expiration (NoncurrentVersionExpiration, optional): The delete operation that you want OSS to perform on the previous versions of the objects that match the lifecycle rule when the previous versions expire.
-        filter (Filter, optional): The container that stores the Not parameter that is used to filter objects.
+        filter (LifecycleRuleFilter, optional): The container that stores the Not parameter that is used to filter objects.
         id (str, optional): The ID of the lifecycle rule. The ID can contain up to 255 characters. If you do not specify the ID, OSS automatically generates a unique ID for the lifecycle rule.
-        expiration (Expiration, optional): The delete operation to perform on objects based on the lifecycle rule. For an object in a versioning-enabled bucket, the delete operation specified by this parameter is performed only on the current version of the object.The period of time from when the objects expire to when the objects are deleted must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA or Archive.
-        transitions (List[Transition], optional): The conversion of the storage class of objects that match the lifecycle rule when the objects expire. The storage class of the objects can be converted to IA, Archive, and ColdArchive. The storage class of Standard objects in a Standard bucket can be converted to IA, Archive, or Cold Archive. The period of time from when the objects expire to when the storage class of the objects is converted to Archive must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA. For example, if the validity period is set to 30 for objects whose storage class is converted to IA after the validity period, the validity period must be set to a value greater than 30 for objects whose storage class is converted to Archive.  Either Days or CreatedBeforeDate is required.
+        expiration (LifecycleRuleExpiration, optional): The delete operation to perform on objects based on the lifecycle rule. For an object in a versioning-enabled bucket, the delete operation specified by this parameter is performed only on the current version of the object.The period of time from when the objects expire to when the objects are deleted must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA or Archive.
+        transitions (List[LifecycleRuleTransition], optional): The conversion of the storage class of objects that match the lifecycle rule when the objects expire. The storage class of the objects can be converted to IA, Archive, and ColdArchive. The storage class of Standard objects in a Standard bucket can be converted to IA, Archive, or Cold Archive. The period of time from when the objects expire to when the storage class of the objects is converted to Archive must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA. For example, if the validity period is set to 30 for objects whose storage class is converted to IA after the validity period, the validity period must be set to a value greater than 30 for objects whose storage class is converted to Archive.  Either Days or CreatedBeforeDate is required.
         noncurrent_version_transitions (List[NoncurrentVersionTransition], optional): The conversion of the storage class of previous versions of the objects that match the lifecycle rule when the previous versions expire. The storage class of the previous versions can be converted to IA or Archive. The period of time from when the previous versions expire to when the storage class of the previous versions is converted to Archive must be longer than the period of time from when the previous versions expire to when the storage class of the previous versions is converted to IA.
         atime_base (int, optional): Timestamp for when access tracking was enabled.
         prefix (str, optional): The prefix in the names of the objects to which the rule applies. The prefixes specified by different rules cannot overlap.*   If Prefix is specified, this rule applies only to objects whose names contain the specified prefix in the bucket.*   If Prefix is not specified, this rule applies to all objects in the bucket.
         status (str, optional): Specifies whether to enable the rule. Valid values:*   Enabled: enables the rule. OSS periodically executes the rule.*   Disabled: does not enable the rule. OSS ignores the rule.
-        abort_multipart_upload (AbortMultipartUpload, optional): The delete operation that you want OSS to perform on the parts that are uploaded in incomplete multipart upload tasks when the parts expire.
+        abort_multipart_upload (LifecycleRuleAbortMultipartUpload, optional): The delete operation that you want OSS to perform on the parts that are uploaded in incomplete multipart upload tasks when the parts expire.
         """
         super().__init__(**kwargs)
         self.tags = tags

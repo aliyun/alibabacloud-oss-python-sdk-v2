@@ -29,7 +29,7 @@ def main():
             lifecycle_configuration=oss.LifecycleConfiguration(
                 rules=[oss.LifecycleRule(
                     id='test-001****',
-                    transitions=[oss.Transition(
+                    transitions=[oss.LifecycleRuleTransition(
                         # created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         created_before_date=datetime.datetime.strptime("2023-10-01T00:00:00.000Z", '%Y-%m-%dT00:00:00.000Z'),
                         storage_class=oss.StorageClassType.COLDARCHIVE,
@@ -39,7 +39,7 @@ def main():
                     status='Enabled',
                 ), oss.LifecycleRule(
                     id='test-002****',
-                    transitions=[oss.Transition(
+                    transitions=[oss.LifecycleRuleTransition(
                         created_before_date=datetime.datetime.fromtimestamp(1702743657),
                         # created_before_date=datetime.datetime.strptime("2023-10-01T00:00:00.000Z", '%Y-%m-%dT00:00:00.000Z'),
                         storage_class='Archive',
