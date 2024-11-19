@@ -1,7 +1,7 @@
 # pylint: skip-file
 
 import unittest
-from alibabacloud_oss_v2 import serde
+from alibabacloud_oss_v2 import serde, InventoryOptionalFieldType
 from alibabacloud_oss_v2.models import bucket_inventory as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
 from .. import MockHttpResponse
