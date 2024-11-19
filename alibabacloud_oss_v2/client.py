@@ -1186,3 +1186,60 @@ class Client:
         """
         return operations.option_object(self._client, request, **kwargs)
 
+
+    # bucket inventory
+    def put_bucket_inventory(self, request: models.PutBucketInventoryRequest, **kwargs
+                             ) -> models.PutBucketInventoryResult:
+        """
+        Configures an inventory for a bucket.
+
+        Args:
+            request (PutBucketInventoryRequest): Request parameters for PutBucketInventory operation.
+
+        Returns:
+            PutBucketInventoryResult: Response result for PutBucketInventory operation.
+        """
+        return operations.put_bucket_inventory(self._client, request, **kwargs)
+
+
+    def get_bucket_inventory(self, request: models.GetBucketInventoryRequest, **kwargs
+                             ) -> models.GetBucketInventoryResult:
+        """
+        Queries the inventories that are configured for a bucket.
+
+        Args:
+            request (GetBucketInventoryRequest): Request parameters for GetBucketInventory operation.
+
+        Returns:
+            GetBucketInventoryResult: Response result for GetBucketInventory operation.
+        """
+        return operations.get_bucket_inventory(self._client, request, **kwargs)
+
+
+    def list_bucket_inventory(self, request: models.ListBucketInventoryRequest, **kwargs
+                              ) -> models.ListBucketInventoryResult:
+        """
+        Queries all inventories in a bucket at a time.
+
+        Args:
+            request (ListBucketInventoryRequest): Request parameters for ListBucketInventory operation.
+
+        Returns:
+            ListBucketInventoryResult: Response result for ListBucketInventory operation.
+        """
+        return operations.list_bucket_inventory(self._client, request, **kwargs)
+
+
+    def delete_bucket_inventory(self, request: models.DeleteBucketInventoryRequest, **kwargs
+                                ) -> models.DeleteBucketInventoryResult:
+        """
+        Deletes an inventory for a bucket.
+
+        Args:
+            request (DeleteBucketInventoryRequest): Request parameters for DeleteBucketInventory operation.
+
+        Returns:
+            DeleteBucketInventoryResult: Response result for DeleteBucketInventory operation.
+        """
+        return operations.delete_bucket_inventory(self._client, request, **kwargs)
+
