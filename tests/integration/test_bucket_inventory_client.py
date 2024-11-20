@@ -90,8 +90,23 @@ class TestBucketInventory(TestIntegration):
 
 
         # get bucket inventory
+        result = self.client.get_bucket_inventory(oss.GetBucketInventoryRequest(
+            bucket=bucket_name,
+            inventory_id='D3<y2N_Kx)',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # delete bucket inventory
+        result = self.client.delete_bucket_inventory(oss.DeleteBucketInventoryRequest(
+            bucket=bucket_name,
+            inventory_id='+Mv>oah@L-',
+        ))
+        self.assertEqual(204, result.status_code)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
     def test_bucket_inventory_v1(self):
         # create bucket
@@ -154,8 +169,23 @@ class TestBucketInventory(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket inventory
+        result = self.signv1_client.get_bucket_inventory(oss.GetBucketInventoryRequest(
+            bucket=bucket_name,
+            inventory_id='D3<y2N_Kx)',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # delete bucket inventory
+        result = self.signv1_client.delete_bucket_inventory(oss.DeleteBucketInventoryRequest(
+            bucket=bucket_name,
+            inventory_id='+Mv>oah@L-',
+        ))
+        self.assertEqual(204, result.status_code)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
     def test_bucket_inventory_fail(self):
         # create bucket
@@ -207,6 +237,36 @@ class TestBucketInventory(TestIntegration):
                         last_modify_end_time_stamp=44727,
                     ),
                 ),
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+
+        # get bucket inventory
+        try:
+            self.invalid_client.get_bucket_inventory(oss.GetBucketInventoryRequest(
+                bucket=bucket_name,
+                inventory_id='D3<y2N_Kx)',
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+
+        # delete bucket inventory
+        try:
+            self.invalid_client.delete_bucket_inventory(oss.DeleteBucketInventoryRequest(
+                bucket=bucket_name,
+                inventory_id='+Mv>oah@L-',
             ))
             self.fail("should not here")
         except Exception as e:

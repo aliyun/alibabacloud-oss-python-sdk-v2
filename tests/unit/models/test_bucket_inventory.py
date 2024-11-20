@@ -311,7 +311,7 @@ class TestGetBucketInventory(unittest.TestCase):
         self.assertEqual('report1', result.inventory_configuration.id)
         self.assertEqual(True, result.inventory_configuration.is_enabled)
         self.assertEqual('CSV', result.inventory_configuration.destination.oss_bucket_destination.format)
-        self.assertEqual(1000000000000000, result.inventory_configuration.destination.oss_bucket_destination.account_id)
+        self.assertEqual('1000000000000000', result.inventory_configuration.destination.oss_bucket_destination.account_id)
         self.assertEqual('acs:ram::1000000000000000:role/AliyunOSSRole', result.inventory_configuration.destination.oss_bucket_destination.role_arn)
         self.assertEqual('acs:oss:::bucket_0001', result.inventory_configuration.destination.oss_bucket_destination.bucket)
         self.assertEqual('prefix1', result.inventory_configuration.destination.oss_bucket_destination.prefix)
@@ -321,3 +321,68 @@ class TestGetBucketInventory(unittest.TestCase):
         self.assertEqual('All', result.inventory_configuration.included_object_versions)
         self.assertEqual(InventoryOptionalFieldType.SIZE, result.inventory_configuration.optional_fields.fields[0])
 
+
+class TestDeleteBucketInventory(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.DeleteBucketInventoryRequest(
+        )
+        self.assertIsNone(request.bucket)
+        self.assertIsNone(request.inventory_id)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.DeleteBucketInventoryRequest(
+            bucket='bucketexampletest',
+            inventory_id='+Mv>oah@L-',
+        )
+
+
+
+    def test_serialize_request(self):
+        request = model.DeleteBucketInventoryRequest(
+            bucket='bucketexampletest',
+            inventory_id='+Mv>oah@L-',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='DeleteBucketInventory',
+            method='DELETE',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('DeleteBucketInventory', op_input.op_name)
+        self.assertEqual('DELETE', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
+        self.assertEqual('+Mv>oah@L-', op_input.parameters.get('inventoryId'))
+
+    def test_constructor_result(self):
+        result = model.DeleteBucketInventoryResult()
+        self.assertIsInstance(result, serde.ResultModel)
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.DeleteBucketInventoryResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-hash-crc64ecma': '316181249502703****',
+                    'x-oss-version-id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
