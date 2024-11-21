@@ -26,10 +26,10 @@ def main():
     result = client.put_user_defined_log_fields_config(oss.PutUserDefinedLogFieldsConfigRequest(
             bucket=args.bucket,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
-                header_set=oss.HeaderSet(
+                header_set=oss.LoggingHeaderSet(
                     headers=['UMDQTVd8IC', ' #$rryY.+k'],
                 ),
-                param_set=oss.ParamSet(
+                param_set=oss.LoggingParamSet(
                     parameters=['nTid7S4E&', '%+rpTm<Y$k'],
                 ),
             ),

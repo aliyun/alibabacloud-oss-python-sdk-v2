@@ -2,7 +2,7 @@ from typing import Optional, List, Any, Union
 from .. import serde
 
 
-class HeaderSet(serde.Model):
+class LoggingHeaderSet(serde.Model):
     """
     The container that stores the configurations of custom request headers.
     """
@@ -27,7 +27,7 @@ class HeaderSet(serde.Model):
         self.headers = headers
 
 
-class ParamSet(serde.Model):
+class LoggingParamSet(serde.Model):
     """
     The container that stores the configurations of custom URL parameters.
     """
@@ -96,14 +96,14 @@ class UserDefinedLogFieldsConfiguration(serde.Model):
     }
 
     _dependency_map = { 
-        'HeaderSet': {'new': lambda: HeaderSet()},
-        'ParamSet': {'new': lambda: ParamSet()},
+        'HeaderSet': {'new': lambda: LoggingHeaderSet()},
+        'ParamSet': {'new': lambda: LoggingParamSet()},
     }
 
     def __init__(
         self,
-        header_set: Optional[HeaderSet] = None,
-        param_set: Optional[ParamSet] = None,
+        header_set: Optional[LoggingHeaderSet] = None,
+        param_set: Optional[LoggingParamSet] = None,
         **kwargs: Any
     ) -> None:
         """

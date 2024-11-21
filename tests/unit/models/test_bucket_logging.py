@@ -235,10 +235,10 @@ class TestPutUserDefinedLogFieldsConfig(unittest.TestCase):
         request = model.PutUserDefinedLogFieldsConfigRequest(
             bucket='bucketexampletest',
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
-                header_set=model.HeaderSet(
+                header_set=model.LoggingHeaderSet(
                     headers=['9&12.KFliV', 'yi;ml47g)I'],
                 ),
-                param_set=model.ParamSet(
+                param_set=model.LoggingParamSet(
                     parameters=['-eDOon2&)', '0t,aKLN.D'],
                 ),
             ),
@@ -251,10 +251,10 @@ class TestPutUserDefinedLogFieldsConfig(unittest.TestCase):
         request = model.PutUserDefinedLogFieldsConfigRequest(
             bucket='bucketexampletest',
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
-                header_set=model.HeaderSet(
+                header_set=model.LoggingHeaderSet(
                     headers=[';%6s7q?iA!', 'brglo!jUY+'],
                 ),
-                param_set=model.ParamSet(
+                param_set=model.LoggingParamSet(
                     parameters=['0LD.sRxO!3', '7LM2WBSfIn'],
                 ),
             ),
@@ -337,10 +337,10 @@ class TestGetUserDefinedLogFieldsConfig(unittest.TestCase):
 
         result = model.GetUserDefinedLogFieldsConfigResult(
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
-                header_set=model.HeaderSet(
+                header_set=model.LoggingHeaderSet(
                     headers=['0(&Cy#l- 9', '#JMia::(!L'],
                 ),
-                param_set=model.ParamSet(
+                param_set=model.LoggingParamSet(
                     parameters=['iwS;(tE,lo', 'Qlu)DhOs|)'],
                 ),
             ),

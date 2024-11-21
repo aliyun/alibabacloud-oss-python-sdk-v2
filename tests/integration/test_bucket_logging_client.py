@@ -60,10 +60,10 @@ class TestBucketLogging(TestIntegration):
         result = self.client.put_user_defined_log_fields_config(oss.PutUserDefinedLogFieldsConfigRequest(
             bucket=bucket_name,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
-                header_set=oss.HeaderSet(
+                header_set=oss.LoggingHeaderSet(
                     headers=[';YRUmR^oOZ', '6L1HYCXks#'],
                 ),
-                param_set=oss.ParamSet(
+                param_set=oss.LoggingParamSet(
                     parameters=[';OGrIUYln ', '>SS#m7k?)T'],
                 ),
             ),
@@ -145,10 +145,10 @@ class TestBucketLogging(TestIntegration):
         result = self.signv1_client.put_user_defined_log_fields_config(oss.PutUserDefinedLogFieldsConfigRequest(
             bucket=bucket_name,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
-                header_set=oss.HeaderSet(
+                header_set=oss.LoggingHeaderSet(
                     headers=[')$k+$;jm+', '5;O$QXOCK2'],
                 ),
-                param_set=oss.ParamSet(
+                param_set=oss.LoggingParamSet(
                     parameters=['IpaR(ad~p', ';uza,9yf71'],
                 ),
             ),
@@ -242,10 +242,10 @@ class TestBucketLogging(TestIntegration):
             self.invalid_client.put_user_defined_log_fields_config(oss.PutUserDefinedLogFieldsConfigRequest(
                 bucket=bucket_name,
                 user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
-                    header_set=oss.HeaderSet(
+                    header_set=oss.LoggingHeaderSet(
                         headers=['D@R4G3@Uf;', 'C9xW_T%(hE'],
                     ),
-                    param_set=oss.ParamSet(
+                    param_set=oss.LoggingParamSet(
                         parameters=['Hmb/Lra_~Q', 'FNmTE+w;%e'],
                     ),
                 ),
