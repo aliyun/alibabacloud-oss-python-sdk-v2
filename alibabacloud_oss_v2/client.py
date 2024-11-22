@@ -1186,3 +1186,59 @@ class Client:
         """
         return operations.option_object(self._client, request, **kwargs)
 
+
+    # bucket policy
+    def put_bucket_policy(self, request: models.PutBucketPolicyRequest, **kwargs
+                          ) -> models.PutBucketPolicyResult:
+        """
+        Configures a policy for a bucket.
+
+        Args:
+            request (PutBucketPolicyRequest): Request parameters for PutBucketPolicy operation.
+
+        Returns:
+            PutBucketPolicyResult: Response result for PutBucketPolicy operation.
+        """
+        return operations.put_bucket_policy(self._client, request, **kwargs)
+
+    def get_bucket_policy(self, request: models.GetBucketPolicyRequest, **kwargs
+                          ) -> models.GetBucketPolicyResult:
+        """
+        Queries the policies configured for a bucket.
+
+        Args:
+            request (GetBucketPolicyRequest): Request parameters for GetBucketPolicy operation.
+
+        Returns:
+            GetBucketPolicyResult: Response result for GetBucketPolicy operation.
+        """
+        return operations.get_bucket_policy(self._client, request, **kwargs)
+
+
+    def delete_bucket_policy(self, request: models.DeleteBucketPolicyRequest, **kwargs
+                             ) -> models.DeleteBucketPolicyResult:
+        """
+        Deletes a policy for a bucket.
+
+        Args:
+            request (DeleteBucketPolicyRequest): Request parameters for DeleteBucketPolicy operation.
+
+        Returns:
+            DeleteBucketPolicyResult: Response result for DeleteBucketPolicy operation.
+        """
+        return operations.delete_bucket_policy(self._client, request, **kwargs)
+
+
+    def get_bucket_policy_status(self, request: models.GetBucketPolicyStatusRequest, **kwargs
+                                 ) -> models.GetBucketPolicyStatusResult:
+        """
+        Checks whether the current bucket policy allows public access.
+
+        Args:
+            request (GetBucketPolicyStatusRequest): Request parameters for GetBucketPolicyStatus operation.
+
+        Returns:
+            GetBucketPolicyStatusResult: Response result for GetBucketPolicyStatus operation.
+        """
+        return operations.get_bucket_policy_status(self._client, request, **kwargs)
+
