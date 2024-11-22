@@ -1,5 +1,3 @@
-import datetime
-import io
 from typing import Optional, List, Any, Union
 from .. import serde
 
@@ -49,7 +47,7 @@ class PutBucketPolicyRequest(serde.RequestModel):
     ) -> None:
         """
         bucket (str, required): The name of the bucket.
-        body (io.Reader, required): The request parameters.
+        body (str, required): The request parameters.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
