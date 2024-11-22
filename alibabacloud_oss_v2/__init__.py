@@ -20,6 +20,7 @@ from .models.access_point import *
 from .models.bucket_access_monitor import *
 from .models.bucket_archive_direct_read import *
 from .models.bucket_cname import *
+from .models.bucket_lifecycle import *
 from .models.bucket_cors import *
 from .models.bucket_encryption import *
 from .models.bucket_logging import *
