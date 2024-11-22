@@ -1187,6 +1187,90 @@ class Client:
         return operations.option_object(self._client, request, **kwargs)
 
 
+    # bucket logging
+    def put_bucket_logging(self, request: models.PutBucketLoggingRequest, **kwargs
+                           ) -> models.PutBucketLoggingResult:
+        """
+        Enables logging for a bucket. After you enable logging for a bucket, Object Storage Service (OSS) generates logs every hour based on the defined naming rule and stores the logs as objects in the specified destination bucket.
+
+        Args:
+            request (PutBucketLoggingRequest): Request parameters for PutBucketLogging operation.
+
+        Returns:
+            PutBucketLoggingResult: Response result for PutBucketLogging operation.
+        """
+        return operations.put_bucket_logging(self._client, request, **kwargs)
+
+
+    def get_bucket_logging(self, request: models.GetBucketLoggingRequest, **kwargs
+                           ) -> models.GetBucketLoggingResult:
+        """
+        Queries the configurations of access log collection of a bucket. Only the owner of a bucket can query the configurations of access log collection of the bucket.
+
+        Args:
+            request (GetBucketLoggingRequest): Request parameters for GetBucketLogging operation.
+
+        Returns:
+            GetBucketLoggingResult: Response result for GetBucketLogging operation.
+        """
+        return operations.get_bucket_logging(self._client, request, **kwargs)
+
+
+    def delete_bucket_logging(self, request: models.DeleteBucketLoggingRequest, **kwargs
+                              ) -> models.DeleteBucketLoggingResult:
+        """
+        Disables the logging feature for a bucket.
+
+        Args:
+            request (DeleteBucketLoggingRequest): Request parameters for DeleteBucketLogging operation.
+
+        Returns:
+            DeleteBucketLoggingResult: Response result for DeleteBucketLogging operation.
+        """
+        return operations.delete_bucket_logging(self._client, request, **kwargs)
+
+
+    def put_user_defined_log_fields_config(self, request: models.PutUserDefinedLogFieldsConfigRequest, **kwargs
+                                           ) -> models.PutUserDefinedLogFieldsConfigResult:
+        """
+        Customizes the user_defined_log_fields field in real-time logs by adding custom request headers or query parameters to the field for subsequent analysis of requests.
+
+        Args:
+            request (PutUserDefinedLogFieldsConfigRequest): Request parameters for PutUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            PutUserDefinedLogFieldsConfigResult: Response result for PutUserDefinedLogFieldsConfig operation.
+        """
+        return operations.put_user_defined_log_fields_config(self._client, request, **kwargs)
+
+
+    def get_user_defined_log_fields_config(self, request: models.GetUserDefinedLogFieldsConfigRequest, **kwargs
+                                           ) -> models.GetUserDefinedLogFieldsConfigResult:
+        """
+        Queries the custom configurations of the user_defined_log_fields field in the real-time logs of a bucket.
+
+        Args:
+            request (GetUserDefinedLogFieldsConfigRequest): Request parameters for GetUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            GetUserDefinedLogFieldsConfigResult: Response result for GetUserDefinedLogFieldsConfig operation.
+        """
+        return operations.get_user_defined_log_fields_config(self._client, request, **kwargs)
+
+
+    def delete_user_defined_log_fields_config(self, request: models.DeleteUserDefinedLogFieldsConfigRequest, **kwargs
+                                              ) -> models.DeleteUserDefinedLogFieldsConfigResult:
+        """
+        Deletes the custom configurations of the user_defined_log_fields field in the real-time logs of a bucket.
+
+        Args:
+            request (DeleteUserDefinedLogFieldsConfigRequest): Request parameters for DeleteUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            DeleteUserDefinedLogFieldsConfigResult: Response result for DeleteUserDefinedLogFieldsConfig operation.
+        """
+        return operations.delete_user_defined_log_fields_config(self._client, request, **kwargs)
+
     # bucket_encryption
     def put_bucket_encryption(self, request: models.PutBucketEncryptionRequest, **kwargs
                               ) -> models.PutBucketEncryptionResult:
