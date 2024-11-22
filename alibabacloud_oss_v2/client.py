@@ -1168,3 +1168,186 @@ class Client:
             DeleteBucketLifecycleResult: Response result for DeleteBucketLifecycle operation.
         """
         return operations.delete_bucket_lifecycle(self._client, request, **kwargs)
+
+    # bucket cors
+    def put_bucket_cors(self, request: models.PutBucketCorsRequest, **kwargs
+                        ) -> models.PutBucketCorsResult:
+        """
+        Configures cross-origin resource sharing (CORS) rules for a bucket.
+
+        Args:
+            request (PutBucketCorsRequest): Request parameters for PutBucketCors operation.
+
+        Returns:
+            PutBucketCorsResult: Response result for PutBucketCors operation.
+        """
+        return operations.put_bucket_cors(self._client, request, **kwargs)
+
+
+    def get_bucket_cors(self, request: models.GetBucketCorsRequest, **kwargs
+                        ) -> models.GetBucketCorsResult:
+        """
+        Queries the cross-origin resource sharing (CORS) rules that are configured for a bucket.
+
+        Args:
+            request (GetBucketCorsRequest): Request parameters for GetBucketCors operation.
+
+        Returns:
+            GetBucketCorsResult: Response result for GetBucketCors operation.
+        """
+        return operations.get_bucket_cors(self._client, request, **kwargs)
+
+
+    def delete_bucket_cors(self, request: models.DeleteBucketCorsRequest, **kwargs
+                           ) -> models.DeleteBucketCorsResult:
+        """
+        Disables the cross-origin resource sharing (CORS) feature and deletes all CORS rules for a bucket.
+
+        Args:
+            request (DeleteBucketCorsRequest): Request parameters for DeleteBucketCors operation.
+
+        Returns:
+            DeleteBucketCorsResult: Response result for DeleteBucketCors operation.
+        """
+        return operations.delete_bucket_cors(self._client, request, **kwargs)
+
+
+    def option_object(self, request: models.OptionObjectRequest, **kwargs
+                      ) -> models.OptionObjectResult:
+        """
+        Determines whether to send a cross-origin request. Before a cross-origin request is sent, the browser sends a preflight OPTIONS request that includes a specific origin, HTTP method, and header information to Object Storage Service (OSS) to determine whether to send the cross-origin request.
+
+        Args:
+            request (OptionObjectRequest): Request parameters for OptionObject operation.
+
+        Returns:
+            OptionObjectResult: Response result for OptionObject operation.
+        """
+        return operations.option_object(self._client, request, **kwargs)
+
+
+    # bucket logging
+    def put_bucket_logging(self, request: models.PutBucketLoggingRequest, **kwargs
+                           ) -> models.PutBucketLoggingResult:
+        """
+        Enables logging for a bucket. After you enable logging for a bucket, Object Storage Service (OSS) generates logs every hour based on the defined naming rule and stores the logs as objects in the specified destination bucket.
+
+        Args:
+            request (PutBucketLoggingRequest): Request parameters for PutBucketLogging operation.
+
+        Returns:
+            PutBucketLoggingResult: Response result for PutBucketLogging operation.
+        """
+        return operations.put_bucket_logging(self._client, request, **kwargs)
+
+
+    def get_bucket_logging(self, request: models.GetBucketLoggingRequest, **kwargs
+                           ) -> models.GetBucketLoggingResult:
+        """
+        Queries the configurations of access log collection of a bucket. Only the owner of a bucket can query the configurations of access log collection of the bucket.
+
+        Args:
+            request (GetBucketLoggingRequest): Request parameters for GetBucketLogging operation.
+
+        Returns:
+            GetBucketLoggingResult: Response result for GetBucketLogging operation.
+        """
+        return operations.get_bucket_logging(self._client, request, **kwargs)
+
+
+    def delete_bucket_logging(self, request: models.DeleteBucketLoggingRequest, **kwargs
+                              ) -> models.DeleteBucketLoggingResult:
+        """
+        Disables the logging feature for a bucket.
+
+        Args:
+            request (DeleteBucketLoggingRequest): Request parameters for DeleteBucketLogging operation.
+
+        Returns:
+            DeleteBucketLoggingResult: Response result for DeleteBucketLogging operation.
+        """
+        return operations.delete_bucket_logging(self._client, request, **kwargs)
+
+
+    def put_user_defined_log_fields_config(self, request: models.PutUserDefinedLogFieldsConfigRequest, **kwargs
+                                           ) -> models.PutUserDefinedLogFieldsConfigResult:
+        """
+        Customizes the user_defined_log_fields field in real-time logs by adding custom request headers or query parameters to the field for subsequent analysis of requests.
+
+        Args:
+            request (PutUserDefinedLogFieldsConfigRequest): Request parameters for PutUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            PutUserDefinedLogFieldsConfigResult: Response result for PutUserDefinedLogFieldsConfig operation.
+        """
+        return operations.put_user_defined_log_fields_config(self._client, request, **kwargs)
+
+
+    def get_user_defined_log_fields_config(self, request: models.GetUserDefinedLogFieldsConfigRequest, **kwargs
+                                           ) -> models.GetUserDefinedLogFieldsConfigResult:
+        """
+        Queries the custom configurations of the user_defined_log_fields field in the real-time logs of a bucket.
+
+        Args:
+            request (GetUserDefinedLogFieldsConfigRequest): Request parameters for GetUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            GetUserDefinedLogFieldsConfigResult: Response result for GetUserDefinedLogFieldsConfig operation.
+        """
+        return operations.get_user_defined_log_fields_config(self._client, request, **kwargs)
+
+
+    def delete_user_defined_log_fields_config(self, request: models.DeleteUserDefinedLogFieldsConfigRequest, **kwargs
+                                              ) -> models.DeleteUserDefinedLogFieldsConfigResult:
+        """
+        Deletes the custom configurations of the user_defined_log_fields field in the real-time logs of a bucket.
+
+        Args:
+            request (DeleteUserDefinedLogFieldsConfigRequest): Request parameters for DeleteUserDefinedLogFieldsConfig operation.
+
+        Returns:
+            DeleteUserDefinedLogFieldsConfigResult: Response result for DeleteUserDefinedLogFieldsConfig operation.
+        """
+        return operations.delete_user_defined_log_fields_config(self._client, request, **kwargs)
+
+    # bucket_encryption
+    def put_bucket_encryption(self, request: models.PutBucketEncryptionRequest, **kwargs
+                              ) -> models.PutBucketEncryptionResult:
+        """
+        Configures encryption rules for a bucket.
+
+        Args:
+            request (PutBucketEncryptionRequest): Request parameters for PutBucketEncryption operation.
+
+        Returns:
+            PutBucketEncryptionResult: Response result for PutBucketEncryption operation.
+        """
+        return operations.put_bucket_encryption(self._client, request, **kwargs)
+
+
+    def get_bucket_encryption(self, request: models.GetBucketEncryptionRequest, **kwargs
+                              ) -> models.GetBucketEncryptionResult:
+        """
+        Queries the encryption rules configured for a bucket.
+
+        Args:
+            request (GetBucketEncryptionRequest): Request parameters for GetBucketEncryption operation.
+
+        Returns:
+            GetBucketEncryptionResult: Response result for GetBucketEncryption operation.
+        """
+        return operations.get_bucket_encryption(self._client, request, **kwargs)
+
+
+    def delete_bucket_encryption(self, request: models.DeleteBucketEncryptionRequest, **kwargs
+                                 ) -> models.DeleteBucketEncryptionResult:
+        """
+        Deletes encryption rules for a bucket.
+
+        Args:
+            request (DeleteBucketEncryptionRequest): Request parameters for DeleteBucketEncryption operation.
+
+        Returns:
+            DeleteBucketEncryptionResult: Response result for DeleteBucketEncryption operation.
+        """
+        return operations.delete_bucket_encryption(self._client, request, **kwargs)
