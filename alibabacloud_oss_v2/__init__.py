@@ -22,6 +22,7 @@ from .models.bucket_archive_direct_read import *
 from .models.bucket_cname import *
 from .models.bucket_cors import *
 from .models.bucket_encryption import *
+from .models.bucket_logging import *
 
 from .config import Config
 from .client import Client
