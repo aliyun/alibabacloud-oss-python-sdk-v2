@@ -13,6 +13,7 @@ _model_allow_attribute_map = ["headers", "parameters", "payload"]
 
 ISO8601 = '%Y-%m-%dT%H:%M:%SZ'
 ISO8601_MICRO = '%Y-%m-%dT%H:%M:%S.%fZ'
+ISO8601_DATE = '%Y-%m-%dT00:00:00.000Z'
 
 class Model:
     """Mixin for all client request body/response body models to support
@@ -126,6 +127,23 @@ def serialize_isotime(value: datetime.datetime) -> str:
         if value.microsecond > 0:
             return value.strftime(ISO8601_MICRO)
         return value.strftime(ISO8601)
+    except ValueError:
+        return value.strftime(ISO8601)
+
+
+def serialize_iso_date(value: datetime.datetime) -> str:
+    """Serialize Date object into ISO-8601 formatted string
+
+    Args:
+        value (datetime.datetime): value to be serialized
+
+    Returns:
+        str: ISO-8601 formatted string, eg 2014-05-15T00:00:00.000Z
+    """
+
+    try:
+        return value.strftime(ISO8601_DATE)
+
     except ValueError:
         return value.strftime(ISO8601)
 
@@ -249,6 +267,8 @@ def _serialize_xml_any(tag: str, value: Any, atype: str) -> ET.Element:
             child.text = serialize_httptime(value)
         elif 'unixtime' in atypes:
             child.text = serialize_unixtime(value)
+        elif 'ios8601date' in atypes:
+            child.text = serialize_iso_date(value)
         else:
             child.text = serialize_isotime(value)
         return child

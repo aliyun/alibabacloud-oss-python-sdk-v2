@@ -1129,6 +1129,45 @@ class Client:
         """
         return operations.delete_cname(self._client, request, **kwargs)
 
+    # bucket lifecycle
+    def put_bucket_lifecycle(self, request: models.PutBucketLifecycleRequest, **kwargs
+                             ) -> models.PutBucketLifecycleResult:
+        """
+        Configures a lifecycle rule for a bucket. After you configure a lifecycle rule for a bucket, Object Storage Service (OSS) automatically deletes the objects that match the rule or converts the storage type of the objects based on the point in time that is specified in the lifecycle rule.
+
+        Args:
+            request (PutBucketLifecycleRequest): Request parameters for PutBucketLifecycle operation.
+
+        Returns:
+            PutBucketLifecycleResult: Response result for PutBucketLifecycle operation.
+        """
+        return operations.put_bucket_lifecycle(self._client, request, **kwargs)
+
+    def get_bucket_lifecycle(self, request: models.GetBucketLifecycleRequest, **kwargs
+                             ) -> models.GetBucketLifecycleResult:
+        """
+        Queries the lifecycle rules configured for a bucket. Only the owner of a bucket has the permissions to query the lifecycle rules configured for the bucket.
+
+        Args:
+            request (GetBucketLifecycleRequest): Request parameters for GetBucketLifecycle operation.
+
+        Returns:
+            GetBucketLifecycleResult: Response result for GetBucketLifecycle operation.
+        """
+        return operations.get_bucket_lifecycle(self._client, request, **kwargs)
+
+    def delete_bucket_lifecycle(self, request: models.DeleteBucketLifecycleRequest, **kwargs
+                                ) -> models.DeleteBucketLifecycleResult:
+        """
+        Deletes the lifecycle rules of a bucket.
+
+        Args:
+            request (DeleteBucketLifecycleRequest): Request parameters for DeleteBucketLifecycle operation.
+
+        Returns:
+            DeleteBucketLifecycleResult: Response result for DeleteBucketLifecycle operation.
+        """
+        return operations.delete_bucket_lifecycle(self._client, request, **kwargs)
 
     # bucket cors
     def put_bucket_cors(self, request: models.PutBucketCorsRequest, **kwargs
