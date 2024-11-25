@@ -31,7 +31,7 @@ def put_bucket_inventory(client: _SyncClientImpl, request: models.PutBucketInven
                 'inventory': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['inventory']},
+            op_metadata={'sub-resource': ['inventory', 'inventoryId']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -72,7 +72,7 @@ def get_bucket_inventory(client: _SyncClientImpl, request: models.GetBucketInven
                 'inventory': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['inventory']},
+            op_metadata={'sub-resource': ['inventory', 'inventoryId']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -113,7 +113,7 @@ def list_bucket_inventory(client: _SyncClientImpl, request: models.ListBucketInv
                 'inventory': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['inventory']},
+            op_metadata={'sub-resource': ['inventory', 'inventoryId']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -154,7 +154,7 @@ def delete_bucket_inventory(client: _SyncClientImpl, request: models.DeleteBucke
                 'inventory': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['inventory']},
+            op_metadata={'sub-resource': ['inventory', 'inventoryId']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5

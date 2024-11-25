@@ -136,7 +136,7 @@ class OptionalFields(serde.Model):
     """
 
     _attribute_map = { 
-        'fields': {'tag': 'xml', 'rename': 'Field', 'type': '[InventoryOptionalFieldType]'},
+        'fields': {'tag': 'xml', 'rename': 'Field', 'type': '[str]'},
     }
 
     _xml_map = {
@@ -146,11 +146,11 @@ class OptionalFields(serde.Model):
 
     def __init__(
         self,
-        fields: Optional[List[InventoryOptionalFieldType]] = None,
+        fields: Optional[List[Union[str, InventoryOptionalFieldType]]] = None,
         **kwargs: Any
     ) -> None:
         """
-        fields (List[InventoryOptionalFieldType], optional): The configuration fields that are included in inventory lists. Available configuration fields:*   Size: the size of the object.*   LastModifiedDate: the time when the object was last modified.*   ETag: the ETag of the object. It is used to identify the content of the object.*   StorageClass: the storage class of the object.*   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.*   EncryptionStatus: the encryption status of the object.
+        fields (List[Union[str, InventoryOptionalFieldType]], optional): The configuration fields that are included in inventory lists. Available configuration fields:*   Size: the size of the object.*   LastModifiedDate: the time when the object was last modified.*   ETag: the ETag of the object. It is used to identify the content of the object.*   StorageClass: the storage class of the object.*   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.*   EncryptionStatus: the encryption status of the object.
         """
         super().__init__(**kwargs)
         self.fields = fields
