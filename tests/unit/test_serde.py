@@ -1924,6 +1924,11 @@ class TestSerdePublicFunction(unittest.TestCase):
         self.assertEqual(datetime_utc, serde.deserialize_httptime('Sun, 17 Dec 2023 03:30:19 GMT'))
         self.assertEqual(datetime_utc, serde.deserialize_unixtime('1702783819'))
 
+    def test_serialize_date(self):
+        datetime_utc = datetime.datetime.fromtimestamp(1702783819, tz=datetime.timezone.utc)
+        self.assertEqual('2023-12-17T00:00:00.000Z', serde.serialize_iso_date(datetime_utc))
+
+
     def test_serialize_boolean(self):
         self.assertTrue(serde.deserialize_boolean('True'))
         self.assertTrue(serde.deserialize_boolean('true'))
