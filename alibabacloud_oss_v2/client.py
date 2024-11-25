@@ -1463,3 +1463,32 @@ class Client:
             DeleteBucketEncryptionResult: Response result for DeleteBucketEncryption operation.
         """
         return operations.delete_bucket_encryption(self._client, request, **kwargs)
+
+    # bucket referer
+    def put_bucket_referer(self, request: models.PutBucketRefererRequest, **kwargs
+                           ) -> models.PutBucketRefererResult:
+        """
+        Configures a Referer whitelist for an Object Storage Service (OSS) bucket. You can specify whether to allow the requests whose Referer field is empty or whose query strings are truncated.
+
+        Args:
+            request (PutBucketRefererRequest): Request parameters for PutBucketReferer operation.
+
+        Returns:
+            PutBucketRefererResult: Response result for PutBucketReferer operation.
+        """
+        return operations.put_bucket_referer(self._client, request, **kwargs)
+
+
+    def get_bucket_referer(self, request: models.GetBucketRefererRequest, **kwargs
+                           ) -> models.GetBucketRefererResult:
+        """
+        Queries the hotlink protection configurations for a bucket.
+
+        Args:
+            request (GetBucketRefererRequest): Request parameters for GetBucketReferer operation.
+
+        Returns:
+            GetBucketRefererResult: Response result for GetBucketReferer operation.
+        """
+        return operations.get_bucket_referer(self._client, request, **kwargs)
+
