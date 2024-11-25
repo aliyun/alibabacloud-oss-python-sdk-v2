@@ -25,6 +25,7 @@ from .models.bucket_cors import *
 from .models.bucket_policy import *
 from .models.bucket_encryption import *
 from .models.bucket_logging import *
+from .models.bucket_inventory import *
 
 from .config import Config
 from .client import Client
