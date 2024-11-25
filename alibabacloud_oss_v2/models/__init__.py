@@ -14,3 +14,4 @@ from .bucket_inventory import *
 from .bucket_policy import *
 from .bucket_logging import *
 from .bucket_encryption import *
+from .bucket_referer import *
