@@ -14,5 +14,6 @@ from .bucket_inventory import *
 from .bucket_policy import *
 from .bucket_logging import *
 from .bucket_encryption import *
+from .bucket_website import *
 from .bucket_replication import *
 from .bucket_referer import *
