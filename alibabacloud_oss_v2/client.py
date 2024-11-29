@@ -1464,6 +1464,91 @@ class Client:
         """
         return operations.delete_bucket_encryption(self._client, request, **kwargs)
 
+
+    # bucket replication
+    def put_bucket_rtc(self, request: models.PutBucketRtcRequest, **kwargs
+                       ) -> models.PutBucketRtcResult:
+        """
+        Enables or disables the Replication Time Control (RTC) feature for existing cross-region replication (CRR) rules.
+
+        Args:
+            request (PutBucketRtcRequest): Request parameters for PutBucketRtc operation.
+
+        Returns:
+            PutBucketRtcResult: Response result for PutBucketRtc operation.
+        """
+        return operations.put_bucket_rtc(self._client, request, **kwargs)
+
+
+    def put_bucket_replication(self, request: models.PutBucketReplicationRequest, **kwargs
+                               ) -> models.PutBucketReplicationResult:
+        """
+        Configures data replication rules for a bucket. Object Storage Service (OSS) supports cross-region replication (CRR) and same-region replication (SRR).
+
+        Args:
+            request (PutBucketReplicationRequest): Request parameters for PutBucketReplication operation.
+
+        Returns:
+            PutBucketReplicationResult: Response result for PutBucketReplication operation.
+        """
+        return operations.put_bucket_replication(self._client, request, **kwargs)
+
+
+    def get_bucket_replication(self, request: models.GetBucketReplicationRequest, **kwargs
+                               ) -> models.GetBucketReplicationResult:
+        """
+        Queries the data replication rules configured for a bucket.
+
+        Args:
+            request (GetBucketReplicationRequest): Request parameters for GetBucketReplication operation.
+
+        Returns:
+            GetBucketReplicationResult: Response result for GetBucketReplication operation.
+        """
+        return operations.get_bucket_replication(self._client, request, **kwargs)
+
+
+    def get_bucket_replication_location(self, request: models.GetBucketReplicationLocationRequest, **kwargs
+                                        ) -> models.GetBucketReplicationLocationResult:
+        """
+        Queries the regions in which available destination buckets reside. You can determine the region of the destination bucket to which the data in the source bucket are replicated based on the returned response.
+
+        Args:
+            request (GetBucketReplicationLocationRequest): Request parameters for GetBucketReplicationLocation operation.
+
+        Returns:
+            GetBucketReplicationLocationResult: Response result for GetBucketReplicationLocation operation.
+        """
+        return operations.get_bucket_replication_location(self._client, request, **kwargs)
+
+
+    def get_bucket_replication_progress(self, request: models.GetBucketReplicationProgressRequest, **kwargs
+                                        ) -> models.GetBucketReplicationProgressResult:
+        """
+        Queries the information about the data replication process of a bucket.
+
+        Args:
+            request (GetBucketReplicationProgressRequest): Request parameters for GetBucketReplicationProgress operation.
+
+        Returns:
+            GetBucketReplicationProgressResult: Response result for GetBucketReplicationProgress operation.
+        """
+        return operations.get_bucket_replication_progress(self._client, request, **kwargs)
+
+
+    def delete_bucket_replication(self, request: models.DeleteBucketReplicationRequest, **kwargs
+                                  ) -> models.DeleteBucketReplicationResult:
+        """
+        Disables data replication for a bucket and deletes the data replication rule configured for the bucket. After you call this operation, all operations performed on the source bucket are not synchronized to the destination bucket.
+
+        Args:
+            request (DeleteBucketReplicationRequest): Request parameters for DeleteBucketReplication operation.
+
+        Returns:
+            DeleteBucketReplicationResult: Response result for DeleteBucketReplication operation.
+        """
+        return operations.delete_bucket_replication(self._client, request, **kwargs)
+
     # bucket referer
     def put_bucket_referer(self, request: models.PutBucketRefererRequest, **kwargs
                            ) -> models.PutBucketRefererResult:

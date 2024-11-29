@@ -14,4 +14,5 @@ from .bucket_lifecycle import *
 from .bucket_cors import *
 from .bucket_logging import *
 from .bucket_encryption import *
+from .bucket_replication import *
 from .bucket_referer import *
