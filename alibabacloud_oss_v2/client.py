@@ -1463,3 +1463,47 @@ class Client:
             DeleteBucketEncryptionResult: Response result for DeleteBucketEncryption operation.
         """
         return operations.delete_bucket_encryption(self._client, request, **kwargs)
+
+
+    # bucket website
+    def get_bucket_website(self, request: models.GetBucketWebsiteRequest, **kwargs
+                           ) -> models.GetBucketWebsiteResult:
+        """
+        Queries the static website hosting status and redirection rules configured for a bucket.
+
+        Args:
+            request (GetBucketWebsiteRequest): Request parameters for GetBucketWebsite operation.
+
+        Returns:
+            GetBucketWebsiteResult: Response result for GetBucketWebsite operation.
+        """
+        return operations.get_bucket_website(self._client, request, **kwargs)
+
+
+    def put_bucket_website(self, request: models.PutBucketWebsiteRequest, **kwargs
+                           ) -> models.PutBucketWebsiteResult:
+        """
+        Enables the static website hosting mode for a bucket and configures redirection rules for the bucket.
+
+        Args:
+            request (PutBucketWebsiteRequest): Request parameters for PutBucketWebsite operation.
+
+        Returns:
+            PutBucketWebsiteResult: Response result for PutBucketWebsite operation.
+        """
+        return operations.put_bucket_website(self._client, request, **kwargs)
+
+
+    def delete_bucket_website(self, request: models.DeleteBucketWebsiteRequest, **kwargs
+                              ) -> models.DeleteBucketWebsiteResult:
+        """
+        Disables the static website hosting mode and deletes the redirection rules for a bucket.
+
+        Args:
+            request (DeleteBucketWebsiteRequest): Request parameters for DeleteBucketWebsite operation.
+
+        Returns:
+            DeleteBucketWebsiteResult: Response result for DeleteBucketWebsite operation.
+        """
+        return operations.delete_bucket_website(self._client, request, **kwargs)
+
