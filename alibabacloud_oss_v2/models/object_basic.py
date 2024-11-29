@@ -996,19 +996,19 @@ class DeleteObjectResult(serde.ResultModel):
 
     _attribute_map = {
         "version_id": {"tag": "output", "position": "header", "rename": "x-oss-version-id"},
-        "delete_marker": {"tag": "output", "position": "header", "rename": "x-oss-delete-marker"},
+        "delete_marker": {"tag": "output", "position": "header", "rename": "x-oss-delete-marker", "type": "bool"},
     }
 
     def __init__(
         self,
         version_id: Optional[str] = None,
-        delete_marker: Optional[str] = None,
+        delete_marker: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             version_id (str, optional): Version of the object.
-            delete_marker (str, optional): Specifies whether the object retrieved was (true) or was not (false) a Delete  Marker.
+            delete_marker (bool, optional): Indicates whether the deleted version is a delete marker.
         """
         super().__init__(**kwargs)
         self.version_id = version_id
@@ -1046,7 +1046,6 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
     _attribute_map = {
         "bucket": {"tag": "input", "position": "host", "required": True},
         "encoding_type": {"tag": "input", "position": "query", "rename": "encoding-type"},
-        "content_length": {"tag": "input", "position": "header", "rename": "Content-Length"},
         "objects": {"tag": "input", "position": "nop", "required": True},
         "quiet": {"tag": "input", "position": "nop"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
@@ -1056,7 +1055,6 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         self,
         bucket: str = None,
         encoding_type: Optional[str] = None,
-        content_length: Optional[int] = None,
         objects: Optional[List[DeleteObject]] = None,
         quiet: Optional[bool] = None,
          request_payer: Optional[str] = None,
@@ -1066,7 +1064,6 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         Args:
             bucket (str, required): The name of the bucket.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url
-            content_length (int, optional): The size of the data in the HTTP message body. Unit: bytes.
             objects ([DeleteObject], optional): The container that stores information about you want to delete objects.
             quiet (bool, optional): Specifies whether to enable the Quiet return mode.
                 The DeleteMultipleObjects operation provides the following return modes: Valid value: true,false
@@ -1075,7 +1072,6 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         super().__init__(**kwargs)
         self.bucket = bucket
         self.encoding_type = encoding_type
-        self.content_length = content_length
         self.objects = objects
         self.quiet = quiet
         self.request_payer = request_payer
@@ -2133,7 +2129,7 @@ class ListPartsRequest(serde.RequestModel):
         "upload_id": {"tag": "input", "position": "query", "rename": "uploadId", "required": True},
         "encoding_type": {"tag": "input", "position": "query", "rename": "encoding-type"},
         "max_parts": {"tag": "input", "position": "query", "rename": "max-parts", "type": "int"},
-        "part_mumber_marker": {"tag": "input", "position": "query", "rename": "part-number-marker"},
+        "part_number_marker": {"tag": "input", "position": "query", "rename": "part-number-marker"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
     }
 
@@ -2144,7 +2140,7 @@ class ListPartsRequest(serde.RequestModel):
         upload_id: str = None,
         encoding_type: Optional[str] = None,
         max_parts: Optional[int] = None,
-        part_mumber_marker: Optional[str] = None,
+        part_number_marker: Optional[str] = None,
         request_payer: Optional[str] = None,
         **kwargs: Any
     ) -> None:
@@ -2155,7 +2151,7 @@ class ListPartsRequest(serde.RequestModel):
             encoding_type (str, optional): The encoding type of the content in the response. Valid value: url
             max_parts (int, optional): The maximum number of parts that can be returned by OSS.
                 Default value: 1000. Maximum value: 1000.
-            part_mumber_marker (str, optional): The position from which the list starts.
+            part_number_marker (str, optional): The position from which the list starts.
                 All parts whose part numbers are greater than the value of this parameter are listed.
             request_payer (str, optional): To indicate that the requester is aware that the request 
                 and data download will incur costs
@@ -2166,7 +2162,7 @@ class ListPartsRequest(serde.RequestModel):
         self.upload_id = upload_id
         self.encoding_type = encoding_type
         self.max_parts = max_parts
-        self.part_mumber_marker = part_mumber_marker
+        self.part_number_marker = part_number_marker
         self.request_payer = request_payer
 
 
