@@ -30,10 +30,10 @@ class TestBucketReferer(TestIntegration):
                 allow_truncate_query_string=True,
                 truncate_path=False,
                 referer_list=oss.RefererList(
-                    referers=['LGO3<m&s9<', 'szq,1RZ>VI'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=oss.RefererBlacklist(
-                    referers=['e6MZh;>_<s', 'z\E2$-X9UQ'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
         ))
@@ -53,8 +53,8 @@ class TestBucketReferer(TestIntegration):
         self.assertEqual(True, result.referer_configuration.allow_empty_referer)
         self.assertEqual(True, result.referer_configuration.allow_truncate_query_string)
         self.assertEqual(False, result.referer_configuration.truncate_path)
-        self.assertEqual(['LGO3<m&s9<', 'szq,1RZ>VI'], result.referer_configuration.referer_list.referers)
-        self.assertEqual(['e6MZh;>_<s', 'z\E2$-X9UQ'], result.referer_configuration.referer_blacklist.referers)
+        self.assertEqual(['http://www.aliyun.com', 'https://www.aliyun.com'], result.referer_configuration.referer_list.referers)
+        self.assertEqual(['http://www.refuse.com', 'http://www.refuse1.com'], result.referer_configuration.referer_blacklist.referers)
 
 
     def test_bucket_referer_v1(self):
@@ -80,10 +80,10 @@ class TestBucketReferer(TestIntegration):
                 allow_truncate_query_string=True,
                 truncate_path=True,
                 referer_list=oss.RefererList(
-                    referers=['Sc6+B5BJKN', '?yBc/alQK/'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=oss.RefererBlacklist(
-                    referers=['cy<Ebh/6e;', 'c*J$\qf4>t'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
         ))
@@ -102,9 +102,9 @@ class TestBucketReferer(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(True, result.referer_configuration.allow_empty_referer)
         self.assertEqual(True, result.referer_configuration.allow_truncate_query_string)
-        self.assertEqual(False, result.referer_configuration.truncate_path)
-        self.assertEqual(['LGO3<m&s9<', 'szq,1RZ>VI'], result.referer_configuration.referer_list.referers)
-        self.assertEqual(['e6MZh;>_<s', 'z\E2$-X9UQ'], result.referer_configuration.referer_blacklist.referers)
+        self.assertEqual(True, result.referer_configuration.truncate_path)
+        self.assertEqual(['http://www.aliyun.com', 'https://www.aliyun.com'], result.referer_configuration.referer_list.referers)
+        self.assertEqual(['http://www.refuse.com', 'http://www.refuse1.com'], result.referer_configuration.referer_blacklist.referers)
 
 
     def test_bucket_referer_fail(self):
@@ -127,10 +127,10 @@ class TestBucketReferer(TestIntegration):
                     allow_truncate_query_string=True,
                     truncate_path=True,
                     referer_list=oss.RefererList(
-                        referers=[':u+m5aSOZ', 'kuN(1+iB/k'],
+                        referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                     ),
                     referer_blacklist=oss.RefererBlacklist(
-                        referers=['HbYyj3d5vB', 'e/+C\K.!(V'],
+                        referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                     ),
                 ),
             ))

@@ -24,10 +24,10 @@ class TestPutBucketReferer(unittest.TestCase):
                 allow_truncate_query_string=True,
                 truncate_path=False,
                 referer_list=model.RefererList(
-                    referers=['c!-JoKQ(88', '>muJd$cjaR'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=model.RefererBlacklist(
-                    referers=['Q#FUgLv,~~', '^>*S,iL/rd'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
         )
@@ -35,8 +35,8 @@ class TestPutBucketReferer(unittest.TestCase):
         self.assertEqual(False, request.referer_configuration.allow_empty_referer)
         self.assertEqual(True, request.referer_configuration.allow_truncate_query_string)
         self.assertEqual(False, request.referer_configuration.truncate_path)
-        self.assertEqual(['c!-JoKQ(88', '>muJd$cjaR'], request.referer_configuration.referer_list.referers)
-        self.assertEqual(['Q#FUgLv,~~', '^>*S,iL/rd'], request.referer_configuration.referer_blacklist.referers)
+        self.assertEqual(['http://www.aliyun.com', 'https://www.aliyun.com'], request.referer_configuration.referer_list.referers)
+        self.assertEqual(['http://www.refuse.com', 'http://www.refuse1.com'], request.referer_configuration.referer_blacklist.referers)
 
 
     def test_serialize_request(self):
@@ -47,10 +47,10 @@ class TestPutBucketReferer(unittest.TestCase):
                 allow_truncate_query_string=True,
                 truncate_path=False,
                 referer_list=model.RefererList(
-                    referers=['*:Rv^~~$DR', '&UAG<(<L,U'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=model.RefererBlacklist(
-                    referers=['nu$+,UWWN(', 'C^QA&0~UUg'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
         )
@@ -136,18 +136,18 @@ class TestGetBucketReferer(unittest.TestCase):
                 allow_truncate_query_string=False,
                 truncate_path=True,
                 referer_list=model.RefererList(
-                    referers=['qvI8m*Dx;k', 'lr sg>w(;D'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=model.RefererBlacklist(
-                    referers=[')U2uT9z,9$', 'gmOUg>P(U;'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
         )
         self.assertEqual(True, result.referer_configuration.allow_empty_referer)
         self.assertEqual(False, result.referer_configuration.allow_truncate_query_string)
         self.assertEqual(True, result.referer_configuration.truncate_path)
-        self.assertEqual(['qvI8m*Dx;k', 'lr sg>w(;D'], result.referer_configuration.referer_list.referers)
-        self.assertEqual([')U2uT9z,9$', 'gmOUg>P(U;'], result.referer_configuration.referer_blacklist.referers)
+        self.assertEqual(['http://www.aliyun.com', 'https://www.aliyun.com'], result.referer_configuration.referer_list.referers)
+        self.assertEqual(['http://www.refuse.com', 'http://www.refuse1.com'], result.referer_configuration.referer_blacklist.referers)
 
     def test_deserialize_result(self):
         xml_data = r'''
