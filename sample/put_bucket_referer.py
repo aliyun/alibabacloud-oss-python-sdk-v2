@@ -30,10 +30,10 @@ def main():
                 allow_truncate_query_string=False,
                 truncate_path=False,
                 referer_list=oss.RefererList(
-                    referers=['xMf|nO$bK%', 'a\M8vF*Uv'],
+                    referers=['http://www.aliyun.com', 'https://www.aliyun.com'],
                 ),
                 referer_blacklist=oss.RefererBlacklist(
-                    referers=['11U/D 0fHeZn', 'pw,+r+xd:V'],
+                    referers=['http://www.refuse.com', 'http://www.refuse1.com'],
                 ),
             ),
     ))
