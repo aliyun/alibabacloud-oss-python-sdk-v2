@@ -1282,7 +1282,16 @@ class TestDeleteObject(unittest.TestCase):
 
     def test_constructor_result(self):
         result = model.DeleteObjectResult()
-        self.assertIsInstance(result, serde.ResultModel)
+        self.assertIsNone(result.version_id)
+        self.assertIsNone(result.delete_marker)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.DeleteObjectResult(
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            delete_marker=True,
+        )
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertEqual(True, result.delete_marker)
 
     def test_deserialize_result(self):
         xml_data = None
@@ -1323,7 +1332,6 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertIsNotNone(request.bucket)
         self.assertIsNotNone(request.objects)
         self.assertIsNone(request.encoding_type)
-        self.assertIsNone(request.content_length)
         self.assertIsNone(request.quiet)
         self.assertIsNone(request.request_payer)
         self.assertIsNone(request.objects[0].key)
@@ -1356,7 +1364,6 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertEqual('key2', request.objects[1].key)
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDZjhjYmY0****', request.objects[1].version_id)
         self.assertEqual('url', request.encoding_type)
-        self.assertEqual(101, request.content_length)
         self.assertEqual(True, request.quiet)
         self.assertEqual('requester', request.request_payer)
 
@@ -1416,7 +1423,6 @@ class TestDeleteMultipleObjects(unittest.TestCase):
                 ),
             ],
             encoding_type='url',
-            content_length=101,
             quiet=True,
             request_payer='requester',
         )
@@ -1429,7 +1435,6 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertEqual('DeleteMultipleObjects', op_input.op_name)
         self.assertEqual('DELETE', op_input.method)
         self.assertEqual('bucket_name', op_input.bucket)
-        self.assertEqual(101, int(op_input.headers.get('Content-Length')))
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
 
     def test_constructor_result(self):
@@ -3023,7 +3028,7 @@ class TestListParts(unittest.TestCase):
         self.assertIsNotNone(request.upload_id)
         self.assertIsNone(request.encoding_type)
         self.assertIsNone(request.max_parts)
-        self.assertIsNone(request.part_mumber_marker)
+        self.assertIsNone(request.part_number_marker)
         self.assertIsNone(request.request_payer)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
@@ -3036,7 +3041,7 @@ class TestListParts(unittest.TestCase):
             upload_id='0004B9894A22E5B1888A1E29F823****',
             encoding_type='url',
             max_parts=30971,
-            part_mumber_marker='8D7q%(ncL$',
+            part_number_marker='8D7q%(ncL$',
             request_payer='requester',
         )
         self.assertEqual('bucket_name', request.bucket)
@@ -3044,7 +3049,7 @@ class TestListParts(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
         self.assertEqual('url', request.encoding_type)
         self.assertEqual(30971, request.max_parts)
-        self.assertEqual('8D7q%(ncL$', request.part_mumber_marker)
+        self.assertEqual('8D7q%(ncL$', request.part_number_marker)
         self.assertEqual('requester', request.request_payer)
 
         request = model.ListPartsRequest(
@@ -3083,7 +3088,7 @@ class TestListParts(unittest.TestCase):
             upload_id='0004B9894A22E5B1888A1E29F823****',
             encoding_type='url',
             max_parts=30971,
-            part_mumber_marker='8D7q%(ncL$',
+            part_number_marker='8D7q%(ncL$',
             request_payer='requester',
         )
 
