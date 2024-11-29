@@ -27,6 +27,8 @@ from .models.bucket_encryption import *
 from .models.bucket_logging import *
 from .models.bucket_inventory import *
 from .models.bucket_website import *
+from .models.bucket_replication import *
+from .models.bucket_referer import *
 
 from .config import Config
 from .client import Client
