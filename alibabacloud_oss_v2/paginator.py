@@ -262,7 +262,7 @@ class ListPartsPaginator:
 
             first_page = False
             is_truncated = result.is_truncated
-            req.part_mumber_marker = result.next_part_number_marker
+            req.part_number_marker = result.next_part_number_marker
 
     def __repr__(self) -> str:
         return "<ListPartsPaginator>"

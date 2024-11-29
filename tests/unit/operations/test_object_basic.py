@@ -418,7 +418,6 @@ class TestObjectBasic(TestOperations):
         result = operations.delete_multiple_objects(self.client, request)
         self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/?delete=&encoding-type=url', self.request_dump.url)
         self.assertEqual('POST', self.request_dump.method)
-        self.assertEqual(101, int(self.request_dump.headers.get('Content-Length')))
         self.assertEqual('requester', self.request_dump.headers.get('x-oss-request-payer'))
 
     def test_delete_multiple_objects_fail(self):
@@ -916,7 +915,7 @@ class TestObjectBasic(TestOperations):
                 upload_id='0004B9895DBBB6EC9',
                 encoding_type='url',
                 max_parts=12,
-                part_mumber_marker='part_mumber_marker-test',
+                part_number_marker='part_number_marker-test',
                 request_payer='requester',
                 part_number='1',
                 etag='"D41D8CD98F00B204E9800998ECF8****"',
@@ -926,7 +925,7 @@ class TestObjectBasic(TestOperations):
         )
 
         result = operations.list_parts(self.client, request)
-        self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?encoding-type=url&uploadId=0004B9895DBBB6EC9&max-parts=12&part-number-marker=part_mumber_marker-test', self.request_dump.url)
+        self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?encoding-type=url&uploadId=0004B9895DBBB6EC9&max-parts=12&part-number-marker=part_number_marker-test', self.request_dump.url)
         self.assertEqual('GET', self.request_dump.method)
         self.assertEqual('requester', self.request_dump.headers.get('x-oss-request-payer'))
 

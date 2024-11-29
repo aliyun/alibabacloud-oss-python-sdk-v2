@@ -1961,7 +1961,7 @@ class TestPaginator(TestIntegration):
             self.assertEqual(j+1, p.parts[0].part_number)
             self.assertEqual(9, p.parts[0].size)
             j += 1
-        self.assertIsNone(request.part_mumber_marker)
+        self.assertIsNone(request.part_number_marker)
 
         iterator = paginator.iter_page(request, limit=3)
         j = 0
@@ -1971,7 +1971,7 @@ class TestPaginator(TestIntegration):
             self.assertEqual(1, p.parts[0].part_number)
             self.assertEqual(9, p.parts[0].size)
             j += 1
-        self.assertIsNone(request.part_mumber_marker)
+        self.assertIsNone(request.part_number_marker)
 
         #encoding
         encoding_key = 'url-%123-/?#:key-'
