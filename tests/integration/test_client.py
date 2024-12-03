@@ -2189,14 +2189,12 @@ class TestExtension(TestIntegration):
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
-        filename = ''        
-        with tempfile.TemporaryFile('w+b', delete=False) as f:
-            filename = f.name
+        filename = tempfile.gettempprefix()
 
         gresult = self.client.get_object_to_file(oss.GetObjectRequest(
             bucket=self.bucket_name,
             key=key,
-        ), f.name)
+        ), filename)
         self.assertEqual(200, gresult.status_code)
         self.assertEqual('OK', gresult.status)
 
@@ -2212,9 +2210,8 @@ class TestExtension(TestIntegration):
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
 
-        filename = ''
-        with tempfile.TemporaryFile('w+b', delete=False) as f:
-            filename = f.name
+        filename = tempfile.gettempprefix()
+
         try:
             self.invalid_client.get_object_to_file(oss.GetObjectRequest(
                 bucket=self.bucket_name,

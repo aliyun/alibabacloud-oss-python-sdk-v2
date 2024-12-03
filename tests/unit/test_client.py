@@ -39,11 +39,7 @@ def _mock_client(request_fn, response_fn, **kwargs):
     return client.Client(cfg)
 
 def _get_tempfile() -> str:
-    filename = ''
-    with tempfile.TemporaryFile('w+b', delete=False) as f:
-        filename = f.name
-    return filename
-
+    return tempfile.gettempprefix()
 
 progress_save_n = 0
 def _progress_fn(n, _written, total):
@@ -65,7 +61,7 @@ def _read_body(obj: Any) -> bytes:
             if isinstance(a, str):
                 datas.append(a.encode())
             if isinstance(a, int):
-                datas.append(a.to_bytes())
+                datas.append(a.to_bytes(1, byteorder="little"))
         return b''.join(datas)
     else:
         raise TypeError(f'not supported type {type(obj)}')
