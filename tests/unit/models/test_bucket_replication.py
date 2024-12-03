@@ -35,16 +35,16 @@ class TestPutBucketReplication(unittest.TestCase):
                         transfer_type=model.TransferType.OSS_ACC,
                     ),
                     historical_object_replication=model.HistoricalObjectReplicationType.DISABLED,
-                    sync_role='%3j-$,Ovxm',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='OK',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d49f85-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['weL15FfhdL', 'WT@ih5G8K@'],
+                        prefixs=['source1', 'video'],
                     ),
-                    action='62,)fFPgQ&',
+                    action='PUT',
                 ), model.ReplicationRule(
                     source_selection_criteria=model.ReplicationSourceSelectionCriteria(
                         sse_kms_encrypted_objects=model.SseKmsEncryptedObjects(
@@ -60,44 +60,46 @@ class TestPutBucketReplication(unittest.TestCase):
                         transfer_type=model.TransferType.INTERNAL,
                     ),
                     historical_object_replication=model.HistoricalObjectReplicationType.DISABLED,
-                    sync_role='%3j-$,Ovxm',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='OK',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d4-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['&zL>issa6g', 'U$K\9+W96'],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='62,)fFPgQ&',
+                    action='GET',
                 )],
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(model.StatusType.ENABLED, request.replication_configuration.rules[0].source_selection_criteria.sse_kms_encrypted_objects.status)
+        self.assertEqual('Enabled', request.replication_configuration.rules[0].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('OK', request.replication_configuration.rules[0].rtc.status)
         self.assertEqual('bucketexampletest', request.replication_configuration.rules[0].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', request.replication_configuration.rules[0].destination.location)
-        self.assertEqual(model.TransferType.OSS_ACC, request.replication_configuration.rules[0].destination.transfer_type)
-        self.assertEqual(model.HistoricalObjectReplicationType.DISABLED, request.replication_configuration.rules[0].historical_object_replication)
-        self.assertEqual('%3j-$,Ovxm', request.replication_configuration.rules[0].sync_role)
+        self.assertEqual('oss_acc', request.replication_configuration.rules[0].destination.transfer_type)
+        self.assertEqual('disabled', request.replication_configuration.rules[0].historical_object_replication)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', request.replication_configuration.rules[0].sync_role)
         self.assertEqual('OK', request.replication_configuration.rules[0].status)
-        self.assertEqual('R/(x~ud&gP', request.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d49f85-ee30-426b-a5ed-95e9139d****', request.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', request.replication_configuration.rules[0].id)
-        self.assertEqual(['weL15FfhdL', 'WT@ih5G8K@'], request.replication_configuration.rules[0].prefix_set.prefixs)
-        self.assertEqual('62,)fFPgQ&', request.replication_configuration.rules[0].action)
-        self.assertEqual(model.StatusType.DISABLED, request.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
+        self.assertEqual('source1', request.replication_configuration.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video', request.replication_configuration.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('PUT', request.replication_configuration.rules[0].action)
+        self.assertEqual('Disabled', request.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('OK', request.replication_configuration.rules[1].rtc.status)
         self.assertEqual('bucketexampletest', request.replication_configuration.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', request.replication_configuration.rules[1].destination.location)
-        self.assertEqual(model.TransferType.INTERNAL, request.replication_configuration.rules[1].destination.transfer_type)
-        self.assertEqual(model.HistoricalObjectReplicationType.DISABLED, request.replication_configuration.rules[1].historical_object_replication)
-        self.assertEqual('%3j-$,Ovxm', request.replication_configuration.rules[1].sync_role)
+        self.assertEqual('internal', request.replication_configuration.rules[1].destination.transfer_type)
+        self.assertEqual('disabled', request.replication_configuration.rules[1].historical_object_replication)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', request.replication_configuration.rules[1].sync_role)
         self.assertEqual('OK', request.replication_configuration.rules[1].status)
-        self.assertEqual('R/(x~ud&gP', request.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d4-ee30-426b-a5ed-95e9139d****', request.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', request.replication_configuration.rules[1].id)
-        self.assertEqual(['&zL>issa6g', 'U$K\9+W96'], request.replication_configuration.rules[1].prefix_set.prefixs)
-        self.assertEqual('62,)fFPgQ&', request.replication_configuration.rules[1].action)
+        self.assertEqual('source2', request.replication_configuration.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', request.replication_configuration.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('GET', request.replication_configuration.rules[1].action)
 
         request = model.PutBucketReplicationRequest(
             bucket='bucketexampletest',
@@ -117,16 +119,16 @@ class TestPutBucketReplication(unittest.TestCase):
                         transfer_type='internal',
                     ),
                     historical_object_replication='disabled',
-                    sync_role='%3j-$,Ovxm',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='OK',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d49f85-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['^NH1I)-4+t', 'bX1n~Q#);-'],
+                        prefixs=['source', 'video'],
                     ),
-                    action='62,)fFPgQ&',
+                    action='GET',
                 ), model.ReplicationRule(
                     source_selection_criteria=model.ReplicationSourceSelectionCriteria(
                         sse_kms_encrypted_objects=model.SseKmsEncryptedObjects(
@@ -142,16 +144,16 @@ class TestPutBucketReplication(unittest.TestCase):
                         transfer_type='internal',
                     ),
                     historical_object_replication='enabled',
-                    sync_role='%3j-$,Ovxm',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='OK',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d485-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['pA>>@Fpz;p', '/tK9%N|#JO'],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='62,)fFPgQ&',
+                    action='GET',
                 )],
             ),
         )
@@ -162,24 +164,26 @@ class TestPutBucketReplication(unittest.TestCase):
         self.assertEqual('oss-cn-hangzhou', request.replication_configuration.rules[0].destination.location)
         self.assertEqual('internal', request.replication_configuration.rules[0].destination.transfer_type)
         self.assertEqual('disabled', request.replication_configuration.rules[0].historical_object_replication)
-        self.assertEqual('%3j-$,Ovxm', request.replication_configuration.rules[0].sync_role)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', request.replication_configuration.rules[0].sync_role)
         self.assertEqual('OK', request.replication_configuration.rules[0].status)
-        self.assertEqual('R/(x~ud&gP', request.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d49f85-ee30-426b-a5ed-95e9139d****', request.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', request.replication_configuration.rules[0].id)
-        self.assertEqual(['^NH1I)-4+t', 'bX1n~Q#);-'], request.replication_configuration.rules[0].prefix_set.prefixs)
-        self.assertEqual('62,)fFPgQ&', request.replication_configuration.rules[0].action)
+        self.assertEqual('source', request.replication_configuration.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video', request.replication_configuration.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('GET', request.replication_configuration.rules[0].action)
         self.assertEqual('Disabled', request.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('OK', request.replication_configuration.rules[1].rtc.status)
         self.assertEqual('bucketexampletest', request.replication_configuration.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', request.replication_configuration.rules[1].destination.location)
         self.assertEqual('internal', request.replication_configuration.rules[1].destination.transfer_type)
         self.assertEqual('enabled', request.replication_configuration.rules[1].historical_object_replication)
-        self.assertEqual('%3j-$,Ovxm', request.replication_configuration.rules[1].sync_role)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', request.replication_configuration.rules[1].sync_role)
         self.assertEqual('OK', request.replication_configuration.rules[1].status)
-        self.assertEqual('R/(x~ud&gP', request.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', request.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', request.replication_configuration.rules[1].id)
-        self.assertEqual(['pA>>@Fpz;p', '/tK9%N|#JO'], request.replication_configuration.rules[1].prefix_set.prefixs)
-        self.assertEqual('62,)fFPgQ&', request.replication_configuration.rules[1].action)
+        self.assertEqual('source2', request.replication_configuration.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', request.replication_configuration.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('GET', request.replication_configuration.rules[1].action)
 
 
     def test_serialize_request(self):
@@ -201,41 +205,10 @@ class TestPutBucketReplication(unittest.TestCase):
                         transfer_type=model.TransferType.INTERNAL,
                     ),
                     historical_object_replication=model.HistoricalObjectReplicationType.DISABLED,
-                    sync_role='%3j-$,Ovxm',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='OK',
-                    encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
-                    ),
                     id='0022012****',
-                    prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['8YzxhLj^<s', '+7~9MS~m~J'],
-                    ),
-                    action='62,)fFPgQ&',
-                ), model.ReplicationRule(
-                    source_selection_criteria=model.ReplicationSourceSelectionCriteria(
-                        sse_kms_encrypted_objects=model.SseKmsEncryptedObjects(
-                            status=model.StatusType.DISABLED,
-                        ),
-                    ),
-                    rtc=model.ReplicationTimeControl(
-                        status='OK',
-                    ),
-                    destination=model.ReplicationDestination(
-                        bucket='bucketexampletest',
-                        location='oss-cn-hangzhou',
-                        transfer_type=model.TransferType.INTERNAL,
-                    ),
-                    historical_object_replication=model.HistoricalObjectReplicationType.DISABLED,
-                    sync_role='%3j-$,Ovxm',
-                    status='OK',
-                    encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
-                    ),
-                    id='0022012****',
-                    prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['~n!_P#nK)u', '$Nff<F:t0/'],
-                    ),
-                    action='62,)fFPgQ&',
+
                 )],
             ),
         )
@@ -255,9 +228,9 @@ class TestPutBucketReplication(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.PutBucketReplicationResult(
-            replication_rule_id='Cr:ikaa.:i',
+            replication_rule_id='c4d485-ee30-426b-a5ed-95e9139d****',
         )
-        self.assertEqual('Cr:ikaa.:i', result.replication_rule_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', result.replication_rule_id)
 
     def test_deserialize_result(self):
         xml_data = None
@@ -414,16 +387,16 @@ class TestGetBucketReplication(unittest.TestCase):
                         transfer_type=model.TransferType.OSS_ACC,
                     ),
                     historical_object_replication=model.HistoricalObjectReplicationType.ENABLED,
-                    sync_role='P5Fu.R2)t-',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='enabled',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='rYj%X5Yukp',
+                        replica_kms_key_id='c4d485-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['DzftH$VLp', 'c7jKu ^ 4ie * '],
+                        prefixs=['source1', 'video1'],
                     ),
-                    action='x?&>J%#0Cy',
+                    action='POST',
                 ), model.ReplicationRule(
                     source_selection_criteria=model.ReplicationSourceSelectionCriteria(
                         sse_kms_encrypted_objects=model.SseKmsEncryptedObjects(
@@ -439,43 +412,45 @@ class TestGetBucketReplication(unittest.TestCase):
                         transfer_type=model.TransferType.INTERNAL,
                     ),
                     historical_object_replication=model.HistoricalObjectReplicationType.ENABLED,
-                    sync_role='P5Fu.R2)t-',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='enabled',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='rYj%X5Yukp',
+                        replica_kms_key_id='c4d485-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['pU^k<dYEYF', 'ZXc)cu%g8D'],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='x?&>J%#0Cy',
+                    action='PUT',
                 )],
             ),
         )
-        self.assertEqual(model.StatusType.DISABLED, result.replication_configuration.rules[0].source_selection_criteria.sse_kms_encrypted_objects.status)
+        self.assertEqual('Disabled', result.replication_configuration.rules[0].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('enabled', result.replication_configuration.rules[0].rtc.status)
         self.assertEqual('bucketexampletest', result.replication_configuration.rules[0].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_configuration.rules[0].destination.location)
-        self.assertEqual(model.TransferType.OSS_ACC, result.replication_configuration.rules[0].destination.transfer_type)
-        self.assertEqual(model.HistoricalObjectReplicationType.ENABLED, result.replication_configuration.rules[0].historical_object_replication)
-        self.assertEqual('P5Fu.R2)t-', result.replication_configuration.rules[0].sync_role)
+        self.assertEqual('oss_acc', result.replication_configuration.rules[0].destination.transfer_type)
+        self.assertEqual('enabled', result.replication_configuration.rules[0].historical_object_replication)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', result.replication_configuration.rules[0].sync_role)
         self.assertEqual('enabled', result.replication_configuration.rules[0].status)
-        self.assertEqual('rYj%X5Yukp', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', result.replication_configuration.rules[0].id)
-        self.assertEqual(['DzftH$VLp', 'c7jKu ^ 4ie * '], result.replication_configuration.rules[0].prefix_set.prefixs)
-        self.assertEqual('x?&>J%#0Cy', result.replication_configuration.rules[0].action)
-        self.assertEqual(model.StatusType.ENABLED, result.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
+        self.assertEqual('source1', result.replication_configuration.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video1', result.replication_configuration.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('POST', result.replication_configuration.rules[0].action)
+        self.assertEqual('Enabled', result.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('enabled', result.replication_configuration.rules[1].rtc.status)
         self.assertEqual('bucketexampletest', result.replication_configuration.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_configuration.rules[1].destination.location)
-        self.assertEqual(model.TransferType.INTERNAL, result.replication_configuration.rules[1].destination.transfer_type)
-        self.assertEqual(model.HistoricalObjectReplicationType.ENABLED, result.replication_configuration.rules[1].historical_object_replication)
-        self.assertEqual('P5Fu.R2)t-', result.replication_configuration.rules[1].sync_role)
+        self.assertEqual('internal', result.replication_configuration.rules[1].destination.transfer_type)
+        self.assertEqual('enabled', result.replication_configuration.rules[1].historical_object_replication)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', result.replication_configuration.rules[1].sync_role)
         self.assertEqual('enabled', result.replication_configuration.rules[1].status)
-        self.assertEqual('rYj%X5Yukp', result.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', result.replication_configuration.rules[1].id)
-        self.assertEqual(['pU^k<dYEYF', 'ZXc)cu%g8D'], result.replication_configuration.rules[1].prefix_set.prefixs)
-        self.assertEqual('x?&>J%#0Cy', result.replication_configuration.rules[1].action)
+        self.assertEqual('source2', result.replication_configuration.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', result.replication_configuration.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('PUT', result.replication_configuration.rules[1].action)
 
         result = model.GetBucketReplicationResult(
             replication_configuration=model.ReplicationConfiguration(
@@ -494,16 +469,16 @@ class TestGetBucketReplication(unittest.TestCase):
                         transfer_type='internal',
                     ),
                     historical_object_replication='enabled',
-                    sync_role='P5Fu.R2)t-',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='enabled',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='rYj%X5Yukp',
+                        replica_kms_key_id='c4d485-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['59#VccCeHl', 'FjCyq,s7#c'],
+                        prefixs=['source1', 'video1'],
                     ),
-                    action='x?&>J%#0Cy',
+                    action='GET',
                 ), model.ReplicationRule(
                     source_selection_criteria=model.ReplicationSourceSelectionCriteria(
                         sse_kms_encrypted_objects=model.SseKmsEncryptedObjects(
@@ -519,16 +494,16 @@ class TestGetBucketReplication(unittest.TestCase):
                         transfer_type='internal',
                     ),
                     historical_object_replication='disabled',
-                    sync_role='P5Fu.R2)t-',
+                    sync_role='acs:ram::100000000000000:role/AliyunOSSRole',
                     status='enabled',
                     encryption_configuration=model.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='rYj%X5Yukp',
+                        replica_kms_key_id='c4d485-ee30-426b-a5ed-95e9139d****',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['3+jTPG*o6X', 'mp(N>Z>mJ'],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='x?&>J%#0Cy',
+                    action='PUT',
                 )],
             ),
         )
@@ -538,25 +513,26 @@ class TestGetBucketReplication(unittest.TestCase):
         self.assertEqual('oss-cn-hangzhou', result.replication_configuration.rules[0].destination.location)
         self.assertEqual('internal', result.replication_configuration.rules[0].destination.transfer_type)
         self.assertEqual('enabled', result.replication_configuration.rules[0].historical_object_replication)
-        self.assertEqual('P5Fu.R2)t-', result.replication_configuration.rules[0].sync_role)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', result.replication_configuration.rules[0].sync_role)
         self.assertEqual('enabled', result.replication_configuration.rules[0].status)
-        self.assertEqual('rYj%X5Yukp', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', result.replication_configuration.rules[0].id)
-        self.assertEqual(['59#VccCeHl', 'FjCyq,s7#c'], result.replication_configuration.rules[0].prefix_set.prefixs)
-        self.assertEqual('x?&>J%#0Cy', result.replication_configuration.rules[0].action)
+        self.assertEqual('source1', result.replication_configuration.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video1', result.replication_configuration.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('GET', result.replication_configuration.rules[0].action)
         self.assertEqual('Disabled', result.replication_configuration.rules[1].source_selection_criteria.sse_kms_encrypted_objects.status)
         self.assertEqual('enabled', result.replication_configuration.rules[1].rtc.status)
         self.assertEqual('bucketexampletest', result.replication_configuration.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_configuration.rules[1].destination.location)
         self.assertEqual('internal', result.replication_configuration.rules[1].destination.transfer_type)
         self.assertEqual('disabled', result.replication_configuration.rules[1].historical_object_replication)
-        self.assertEqual('P5Fu.R2)t-', result.replication_configuration.rules[1].sync_role)
+        self.assertEqual('acs:ram::100000000000000:role/AliyunOSSRole', result.replication_configuration.rules[1].sync_role)
         self.assertEqual('enabled', result.replication_configuration.rules[1].status)
-        self.assertEqual('rYj%X5Yukp', result.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
+        self.assertEqual('c4d485-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[1].encryption_configuration.replica_kms_key_id)
         self.assertEqual('0022012****', result.replication_configuration.rules[1].id)
-        self.assertEqual(['3+jTPG*o6X', 'mp(N>Z>mJ'], result.replication_configuration.rules[1].prefix_set.prefixs)
-        self.assertEqual('x?&>J%#0Cy', result.replication_configuration.rules[1].action)
-
+        self.assertEqual('source2', result.replication_configuration.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', result.replication_configuration.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('PUT', result.replication_configuration.rules[1].action)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -651,31 +627,33 @@ class TestGetBucketReplicationLocation(unittest.TestCase):
 
         result = model.GetBucketReplicationLocationResult(
             replication_location=model.ReplicationLocation(
-                locations=['Qwn,?>K84y', 'qBVX@$5&Ph'],
+                locations=['oss-cn-beijing', 'oss-cn-qingdao'],
                 location_transfer_type_constraint=model.LocationTransferTypeConstraint(
                     location_transfer_types=[model.LocationTransferType(
                         location='oss-cn-hangzhou',
                         transfer_types=model.TransferTypes(
-                            types=['bTKdoSYN~K', '4io$O jdsP'],
+                            types=['oss_acc', 'internal'],
                         ),
                     ), model.LocationTransferType(
                         location='oss-cn-hangzhou',
                         transfer_types=model.TransferTypes(
-                            types=['TDfE+g<ooP', 'IHiyU1<zl_'],
+                            types=['internal'],
                         ),
                     )],
                 ),
                 locationrtc_constraint=model.LocationRTCConstraint(
-                    locations=['?G6Ps7V<^r', '.%@<F!Y<<K'],
+                    locations=['oss-us-west-1'],
                 ),
             ),
         )
-        self.assertEqual(['Qwn,?>K84y', 'qBVX@$5&Ph'], result.replication_location.locations)
+        self.assertEqual('oss-cn-beijing', result.replication_location.locations[0])
+        self.assertEqual('oss-cn-qingdao', result.replication_location.locations[1])
         self.assertEqual('oss-cn-hangzhou', result.replication_location.location_transfer_type_constraint.location_transfer_types[0].location)
-        self.assertEqual(['bTKdoSYN~K', '4io$O jdsP'], result.replication_location.location_transfer_type_constraint.location_transfer_types[0].transfer_types.types)
+        self.assertEqual('oss_acc', result.replication_location.location_transfer_type_constraint.location_transfer_types[0].transfer_types.types[0])
+        self.assertEqual('internal', result.replication_location.location_transfer_type_constraint.location_transfer_types[0].transfer_types.types[1])
         self.assertEqual('oss-cn-hangzhou', result.replication_location.location_transfer_type_constraint.location_transfer_types[1].location)
-        self.assertEqual(['TDfE+g<ooP', 'IHiyU1<zl_'], result.replication_location.location_transfer_type_constraint.location_transfer_types[1].transfer_types.types)
-        self.assertEqual(['?G6Ps7V<^r', '.%@<F!Y<<K'], result.replication_location.locationrtc_constraint.locations)
+        self.assertEqual('internal', result.replication_location.location_transfer_type_constraint.location_transfer_types[1].transfer_types.types[0])
+        self.assertEqual('oss-us-west-1', result.replication_location.locationrtc_constraint.locations[0])
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -744,15 +722,15 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
 
         request = model.GetBucketReplicationProgressRequest(
             bucket='bucketexampletest',
-            rule_id='nr \T3>y~$',
+            rule_id='rule_id_001',
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('nr \T3>y~$', request.rule_id)
+        self.assertEqual('rule_id_001', request.rule_id)
 
     def test_serialize_request(self):
         request = model.GetBucketReplicationProgressRequest(
             bucket='bucketexampletest',
-            rule_id='nr \T3>y~$',
+            rule_id='rule_id_001',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -763,7 +741,7 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
         self.assertEqual('GetBucketReplicationProgress', op_input.op_name)
         self.assertEqual('GET', op_input.method)
         self.assertEqual('bucketexampletest', op_input.bucket)
-        self.assertEqual('nr \T3>y~$', op_input.parameters.get('rule-id'))
+        self.assertEqual('rule_id_001', op_input.parameters.get('rule-id'))
 
     def test_constructor_result(self):
         result = model.GetBucketReplicationProgressResult()
@@ -773,16 +751,16 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
         result = model.GetBucketReplicationProgressResult(
             replication_progress=model.ReplicationProgress(
                 rules=[model.ReplicationProgressRule(
-                    historical_object_replication='xv8*Iov4u.',
+                    historical_object_replication='historical_object_replication',
                     progress=model.ReplicationProgressInformation(
-                        historical_object='3W(95Odk-h',
-                        new_object=')vx^D+VMrN',
+                        historical_object='historical_object',
+                        new_object='new_object',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['K^o+BYWL 5', 'LR#tep~d~H'],
+                        prefixs=['source1', 'video1'],
                     ),
-                    action='wfU!f&GW0>',
+                    action='GET>',
                     destination=model.ReplicationDestination(
                         bucket='bucketexampletest',
                         location='oss-cn-hangzhou',
@@ -790,16 +768,16 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
                     ),
                     status='enabled',
                 ), model.ReplicationProgressRule(
-                    historical_object_replication='xv8*Iov4u.',
+                    historical_object_replication='historical_object_replication',
                     progress=model.ReplicationProgressInformation(
-                        historical_object='3W(95Odk-h',
-                        new_object=')vx^D+VMrN',
+                        historical_object='historical_object',
+                        new_object='new_object',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['K9K_je9BD$', 'FCm+#VRLM('],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='wfU!f&GW0>',
+                    action='ALL',
                     destination=model.ReplicationDestination(
                         bucket='bucketexampletest',
                         location='oss-cn-hangzhou',
@@ -809,40 +787,42 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
                 )],
             ),
         )
-        self.assertEqual('xv8*Iov4u.', result.replication_progress.rules[0].historical_object_replication)
-        self.assertEqual('3W(95Odk-h', result.replication_progress.rules[0].progress.historical_object)
-        self.assertEqual(')vx^D+VMrN', result.replication_progress.rules[0].progress.new_object)
+        self.assertEqual('historical_object_replication', result.replication_progress.rules[0].historical_object_replication)
+        self.assertEqual('historical_object', result.replication_progress.rules[0].progress.historical_object)
+        self.assertEqual('new_object', result.replication_progress.rules[0].progress.new_object)
         self.assertEqual('0022012****', result.replication_progress.rules[0].id)
-        self.assertEqual(['K^o+BYWL 5', 'LR#tep~d~H'], result.replication_progress.rules[0].prefix_set.prefixs)
-        self.assertEqual('wfU!f&GW0>', result.replication_progress.rules[0].action)
+        self.assertEqual('source1', result.replication_progress.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video1', result.replication_progress.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('GET>', result.replication_progress.rules[0].action)
         self.assertEqual('bucketexampletest', result.replication_progress.rules[0].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_progress.rules[0].destination.location)
-        self.assertEqual(model.TransferType.OSS_ACC, result.replication_progress.rules[0].destination.transfer_type)
+        self.assertEqual('oss_acc', result.replication_progress.rules[0].destination.transfer_type)
         self.assertEqual('enabled', result.replication_progress.rules[0].status)
-        self.assertEqual('xv8*Iov4u.', result.replication_progress.rules[1].historical_object_replication)
-        self.assertEqual('3W(95Odk-h', result.replication_progress.rules[1].progress.historical_object)
-        self.assertEqual(')vx^D+VMrN', result.replication_progress.rules[1].progress.new_object)
+        self.assertEqual('historical_object_replication', result.replication_progress.rules[1].historical_object_replication)
+        self.assertEqual('historical_object', result.replication_progress.rules[1].progress.historical_object)
+        self.assertEqual('new_object', result.replication_progress.rules[1].progress.new_object)
         self.assertEqual('0022012****', result.replication_progress.rules[1].id)
-        self.assertEqual(['K9K_je9BD$', 'FCm+#VRLM('], result.replication_progress.rules[1].prefix_set.prefixs)
-        self.assertEqual('wfU!f&GW0>', result.replication_progress.rules[1].action)
+        self.assertEqual('source2', result.replication_progress.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', result.replication_progress.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('ALL', result.replication_progress.rules[1].action)
         self.assertEqual('bucketexampletest', result.replication_progress.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_progress.rules[1].destination.location)
-        self.assertEqual(model.TransferType.INTERNAL, result.replication_progress.rules[1].destination.transfer_type)
+        self.assertEqual('internal', result.replication_progress.rules[1].destination.transfer_type)
         self.assertEqual('enabled', result.replication_progress.rules[1].status)
 
         result = model.GetBucketReplicationProgressResult(
             replication_progress=model.ReplicationProgress(
                 rules=[model.ReplicationProgressRule(
-                    historical_object_replication='xv8*Iov4u.',
+                    historical_object_replication='historical_object_replication',
                     progress=model.ReplicationProgressInformation(
-                        historical_object='3W(95Odk-h',
-                        new_object=')vx^D+VMrN',
+                        historical_object='historical_object',
+                        new_object='new_object1',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['.G\G-Mp.>#', '\6S%1ZqiUr'],
+                        prefixs=['source1', 'video1'],
                     ),
-                    action='wfU!f&GW0>',
+                    action='ALL',
                     destination=model.ReplicationDestination(
                         bucket='bucketexampletest',
                         location='oss-cn-hangzhou',
@@ -850,16 +830,16 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
                     ),
                     status='enabled',
                 ), model.ReplicationProgressRule(
-                    historical_object_replication='xv8*Iov4u.',
+                    historical_object_replication='historical_object_replication',
                     progress=model.ReplicationProgressInformation(
-                        historical_object='3W(95Odk-h',
-                        new_object=')vx^D+VMrN',
+                        historical_object='historical_object',
+                        new_object='new_object2',
                     ),
                     id='0022012****',
                     prefix_set=model.ReplicationPrefixSet(
-                        prefixs=['c0b:^u9<5z', 'G1redk-B3D'],
+                        prefixs=['source2', 'video2'],
                     ),
-                    action='wfU!f&GW0>',
+                    action='GET',
                     destination=model.ReplicationDestination(
                         bucket='bucketexampletest',
                         location='oss-cn-hangzhou',
@@ -869,22 +849,24 @@ class TestGetBucketReplicationProgress(unittest.TestCase):
                 )],
             ),
         )
-        self.assertEqual('xv8*Iov4u.', result.replication_progress.rules[0].historical_object_replication)
-        self.assertEqual('3W(95Odk-h', result.replication_progress.rules[0].progress.historical_object)
-        self.assertEqual(')vx^D+VMrN', result.replication_progress.rules[0].progress.new_object)
+        self.assertEqual('historical_object_replication', result.replication_progress.rules[0].historical_object_replication)
+        self.assertEqual('historical_object', result.replication_progress.rules[0].progress.historical_object)
+        self.assertEqual('new_object1', result.replication_progress.rules[0].progress.new_object)
         self.assertEqual('0022012****', result.replication_progress.rules[0].id)
-        self.assertEqual(['.G\G-Mp.>#', '\6S%1ZqiUr'], result.replication_progress.rules[0].prefix_set.prefixs)
-        self.assertEqual('wfU!f&GW0>', result.replication_progress.rules[0].action)
+        self.assertEqual('source1', result.replication_progress.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('video1', result.replication_progress.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('ALL', result.replication_progress.rules[0].action)
         self.assertEqual('bucketexampletest', result.replication_progress.rules[0].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_progress.rules[0].destination.location)
         self.assertEqual('internal', result.replication_progress.rules[0].destination.transfer_type)
         self.assertEqual('enabled', result.replication_progress.rules[0].status)
-        self.assertEqual('xv8*Iov4u.', result.replication_progress.rules[1].historical_object_replication)
-        self.assertEqual('3W(95Odk-h', result.replication_progress.rules[1].progress.historical_object)
-        self.assertEqual(')vx^D+VMrN', result.replication_progress.rules[1].progress.new_object)
+        self.assertEqual('historical_object_replication', result.replication_progress.rules[1].historical_object_replication)
+        self.assertEqual('historical_object', result.replication_progress.rules[1].progress.historical_object)
+        self.assertEqual('new_object2', result.replication_progress.rules[1].progress.new_object)
         self.assertEqual('0022012****', result.replication_progress.rules[1].id)
-        self.assertEqual(['c0b:^u9<5z', 'G1redk-B3D'], result.replication_progress.rules[1].prefix_set.prefixs)
-        self.assertEqual('wfU!f&GW0>', result.replication_progress.rules[1].action)
+        self.assertEqual('source2', result.replication_progress.rules[1].prefix_set.prefixs[0])
+        self.assertEqual('video2', result.replication_progress.rules[1].prefix_set.prefixs[1])
+        self.assertEqual('GET', result.replication_progress.rules[1].action)
         self.assertEqual('bucketexampletest', result.replication_progress.rules[1].destination.bucket)
         self.assertEqual('oss-cn-hangzhou', result.replication_progress.rules[1].destination.location)
         self.assertEqual('oss_acc', result.replication_progress.rules[1].destination.transfer_type)
@@ -960,17 +942,17 @@ class TestDeleteBucketReplication(unittest.TestCase):
         request = model.DeleteBucketReplicationRequest(
             bucket='bucketexampletest',
             replication_rules=model.ReplicationRules(
-                ids=['n>/;roWyOc', 'y-)kDJC8KU'],
+                ids=['test_replication_1', 'test_replication_12'],
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(['n>/;roWyOc', 'y-)kDJC8KU'], request.replication_rules.ids)
+        self.assertEqual(['test_replication_1', 'test_replication_12'], request.replication_rules.ids)
 
     def test_serialize_request(self):
         request = model.DeleteBucketReplicationRequest(
             bucket='bucketexampletest',
             replication_rules=model.ReplicationRules(
-                ids=['3c?:ex\~bl', 'l>LhMAXK2N'],
+                ids=['test_replication_1', 'test_replication_12'],
             ),
         )
 

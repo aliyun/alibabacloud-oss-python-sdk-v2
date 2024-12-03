@@ -45,7 +45,6 @@ class TestBucketInventory(TestIntegration):
                             sse_kms=oss.SSEKMS(
                                 key_id='GGUIFHBKJNFkjghug',
                             ),
-                            sse_oss='+-HnP#AGMt',
                         ),
                     ),
                 ),
@@ -165,7 +164,6 @@ class TestBucketInventory(TestIntegration):
                             sse_kms=oss.SSEKMS(
                                 key_id='GGUIFHBKJNFkjghug',
                             ),
-                            sse_oss='+-HnP#AGMt',
                         ),
                     ),
                 ),
@@ -264,26 +262,25 @@ class TestBucketInventory(TestIntegration):
         try:
             self.invalid_client.put_bucket_inventory(oss.PutBucketInventoryRequest(
                 bucket=bucket_name,
-                inventory_id='SNKsc:Wj|s',
+                inventory_id='inventory_id',
                 inventory_configuration=oss.InventoryConfiguration(
-                    included_object_versions='a-8|zg/5q*',
+                    included_object_versions='All',
                     optional_fields=oss.OptionalFields(
-                        fields=[oss.InventoryOptionalFieldType.E_TAG, oss.InventoryOptionalFieldType.E_TAG],
+                        fields=[oss.InventoryOptionalFieldType.IS_MULTIPART_UPLOADED, oss.InventoryOptionalFieldType.ENCRYPTION_STATUS],
                     ),
-                    id='0022012****',
+                    id='inventory_id',
                     is_enabled=True,
                     destination=oss.InventoryDestination(
                         oss_bucket_destination=oss.InventoryOSSBucketDestination(
                             format=oss.InventoryFormatType.CSV,
-                            account_id='PMCl7H&U&T',
-                            role_arn='k.G_(r\$ZR',
-                            bucket=bucket_name,
+                            account_id=USER_ID,
+                            role_arn=RAM_ROLE_ARN,
+                            bucket='acs:oss:::' + bucket_name,
                             prefix='aaa',
                             encryption=oss.InventoryEncryption(
                                 sse_kms=oss.SSEKMS(
-                                    key_id=':qb\KdTDlu',
+                                    key_id='GGUIFHBKJNFkjghug',
                                 ),
-                                sse_oss='+-HnP#AGMt',
                             ),
                         ),
                     ),
@@ -291,12 +288,12 @@ class TestBucketInventory(TestIntegration):
                         frequency=oss.InventoryFrequencyType.DAILY,
                     ),
                     filter=oss.InventoryFilter(
-                        lower_size_bound=53305,
-                        upper_size_bound=8328,
+                        lower_size_bound=1024,
+                        upper_size_bound=1048576,
                         storage_class='ColdArchive',
                         prefix='aaa',
-                        last_modify_begin_time_stamp=19696,
-                        last_modify_end_time_stamp=44727,
+                        last_modify_begin_time_stamp=1637883649,
+                        last_modify_end_time_stamp=1638347592,
                     ),
                 ),
             ))

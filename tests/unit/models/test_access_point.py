@@ -19,26 +19,26 @@ class TestCreateAccessPoint(unittest.TestCase):
         request = model.CreateAccessPointRequest(
             bucket='bucket_name',
             create_access_point_configuration=model.CreateAccessPointConfiguration(
-                access_point_name='vpK w>\9WD',
-                network_origin='cam+fl;W-o',
+                access_point_name='test_access_point_name_001',
+                network_origin='vpc',
                 vpc_configuration=model.AccessPointVpcConfiguration(
-                    vpc_id='vIoxj64cZS',
+                    vpc_id='vpc-t4nlw426y44rd3iq4xxxx',
                 ),
             ),
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('vpK w>\9WD', request.create_access_point_configuration.access_point_name)
-        self.assertEqual('cam+fl;W-o', request.create_access_point_configuration.network_origin)
-        self.assertEqual('vIoxj64cZS', request.create_access_point_configuration.vpc_configuration.vpc_id)
+        self.assertEqual('test_access_point_name_001', request.create_access_point_configuration.access_point_name)
+        self.assertEqual('vpc', request.create_access_point_configuration.network_origin)
+        self.assertEqual('vpc-t4nlw426y44rd3iq4xxxx', request.create_access_point_configuration.vpc_configuration.vpc_id)
 
     def test_serialize_request(self):
         request = model.CreateAccessPointRequest(
             bucket='bucket_name',
             create_access_point_configuration=model.CreateAccessPointConfiguration(
-                access_point_name='vpK w>\9WD',
-                network_origin='cam+fl;W-o',
+                access_point_name='test_access_point_name_001',
+                network_origin='vpc',
                 vpc_configuration=model.AccessPointVpcConfiguration(
-                    vpc_id='vIoxj64cZS',
+                    vpc_id='vpc-t4nlw426y44rd3iq4xxxx',
                 ),
             ),
         )
@@ -59,11 +59,11 @@ class TestCreateAccessPoint(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.CreateAccessPointResult(
-            access_point_arn='Af#)eQ<V+;',
-            alias='G|co+D*Qz&',
+            access_point_arn='acs:oss:cn-hangzhou:128364106451xxxx:accesspoint/ap-01',
+            alias='ap-01-45ee7945007a2f0bcb595f63e2215cxxxx-ossalias',
         )
-        self.assertEqual('Af#)eQ<V+;', result.access_point_arn)
-        self.assertEqual('G|co+D*Qz&', result.alias)
+        self.assertEqual('acs:oss:cn-hangzhou:128364106451xxxx:accesspoint/ap-01', result.access_point_arn)
+        self.assertEqual('ap-01-45ee7945007a2f0bcb595f63e2215cxxxx-ossalias', result.alias)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -99,15 +99,15 @@ class TestGetAccessPoint(unittest.TestCase):
 
         request = model.GetAccessPointRequest(
             bucket='bucket_name',
-            access_point_name='b%K+QqKi.!',
+            access_point_name='test_access_point_name_001',
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('b%K+QqKi.!', request.access_point_name)
+        self.assertEqual('test_access_point_name_001', request.access_point_name)
 
     def test_serialize_request(self):
         request = model.GetAccessPointRequest(
             bucket='bucket_name',
-            access_point_name='b%K+QqKi.!',
+            access_point_name='test_access_point_name_001',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -135,37 +135,37 @@ class TestGetAccessPoint(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.GetAccessPointResult(
-            account_id=',:^wzJt^mL',
-            network_origin='q#NCB@>n7i',
-            access_point_arn='4bYlS\mkx+',
-            status='OK',
-            creation_date='2013-07-31T10:56:21.000Z',
-            access_point_name='b%K+QqKi.!',
+            account_id='ap-01',
+            network_origin='vpc',
+            access_point_arn='arn:acs:oss:cn-hangzhou:111933544165xxxx:accesspoint/ap-01',
+            status='enable',
+            creation_date='1626769503',
+            access_point_name='ap-01',
             bucket='bucket_name',
             endpoints=model.Endpoints(
-                public_endpoint='C4+*Z!Y(A/',
-                internal_endpoint='oss-cn-hangzhou-internal.aliyuncs.com',
+                public_endpoint='ap-01.oss-cn-hangzhou.oss-accesspoint.aliyuncs.com',
+                internal_endpoint='ap-01.oss-cn-hangzhou-internal.oss-accesspoint.aliyuncs.com',
             ),
             public_access_block_configuration=model.PublicAccessBlockConfiguration(
                 block_public_access=True,
             ),
             vpc_configuration=model.AccessPointVpcConfiguration(
-                vpc_id='GHJ+F)kT|;',
+                vpc_id='vpc-t4nlw426y44rd3iq4xxxx',
             ),
-            alias='p$+\G)ouu7',
+            alias='ap-01-ossalias',
         )
-        self.assertEqual(',:^wzJt^mL', result.account_id)
-        self.assertEqual('q#NCB@>n7i', result.network_origin)
-        self.assertEqual('4bYlS\mkx+', result.access_point_arn)
-        self.assertEqual('OK', result.status)
-        self.assertEqual('2013-07-31T10:56:21.000Z', result.creation_date)
-        self.assertEqual('b%K+QqKi.!', result.access_point_name)
+        self.assertEqual('ap-01', result.account_id)
+        self.assertEqual('vpc', result.network_origin)
+        self.assertEqual('arn:acs:oss:cn-hangzhou:111933544165xxxx:accesspoint/ap-01', result.access_point_arn)
+        self.assertEqual('enable', result.status)
+        self.assertEqual('1626769503', result.creation_date)
+        self.assertEqual('ap-01', result.access_point_name)
         self.assertEqual('bucket_name', result.bucket)
-        self.assertEqual('C4+*Z!Y(A/', result.endpoints.public_endpoint)
-        self.assertEqual('oss-cn-hangzhou-internal.aliyuncs.com', result.endpoints.internal_endpoint)
+        self.assertEqual('ap-01.oss-cn-hangzhou.oss-accesspoint.aliyuncs.com', result.endpoints.public_endpoint)
+        self.assertEqual('ap-01.oss-cn-hangzhou-internal.oss-accesspoint.aliyuncs.com', result.endpoints.internal_endpoint)
         self.assertEqual(True, result.public_access_block_configuration.block_public_access)
-        self.assertEqual('GHJ+F)kT|;', result.vpc_configuration.vpc_id)
-        self.assertEqual('p$+\G)ouu7', result.alias)
+        self.assertEqual('vpc-t4nlw426y44rd3iq4xxxx', result.vpc_configuration.vpc_id)
+        self.assertEqual('ap-01-ossalias', result.alias)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -258,47 +258,41 @@ class TestListAccessPoints(unittest.TestCase):
 
         result = model.ListAccessPointsResult(
             access_points=[model.AccessPoint(
-                    network_origin='ZqMvUa.c.3',
+                    network_origin='vpc',
                     vpc_configuration=model.AccessPointVpcConfiguration(
-                        vpc_id='9e_-)l^zMh',
+                        vpc_id='vpc-t4nlw426y44rd3iq4xxxx',
                     ),
                     status='OK',
                     bucket='bucket_name',
-                    access_point_name='uaJtp/3 Ln',
-                    alias='fF0OZck&LQ',
+                    access_point_name='ap-01',
+                    alias='ap-01-ossalias',
                 ), model.AccessPoint(
-                    network_origin='ZqMvUa.c.3',
-                    vpc_configuration=model.AccessPointVpcConfiguration(
-                        vpc_id='9e_-)l^zMh',
-                    ),
+                    network_origin='vpc',
                     status='OK',
                     bucket='bucket_name',
-                    access_point_name='uaJtp/3 Ln',
-                    alias='fF0OZck&LQ',
+                    access_point_name='ap-02',
+                    alias='ap-02-ossalias',
                 )],
             max_keys=10,
             is_truncated=True,
             next_continuation_token='NextChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
-            account_id='mXXtkiJV0!',
+            account_id='111933544165****',
         )
-
-        self.assertEqual('ZqMvUa.c.3', result.access_points[0].network_origin)
-        self.assertEqual('9e_-)l^zMh', result.access_points[0].vpc_configuration.vpc_id)
+        self.assertEqual('vpc', result.access_points[0].network_origin)
+        self.assertEqual('vpc-t4nlw426y44rd3iq4xxxx', result.access_points[0].vpc_configuration.vpc_id)
         self.assertEqual('OK', result.access_points[0].status)
         self.assertEqual('bucket_name', result.access_points[0].bucket)
-        self.assertEqual('uaJtp/3 Ln', result.access_points[0].access_point_name)
-        self.assertEqual('fF0OZck&LQ', result.access_points[0].alias)
-        self.assertEqual('ZqMvUa.c.3', result.access_points[1].network_origin)
-        self.assertEqual('9e_-)l^zMh', result.access_points[1].vpc_configuration.vpc_id)
+        self.assertEqual('ap-01', result.access_points[0].access_point_name)
+        self.assertEqual('ap-01-ossalias', result.access_points[0].alias)
+        self.assertEqual('vpc', result.access_points[1].network_origin)
         self.assertEqual('OK', result.access_points[1].status)
         self.assertEqual('bucket_name', result.access_points[1].bucket)
-        self.assertEqual('uaJtp/3 Ln', result.access_points[1].access_point_name)
-        self.assertEqual('fF0OZck&LQ', result.access_points[1].alias)
+        self.assertEqual('ap-02', result.access_points[1].access_point_name)
+        self.assertEqual('ap-02-ossalias', result.access_points[1].alias)
         self.assertEqual(10, result.max_keys)
         self.assertEqual(True, result.is_truncated)
         self.assertEqual('NextChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', result.next_continuation_token)
-        self.assertEqual('mXXtkiJV0!', result.account_id)
-
+        self.assertEqual('111933544165****', result.account_id)
 
 
     def test_deserialize_result(self):
@@ -371,16 +365,16 @@ class TestDeleteAccessPoint(unittest.TestCase):
 
         request = model.DeleteAccessPointRequest(
             bucket='bucket_name',
-            access_point_name='>;ew6<fAt;',
+            access_point_name='ap-01',
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('>;ew6<fAt;', request.access_point_name)
+        self.assertEqual('ap-01', request.access_point_name)
 
 
     def test_serialize_request(self):
         request = model.DeleteAccessPointRequest(
             bucket='bucket_name',
-            access_point_name='>;ew6<fAt;',
+            access_point_name='ap-01',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -438,18 +432,18 @@ class TestPutAccessPointPolicy(unittest.TestCase):
 
         request = model.PutAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='l<ILe$ rQF',
+            access_point_name='ap-01',
             body='xml_data',
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('l<ILe$ rQF', request.access_point_name)
+        self.assertEqual('ap-01', request.access_point_name)
         self.assertEqual('xml_data', request.body)
 
 
     def test_serialize_request(self):
         request = model.PutAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='l<ILe$ rQF',
+            access_point_name='ap-01',
             body='xml_data',
         )
 
@@ -507,15 +501,15 @@ class TestGetAccessPointPolicy(unittest.TestCase):
 
         request = model.GetAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='y.gu>%Tu+m',
+            access_point_name='ap-01',
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('y.gu>%Tu+m', request.access_point_name)
+        self.assertEqual('ap-01', request.access_point_name)
 
     def test_serialize_request(self):
         request = model.GetAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='y.gu>%Tu+m',
+            access_point_name='ap-01',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -597,16 +591,16 @@ class TestDeleteAccessPointPolicy(unittest.TestCase):
 
         request = model.DeleteAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='\JQh0EGuR6',
+            access_point_name='ap-01',
         )
         self.assertEqual('bucket_name', request.bucket)
-        self.assertEqual('\JQh0EGuR6', request.access_point_name)
+        self.assertEqual('ap-01', request.access_point_name)
 
 
     def test_serialize_request(self):
         request = model.DeleteAccessPointPolicyRequest(
             bucket='bucket_name',
-            access_point_name='\JQh0EGuR6',
+            access_point_name='ap-01',
         )
 
         op_input = serde.serialize_input(request, OperationInput(

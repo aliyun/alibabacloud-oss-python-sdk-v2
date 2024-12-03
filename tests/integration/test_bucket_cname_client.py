@@ -261,12 +261,11 @@ class TestCnameToken(TestIntegration):
                     cname=oss.Cname(
                         domain='@d5;hctd1|',
                         certificate_configuration=oss.CertificateConfiguration(
-                            certificate=';O$w+8^5eS',
-                            private_key='qBuIGDz0e&',
-                            previous_cert_id='4apeMsia77',
+                            certificate='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                            private_key='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                            previous_cert_id='493****-cn-hangzhou',
                             force=True,
-                            delete_certificate=True,
-                            cert_id='W+8AE/Dr1v',
+                            cert_id='493****-cn-hangzhou',
                         ),
                     ),
                 ),
