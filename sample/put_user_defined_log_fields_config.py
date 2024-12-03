@@ -27,10 +27,10 @@ def main():
             bucket=args.bucket,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
                 header_set=oss.LoggingHeaderSet(
-                    headers=['UMDQTVd8IC', ' #$rryY.+k'],
+                    headers=['header1', 'header2'],
                 ),
                 param_set=oss.LoggingParamSet(
-                    parameters=['nTid7S4E&', '%+rpTm<Y$k'],
+                    parameters=['parameter1', 'parameter2'],
                 ),
             ),
     ))

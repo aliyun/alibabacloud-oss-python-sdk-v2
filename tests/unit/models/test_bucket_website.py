@@ -21,53 +21,53 @@ class TestPutBucketWebsite(unittest.TestCase):
             bucket='bucketexampletest',
             website_configuration=model.WebsiteConfiguration(
                 index_document=model.IndexDocument(
-                    suffix='9AMhr6F099',
+                    suffix='index.html',
                     support_sub_dir=True,
-                    type=90502,
+                    type=0,
                 ),
                 error_document=model.ErrorDocument(
-                    key='example-object-2.jpg',
-                    http_status=18838,
+                    key='error.html',
+                    http_status=404,
                 ),
                 routing_rules=model.RoutingRules(
                     routing_rules=[model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='IGpnK#g1;O',
-                            http_error_code_returned_equals=27934,
+                            key_suffix_equals='abc/',
+                            http_error_code_returned_equals=404,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key1',
+                                equals='value1',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key2',
+                                equals='value2',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='aaa/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='@Dz7_/@WBD',
-                            replace_key_with='e++B 3?b:H',
+                            mirror_url='http://example.com/',
+                            replace_key_with='aab/',
                             enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
-                                pass_all=False,
-                                passs=['Tvr:fU0bWD', '&2%aj;|WN@'],
-                                removes=[';C953edJ+Y', '5+u9ynIfdi'],
+                                pass_all=True,
+                                passs=['myheader-key1', 'myheader-key2'],
+                                removes=['myheader-key3', 'myheader-key4'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key5',
+                                    value='myheader-value',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key6',
+                                    value='myheader-valu2',
                                 )],
                             ),
-                            http_redirect_code=2970,
+                            http_redirect_code=203,
                             mirror_sni=False,
-                            protocol='H9.\LhRAs-',
-                            replace_key_prefix_with='J-SMDz/4oU',
-                            redirect_type='imyLg7kr82',
+                            protocol='http',
+                            replace_key_prefix_with='abc/',
+                            redirect_type='Mirror',
                             mirror_pass_query_string=False,
-                            host_name='Hqhix,~8ez',
+                            host_name='example.com',
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
@@ -75,41 +75,41 @@ class TestPutBucketWebsite(unittest.TestCase):
                     ), model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='IGpnK#g1;O',
-                            http_error_code_returned_equals=27934,
+                            key_suffix_equals='bbc/',
+                            http_error_code_returned_equals=403,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key21',
+                                equals='value21',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key22',
+                                equals='value22U',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='abc/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='@Dz7_/@WBD',
-                            replace_key_with='e++B 3?b:H',
+                            mirror_url='http://example.com/',
+                            replace_key_with='prefix/${key}',
                             enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
-                                pass_all=False,
-                                passs=['9 tYid6?qI', 'Gvubue>ZqT'],
-                                removes=['EVf\/BGq2u', '%co 5Q3)yH'],
+                                pass_all=True,
+                                passs=['myheader-key21', 'myheader-key22'],
+                                removes=['myheader-key23', 'myheader-key24'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key25',
+                                    value='myheader-value2',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key26',
+                                    value='myheader-value22',
                                 )],
                             ),
                             http_redirect_code=2970,
                             mirror_sni=True,
-                            protocol='H9.\LhRAs-',
-                            replace_key_prefix_with='J-SMDz/4oU',
-                            redirect_type='imyLg7kr82',
+                            protocol='https',
+                            replace_key_prefix_with='prefix/${key}.suffix',
+                            redirect_type='AliCDN',
                             mirror_pass_query_string=False,
-                            host_name='Hqhix,~8ez',
+                            host_name='example.com',
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
@@ -119,70 +119,70 @@ class TestPutBucketWebsite(unittest.TestCase):
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('9AMhr6F099', request.website_configuration.index_document.suffix)
+        self.assertEqual('index.html', request.website_configuration.index_document.suffix)
         self.assertEqual(True, request.website_configuration.index_document.support_sub_dir)
-        self.assertEqual(90502, request.website_configuration.index_document.type)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.error_document.key)
-        self.assertEqual(18838, request.website_configuration.error_document.http_status)
+        self.assertEqual(0, request.website_configuration.index_document.type)
+        self.assertEqual('error.html', request.website_configuration.error_document.key)
+        self.assertEqual(404, request.website_configuration.error_document.http_status)
         self.assertEqual(6052, request.website_configuration.routing_rules.routing_rules[0].rule_number)
-        self.assertEqual('IGpnK#g1;O', request.website_configuration.routing_rules.routing_rules[0].condition.key_suffix_equals)
-        self.assertEqual(27934, request.website_configuration.routing_rules.routing_rules[0].condition.http_error_code_returned_equals)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].key)
-        self.assertEqual('dN$i?qw+pU', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].equals)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].key)
-        self.assertEqual('dN$i?qw+pU', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].equals)
-        self.assertEqual('>xJsVadsc&', request.website_configuration.routing_rules.routing_rules[0].condition.key_prefix_equals)
-        self.assertEqual('@Dz7_/@WBD', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url)
-        self.assertEqual('e++B 3?b:H', request.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_with)
+        self.assertEqual('abc/', request.website_configuration.routing_rules.routing_rules[0].condition.key_suffix_equals)
+        self.assertEqual(404, request.website_configuration.routing_rules.routing_rules[0].condition.http_error_code_returned_equals)
+        self.assertEqual('key1', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].key)
+        self.assertEqual('value1', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].equals)
+        self.assertEqual('key2', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].key)
+        self.assertEqual('value2', request.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].equals)
+        self.assertEqual('aaa/', request.website_configuration.routing_rules.routing_rules[0].condition.key_prefix_equals)
+        self.assertEqual('http://example.com/', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url)
+        self.assertEqual('aab/', request.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_with)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.enable_replace_prefix)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.pass_query_string)
-        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.pass_all)
-        self.assertEqual('Tvr:fU0bWD', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[0])
-        self.assertEqual('&2%aj;|WN@', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[1])
-        self.assertEqual(';C953edJ+Y', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[0])
-        self.assertEqual('5+u9ynIfdi', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
-        self.assertEqual('~5,%9@a*9H', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
-        self.assertEqual('~5,%9@a*9H', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
-        self.assertEqual(2970, request.website_configuration.routing_rules.routing_rules[0].redirect.http_redirect_code)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.pass_all)
+        self.assertEqual('myheader-key1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[0])
+        self.assertEqual('myheader-key2', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[1])
+        self.assertEqual('myheader-key3', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[0])
+        self.assertEqual('myheader-key4', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
+        self.assertEqual('myheader-key5', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
+        self.assertEqual('myheader-value', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key6', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-valu2', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
+        self.assertEqual(203, request.website_configuration.routing_rules.routing_rules[0].redirect.http_redirect_code)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_sni)
-        self.assertEqual('H9.\LhRAs-', request.website_configuration.routing_rules.routing_rules[0].redirect.protocol)
-        self.assertEqual('J-SMDz/4oU', request.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
-        self.assertEqual('imyLg7kr82', request.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
+        self.assertEqual('http', request.website_configuration.routing_rules.routing_rules[0].redirect.protocol)
+        self.assertEqual('abc/', request.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
+        self.assertEqual('Mirror', request.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_query_string)
-        self.assertEqual('Hqhix,~8ez', request.website_configuration.routing_rules.routing_rules[0].redirect.host_name)
+        self.assertEqual('example.com', request.website_configuration.routing_rules.routing_rules[0].redirect.host_name)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
         self.assertEqual(6052, request.website_configuration.routing_rules.routing_rules[1].rule_number)
-        self.assertEqual('IGpnK#g1;O', request.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
-        self.assertEqual(27934, request.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
-        self.assertEqual('dN$i?qw+pU', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
-        self.assertEqual('dN$i?qw+pU', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
-        self.assertEqual('>xJsVadsc&', request.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
-        self.assertEqual('@Dz7_/@WBD', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url)
-        self.assertEqual('e++B 3?b:H', request.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
+        self.assertEqual('bbc/', request.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
+        self.assertEqual(403, request.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
+        self.assertEqual('key21', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
+        self.assertEqual('value21', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
+        self.assertEqual('key22', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
+        self.assertEqual('value22U', request.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
+        self.assertEqual('abc/', request.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
+        self.assertEqual('http://example.com/', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url)
+        self.assertEqual('prefix/${key}', request.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.enable_replace_prefix)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
-        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.pass_all)
-        self.assertEqual('9 tYid6?qI', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[0])
-        self.assertEqual('Gvubue>ZqT', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[1])
-        self.assertEqual('EVf\/BGq2u', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[0])
-        self.assertEqual('%co 5Q3)yH', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[1])
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].key)
-        self.assertEqual('~5,%9@a*9H', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].value)
-        self.assertEqual('example-object-2.jpg', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].key)
-        self.assertEqual('~5,%9@a*9H', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].value)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.pass_all)
+        self.assertEqual('myheader-key21', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[0])
+        self.assertEqual('myheader-key22', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[1])
+        self.assertEqual('myheader-key23', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[0])
+        self.assertEqual('myheader-key24', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[1])
+        self.assertEqual('myheader-key25', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].key)
+        self.assertEqual('myheader-value2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key26', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-value22', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].value)
         self.assertEqual(2970, request.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_sni)
-        self.assertEqual('H9.\LhRAs-', request.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
-        self.assertEqual('J-SMDz/4oU', request.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_prefix_with)
-        self.assertEqual('imyLg7kr82', request.website_configuration.routing_rules.routing_rules[1].redirect.redirect_type)
+        self.assertEqual('https', request.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
+        self.assertEqual('prefix/${key}.suffix', request.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_prefix_with)
+        self.assertEqual('AliCDN', request.website_configuration.routing_rules.routing_rules[1].redirect.redirect_type)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_query_string)
-        self.assertEqual('Hqhix,~8ez', request.website_configuration.routing_rules.routing_rules[1].redirect.host_name)
+        self.assertEqual('example.com', request.website_configuration.routing_rules.routing_rules[1].redirect.host_name)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
@@ -192,97 +192,97 @@ class TestPutBucketWebsite(unittest.TestCase):
             bucket='bucketexampletest',
             website_configuration=model.WebsiteConfiguration(
                 index_document=model.IndexDocument(
-                    suffix='9AMhr6F099',
+                    suffix='index.html',
                     support_sub_dir=True,
-                    type=90502,
+                    type=0,
                 ),
                 error_document=model.ErrorDocument(
-                    key='example-object-2.jpg',
-                    http_status=18838,
+                    key='error.html',
+                    http_status=404,
                 ),
                 routing_rules=model.RoutingRules(
                     routing_rules=[model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='IGpnK#g1;O',
-                            http_error_code_returned_equals=27934,
+                            key_suffix_equals='abc/',
+                            http_error_code_returned_equals=404,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key1',
+                                equals='value1',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key2',
+                                equals='value2',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='aaa/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='@Dz7_/@WBD',
-                            replace_key_with='e++B 3?b:H',
+                            mirror_url='http://example.com/',
+                            replace_key_with='aab/',
                             enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
                                 pass_all=True,
-                                passs=['sfT%mG!8zC', '-~#460+04+'],
-                                removes=['x&$mNU+xL|', 'OHT)V3Q5:R'],
+                                passs=['myheader-key1', 'myheader-key2'],
+                                removes=['myheader-key3', 'myheader-key4'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key5',
+                                    value='myheader-value',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key6',
+                                    value='myheader-valu2',
                                 )],
                             ),
-                            http_redirect_code=2970,
-                            mirror_sni=True,
-                            protocol='H9.\LhRAs-',
-                            replace_key_prefix_with='J-SMDz/4oU',
-                            redirect_type='imyLg7kr82',
+                            http_redirect_code=203,
+                            mirror_sni=False,
+                            protocol='http',
+                            replace_key_prefix_with='abc/',
+                            redirect_type='Mirror',
                             mirror_pass_query_string=False,
-                            host_name='Hqhix,~8ez',
+                            host_name='example.com',
                             mirror_follow_redirect=True,
-                            mirror_check_md5=True,
-                            mirror_pass_original_slashes=True,
+                            mirror_check_md5=False,
+                            mirror_pass_original_slashes=False,
                         ),
                     ), model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='IGpnK#g1;O',
-                            http_error_code_returned_equals=27934,
+                            key_suffix_equals='bbc/',
+                            http_error_code_returned_equals=403,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key21',
+                                equals='value21',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='dN$i?qw+pU',
+                                key='key22',
+                                equals='value22U',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='abc/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='@Dz7_/@WBD',
-                            replace_key_with='e++B 3?b:H',
+                            mirror_url='http://example.com/',
+                            replace_key_with='prefix/${key}',
                             enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
                                 pass_all=True,
-                                passs=['+*MSzg6n@4', '7Aco8%(,Lo'],
-                                removes=['1qYf(Mpzen', '.TN1#%-Cli'],
+                                passs=['myheader-key21', 'myheader-key22'],
+                                removes=['myheader-key23', 'myheader-key24'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key25',
+                                    value='myheader-value2',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='~5,%9@a*9H',
+                                    key='myheader-key26',
+                                    value='myheader-value22',
                                 )],
                             ),
                             http_redirect_code=2970,
                             mirror_sni=True,
-                            protocol='H9.\LhRAs-',
-                            replace_key_prefix_with='J-SMDz/4oU',
-                            redirect_type='imyLg7kr82',
+                            protocol='https',
+                            replace_key_prefix_with='prefix/${key}.suffix',
+                            redirect_type='AliCDN',
                             mirror_pass_query_string=False,
-                            host_name='Hqhix,~8ez',
+                            host_name='example.com',
                             mirror_follow_redirect=True,
-                            mirror_check_md5=True,
+                            mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
                         ),
                     )],
@@ -368,95 +368,95 @@ class TestGetBucketWebsite(unittest.TestCase):
         result = model.GetBucketWebsiteResult(
             website_configuration=model.WebsiteConfiguration(
                 index_document=model.IndexDocument(
-                    suffix='V&!gW*rebP',
+                    suffix='index.html',
                     support_sub_dir=True,
-                    type=17107,
+                    type=0,
                 ),
                 error_document=model.ErrorDocument(
-                    key='example-object-2.jpg',
-                    http_status=47689,
+                    key='error.html',
+                    http_status=404,
                 ),
                 routing_rules=model.RoutingRules(
                     routing_rules=[model.RoutingRule(
-                        rule_number=81851,
+                        rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='Bz+99LXI1c',
-                            http_error_code_returned_equals=8083,
+                            key_suffix_equals='abc/',
+                            http_error_code_returned_equals=404,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='>~*J9ph+oh',
+                                key='key1',
+                                equals='value1',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='>~*J9ph+oh',
+                                key='key2',
+                                equals='value2',
                             )],
-                            key_prefix_equals='9O0!-yByC3',
+                            key_prefix_equals='aaa/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='.nKig&JHjX',
-                            replace_key_with='-T6p@8.$&J',
-                            enable_replace_prefix=False,
+                            mirror_url='http://example.com/',
+                            replace_key_with='aab/',
+                            enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
-                                pass_all=False,
-                                passs=['&%ykVpAAq+', '#>~C_fKg$2'],
-                                removes=['9TRpem&YL;', 'G.#9exGzdT'],
+                                pass_all=True,
+                                passs=['myheader-key1', 'myheader-key2'],
+                                removes=['myheader-key3', 'myheader-key4'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='+gJ1xjGAB:',
+                                    key='myheader-key5',
+                                    value='myheader-value',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='+gJ1xjGAB:',
+                                    key='myheader-key6',
+                                    value='myheader-valu2',
                                 )],
                             ),
-                            http_redirect_code=16375,
+                            http_redirect_code=203,
                             mirror_sni=False,
-                            protocol='x?8oLtKh+1',
-                            replace_key_prefix_with='yy@wr40git',
-                            redirect_type='!+8Y>yjL3-',
-                            mirror_pass_query_string=True,
-                            host_name='#70b#w@pbm',
+                            protocol='http',
+                            replace_key_prefix_with='abc/',
+                            redirect_type='Mirror',
+                            mirror_pass_query_string=False,
+                            host_name='example.com',
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
                         ),
                     ), model.RoutingRule(
-                        rule_number=81851,
+                        rule_number=6052,
                         condition=model.RoutingRuleCondition(
-                            key_suffix_equals='Bz+99LXI1c',
-                            http_error_code_returned_equals=8083,
+                            key_suffix_equals='bbc/',
+                            http_error_code_returned_equals=403,
                             include_headers=[model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='>~*J9ph+oh',
+                                key='key21',
+                                equals='value21',
                             ), model.RoutingRuleIncludeHeader(
-                                key='example-object-2.jpg',
-                                equals='>~*J9ph+oh',
+                                key='key22',
+                                equals='value22U',
                             )],
-                            key_prefix_equals='9O0!-yByC3',
+                            key_prefix_equals='abc/',
                         ),
                         redirect=model.RoutingRuleRedirect(
-                            mirror_url='.nKig&JHjX',
-                            replace_key_with='-T6p@8.$&J',
+                            mirror_url='http://example.com/',
+                            replace_key_with='prefix/${key}',
                             enable_replace_prefix=True,
                             pass_query_string=True,
                             mirror_headers=model.MirrorHeaders(
                                 pass_all=True,
-                                passs=['QQ^5M|6j>7', 'QHf*,2<LwX'],
-                                removes=['3aki wityf', '+:@2^j^%%,'],
+                                passs=['myheader-key21', 'myheader-key22'],
+                                removes=['myheader-key23', 'myheader-key24'],
                                 sets=[model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='+gJ1xjGAB:',
+                                    key='myheader-key25',
+                                    value='myheader-value2',
                                 ), model.MirrorHeadersSet(
-                                    key='example-object-2.jpg',
-                                    value='+gJ1xjGAB:',
+                                    key='myheader-key26',
+                                    value='myheader-value22',
                                 )],
                             ),
-                            http_redirect_code=16375,
-                            mirror_sni=False,
-                            protocol='x?8oLtKh+1',
-                            replace_key_prefix_with='yy@wr40git',
-                            redirect_type='!+8Y>yjL3-',
-                            mirror_pass_query_string=True,
-                            host_name='#70b#w@pbm',
+                            http_redirect_code=2970,
+                            mirror_sni=True,
+                            protocol='https',
+                            replace_key_prefix_with='prefix/${key}.suffix',
+                            redirect_type='AliCDN',
+                            mirror_pass_query_string=False,
+                            host_name='example.com',
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
@@ -465,70 +465,70 @@ class TestGetBucketWebsite(unittest.TestCase):
                 ),
             ),
         )
-        self.assertEqual('V&!gW*rebP', result.website_configuration.index_document.suffix)
+        self.assertEqual('index.html', result.website_configuration.index_document.suffix)
         self.assertEqual(True, result.website_configuration.index_document.support_sub_dir)
-        self.assertEqual(17107, result.website_configuration.index_document.type)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.error_document.key)
-        self.assertEqual(47689, result.website_configuration.error_document.http_status)
-        self.assertEqual(81851, result.website_configuration.routing_rules.routing_rules[0].rule_number)
-        self.assertEqual('Bz+99LXI1c', result.website_configuration.routing_rules.routing_rules[0].condition.key_suffix_equals)
-        self.assertEqual(8083, result.website_configuration.routing_rules.routing_rules[0].condition.http_error_code_returned_equals)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].key)
-        self.assertEqual('>~*J9ph+oh', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].equals)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].key)
-        self.assertEqual('>~*J9ph+oh', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].equals)
-        self.assertEqual('9O0!-yByC3', result.website_configuration.routing_rules.routing_rules[0].condition.key_prefix_equals)
-        self.assertEqual('.nKig&JHjX', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url)
-        self.assertEqual('-T6p@8.$&J', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_with)
-        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.enable_replace_prefix)
+        self.assertEqual(0, result.website_configuration.index_document.type)
+        self.assertEqual('error.html', result.website_configuration.error_document.key)
+        self.assertEqual(404, result.website_configuration.error_document.http_status)
+        self.assertEqual(6052, result.website_configuration.routing_rules.routing_rules[0].rule_number)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].condition.key_suffix_equals)
+        self.assertEqual(404, result.website_configuration.routing_rules.routing_rules[0].condition.http_error_code_returned_equals)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].equals)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].equals)
+        self.assertEqual('aaa/', result.website_configuration.routing_rules.routing_rules[0].condition.key_prefix_equals)
+        self.assertEqual('http://example.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url)
+        self.assertEqual('aab/', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_with)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.enable_replace_prefix)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.pass_query_string)
-        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.pass_all)
-        self.assertEqual('&%ykVpAAq+', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[0])
-        self.assertEqual('#>~C_fKg$2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[1])
-        self.assertEqual('9TRpem&YL;', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[0])
-        self.assertEqual('G.#9exGzdT', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
-        self.assertEqual('+gJ1xjGAB:', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
-        self.assertEqual('+gJ1xjGAB:', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
-        self.assertEqual(16375, result.website_configuration.routing_rules.routing_rules[0].redirect.http_redirect_code)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.pass_all)
+        self.assertEqual('myheader-key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[0])
+        self.assertEqual('myheader-key2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[1])
+        self.assertEqual('myheader-key3', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[0])
+        self.assertEqual('myheader-key4', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
+        self.assertEqual('myheader-key5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
+        self.assertEqual('myheader-value', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key6', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-valu2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
+        self.assertEqual(203, result.website_configuration.routing_rules.routing_rules[0].redirect.http_redirect_code)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_sni)
-        self.assertEqual('x?8oLtKh+1', result.website_configuration.routing_rules.routing_rules[0].redirect.protocol)
-        self.assertEqual('yy@wr40git', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
-        self.assertEqual('!+8Y>yjL3-', result.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
-        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_query_string)
-        self.assertEqual('#70b#w@pbm', result.website_configuration.routing_rules.routing_rules[0].redirect.host_name)
+        self.assertEqual('http', result.website_configuration.routing_rules.routing_rules[0].redirect.protocol)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
+        self.assertEqual('Mirror', result.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_query_string)
+        self.assertEqual('example.com', result.website_configuration.routing_rules.routing_rules[0].redirect.host_name)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
-        self.assertEqual(81851, result.website_configuration.routing_rules.routing_rules[1].rule_number)
-        self.assertEqual('Bz+99LXI1c', result.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
-        self.assertEqual(8083, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
-        self.assertEqual('>~*J9ph+oh', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
-        self.assertEqual('>~*J9ph+oh', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
-        self.assertEqual('9O0!-yByC3', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
-        self.assertEqual('.nKig&JHjX', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url)
-        self.assertEqual('-T6p@8.$&J', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
+        self.assertEqual(6052, result.website_configuration.routing_rules.routing_rules[1].rule_number)
+        self.assertEqual('bbc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
+        self.assertEqual(403, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
+        self.assertEqual('key21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
+        self.assertEqual('value21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
+        self.assertEqual('key22', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
+        self.assertEqual('value22U', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
+        self.assertEqual('http://example.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url)
+        self.assertEqual('prefix/${key}', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.enable_replace_prefix)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.pass_all)
-        self.assertEqual('QQ^5M|6j>7', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[0])
-        self.assertEqual('QHf*,2<LwX', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[1])
-        self.assertEqual('3aki wityf', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[0])
-        self.assertEqual('+:@2^j^%%,', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[1])
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].key)
-        self.assertEqual('+gJ1xjGAB:', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].value)
-        self.assertEqual('example-object-2.jpg', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].key)
-        self.assertEqual('+gJ1xjGAB:', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].value)
-        self.assertEqual(16375, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
-        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_sni)
-        self.assertEqual('x?8oLtKh+1', result.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
-        self.assertEqual('yy@wr40git', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_prefix_with)
-        self.assertEqual('!+8Y>yjL3-', result.website_configuration.routing_rules.routing_rules[1].redirect.redirect_type)
-        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_query_string)
-        self.assertEqual('#70b#w@pbm', result.website_configuration.routing_rules.routing_rules[1].redirect.host_name)
+        self.assertEqual('myheader-key21', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[0])
+        self.assertEqual('myheader-key22', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[1])
+        self.assertEqual('myheader-key23', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[0])
+        self.assertEqual('myheader-key24', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[1])
+        self.assertEqual('myheader-key25', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].key)
+        self.assertEqual('myheader-value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key26', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-value22', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].value)
+        self.assertEqual(2970, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_sni)
+        self.assertEqual('https', result.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
+        self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_prefix_with)
+        self.assertEqual('AliCDN', result.website_configuration.routing_rules.routing_rules[1].redirect.redirect_type)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_query_string)
+        self.assertEqual('example.com', result.website_configuration.routing_rules.routing_rules[1].redirect.host_name)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)

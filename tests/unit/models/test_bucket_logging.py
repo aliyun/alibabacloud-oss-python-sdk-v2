@@ -21,14 +21,14 @@ class TestPutBucketLogging(unittest.TestCase):
             bucket='bucketexampletest',
             bucket_logging_status=model.BucketLoggingStatus(
                 logging_enabled=model.LoggingEnabled(
-                    target_bucket='q7~sjKc_Lw',
-                    target_prefix='aE>@%ITkxX',
+                    target_bucket='target_bucket',
+                    target_prefix='target_prefix',
                 ),
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('q7~sjKc_Lw', request.bucket_logging_status.logging_enabled.target_bucket)
-        self.assertEqual('aE>@%ITkxX', request.bucket_logging_status.logging_enabled.target_prefix)
+        self.assertEqual('target_bucket', request.bucket_logging_status.logging_enabled.target_bucket)
+        self.assertEqual('target_prefix', request.bucket_logging_status.logging_enabled.target_prefix)
 
 
     def test_serialize_request(self):
@@ -36,8 +36,8 @@ class TestPutBucketLogging(unittest.TestCase):
             bucket='bucketexampletest',
             bucket_logging_status=model.BucketLoggingStatus(
                 logging_enabled=model.LoggingEnabled(
-                    target_bucket='q7~sjKc_Lw',
-                    target_prefix='aE>@%ITkxX',
+                    target_bucket='target_bucket',
+                    target_prefix='target_prefix',
                 ),
             ),
         )
@@ -120,13 +120,13 @@ class TestGetBucketLogging(unittest.TestCase):
         result = model.GetBucketLoggingResult(
             bucket_logging_status=model.BucketLoggingStatus(
                 logging_enabled=model.LoggingEnabled(
-                    target_bucket='DJY#CRoJqv',
-                    target_prefix='<2CcRt55A#',
+                    target_bucket='target_bucket',
+                    target_prefix='target_prefix',
                 ),
             ),
         )
-        self.assertEqual('DJY#CRoJqv', result.bucket_logging_status.logging_enabled.target_bucket)
-        self.assertEqual('<2CcRt55A#', result.bucket_logging_status.logging_enabled.target_prefix)
+        self.assertEqual('target_bucket', result.bucket_logging_status.logging_enabled.target_bucket)
+        self.assertEqual('target_prefix', result.bucket_logging_status.logging_enabled.target_prefix)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -236,26 +236,26 @@ class TestPutUserDefinedLogFieldsConfig(unittest.TestCase):
             bucket='bucketexampletest',
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
                 header_set=model.LoggingHeaderSet(
-                    headers=['9&12.KFliV', 'yi;ml47g)I'],
+                    headers=['headers1', 'headers12'],
                 ),
                 param_set=model.LoggingParamSet(
-                    parameters=['-eDOon2&)', '0t,aKLN.D'],
+                    parameters=['parameters1', 'parameters2'],
                 ),
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(['9&12.KFliV', 'yi;ml47g)I'], request.user_defined_log_fields_configuration.header_set.headers)
-        self.assertEqual(['-eDOon2&)', '0t,aKLN.D'], request.user_defined_log_fields_configuration.param_set.parameters)
+        self.assertEqual(['headers1', 'headers12'], request.user_defined_log_fields_configuration.header_set.headers)
+        self.assertEqual(['parameters1', 'parameters2'], request.user_defined_log_fields_configuration.param_set.parameters)
 
     def test_serialize_request(self):
         request = model.PutUserDefinedLogFieldsConfigRequest(
             bucket='bucketexampletest',
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
                 header_set=model.LoggingHeaderSet(
-                    headers=[';%6s7q?iA!', 'brglo!jUY+'],
+                    headers=['headers1', 'headers12'],
                 ),
                 param_set=model.LoggingParamSet(
-                    parameters=['0LD.sRxO!3', '7LM2WBSfIn'],
+                    parameters=['parameters1', 'parameters2'],
                 ),
             ),
         )
@@ -338,15 +338,15 @@ class TestGetUserDefinedLogFieldsConfig(unittest.TestCase):
         result = model.GetUserDefinedLogFieldsConfigResult(
             user_defined_log_fields_configuration=model.UserDefinedLogFieldsConfiguration(
                 header_set=model.LoggingHeaderSet(
-                    headers=['0(&Cy#l- 9', '#JMia::(!L'],
+                    headers=['headers1', 'headers12'],
                 ),
                 param_set=model.LoggingParamSet(
-                    parameters=['iwS;(tE,lo', 'Qlu)DhOs|)'],
+                    parameters=['parameters1', 'parameters2'],
                 ),
             ),
         )
-        self.assertEqual(['0(&Cy#l- 9', '#JMia::(!L'], result.user_defined_log_fields_configuration.header_set.headers)
-        self.assertEqual(['iwS;(tE,lo', 'Qlu)DhOs|)'], result.user_defined_log_fields_configuration.param_set.parameters)
+        self.assertEqual(['headers1', 'headers12'], result.user_defined_log_fields_configuration.header_set.headers)
+        self.assertEqual(['parameters1', 'parameters2'], result.user_defined_log_fields_configuration.param_set.parameters)
 
     def test_deserialize_result(self):
         xml_data = r'''
