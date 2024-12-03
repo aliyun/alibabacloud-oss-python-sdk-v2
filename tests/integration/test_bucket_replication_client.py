@@ -43,10 +43,10 @@ class TestBucketReplication(TestIntegration):
                     historical_object_replication=oss.HistoricalObjectReplicationType.DISABLED,
                     sync_role=RAM_ROLE_NAME,
                     encryption_configuration=oss.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d49f85-ee30-426b-a5ed-95e9139d****',
                     ),
                     prefix_set=oss.ReplicationPrefixSet(
-                        prefixs=['9|Ql5L$h)7', '&fabz9_gl!'],
+                        prefixs=['aaa/', 'bbb/'],
                     ),
                     action='ALL',
                 )],
@@ -73,8 +73,8 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(oss.TransferType.OSS_ACC, result.replication_configuration.rules[0].destination.transfer_type)
         self.assertEqual(oss.HistoricalObjectReplicationType.DISABLED, result.replication_configuration.rules[0].historical_object_replication)
         self.assertEqual(RAM_ROLE_NAME, result.replication_configuration.rules[0].sync_role)
-        self.assertEqual('R/(x~ud&gP', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
-        self.assertEqual(['9|Ql5L$h)7', '&fabz9_gl!'], result.replication_configuration.rules[0].prefix_set.prefixs)
+        self.assertEqual('c4d49f85-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual(['aaa/', 'bbb/'], result.replication_configuration.rules[0].prefix_set.prefixs)
         self.assertEqual('ALL', result.replication_configuration.rules[0].action)
 
 
@@ -116,8 +116,8 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(id, result.replication_progress.rules[0].id)
-        self.assertEqual('9|Ql5L$h)7', result.replication_progress.rules[0].prefix_set.prefixs[0])
-        self.assertEqual('&fabz9_gl!', result.replication_progress.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('aaa/', result.replication_progress.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('bbb/', result.replication_progress.rules[0].prefix_set.prefixs[1])
         self.assertEqual('ALL', result.replication_progress.rules[0].action)
         self.assertEqual(self.bucket_name, result.replication_progress.rules[0].destination.bucket)
         self.assertEqual(f'oss-{REGION}', result.replication_progress.rules[0].destination.location)
@@ -172,10 +172,10 @@ class TestBucketReplication(TestIntegration):
                     historical_object_replication=oss.HistoricalObjectReplicationType.DISABLED,
                     sync_role=RAM_ROLE_NAME,
                     encryption_configuration=oss.ReplicationEncryptionConfiguration(
-                        replica_kms_key_id='R/(x~ud&gP',
+                        replica_kms_key_id='c4d49f85-ee30-426b-a5ed-95e9139d****',
                     ),
                     prefix_set=oss.ReplicationPrefixSet(
-                        prefixs=['9|Ql5L$h)7', '&fabz9_gl!'],
+                        prefixs=['aaa/', 'bbb/'],
                     ),
                     action='ALL',
                 )],
@@ -202,8 +202,8 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(oss.TransferType.OSS_ACC, result.replication_configuration.rules[0].destination.transfer_type)
         self.assertEqual(oss.HistoricalObjectReplicationType.DISABLED, result.replication_configuration.rules[0].historical_object_replication)
         self.assertEqual(RAM_ROLE_NAME, result.replication_configuration.rules[0].sync_role)
-        self.assertEqual('R/(x~ud&gP', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
-        self.assertEqual(['9|Ql5L$h)7', '&fabz9_gl!'], result.replication_configuration.rules[0].prefix_set.prefixs)
+        self.assertEqual('c4d49f85-ee30-426b-a5ed-95e9139d****', result.replication_configuration.rules[0].encryption_configuration.replica_kms_key_id)
+        self.assertEqual(['aaa/', 'bbb/'], result.replication_configuration.rules[0].prefix_set.prefixs)
         self.assertEqual('ALL', result.replication_configuration.rules[0].action)
 
 
@@ -245,8 +245,8 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(id, result.replication_progress.rules[0].id)
-        self.assertEqual('9|Ql5L$h)7', result.replication_progress.rules[0].prefix_set.prefixs[0])
-        self.assertEqual('&fabz9_gl!', result.replication_progress.rules[0].prefix_set.prefixs[1])
+        self.assertEqual('aaa/', result.replication_progress.rules[0].prefix_set.prefixs[0])
+        self.assertEqual('bbb/', result.replication_progress.rules[0].prefix_set.prefixs[1])
         self.assertEqual('ALL', result.replication_progress.rules[0].action)
         self.assertEqual(self.bucket_name, result.replication_progress.rules[0].destination.bucket)
         self.assertEqual(f'oss-{REGION}', result.replication_progress.rules[0].destination.location)
@@ -296,16 +296,15 @@ class TestBucketReplication(TestIntegration):
                             transfer_type=oss.TransferType.INTERNAL,
                         ),
                         historical_object_replication=oss.HistoricalObjectReplicationType.DISABLED,
-                        sync_role='%3j-$,Ovxm',
+                        sync_role='acs:ram::1283***5:role/AliyunOSSRole',
                         status='OK',
                         encryption_configuration=oss.ReplicationEncryptionConfiguration(
-                            replica_kms_key_id='R/(x~ud&gP',
+                            replica_kms_key_id='c4d49f85-ee30-426b-a5ed-95e9139d****',
                         ),
-                        id='0022012****',
                         prefix_set=oss.ReplicationPrefixSet(
-                            prefixs=[':ok;W3k.SY', ';4kch7?^Q?'],
+                            prefixs=['aaa/', 'bbb/'],
                         ),
-                        action='62,)fFPgQ&',
+                        action='ALL',
                     )],
                 ),
             ))
@@ -370,7 +369,7 @@ class TestBucketReplication(TestIntegration):
         try:
             self.invalid_client.get_bucket_replication_progress(oss.GetBucketReplicationProgressRequest(
                 bucket=bucket_name,
-                rule_id='Rl,k#TVnN9',
+                rule_id='RlTVnN9',
             ))
             self.fail("should not here")
         except Exception as e:
@@ -386,7 +385,7 @@ class TestBucketReplication(TestIntegration):
             self.invalid_client.delete_bucket_replication(oss.DeleteBucketReplicationRequest(
                 bucket=bucket_name,
                 replication_rules=oss.ReplicationRules(
-                    ids=['1 Q&filYE|', 'el4A7mBqRt'],
+                    ids=['ids1', 'ids2'],
                 ),
             ))
             self.fail("should not here")

@@ -22,40 +22,38 @@ class TestCreateCnameToken(unittest.TestCase):
             bucket='bucket-name-test',
             bucket_cname_configuration=model.BucketCnameConfiguration(
                 cname=model.Cname(
-                    domain='*v@g@q#VOs',
+                    domain='example.com',
                     certificate_configuration=model.CertificateConfiguration(
-                        certificate='Y_%r6!mwu2',
-                        private_key='wkdBQEQAFm',
-                        previous_cert_id='fXw>SaVK<3',
+                        certificate='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                        private_key='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                        previous_cert_id='493****-cn-hangzhou',
                         force=True,
-                        delete_certificate=True,
-                        cert_id='59HY:tGwZP',
+                        cert_id='493****-cn-hangzhou',
                     ),
                 ),
             ),
         )
         self.assertEqual('bucket-name-test', request.bucket)
-        self.assertEqual('*v@g@q#VOs', request.bucket_cname_configuration.cname.domain)
-        self.assertEqual('Y_%r6!mwu2', request.bucket_cname_configuration.cname.certificate_configuration.certificate)
-        self.assertEqual('wkdBQEQAFm', request.bucket_cname_configuration.cname.certificate_configuration.private_key)
-        self.assertEqual('fXw>SaVK<3', request.bucket_cname_configuration.cname.certificate_configuration.previous_cert_id)
+        self.assertEqual('example.com', request.bucket_cname_configuration.cname.domain)
+        self.assertEqual('-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----', request.bucket_cname_configuration.cname.certificate_configuration.certificate)
+        self.assertEqual('-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----', request.bucket_cname_configuration.cname.certificate_configuration.private_key)
+        self.assertEqual('493****-cn-hangzhou', request.bucket_cname_configuration.cname.certificate_configuration.previous_cert_id)
         self.assertEqual(True, request.bucket_cname_configuration.cname.certificate_configuration.force)
-        self.assertEqual(True, request.bucket_cname_configuration.cname.certificate_configuration.delete_certificate)
-        self.assertEqual('59HY:tGwZP', request.bucket_cname_configuration.cname.certificate_configuration.cert_id)
+        self.assertEqual('493****-cn-hangzhou', request.bucket_cname_configuration.cname.certificate_configuration.cert_id)
 
     def test_serialize_request(self):
         request = model.CreateCnameTokenRequest(
             bucket='bucket-name-test',
             bucket_cname_configuration=model.BucketCnameConfiguration(
                 cname=model.Cname(
-                    domain='*v@g@q#VOs',
+                    domain='example.com',
                     certificate_configuration=model.CertificateConfiguration(
-                        certificate='Y_%r6!mwu2',
-                        private_key='wkdBQEQAFm',
-                        previous_cert_id='fXw>SaVK<3',
+                        certificate='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                        private_key='-----BEGIN CERTIFICATE----- MIIDhDCCAmwCCQCFs8ixARsyrDANBgkqhkiG9w0BAQsFADCBgzELMAkGA1UEBhMC **** -----END CERTIFICATE-----',
+                        previous_cert_id='493****-cn-hangzhou',
                         force=True,
                         delete_certificate=True,
-                        cert_id='59HY:tGwZP',
+                        cert_id='493****-cn-hangzhou',
                     ),
                 ),
             ),
@@ -77,15 +75,15 @@ class TestCreateCnameToken(unittest.TestCase):
 
         result = model.CreateCnameTokenResult(
             cname_token=model.CnameToken(
-                cname='Wy|9d2n/rI',
-                token='a^A5/Y)P_/',
-                expire_time='D)*fY Rf0P',
+                cname='example.com',
+                token='be1d49d863dea9ffeff3df7d6455****',
+                expire_time='Wed, 23 Feb 2022 21:39:42 GMT',
                 bucket='bucket-name-test',
             ),
         )
-        self.assertEqual('Wy|9d2n/rI', result.cname_token.cname)
-        self.assertEqual('a^A5/Y)P_/', result.cname_token.token)
-        self.assertEqual('D)*fY Rf0P', result.cname_token.expire_time)
+        self.assertEqual('example.com', result.cname_token.cname)
+        self.assertEqual('be1d49d863dea9ffeff3df7d6455****', result.cname_token.token)
+        self.assertEqual('Wed, 23 Feb 2022 21:39:42 GMT', result.cname_token.expire_time)
         self.assertEqual('bucket-name-test', result.cname_token.bucket)
 
     def test_deserialize_result(self):
@@ -135,15 +133,15 @@ class TestGetCnameToken(unittest.TestCase):
 
         request = model.GetCnameTokenRequest(
             bucket='bucketexampletest',
-            cname=' hI 1%#S&|',
+            cname='example.com',
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(' hI 1%#S&|', request.cname)
+        self.assertEqual('example.com', request.cname)
 
     def test_serialize_request(self):
         request = model.GetCnameTokenRequest(
             bucket='bucketexampletest',
-            cname=' hI 1%#S&|',
+            cname='example.com',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -154,7 +152,7 @@ class TestGetCnameToken(unittest.TestCase):
         self.assertEqual('GetCnameToken', op_input.op_name)
         self.assertEqual('GET', op_input.method)
         self.assertEqual('bucketexampletest', op_input.bucket)
-        self.assertEqual(' hI 1%#S&|', op_input.parameters.get('cname'))
+        self.assertEqual('example.com', op_input.parameters.get('cname'))
 
     def test_constructor_result(self):
         result = model.GetCnameTokenResult()
@@ -163,15 +161,15 @@ class TestGetCnameToken(unittest.TestCase):
 
         result = model.GetCnameTokenResult(
             cname_token=model.CnameToken(
-                cname=' hI 1%#S&|',
-                token='OeX6Q2:$6p',
-                expire_time='8T?X~kq+@v',
+                cname='example.com',
+                token='be1d49d863dea9ffeff3df7d6455****',
+                expire_time='Wed, 23 Feb 2022 21:39:42 GMT',
                 bucket='bucketexampletest',
             ),
         )
-        self.assertEqual(' hI 1%#S&|', result.cname_token.cname)
-        self.assertEqual('OeX6Q2:$6p', result.cname_token.token)
-        self.assertEqual('8T?X~kq+@v', result.cname_token.expire_time)
+        self.assertEqual('example.com', result.cname_token.cname)
+        self.assertEqual('be1d49d863dea9ffeff3df7d6455****', result.cname_token.token)
+        self.assertEqual('Wed, 23 Feb 2022 21:39:42 GMT', result.cname_token.expire_time)
         self.assertEqual('bucketexampletest', result.cname_token.bucket)
 
     def test_deserialize_result(self):
@@ -347,10 +345,10 @@ class TestListCname(unittest.TestCase):
                 last_modified='2024-12-17T00:20:57.000Z',
                 status='OK',
                 certificate=model.CnameCertificate(
-                    fingerprint='2P\$6m\4Ul',
-                    valid_start_date='zx_fy<>KH.',
-                    valid_end_date='2;OO4kY.-E',
-                    type='ApGNl+f ol',
+                    fingerprint='DE:01:CF:EC:7C:A7:98:CB:D8:6E:FB:1D:97:EB:A9:64:1D:4E:**:**',
+                    valid_start_date='Wed, 12 Apr 2023 10:14:51 GMT',
+                    valid_end_date='Mon, 4 May 2048 10:14:51 GMT',
+                    type='CAS',
                     cert_id='493****-cn-hangzhou',
                     status='OK',
                     creation_date='2013-07-31T10:56:21.000Z',
@@ -360,40 +358,40 @@ class TestListCname(unittest.TestCase):
                 last_modified='2014-07-31T10:56:21.000Z',
                 status='OK',
                 certificate=model.CnameCertificate(
-                    fingerprint='2P\$6m\4Ul',
-                    valid_start_date='zx_fy<>KH.',
-                    valid_end_date='2;OO4kY.-E',
-                    type='ApGNl+f ol',
+                    fingerprint='98:CB:D8:6E:FB:1D:97:EB:A9:64:1D:4E:**:**',
+                    valid_start_date='Wed, 12 Apr 2021 10:14:51 GMT',
+                    valid_end_date='Mon, 5 May 2048 10:14:51 GMT',
+                    type='CAS',
                     cert_id='493****-cn-hangzhou',
                     status='OK',
                     creation_date='2013-07-31T10:56:21.000Z',
                 ),
             )],
             bucket='bucketexampletest',
-            owner='(N?LaHkG&@',
+            owner='owner',
         )
         self.assertEqual('example.com', result.cnames[0].domain)
         self.assertEqual('2024-12-17T00:20:57.000Z', result.cnames[0].last_modified)
         self.assertEqual('OK', result.cnames[0].status)
-        self.assertEqual('2P\$6m\4Ul', result.cnames[0].certificate.fingerprint)
-        self.assertEqual('zx_fy<>KH.', result.cnames[0].certificate.valid_start_date)
-        self.assertEqual('2;OO4kY.-E', result.cnames[0].certificate.valid_end_date)
-        self.assertEqual('ApGNl+f ol', result.cnames[0].certificate.type)
+        self.assertEqual('DE:01:CF:EC:7C:A7:98:CB:D8:6E:FB:1D:97:EB:A9:64:1D:4E:**:**', result.cnames[0].certificate.fingerprint)
+        self.assertEqual('Wed, 12 Apr 2023 10:14:51 GMT', result.cnames[0].certificate.valid_start_date)
+        self.assertEqual('Mon, 4 May 2048 10:14:51 GMT', result.cnames[0].certificate.valid_end_date)
+        self.assertEqual('CAS', result.cnames[0].certificate.type)
         self.assertEqual('493****-cn-hangzhou', result.cnames[0].certificate.cert_id)
         self.assertEqual('OK', result.cnames[0].certificate.status)
         self.assertEqual('2013-07-31T10:56:21.000Z', result.cnames[0].certificate.creation_date)
         self.assertEqual('example.com', result.cnames[1].domain)
         self.assertEqual('2014-07-31T10:56:21.000Z', result.cnames[1].last_modified)
         self.assertEqual('OK', result.cnames[1].status)
-        self.assertEqual('2P\$6m\4Ul', result.cnames[1].certificate.fingerprint)
-        self.assertEqual('zx_fy<>KH.', result.cnames[1].certificate.valid_start_date)
-        self.assertEqual('2;OO4kY.-E', result.cnames[1].certificate.valid_end_date)
-        self.assertEqual('ApGNl+f ol', result.cnames[1].certificate.type)
+        self.assertEqual('98:CB:D8:6E:FB:1D:97:EB:A9:64:1D:4E:**:**', result.cnames[1].certificate.fingerprint)
+        self.assertEqual('Wed, 12 Apr 2021 10:14:51 GMT', result.cnames[1].certificate.valid_start_date)
+        self.assertEqual('Mon, 5 May 2048 10:14:51 GMT', result.cnames[1].certificate.valid_end_date)
+        self.assertEqual('CAS', result.cnames[1].certificate.type)
         self.assertEqual('493****-cn-hangzhou', result.cnames[1].certificate.cert_id)
         self.assertEqual('OK', result.cnames[1].certificate.status)
         self.assertEqual('2013-07-31T10:56:21.000Z', result.cnames[1].certificate.creation_date)
         self.assertEqual('bucketexampletest', result.bucket)
-        self.assertEqual('(N?LaHkG&@', result.owner)
+        self.assertEqual('owner', result.owner)
 
 
     def test_deserialize_result(self):

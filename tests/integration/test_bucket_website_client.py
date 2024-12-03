@@ -63,7 +63,7 @@ class TestBucketWebsite(TestIntegration):
                                     value='myheader-value',
                                 ), oss.MirrorHeadersSet(
                                     key='myheader-key6',
-                                    value='myheader-valu2',
+                                    value='myheader-value2',
                                 )],
                             ),
                             mirror_sni=True,
@@ -86,7 +86,7 @@ class TestBucketWebsite(TestIntegration):
                                 key='key22',
                                 equals='value22U',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='abc/',
                         ),
                         redirect=oss.RoutingRuleRedirect(
                             replace_key_with='prefix/${key}.suffix',
@@ -151,7 +151,7 @@ class TestBucketWebsite(TestIntegration):
         self.assertEqual('myheader-key5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
         self.assertEqual('myheader-value', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
         self.assertEqual('myheader-key6', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
-        self.assertEqual('myheader-valu2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
+        self.assertEqual('myheader-value2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_sni)
         self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
         self.assertEqual('Mirror', result.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
@@ -166,7 +166,7 @@ class TestBucketWebsite(TestIntegration):
         self.assertEqual('value21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
         self.assertEqual('key22', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
         self.assertEqual('value22U', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
-        self.assertEqual('>xJsVadsc&', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
         self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
         self.assertEqual(301, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
@@ -270,7 +270,7 @@ class TestBucketWebsite(TestIntegration):
                                 key='key22',
                                 equals='value22U',
                             )],
-                            key_prefix_equals='>xJsVadsc&',
+                            key_prefix_equals='abc/',
                         ),
                         redirect=oss.RoutingRuleRedirect(
                             replace_key_with='prefix/${key}.suffix',
@@ -358,7 +358,7 @@ class TestBucketWebsite(TestIntegration):
         self.assertEqual('value21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
         self.assertEqual('key22', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
         self.assertEqual('value22U', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
-        self.assertEqual('>xJsVadsc&', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
         self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
         self.assertEqual(301, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)

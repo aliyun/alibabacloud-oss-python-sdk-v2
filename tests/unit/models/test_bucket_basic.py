@@ -962,34 +962,34 @@ class TestGetBucketInfo(unittest.TestCase):
 
         result = model.GetBucketInfoResult(
             bucket_info=model.BucketInfo(
-                name = 'oss-example',
-                access_monitor = 'Enabled',
-                location = 'oss-cn-hangzhou',
-                creation_date = '2013-07-31T10:56:21.000Z',
-                extranet_endpoint = 'oss-cn-hangzhou.aliyuncs.com',
-                intranet_endpoint = 'oss-cn-hangzhou-internal.aliyuncs.com',
-                acl = 'private',
-                data_redundancy_type = 'LRS',
-                owner = model.Owner(
+                name='oss-example',
+                access_monitor='Enabled',
+                location='oss-cn-hangzhou',
+                creation_date='2013-07-31T10:56:21.000Z',
+                extranet_endpoint='oss-cn-hangzhou.aliyuncs.com',
+                intranet_endpoint='oss-cn-hangzhou-internal.aliyuncs.com',
+                acl='private',
+                data_redundancy_type='LRS',
+                owner=model.Owner(
                     id='0022012****',
                     display_name='user_example',
                 ),
-                storage_class = 'Standard',
-                resource_group_id = 'rg-aek27tc********',
-                sse_rule = model.SSERule(
+                storage_class='Standard',
+                resource_group_id='rg-aek27tc********',
+                sse_rule=model.SSERule(
                     kms_master_key_id='0022012****',
                     sse_algorithm='user_example',
                     kms_data_encryption='user_example',
                 ),
-                versioning = 'Enabled',
-                transfer_acceleration = 'Disabled',
-                cross_region_replication = 'Disabled',
-                bucket_policy = model.BucketPolicy(
+                versioning='Enabled',
+                transfer_acceleration='Disabled',
+                cross_region_replication='Disabled',
+                bucket_policy=model.BucketPolicy(
                     log_bucket='0022012****',
                     log_prefix='user_example',
                 ),
-                comment = 'comment test',
-                block_public_access = True,
+                comment='comment test',
+                block_public_access=True,
             ),
         )
 
@@ -1041,7 +1041,7 @@ class TestGetBucketInfo(unittest.TestCase):
     <StorageClass>Standard</StorageClass>
     <TransferAcceleration>Disabled</TransferAcceleration>
     <CrossRegionReplication>Disabled</CrossRegionReplication>
-	<DataRedundancyType>LRS</DataRedundancyType>
+    <DataRedundancyType>LRS</DataRedundancyType>
     <Name>oss-example</Name>
     <ResourceGroupId>rg-aek27tc********</ResourceGroupId>
     <Owner>
@@ -1052,10 +1052,10 @@ class TestGetBucketInfo(unittest.TestCase):
       <Grant>private</Grant>
     </AccessControlList> 
     <ServerSideEncryptionRule>
-		<SSEAlgorithm>KMS</SSEAlgorithm>
-		<KMSMasterKeyID>shUhih687675***32edghadg</KMSMasterKeyID>
-		<KMSDataEncryption>SM4</KMSDataEncryption>
-	</ServerSideEncryptionRule>
+        <SSEAlgorithm>KMS</SSEAlgorithm>
+        <KMSMasterKeyID>shUhih687675***32edghadg</KMSMasterKeyID>
+        <KMSDataEncryption>SM4</KMSDataEncryption>
+    </ServerSideEncryptionRule>
     <BucketPolicy>
       <LogBucket>examplebucket</LogBucket>
       <LogPrefix>log/</LogPrefix>

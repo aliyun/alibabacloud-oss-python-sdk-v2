@@ -28,7 +28,7 @@ class TestBucketLogging(TestIntegration):
             bucket_logging_status=oss.BucketLoggingStatus(
                 logging_enabled=oss.LoggingEnabled(
                     target_bucket=bucket_name,
-                    target_prefix='aE>@%ITkxX',
+                    target_prefix='aaa/',
                 ),
             ),
         ))
@@ -46,7 +46,7 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(bucket_name, result.bucket_logging_status.logging_enabled.target_bucket)
-        self.assertEqual('aE>@%ITkxX', result.bucket_logging_status.logging_enabled.target_prefix)
+        self.assertEqual('aaa/', result.bucket_logging_status.logging_enabled.target_prefix)
 
         # delete bucket logging
         result = self.client.delete_bucket_logging(oss.DeleteBucketLoggingRequest(
@@ -61,10 +61,10 @@ class TestBucketLogging(TestIntegration):
             bucket=bucket_name,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
                 header_set=oss.LoggingHeaderSet(
-                    headers=[';YRUmR^oOZ', '6L1HYCXks#'],
+                    headers=['header1', 'header2'],
                 ),
                 param_set=oss.LoggingParamSet(
-                    parameters=[';OGrIUYln ', '>SS#m7k?)T'],
+                    parameters=['param1', 'param2'],
                 ),
             ),
         ))
@@ -81,8 +81,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-        self.assertEqual(len([';YRUmR^oOZ', '6L1HYCXks#']), result.user_defined_log_fields_configuration.header_set.headers.__len__())
-        self.assertEqual(len([';OGrIUYln ', '>SS#m7k?)T']), result.user_defined_log_fields_configuration.param_set.parameters.__len__())
+        self.assertEqual(len(['header1', 'header2']), result.user_defined_log_fields_configuration.header_set.headers.__len__())
+        self.assertEqual(len(['param1', 'param2']), result.user_defined_log_fields_configuration.param_set.parameters.__len__())
 
         # delete user defined log fields config
         result = self.client.delete_user_defined_log_fields_config(oss.DeleteUserDefinedLogFieldsConfigRequest(
@@ -113,7 +113,7 @@ class TestBucketLogging(TestIntegration):
             bucket_logging_status=oss.BucketLoggingStatus(
                 logging_enabled=oss.LoggingEnabled(
                     target_bucket=bucket_name,
-                    target_prefix='aE>@%ITkxX',
+                    target_prefix='aaa/',
                 ),
             ),
         ))
@@ -131,7 +131,7 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(bucket_name, result.bucket_logging_status.logging_enabled.target_bucket)
-        self.assertEqual('aE>@%ITkxX', result.bucket_logging_status.logging_enabled.target_prefix)
+        self.assertEqual('aaa/', result.bucket_logging_status.logging_enabled.target_prefix)
 
         # delete bucket logging
         result = self.signv1_client.delete_bucket_logging(oss.DeleteBucketLoggingRequest(
@@ -146,10 +146,10 @@ class TestBucketLogging(TestIntegration):
             bucket=bucket_name,
             user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
                 header_set=oss.LoggingHeaderSet(
-                    headers=[')$k+$;jm+', '5;O$QXOCK2'],
+                    headers=['header1', 'header2'],
                 ),
                 param_set=oss.LoggingParamSet(
-                    parameters=['IpaR(ad~p', ';uza,9yf71'],
+                    parameters=['param1', 'param2'],
                 ),
             ),
         ))
@@ -166,8 +166,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-        self.assertEqual(len([')$k+$;jm+', '5;O$QXOCK2']), result.user_defined_log_fields_configuration.header_set.headers.__len__())
-        self.assertEqual(len(['IpaR(ad~p', ';uza,9yf71']), result.user_defined_log_fields_configuration.param_set.parameters.__len__())
+        self.assertEqual(len(['header1', 'header2']), result.user_defined_log_fields_configuration.header_set.headers.__len__())
+        self.assertEqual(len(['param1', 'param2']), result.user_defined_log_fields_configuration.param_set.parameters.__len__())
 
         # delete user defined log fields config
         result = self.signv1_client.delete_user_defined_log_fields_config(oss.DeleteUserDefinedLogFieldsConfigRequest(
@@ -195,8 +195,8 @@ class TestBucketLogging(TestIntegration):
                 bucket=bucket_name,
                 bucket_logging_status=oss.BucketLoggingStatus(
                     logging_enabled=oss.LoggingEnabled(
-                        target_bucket='q7~sjKc_Lw',
-                        target_prefix='aE>@%ITkxX',
+                        target_bucket='bucket_name',
+                        target_prefix='aaa/',
                     ),
                 ),
             ))
@@ -243,10 +243,10 @@ class TestBucketLogging(TestIntegration):
                 bucket=bucket_name,
                 user_defined_log_fields_configuration=oss.UserDefinedLogFieldsConfiguration(
                     header_set=oss.LoggingHeaderSet(
-                        headers=['D@R4G3@Uf;', 'C9xW_T%(hE'],
+                        headers=['header1', 'header2'],
                     ),
                     param_set=oss.LoggingParamSet(
-                        parameters=['Hmb/Lra_~Q', 'FNmTE+w;%e'],
+                        parameters=['param1', 'param2'],
                     ),
                 ),
             ))

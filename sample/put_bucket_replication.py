@@ -53,7 +53,7 @@ def main():
                     sync_role=args.sync_role,
                     status='Disabled',
                     prefix_set=oss.ReplicationPrefixSet(
-                        prefixs=['C$|EqA0gEq', ' Md)+1gf@p'],
+                        prefixs=['aaa/', 'bbb/'],
                     ),
                     action='ALL',
                 )],

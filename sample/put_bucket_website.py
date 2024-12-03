@@ -86,7 +86,7 @@ def main():
                             key='key22',
                             equals='value22U',
                         )],
-                        key_prefix_equals='>xJsVadsc&',
+                        key_prefix_equals='bbb/',
                     ),
                     redirect=oss.RoutingRuleRedirect(
                         replace_key_with='prefix/${key}.suffix',

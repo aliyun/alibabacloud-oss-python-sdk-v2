@@ -388,7 +388,7 @@ class TestHeadObject(unittest.TestCase):
             content_disposition='attachment; filename=testing.txt',
             content_encoding='utf-8',
             expires='2023-10-12T00:00:00.000Z',
-            hash_crc64='GHH^%$#^&INOU(',
+            hash_crc64='8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCU',
             storage_class='Archive',
             object_type='public-read-write',
             version_id='version_id-test',
@@ -403,7 +403,7 @@ class TestHeadObject(unittest.TestCase):
             request_charged='request_charged-test',
             allow_origin='*',
             allow_methods='PUT,GET',
-            allow_age='%#@$#@&^%&(*HIHJ',
+            allow_age='1111',
             allow_headers='{a:a1, b:b2}',
             expose_headers='{a:a1, b:b2}',
         )
@@ -417,7 +417,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('attachment; filename=testing.txt',result.content_disposition)
         self.assertEqual('utf-8', result.content_encoding)
         self.assertEqual('2023-10-12T00:00:00.000Z', result.expires)
-        self.assertEqual('GHH^%$#^&INOU(', result.hash_crc64)
+        self.assertEqual('8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCU', result.hash_crc64)
         self.assertEqual('Archive', result.storage_class)
         self.assertEqual('public-read-write', result.object_type)
         self.assertEqual('version_id-test', result.version_id)
@@ -432,7 +432,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('request_charged-test', result.request_charged)
         self.assertEqual('*', result.allow_origin)
         self.assertEqual('PUT,GET', result.allow_methods)
-        self.assertEqual('%#@$#@&^%&(*HIHJ', result.allow_age)
+        self.assertEqual('1111', result.allow_age)
         self.assertEqual('{a:a1, b:b2}', result.allow_headers)
         self.assertEqual('{a:a1, b:b2}', result.expose_headers)
 
@@ -2205,7 +2205,7 @@ class TestUploadPart(unittest.TestCase):
             body='xml_data',
             request_payer='requester',
             progress_fn='progress_fn-test',
-            cse_multipart_context='XW_?DnmrZ ',
+            cse_multipart_context='894A22E5B1888A1E29F823**',
         )
         self.assertEqual('bucket_name', request.bucket)
         self.assertEqual('example-object-2.jpg', request.key)
@@ -2217,7 +2217,7 @@ class TestUploadPart(unittest.TestCase):
         self.assertEqual('xml_data', request.body)
         self.assertEqual('requester', request.request_payer)
         self.assertEqual('progress_fn-test', request.progress_fn)
-        self.assertEqual('XW_?DnmrZ ', request.cse_multipart_context)
+        self.assertEqual('894A22E5B1888A1E29F823**', request.cse_multipart_context)
 
 
         request = model.UploadPartRequest(
@@ -2266,7 +2266,7 @@ class TestUploadPart(unittest.TestCase):
             body='xml_data',
             request_payer='requester',
             progress_fn='progress_fn-test',
-            cse_multipart_context='XW_?DnmrZ ',
+            cse_multipart_context='894A22E5B1888A1E29F823**',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -2369,9 +2369,9 @@ class TestUploadPartCopy(unittest.TestCase):
             part_number=1,
             upload_id='0004B9894A22E5B1888A1E29F823****',
             source_key='source-invalid-key',
-            source_bucket='VR$gjlSvZg',
-            source_version_id=':E*lukL%^N',
-            source_range='%spR|e?<JV',
+            source_bucket='source_bucket',
+            source_version_id='8F00B204E9800998ECF9**',
+            source_range='bytes 0~9/44',
             if_match='D41D8CD98F00B204E9800998ECF8****',
             if_none_match='D41D8CD98F00B204E9800998ECF9****',
             if_modified_since='Fri, 13 Nov 2023 14:47:53 GMT',
@@ -2384,9 +2384,9 @@ class TestUploadPartCopy(unittest.TestCase):
         self.assertEqual(1, request.part_number)
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
         self.assertEqual('source-invalid-key', request.source_key)
-        self.assertEqual('VR$gjlSvZg', request.source_bucket)
-        self.assertEqual(':E*lukL%^N', request.source_version_id)
-        self.assertEqual('%spR|e?<JV', request.source_range)
+        self.assertEqual('source_bucket', request.source_bucket)
+        self.assertEqual('8F00B204E9800998ECF9**', request.source_version_id)
+        self.assertEqual('bytes 0~9/44', request.source_range)
         self.assertEqual('D41D8CD98F00B204E9800998ECF8****', request.if_match)
         self.assertEqual('D41D8CD98F00B204E9800998ECF9****', request.if_none_match)
         self.assertEqual('Fri, 13 Nov 2023 14:47:53 GMT', request.if_modified_since)
@@ -2441,9 +2441,9 @@ class TestUploadPartCopy(unittest.TestCase):
             part_number=1,
             upload_id='0004B9894A22E5B1888A1E29F823****',
             source_key='source-invalid-key',
-            source_bucket='VR$gjlSvZg',
-            source_version_id=':E*lukL%^N',
-            source_range='%spR|e?<JV',
+            source_bucket='source_bucket',
+            source_version_id='8F00B204E9800998ECF9**',
+            source_range='bytes 0~9/44',
             if_match='D41D8CD98F00B204E9800998ECF8****',
             if_none_match='D41D8CD98F00B204E9800998ECF9****',
             if_modified_since='Fri, 13 Nov 2023 14:47:53 GMT',
@@ -2462,7 +2462,7 @@ class TestUploadPartCopy(unittest.TestCase):
         self.assertEqual('bucket_name', op_input.bucket)
         self.assertEqual(1, int(op_input.parameters.get('partNumber')))
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', op_input.parameters.get('uploadId'))
-        self.assertEqual('%spR|e?<JV', op_input.headers.get('x-oss-copy-source-range'))
+        self.assertEqual('bytes 0~9/44', op_input.headers.get('x-oss-copy-source-range'))
         self.assertEqual('D41D8CD98F00B204E9800998ECF8****', op_input.headers.get('x-oss-copy-source-if-match'))
         self.assertEqual('D41D8CD98F00B204E9800998ECF9****', op_input.headers.get('x-oss-copy-source-if-none-match'))
         self.assertEqual('Fri, 13 Nov 2023 14:47:53 GMT', op_input.headers.get('x-oss-copy-source-if-modified-since'))
@@ -2480,18 +2480,18 @@ class TestUploadPartCopy(unittest.TestCase):
         result = model.UploadPartCopyResult(
             last_modified=datetime.datetime.fromtimestamp(1702743657),
             etag='"D41D8CD98F00B204E9800998ECF8****"',
-            source_version_id=':E*lukL%^N',
+            source_version_id='D8CD98F00B204E9800998ECF8**',
         )
         self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
         self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
-        self.assertEqual(':E*lukL%^N', result.source_version_id)
+        self.assertEqual('D8CD98F00B204E9800998ECF8**', result.source_version_id)
 
         result = model.UploadPartCopyResult(
-            source_version_id=':E*lukL%^N',
+            source_version_id='D8CD98F00B204E9800998ECF8**',
             invalid_field='invalid_field',
         )
-        self.assertEqual(':E*lukL%^N', result.source_version_id)
+        self.assertEqual('D8CD98F00B204E9800998ECF8**', result.source_version_id)
         self.assertFalse(hasattr(result, 'invalid_field'))
 
     def test_deserialize_result(self):
@@ -2544,7 +2544,7 @@ class TestCompleteMultipartUpload(unittest.TestCase):
                             etag='jOTRmNTE5NmU5NmFhZjhjYmY0****',
                         )],
             ),
-            complete_all='I;%Y^td%YB',
+            complete_all='false',
             callback='{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}',
             callback_var='{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}',
             forbid_overwrite=True,
@@ -2559,7 +2559,7 @@ class TestCompleteMultipartUpload(unittest.TestCase):
         self.assertEqual('ZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.complete_multipart_upload.parts[0].etag)
         self.assertEqual(2, request.complete_multipart_upload.parts[1].part_number)
         self.assertEqual('jOTRmNTE5NmU5NmFhZjhjYmY0****', request.complete_multipart_upload.parts[1].etag)
-        self.assertEqual('I;%Y^td%YB', request.complete_all)
+        self.assertEqual('false', request.complete_all)
         self.assertEqual('{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}', request.callback)
         self.assertEqual('{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}', request.callback_var)
         self.assertEqual(True, request.forbid_overwrite)
@@ -2610,7 +2610,7 @@ class TestCompleteMultipartUpload(unittest.TestCase):
                             etag='jOTRmNTE5NmU5NmFhZjhjYmY0****',
                         )],
             ),
-            complete_all='I;%Y^td%YB',
+            complete_all='true',
             callback='{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}',
             callback_var='{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}',
             forbid_overwrite=True,
@@ -2629,7 +2629,7 @@ class TestCompleteMultipartUpload(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', op_input.parameters.get('uploadId'))
         self.assertEqual('url', op_input.parameters.get('encoding-type'))
         self.assertEqual('private', op_input.headers.get('x-oss-object-acl'))
-        self.assertEqual('I;%Y^td%YB', op_input.headers.get('x-oss-complete-all'))
+        self.assertEqual('true', op_input.headers.get('x-oss-complete-all'))
         self.assertEqual('{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}', op_input.headers.get('x-oss-callback'))
         self.assertEqual('{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}', op_input.headers.get('x-oss-callback-var'))
         self.assertEqual(True, bool(op_input.headers.get('x-oss-forbid-overwrite')))
@@ -2842,7 +2842,7 @@ class TestListMultipartUploads(unittest.TestCase):
             key_marker='ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
             max_uploads=90009,
             prefix='aaa',
-            upload_id_marker='jZ/U5|2M+d',
+            upload_id_marker='VyL2VyaWMvZGVtbzMuanNvbhAA',
             request_payer='requester',
         )
         self.assertEqual('bucket_name', request.bucket)
@@ -2851,7 +2851,7 @@ class TestListMultipartUploads(unittest.TestCase):
         self.assertEqual('ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', request.key_marker)
         self.assertEqual(90009, request.max_uploads)
         self.assertEqual('aaa', request.prefix)
-        self.assertEqual('jZ/U5|2M+d', request.upload_id_marker)
+        self.assertEqual('VyL2VyaWMvZGVtbzMuanNvbhAA', request.upload_id_marker)
         self.assertEqual('requester', request.request_payer)
 
         request = model.ListMultipartUploadsRequest(
@@ -2881,7 +2881,7 @@ class TestListMultipartUploads(unittest.TestCase):
             key_marker='ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
             max_uploads=90009,
             prefix='aaa',
-            upload_id_marker='jZ/U5|2M+d',
+            upload_id_marker='VyL2VyaWMvZGVtbzMuanNvbhAA',
             request_payer='requester',
         )
 
@@ -2898,7 +2898,7 @@ class TestListMultipartUploads(unittest.TestCase):
         self.assertEqual('ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', op_input.parameters.get('key-marker'))
         self.assertEqual(90009, int(op_input.parameters.get('max-uploads')))
         self.assertEqual('aaa', op_input.parameters.get('prefix'))
-        self.assertEqual('jZ/U5|2M+d', op_input.parameters.get('upload-id-marker'))
+        self.assertEqual('VyL2VyaWMvZGVtbzMuanNvbhAA', op_input.parameters.get('upload-id-marker'))
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
 
     def test_constructor_result(self):
@@ -2919,9 +2919,9 @@ class TestListMultipartUploads(unittest.TestCase):
             encoding_type='url',
             bucket='bucket_name',
             key_marker='ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
-            upload_id_marker='jZ/U5|2M+d',
+            upload_id_marker='VyL2VyaWMvZGVtbzMuanNvbhAA',
             next_key_marker='demo%2FREADME-CN.md',
-            next_upload_id_marker='e_ Y0S_O*E',
+            next_upload_id_marker='VyL2VzMuanNvbhAA',
             delimiter='/',
             prefix='aaa',
             max_uploads=90009,
@@ -2939,9 +2939,9 @@ class TestListMultipartUploads(unittest.TestCase):
         self.assertEqual('url', result.encoding_type)
         self.assertEqual('bucket_name', result.bucket)
         self.assertEqual('ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', result.key_marker)
-        self.assertEqual('jZ/U5|2M+d', result.upload_id_marker)
+        self.assertEqual('VyL2VyaWMvZGVtbzMuanNvbhAA', result.upload_id_marker)
         self.assertEqual('demo%2FREADME-CN.md', result.next_key_marker)
-        self.assertEqual('e_ Y0S_O*E', result.next_upload_id_marker)
+        self.assertEqual('VyL2VzMuanNvbhAA', result.next_upload_id_marker)
         self.assertEqual('/', result.delimiter)
         self.assertEqual('aaa', result.prefix)
         self.assertEqual(90009, result.max_uploads)
@@ -3041,7 +3041,7 @@ class TestListParts(unittest.TestCase):
             upload_id='0004B9894A22E5B1888A1E29F823****',
             encoding_type='url',
             max_parts=30971,
-            part_number_marker='8D7q%(ncL$',
+            part_number_marker='1',
             request_payer='requester',
         )
         self.assertEqual('bucket_name', request.bucket)
@@ -3049,7 +3049,7 @@ class TestListParts(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
         self.assertEqual('url', request.encoding_type)
         self.assertEqual(30971, request.max_parts)
-        self.assertEqual('8D7q%(ncL$', request.part_number_marker)
+        self.assertEqual('1', request.part_number_marker)
         self.assertEqual('requester', request.request_payer)
 
         request = model.ListPartsRequest(
@@ -3088,7 +3088,7 @@ class TestListParts(unittest.TestCase):
             upload_id='0004B9894A22E5B1888A1E29F823****',
             encoding_type='url',
             max_parts=30971,
-            part_number_marker='8D7q%(ncL$',
+            part_number_marker='2',
             request_payer='requester',
         )
 
@@ -3103,7 +3103,7 @@ class TestListParts(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', op_input.parameters.get('uploadId'))
         self.assertEqual('url', op_input.parameters.get('encoding-type'))
         self.assertEqual(30971, int(op_input.parameters.get('max-parts')))
-        self.assertEqual('8D7q%(ncL$', op_input.parameters.get('part-number-marker'))
+        self.assertEqual('2', op_input.parameters.get('part-number-marker'))
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
 
     def test_constructor_result(self):
@@ -3136,10 +3136,10 @@ class TestListParts(unittest.TestCase):
             max_parts=30971,
             is_truncated=True,
             storage_class='ColdArchive',
-            client_encryption_key='jT*uL+BrU<',
-            client_encryption_start='0Z0H+*hZ:t',
-            client_encryption_cek_alg='0Epx%5PlMY',
-            client_encryption_wrap_alg='g|VF!d\3li',
+            client_encryption_key='client_encryption_key',
+            client_encryption_start='client_encryption_start',
+            client_encryption_cek_alg='client_encryption_cek_alg',
+            client_encryption_wrap_alg='client_encryption_wrap_alg',
             client_encryption_data_size=28827,
             client_encryption_part_size=94474,
             parts=[model.Part(
@@ -3165,10 +3165,10 @@ class TestListParts(unittest.TestCase):
         self.assertEqual(30971, result.max_parts)
         self.assertEqual(True, result.is_truncated)
         self.assertEqual('ColdArchive', result.storage_class)
-        self.assertEqual('jT*uL+BrU<', result.client_encryption_key)
-        self.assertEqual('0Z0H+*hZ:t', result.client_encryption_start)
-        self.assertEqual('0Epx%5PlMY', result.client_encryption_cek_alg)
-        self.assertEqual('g|VF!d\3li', result.client_encryption_wrap_alg)
+        self.assertEqual('client_encryption_key', result.client_encryption_key)
+        self.assertEqual('client_encryption_start', result.client_encryption_start)
+        self.assertEqual('client_encryption_cek_alg', result.client_encryption_cek_alg)
+        self.assertEqual('client_encryption_wrap_alg', result.client_encryption_wrap_alg)
         self.assertEqual(28827, result.client_encryption_data_size)
         self.assertEqual(94474, result.client_encryption_part_size)
         self.assertEqual(1, result.parts[0].part_number)
@@ -3478,7 +3478,7 @@ class TestGetSymlink(unittest.TestCase):
 
         result = model.GetSymlinkResult(
             version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
-            target='_#B++ $M3T',
+            target='gZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0***',
             etag='"D41D8CD98F00B204E9800998ECF8****"',
             metadata={
                 "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
@@ -3488,7 +3488,7 @@ class TestGetSymlink(unittest.TestCase):
             },
         )
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
-        self.assertEqual('_#B++ $M3T', result.target)
+        self.assertEqual('gZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0***', result.target)
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
         self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result.metadata.get("client-side-encryption-key"))
         self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result.metadata.get("client-side-encryption-start"))
@@ -4162,19 +4162,19 @@ class TestAsyncProcessObject(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.AsyncProcessObjectResult(
-            event_id='vqI):RvM5j',
+            event_id='gMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0***',
             task_id=123,
-            process_request_id='R<XFkteab5',
+            process_request_id='gMDJgZCA0mFhZjhjYmY0***',
         )
-        self.assertEqual('vqI):RvM5j', result.event_id)
+        self.assertEqual('gMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0***', result.event_id)
         self.assertEqual(123, result.task_id)
-        self.assertEqual('R<XFkteab5', result.process_request_id)
+        self.assertEqual('gMDJgZCA0mFhZjhjYmY0***', result.process_request_id)
 
         result = model.AsyncProcessObjectResult(
-            process_request_id='R<XFkteab5',
+            process_request_id='RgMDJgZCA0BYiIDYmY0***',
             invalid_field='invalid_field',
         )
-        self.assertEqual('R<XFkteab5', result.process_request_id)
+        self.assertEqual('RgMDJgZCA0BYiIDYmY0***', result.process_request_id)
         self.assertFalse(hasattr(result, 'invalid_field'))
 
     def test_deserialize_result(self):
