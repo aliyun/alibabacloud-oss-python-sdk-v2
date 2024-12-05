@@ -30,6 +30,7 @@ from .models.bucket_website import *
 from .models.bucket_replication import *
 from .models.bucket_referer import *
 from .models.bucket_worm import *
+from .models.bucket_request_payment import *
 
 from .config import Config
 from .client import Client
