@@ -1689,3 +1689,32 @@ class Client:
             GetBucketWormResult: Response result for GetBucketWorm operation.
         """
         return operations.get_bucket_worm(self._client, request, **kwargs)
+
+
+    # bucket request payment
+    def put_bucket_request_payment(self, request: models.PutBucketRequestPaymentRequest, **kwargs
+                               ) -> models.PutBucketRequestPaymentResult:
+        """
+        Enables pay-by-requester for a bucket.
+
+        Args:
+            request (PutBucketRequestPaymentRequest): Request parameters for PutBucketRequestPayment operation.
+
+        Returns:
+            PutBucketRequestPaymentResult: Response result for PutBucketRequestPayment operation.
+        """
+        return operations.put_bucket_request_payment(self._client, request, **kwargs)
+
+
+    def get_bucket_request_payment(self, request: models.GetBucketRequestPaymentRequest, **kwargs
+                                   ) -> models.GetBucketRequestPaymentResult:
+        """
+        Queries pay-by-requester configurations for a bucket.
+
+        Args:
+            request (GetBucketRequestPaymentRequest): Request parameters for GetBucketRequestPayment operation.
+
+        Returns:
+            GetBucketRequestPaymentResult: Response result for GetBucketRequestPayment operation.
+        """
+        return operations.get_bucket_request_payment(self._client, request, **kwargs)
