@@ -1618,3 +1618,74 @@ class Client:
             GetBucketRefererResult: Response result for GetBucketReferer operation.
         """
         return operations.get_bucket_referer(self._client, request, **kwargs)
+
+
+   # bucket worm
+    def initiate_bucket_worm(self, request: models.InitiateBucketWormRequest, **kwargs
+                             ) -> models.InitiateBucketWormResult:
+        """
+        Creates a retention policy.
+
+        Args:
+            request (InitiateBucketWormRequest): Request parameters for InitiateBucketWorm operation.
+
+        Returns:
+            InitiateBucketWormResult: Response result for InitiateBucketWorm operation.
+        """
+        return operations.initiate_bucket_worm(self._client, request, **kwargs)
+
+
+    def abort_bucket_worm(self, request: models.AbortBucketWormRequest, **kwargs
+                          ) -> models.AbortBucketWormResult:
+        """
+        Deletes an unlocked retention policy for a bucket.
+
+        Args:
+            request (AbortBucketWormRequest): Request parameters for AbortBucketWorm operation.
+
+        Returns:
+            AbortBucketWormResult: Response result for AbortBucketWorm operation.
+        """
+        return operations.abort_bucket_worm(self._client, request, **kwargs)
+
+
+    def complete_bucket_worm(self, request: models.CompleteBucketWormRequest, **kwargs
+                             ) -> models.CompleteBucketWormResult:
+        """
+        Locks a retention policy.
+
+        Args:
+            request (CompleteBucketWormRequest): Request parameters for CompleteBucketWorm operation.
+
+        Returns:
+            CompleteBucketWormResult: Response result for CompleteBucketWorm operation.
+        """
+        return operations.complete_bucket_worm(self._client, request, **kwargs)
+
+
+    def extend_bucket_worm(self, request: models.ExtendBucketWormRequest, **kwargs
+                           ) -> models.ExtendBucketWormResult:
+        """
+        Extends the retention period of objects in a bucket for which a retention policy is locked.
+
+        Args:
+            request (ExtendBucketWormRequest): Request parameters for ExtendBucketWorm operation.
+
+        Returns:
+            ExtendBucketWormResult: Response result for ExtendBucketWorm operation.
+        """
+        return operations.extend_bucket_worm(self._client, request, **kwargs)
+
+
+    def get_bucket_worm(self, request: models.GetBucketWormRequest, **kwargs
+                        ) -> models.GetBucketWormResult:
+        """
+        Queries the retention policy configured for a bucket.
+
+        Args:
+            request (GetBucketWormRequest): Request parameters for GetBucketWorm operation.
+
+        Returns:
+            GetBucketWormResult: Response result for GetBucketWorm operation.
+        """
+        return operations.get_bucket_worm(self._client, request, **kwargs)
