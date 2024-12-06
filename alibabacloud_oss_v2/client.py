@@ -1718,3 +1718,60 @@ class Client:
             GetBucketRequestPaymentResult: Response result for GetBucketRequestPayment operation.
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
+
+
+    # style
+    def put_style(self, request: models.PutStyleRequest, **kwargs
+                  ) -> models.PutStyleResult:
+        """
+        Adds an image style to a bucket. An image style contains one or more image processing parameters.
+
+        Args:
+            request (PutStyleRequest): Request parameters for PutStyle operation.
+
+        Returns:
+            PutStyleResult: Response result for PutStyle operation.
+        """
+        return operations.put_style(self._client, request, **kwargs)
+
+
+    def list_style(self, request: models.ListStyleRequest, **kwargs
+                   ) -> models.ListStyleResult:
+        """
+        Queries all image styles that are created for a bucket.
+
+        Args:
+            request (ListStyleRequest): Request parameters for ListStyle operation.
+
+        Returns:
+            ListStyleResult: Response result for ListStyle operation.
+        """
+        return operations.list_style(self._client, request, **kwargs)
+
+
+    def get_style(self, request: models.GetStyleRequest, **kwargs
+                  ) -> models.GetStyleResult:
+        """
+        Queries the information about an image style of a bucket.
+
+        Args:
+            request (GetStyleRequest): Request parameters for GetStyle operation.
+
+        Returns:
+            GetStyleResult: Response result for GetStyle operation.
+        """
+        return operations.get_style(self._client, request, **kwargs)
+
+
+    def delete_style(self, request: models.DeleteStyleRequest, **kwargs
+                     ) -> models.DeleteStyleResult:
+        """
+        Deletes an image style from a bucket.
+
+        Args:
+            request (DeleteStyleRequest): Request parameters for DeleteStyle operation.
+
+        Returns:
+            DeleteStyleResult: Response result for DeleteStyle operation.
+        """
+        return operations.delete_style(self._client, request, **kwargs)
