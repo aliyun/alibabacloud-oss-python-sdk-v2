@@ -1718,3 +1718,47 @@ class Client:
             GetBucketRequestPaymentResult: Response result for GetBucketRequestPayment operation.
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
+
+
+    # bucket tags
+    def put_bucket_tags(self, request: models.PutBucketTagsRequest, **kwargs
+                        ) -> models.PutBucketTagsResult:
+        """
+        Adds tags to or modifies the existing tags of a bucket.
+
+        Args:
+            request (PutBucketTagsRequest): Request parameters for PutBucketTags operation.
+
+        Returns:
+            PutBucketTagsResult: Response result for PutBucketTags operation.
+        """
+        return operations.put_bucket_tags(self._client, request, **kwargs)
+
+
+    def get_bucket_tags(self, request: models.GetBucketTagsRequest, **kwargs
+                        ) -> models.GetBucketTagsResult:
+        """
+        Queries the tags of a bucket.
+
+        Args:
+            request (GetBucketTagsRequest): Request parameters for GetBucketTags operation.
+
+        Returns:
+            GetBucketTagsResult: Response result for GetBucketTags operation.
+        """
+        return operations.get_bucket_tags(self._client, request, **kwargs)
+
+
+    def delete_bucket_tags(self, request: models.DeleteBucketTagsRequest, **kwargs
+                           ) -> models.DeleteBucketTagsResult:
+        """
+        Deletes tags configured for a bucket.
+
+        Args:
+            request (DeleteBucketTagsRequest): Request parameters for DeleteBucketTags operation.
+
+        Returns:
+            DeleteBucketTagsResult: Response result for DeleteBucketTags operation.
+        """
+        return operations.delete_bucket_tags(self._client, request, **kwargs)
+
