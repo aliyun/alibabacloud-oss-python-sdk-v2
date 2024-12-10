@@ -1718,3 +1718,47 @@ class Client:
             GetBucketRequestPaymentResult: Response result for GetBucketRequestPayment operation.
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
+
+
+    # public access block
+    def get_public_access_block(self, request: models.GetPublicAccessBlockRequest, **kwargs
+                                ) -> models.GetPublicAccessBlockResult:
+        """
+        Queries the Block Public Access configurations of OSS resources.
+
+        Args:
+            request (GetPublicAccessBlockRequest): Request parameters for GetPublicAccessBlock operation.
+
+        Returns:
+            GetPublicAccessBlockResult: Response result for GetPublicAccessBlock operation.
+        """
+        return operations.get_public_access_block(self._client, request, **kwargs)
+
+
+    def put_public_access_block(self, request: models.PutPublicAccessBlockRequest, **kwargs
+                                ) -> models.PutPublicAccessBlockResult:
+        """
+        Enables or disables Block Public Access for Object Storage Service (OSS) resources.
+
+        Args:
+            request (PutPublicAccessBlockRequest): Request parameters for PutPublicAccessBlock operation.
+
+        Returns:
+            PutPublicAccessBlockResult: Response result for PutPublicAccessBlock operation.
+        """
+        return operations.put_public_access_block(self._client, request, **kwargs)
+
+
+    def delete_public_access_block(self, request: models.DeletePublicAccessBlockRequest, **kwargs
+                                   ) -> models.DeletePublicAccessBlockResult:
+        """
+        Deletes the Block Public Access configurations of OSS resources.
+
+        Args:
+            request (DeletePublicAccessBlockRequest): Request parameters for DeletePublicAccessBlock operation.
+
+        Returns:
+            DeletePublicAccessBlockResult: Response result for DeletePublicAccessBlock operation.
+        """
+        return operations.delete_public_access_block(self._client, request, **kwargs)
+
