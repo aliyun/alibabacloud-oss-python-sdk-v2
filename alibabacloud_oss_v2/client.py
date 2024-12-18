@@ -1719,6 +1719,48 @@ class Client:
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
 
+    # bucket public access block
+    def get_bucket_public_access_block(self, request: models.GetBucketPublicAccessBlockRequest, **kwargs
+                                       ) -> models.GetBucketPublicAccessBlockResult:
+        """
+        Queries the Block Public Access configurations of a bucket.
+
+        Args:
+            request (GetBucketPublicAccessBlockRequest): Request parameters for GetBucketPublicAccessBlock operation.
+
+        Returns:
+            GetBucketPublicAccessBlockResult: Response result for GetBucketPublicAccessBlock operation.
+        """
+        return operations.get_bucket_public_access_block(self._client, request, **kwargs)
+
+
+    def put_bucket_public_access_block(self, request: models.PutBucketPublicAccessBlockRequest, **kwargs
+                                       ) -> models.PutBucketPublicAccessBlockResult:
+        """
+        Enables or disables Block Public Access for a bucket.
+
+        Args:
+            request (PutBucketPublicAccessBlockRequest): Request parameters for PutBucketPublicAccessBlock operation.
+
+        Returns:
+            PutBucketPublicAccessBlockResult: Response result for PutBucketPublicAccessBlock operation.
+        """
+        return operations.put_bucket_public_access_block(self._client, request, **kwargs)
+
+
+    def delete_bucket_public_access_block(self, request: models.DeleteBucketPublicAccessBlockRequest, **kwargs
+                                          ) -> models.DeleteBucketPublicAccessBlockResult:
+        """
+        Deletes the Block Public Access configurations of a bucket.
+
+        Args:
+            request (DeleteBucketPublicAccessBlockRequest): Request parameters for DeleteBucketPublicAccessBlock operation.
+
+        Returns:
+            DeleteBucketPublicAccessBlockResult: Response result for DeleteBucketPublicAccessBlock operation.
+        """
+        return operations.delete_bucket_public_access_block(self._client, request, **kwargs)
+
     # public access block
     def get_public_access_block(self, request: models.GetPublicAccessBlockRequest, **kwargs
                                 ) -> models.GetPublicAccessBlockResult:
