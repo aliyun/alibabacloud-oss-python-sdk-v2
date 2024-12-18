@@ -20,3 +20,8 @@ from .bucket_referer import *
 from .bucket_worm import *
 from .bucket_request_payment import *
 from .bucket_data_redundancy_transition import *
+from .bucket_transfer_acceleration import *
+from .bucket_public_access_block import *
+from .public_access_block import *
+from .bucket_resource_group import *
+from .bucket_style import *

@@ -32,6 +32,11 @@ from .models.bucket_referer import *
 from .models.bucket_worm import *
 from .models.bucket_request_payment import *
 from .models.bucket_data_redundancy_transition import *
+from .models.bucket_transfer_acceleration import *
+from .models.bucket_public_access_block import *
+from .models.public_access_block import *
+from .models.bucket_resource_group import *
+from .models.bucket_style import *
 
 from .config import Config
 from .client import Client

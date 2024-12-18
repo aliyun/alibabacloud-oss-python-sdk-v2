@@ -1785,3 +1785,199 @@ class Client:
         """
         return operations.delete_bucket_data_redundancy_transition(self._client, request, **kwargs)
 
+
+    # bucket transfer acceleration
+    def put_bucket_transfer_acceleration(self, request: models.PutBucketTransferAccelerationRequest, **kwargs
+                                         ) -> models.PutBucketTransferAccelerationResult:
+        """
+        Configures transfer acceleration for a bucket. After you enable transfer acceleration for a bucket, the object access speed is accelerated for users worldwide. The transfer acceleration feature is applicable to scenarios where data needs to be transferred over long geographical distances. This feature can also be used to download or upload objects that are gigabytes or terabytes in size.
+
+        Args:
+            request (PutBucketTransferAccelerationRequest): Request parameters for PutBucketTransferAcceleration operation.
+
+        Returns:
+            PutBucketTransferAccelerationResult: Response result for PutBucketTransferAcceleration operation.
+        """
+        return operations.put_bucket_transfer_acceleration(self._client, request, **kwargs)
+
+
+    def get_bucket_transfer_acceleration(self, request: models.GetBucketTransferAccelerationRequest, **kwargs
+                                         ) -> models.GetBucketTransferAccelerationResult:
+        """
+        Queries the transfer acceleration configurations of a bucket.
+
+        Args:
+            request (GetBucketTransferAccelerationRequest): Request parameters for GetBucketTransferAcceleration operation.
+
+        Returns:
+            GetBucketTransferAccelerationResult: Response result for GetBucketTransferAcceleration operation.
+        """
+        return operations.get_bucket_transfer_acceleration(self._client, request, **kwargs)
+
+    # bucket public access block
+    def get_bucket_public_access_block(self, request: models.GetBucketPublicAccessBlockRequest, **kwargs
+                                       ) -> models.GetBucketPublicAccessBlockResult:
+        """
+        Queries the Block Public Access configurations of a bucket.
+
+        Args:
+            request (GetBucketPublicAccessBlockRequest): Request parameters for GetBucketPublicAccessBlock operation.
+
+        Returns:
+            GetBucketPublicAccessBlockResult: Response result for GetBucketPublicAccessBlock operation.
+        """
+        return operations.get_bucket_public_access_block(self._client, request, **kwargs)
+
+
+    def put_bucket_public_access_block(self, request: models.PutBucketPublicAccessBlockRequest, **kwargs
+                                       ) -> models.PutBucketPublicAccessBlockResult:
+        """
+        Enables or disables Block Public Access for a bucket.
+
+        Args:
+            request (PutBucketPublicAccessBlockRequest): Request parameters for PutBucketPublicAccessBlock operation.
+
+        Returns:
+            PutBucketPublicAccessBlockResult: Response result for PutBucketPublicAccessBlock operation.
+        """
+        return operations.put_bucket_public_access_block(self._client, request, **kwargs)
+
+
+    def delete_bucket_public_access_block(self, request: models.DeleteBucketPublicAccessBlockRequest, **kwargs
+                                          ) -> models.DeleteBucketPublicAccessBlockResult:
+        """
+        Deletes the Block Public Access configurations of a bucket.
+
+        Args:
+            request (DeleteBucketPublicAccessBlockRequest): Request parameters for DeleteBucketPublicAccessBlock operation.
+
+        Returns:
+            DeleteBucketPublicAccessBlockResult: Response result for DeleteBucketPublicAccessBlock operation.
+        """
+        return operations.delete_bucket_public_access_block(self._client, request, **kwargs)
+
+    # public access block
+    def get_public_access_block(self, request: models.GetPublicAccessBlockRequest, **kwargs
+                                ) -> models.GetPublicAccessBlockResult:
+        """
+        Queries the Block Public Access configurations of OSS resources.
+
+        Args:
+            request (GetPublicAccessBlockRequest): Request parameters for GetPublicAccessBlock operation.
+
+        Returns:
+            GetPublicAccessBlockResult: Response result for GetPublicAccessBlock operation.
+        """
+        return operations.get_public_access_block(self._client, request, **kwargs)
+
+
+    def put_public_access_block(self, request: models.PutPublicAccessBlockRequest, **kwargs
+                                ) -> models.PutPublicAccessBlockResult:
+        """
+        Enables or disables Block Public Access for Object Storage Service (OSS) resources.
+
+        Args:
+            request (PutPublicAccessBlockRequest): Request parameters for PutPublicAccessBlock operation.
+
+        Returns:
+            PutPublicAccessBlockResult: Response result for PutPublicAccessBlock operation.
+        """
+        return operations.put_public_access_block(self._client, request, **kwargs)
+
+
+    def delete_public_access_block(self, request: models.DeletePublicAccessBlockRequest, **kwargs
+                                   ) -> models.DeletePublicAccessBlockResult:
+        """
+        Deletes the Block Public Access configurations of OSS resources.
+
+        Args:
+            request (DeletePublicAccessBlockRequest): Request parameters for DeletePublicAccessBlock operation.
+
+        Returns:
+            DeletePublicAccessBlockResult: Response result for DeletePublicAccessBlock operation.
+        """
+        return operations.delete_public_access_block(self._client, request, **kwargs)
+
+    # bucket resource group
+    def get_bucket_resource_group(self, request: models.GetBucketResourceGroupRequest, **kwargs
+                                  ) -> models.GetBucketResourceGroupResult:
+        """
+        Queries the ID of the resource group to which a bucket belongs.
+
+        Args:
+            request (GetBucketResourceGroupRequest): Request parameters for GetBucketResourceGroup operation.
+
+        Returns:
+            GetBucketResourceGroupResult: Response result for GetBucketResourceGroup operation.
+        """
+        return operations.get_bucket_resource_group(self._client, request, **kwargs)
+
+
+    def put_bucket_resource_group(self, request: models.PutBucketResourceGroupRequest, **kwargs
+                                  ) -> models.PutBucketResourceGroupResult:
+        """
+        Modifies the ID of the resource group to which a bucket belongs.
+
+        Args:
+            request (PutBucketResourceGroupRequest): Request parameters for PutBucketResourceGroup operation.
+
+        Returns:
+            PutBucketResourceGroupResult: Response result for PutBucketResourceGroup operation.
+        """
+        return operations.put_bucket_resource_group(self._client, request, **kwargs)
+
+    # style
+    def put_style(self, request: models.PutStyleRequest, **kwargs
+                  ) -> models.PutStyleResult:
+        """
+        Adds an image style to a bucket. An image style contains one or more image processing parameters.
+
+        Args:
+            request (PutStyleRequest): Request parameters for PutStyle operation.
+
+        Returns:
+            PutStyleResult: Response result for PutStyle operation.
+        """
+        return operations.put_style(self._client, request, **kwargs)
+
+
+    def list_style(self, request: models.ListStyleRequest, **kwargs
+                   ) -> models.ListStyleResult:
+        """
+        Queries all image styles that are created for a bucket.
+
+        Args:
+            request (ListStyleRequest): Request parameters for ListStyle operation.
+
+        Returns:
+            ListStyleResult: Response result for ListStyle operation.
+        """
+        return operations.list_style(self._client, request, **kwargs)
+
+
+    def get_style(self, request: models.GetStyleRequest, **kwargs
+                  ) -> models.GetStyleResult:
+        """
+        Queries the information about an image style of a bucket.
+
+        Args:
+            request (GetStyleRequest): Request parameters for GetStyle operation.
+
+        Returns:
+            GetStyleResult: Response result for GetStyle operation.
+        """
+        return operations.get_style(self._client, request, **kwargs)
+
+
+    def delete_style(self, request: models.DeleteStyleRequest, **kwargs
+                     ) -> models.DeleteStyleResult:
+        """
+        Deletes an image style from a bucket.
+
+        Args:
+            request (DeleteStyleRequest): Request parameters for DeleteStyle operation.
+
+        Returns:
+            DeleteStyleResult: Response result for DeleteStyle operation.
+        """
+        return operations.delete_style(self._client, request, **kwargs)
