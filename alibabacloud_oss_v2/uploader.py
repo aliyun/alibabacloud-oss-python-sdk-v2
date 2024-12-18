@@ -499,6 +499,7 @@ class _UploaderDelegate:
             if not self._options.leave_parts_on_error:
                 try:
                     abort_request = models.AbortMultipartUploadRequest()
+                    abort_request.upload_id = upload_ctx.upload_id
                     copy_request(request, self._reqeust)
                     self._client.abort_multipart_upload(abort_request)
                 except Exception as _:
