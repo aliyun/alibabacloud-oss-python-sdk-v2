@@ -1719,6 +1719,46 @@ class Client:
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
 
+    # access point public access block
+    def put_access_point_public_access_block(self, request: models.PutAccessPointPublicAccessBlockRequest, **kwargs
+                                             ) -> models.PutAccessPointPublicAccessBlockResult:
+        """
+        Enables or disables Block Public Access for an access point.
+
+        Args:
+            request (PutAccessPointPublicAccessBlockRequest): Request parameters for PutAccessPointPublicAccessBlock operation.
+
+        Returns:
+            PutAccessPointPublicAccessBlockResult: Response result for PutAccessPointPublicAccessBlock operation.
+        """
+        return operations.put_access_point_public_access_block(self._client, request, **kwargs)
+
+    def get_access_point_public_access_block(self, request: models.GetAccessPointPublicAccessBlockRequest, **kwargs
+                                             ) -> models.GetAccessPointPublicAccessBlockResult:
+        """
+        Queries the Block Public Access configurations of an access point.
+
+        Args:
+            request (GetAccessPointPublicAccessBlockRequest): Request parameters for GetAccessPointPublicAccessBlock operation.
+
+        Returns:
+            GetAccessPointPublicAccessBlockResult: Response result for GetAccessPointPublicAccessBlock operation.
+        """
+        return operations.get_access_point_public_access_block(self._client, request, **kwargs)
+
+    def delete_access_point_public_access_block(self, request: models.DeleteAccessPointPublicAccessBlockRequest, **kwargs
+                                                ) -> models.DeleteAccessPointPublicAccessBlockResult:
+        """
+        Deletes the Block Public Access configurations of an access point.
+
+        Args:
+            request (DeleteAccessPointPublicAccessBlockRequest): Request parameters for DeleteAccessPointPublicAccessBlock operation.
+
+        Returns:
+            DeleteAccessPointPublicAccessBlockResult: Response result for DeleteAccessPointPublicAccessBlock operation.
+        """
+        return operations.delete_access_point_public_access_block(self._client, request, **kwargs)
+
     # bucket data redundancy transition
     def create_bucket_data_redundancy_transition(self, request: models.CreateBucketDataRedundancyTransitionRequest, **kwargs
                                                  ) -> models.CreateBucketDataRedundancyTransitionResult:
