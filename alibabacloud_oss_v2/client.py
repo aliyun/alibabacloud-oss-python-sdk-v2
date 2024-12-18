@@ -1719,6 +1719,35 @@ class Client:
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
 
+
+    # bucket transfer acceleration
+    def put_bucket_transfer_acceleration(self, request: models.PutBucketTransferAccelerationRequest, **kwargs
+                                         ) -> models.PutBucketTransferAccelerationResult:
+        """
+        Configures transfer acceleration for a bucket. After you enable transfer acceleration for a bucket, the object access speed is accelerated for users worldwide. The transfer acceleration feature is applicable to scenarios where data needs to be transferred over long geographical distances. This feature can also be used to download or upload objects that are gigabytes or terabytes in size.
+
+        Args:
+            request (PutBucketTransferAccelerationRequest): Request parameters for PutBucketTransferAcceleration operation.
+
+        Returns:
+            PutBucketTransferAccelerationResult: Response result for PutBucketTransferAcceleration operation.
+        """
+        return operations.put_bucket_transfer_acceleration(self._client, request, **kwargs)
+
+
+    def get_bucket_transfer_acceleration(self, request: models.GetBucketTransferAccelerationRequest, **kwargs
+                                         ) -> models.GetBucketTransferAccelerationResult:
+        """
+        Queries the transfer acceleration configurations of a bucket.
+
+        Args:
+            request (GetBucketTransferAccelerationRequest): Request parameters for GetBucketTransferAcceleration operation.
+
+        Returns:
+            GetBucketTransferAccelerationResult: Response result for GetBucketTransferAcceleration operation.
+        """
+        return operations.get_bucket_transfer_acceleration(self._client, request, **kwargs)
+
     # bucket public access block
     def get_bucket_public_access_block(self, request: models.GetBucketPublicAccessBlockRequest, **kwargs
                                        ) -> models.GetBucketPublicAccessBlockResult:
