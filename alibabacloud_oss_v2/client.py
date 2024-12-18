@@ -1719,6 +1719,33 @@ class Client:
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
 
+    # bucket resource group
+    def get_bucket_resource_group(self, request: models.GetBucketResourceGroupRequest, **kwargs
+                                  ) -> models.GetBucketResourceGroupResult:
+        """
+        Queries the ID of the resource group to which a bucket belongs.
+
+        Args:
+            request (GetBucketResourceGroupRequest): Request parameters for GetBucketResourceGroup operation.
+
+        Returns:
+            GetBucketResourceGroupResult: Response result for GetBucketResourceGroup operation.
+        """
+        return operations.get_bucket_resource_group(self._client, request, **kwargs)
+
+
+    def put_bucket_resource_group(self, request: models.PutBucketResourceGroupRequest, **kwargs
+                                  ) -> models.PutBucketResourceGroupResult:
+        """
+        Modifies the ID of the resource group to which a bucket belongs.
+
+        Args:
+            request (PutBucketResourceGroupRequest): Request parameters for PutBucketResourceGroup operation.
+
+        Returns:
+            PutBucketResourceGroupResult: Response result for PutBucketResourceGroup operation.
+        """
+        return operations.put_bucket_resource_group(self._client, request, **kwargs)
 
     # style
     def put_style(self, request: models.PutStyleRequest, **kwargs
