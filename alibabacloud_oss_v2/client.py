@@ -1719,6 +1719,72 @@ class Client:
         """
         return operations.get_bucket_request_payment(self._client, request, **kwargs)
 
+    # bucket data redundancy transition
+    def create_bucket_data_redundancy_transition(self, request: models.CreateBucketDataRedundancyTransitionRequest, **kwargs
+                                                 ) -> models.CreateBucketDataRedundancyTransitionResult:
+        """
+        Creates a redundancy type conversion task for a bucket.
+
+        Args:
+            request (CreateBucketDataRedundancyTransitionRequest): Request parameters for CreateBucketDataRedundancyTransition operation.
+
+        Returns:
+            CreateBucketDataRedundancyTransitionResult: Response result for CreateBucketDataRedundancyTransition operation.
+        """
+        return operations.create_bucket_data_redundancy_transition(self._client, request, **kwargs)
+
+    def get_bucket_data_redundancy_transition(self, request: models.GetBucketDataRedundancyTransitionRequest, **kwargs
+                                              ) -> models.GetBucketDataRedundancyTransitionResult:
+        """
+        Queries the redundancy type conversion tasks of a bucket.
+
+        Args:
+            request (GetBucketDataRedundancyTransitionRequest): Request parameters for GetBucketDataRedundancyTransition operation.
+
+        Returns:
+            GetBucketDataRedundancyTransitionResult: Response result for GetBucketDataRedundancyTransition operation.
+        """
+        return operations.get_bucket_data_redundancy_transition(self._client, request, **kwargs)
+
+    def list_bucket_data_redundancy_transition(self, request: models.ListBucketDataRedundancyTransitionRequest, **kwargs
+                                               ) -> models.ListBucketDataRedundancyTransitionResult:
+        """
+        Lists all redundancy type conversion tasks of a bucket.
+
+        Args:
+            request (ListBucketDataRedundancyTransitionRequest): Request parameters for ListBucketDataRedundancyTransition operation.
+
+        Returns:
+            ListBucketDataRedundancyTransitionResult: Response result for ListBucketDataRedundancyTransition operation.
+        """
+        return operations.list_bucket_data_redundancy_transition(self._client, request, **kwargs)
+
+    def list_user_data_redundancy_transition(self, request: models.ListUserDataRedundancyTransitionRequest, **kwargs
+                                               ) -> models.ListUserDataRedundancyTransitionResult:
+        """
+        Lists all redundancy type conversion tasks of a user.
+
+        Args:
+            request (ListUserDataRedundancyTransitionRequest): Request parameters for ListUserDataRedundancyTransition operation.
+
+        Returns:
+            ListUserDataRedundancyTransitionResult: Response result for ListUserDataRedundancyTransition operation.
+        """
+        return operations.list_user_data_redundancy_transition(self._client, request, **kwargs)
+
+    def delete_bucket_data_redundancy_transition(self, request: models.DeleteBucketDataRedundancyTransitionRequest, **kwargs
+                                                 ) -> models.DeleteBucketDataRedundancyTransitionResult:
+        """
+        Deletes a redundancy type conversion task of a bucket.
+
+        Args:
+            request (DeleteBucketDataRedundancyTransitionRequest): Request parameters for DeleteBucketDataRedundancyTransition operation.
+
+        Returns:
+            DeleteBucketDataRedundancyTransitionResult: Response result for DeleteBucketDataRedundancyTransition operation.
+        """
+        return operations.delete_bucket_data_redundancy_transition(self._client, request, **kwargs)
+
 
     # bucket transfer acceleration
     def put_bucket_transfer_acceleration(self, request: models.PutBucketTransferAccelerationRequest, **kwargs
