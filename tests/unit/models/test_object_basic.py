@@ -27,7 +27,7 @@ class TestPutObject(unittest.TestCase):
         self.assertIsNone(request.expires)
         self.assertIsNone(request.server_side_encryption)
         self.assertIsNone(request.server_side_data_encryption)
-        self.assertIsNone(request.sse_kms_key_id)
+        self.assertIsNone(request.server_side_encryption_key_id)
         self.assertIsNone(request.tagging)
         self.assertIsNone(request.callback)
         self.assertIsNone(request.callback_var)
@@ -61,7 +61,7 @@ class TestPutObject(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             callback='{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}',
             callback_var='{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}',
@@ -88,7 +88,7 @@ class TestPutObject(unittest.TestCase):
         self.assertEqual('2022-10-12T00:00:00.000Z', request.expires)
         self.assertEqual('SM4', request.server_side_encryption)
         self.assertEqual('KMS', request.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.server_side_encryption_key_id)
         self.assertEqual('tagging-test', request.tagging)
         self.assertEqual('{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}', request.callback)
         self.assertEqual('{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}', request.callback_var)
@@ -145,7 +145,7 @@ class TestPutObject(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             callback='{\"callbackUrl\":\"www.abc.com/callback\",\"callbackBody\":\"${etag}\"}',
             callback_var='{\"x:var1\":\"value1\",\"x:var2\":\"value2\"}',
@@ -359,7 +359,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertIsNone(result.tagging_count)
         self.assertIsNone(result.server_side_encryption)
         self.assertIsNone(result.server_side_data_encryption)
-        self.assertIsNone(result.sse_kms_key_id)
+        self.assertIsNone(result.server_side_encryption_key_id)
         self.assertIsNone(result.next_append_position)
         self.assertIsNone(result.expiration)
         self.assertIsNone(result.restore)
@@ -395,7 +395,7 @@ class TestHeadObject(unittest.TestCase):
             tagging_count=111,
             server_side_encryption='SM4',
             server_side_data_encryption='AES256',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             next_append_position='222',
             expiration='2022-10-12T00:00:00.000Z',
             restore='ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',
@@ -424,7 +424,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual(111, result.tagging_count)
         self.assertEqual('SM4', result.server_side_encryption)
         self.assertEqual('AES256', result.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.server_side_encryption_key_id)
         self.assertEqual('222', result.next_append_position)
         self.assertEqual('2022-10-12T00:00:00.000Z', result.expiration)
         self.assertEqual('ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',result.restore)
@@ -631,7 +631,7 @@ class TestGetObject(unittest.TestCase):
         self.assertIsNone(result.tagging_count)
         self.assertIsNone(result.server_side_encryption)
         self.assertIsNone(result.server_side_data_encryption)
-        self.assertIsNone(result.sse_kms_key_id)
+        self.assertIsNone(result.server_side_encryption_key_id)
         self.assertIsNone(result.next_append_position)
         self.assertIsNone(result.expiration)
         self.assertIsNone(result.restore)
@@ -664,7 +664,7 @@ class TestGetObject(unittest.TestCase):
             tagging_count=2048,
             server_side_encryption='AES256',
             server_side_data_encryption='SM4',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             next_append_position='234',
             expiration='2022-10-12T00:00:00.000Z',
             restore='ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',
@@ -688,7 +688,7 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual(2048, int(result.tagging_count))
         self.assertEqual('AES256', result.server_side_encryption)
         self.assertEqual('SM4', result.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.server_side_encryption_key_id)
         self.assertEqual('234', result.next_append_position)
         self.assertEqual('2022-10-12T00:00:00.000Z', result.expiration)
         self.assertEqual('ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',result.restore)
@@ -756,7 +756,7 @@ class TestAppendObject(unittest.TestCase):
         self.assertIsNone(request.expires)
         self.assertIsNone(request.server_side_encryption)
         self.assertIsNone(request.server_side_data_encryption)
-        self.assertIsNone(request.sse_kms_key_id)
+        self.assertIsNone(request.server_side_encryption_key_id)
         self.assertIsNone(request.tagging)
         self.assertIsNone(request.forbid_overwrite)
         self.assertIsNone(request.traffic_limit)
@@ -789,7 +789,7 @@ class TestAppendObject(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             forbid_overwrite=True,
             traffic_limit=100*1024*8,
@@ -815,7 +815,7 @@ class TestAppendObject(unittest.TestCase):
         self.assertEqual('2022-10-12T00:00:00.000Z', request.expires)
         self.assertEqual('SM4', request.server_side_encryption)
         self.assertEqual('KMS', request.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.server_side_encryption_key_id)
         self.assertEqual('tagging-test', request.tagging)
         self.assertEqual(True, request.forbid_overwrite)
         self.assertEqual(100 * 1024 * 8, request.traffic_limit)
@@ -875,7 +875,7 @@ class TestAppendObject(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             forbid_overwrite=True,
             traffic_limit=100*1024*8,
@@ -976,7 +976,7 @@ class TestCopyObject(unittest.TestCase):
         self.assertIsNone(request.metadata_directive)
         self.assertIsNone(request.server_side_encryption)
         self.assertIsNone(request.server_side_data_encryption)
-        self.assertIsNone(request.sse_kms_key_id)
+        self.assertIsNone(request.server_side_encryption_key_id)
         self.assertIsNone(request.tagging)
         self.assertIsNone(request.tagging_directive)
         self.assertIsNone(request.forbid_overwrite)
@@ -1016,7 +1016,7 @@ class TestCopyObject(unittest.TestCase):
             metadata_directive='COPY',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             tagging_directive='tagging_directive-test',
             forbid_overwrite=True,
@@ -1049,7 +1049,7 @@ class TestCopyObject(unittest.TestCase):
         self.assertEqual('COPY', request.metadata_directive)
         self.assertEqual('SM4', request.server_side_encryption)
         self.assertEqual('KMS', request.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.server_side_encryption_key_id)
         self.assertEqual('tagging-test', request.tagging)
         self.assertEqual('tagging_directive-test', request.tagging_directive)
         self.assertEqual(True, request.forbid_overwrite)
@@ -1116,7 +1116,7 @@ class TestCopyObject(unittest.TestCase):
             metadata_directive='metadata_directive-test',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             tagging_directive='tagging_directive-test',
             forbid_overwrite=True,
@@ -1167,7 +1167,7 @@ class TestCopyObject(unittest.TestCase):
         self.assertIsNone(result.source_version_id)
         self.assertIsNone(result.server_side_encryption)
         self.assertIsNone(result.server_side_data_encryption)
-        self.assertIsNone(result.sse_kms_key_id)
+        self.assertIsNone(result.server_side_encryption_key_id)
         self.assertIsNone(result.last_modified)
         self.assertIsNone(result.etag)
         self.assertIsInstance(result, serde.Model)
@@ -1178,7 +1178,7 @@ class TestCopyObject(unittest.TestCase):
             source_version_id='source_version_id-test',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             last_modified=datetime.datetime.fromtimestamp(1702743657),
             etag='"D41D8CD98F00B204E9800998ECF8****"',
         )
@@ -1187,7 +1187,7 @@ class TestCopyObject(unittest.TestCase):
         self.assertEqual('source_version_id-test', result.source_version_id)
         self.assertEqual('SM4', result.server_side_encryption)
         self.assertEqual('KMS', result.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.server_side_encryption_key_id)
         self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
         self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
@@ -1985,7 +1985,7 @@ class TestInitiateMultipartUpload(unittest.TestCase):
         self.assertIsNone(request.expires)
         self.assertIsNone(request.server_side_encryption)
         self.assertIsNone(request.server_side_data_encryption)
-        self.assertIsNone(request.sse_kms_key_id)
+        self.assertIsNone(request.server_side_encryption_key_id)
         self.assertIsNone(request.tagging)
         self.assertIsNone(request.forbid_overwrite)
         self.assertIsNone(request.request_payer)
@@ -2016,7 +2016,7 @@ class TestInitiateMultipartUpload(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             forbid_overwrite=True,
             request_payer='requester',
@@ -2040,7 +2040,7 @@ class TestInitiateMultipartUpload(unittest.TestCase):
         self.assertEqual('2022-10-12T00:00:00.000Z', request.expires)
         self.assertEqual('SM4', request.server_side_encryption)
         self.assertEqual('KMS', request.server_side_data_encryption)
-        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.sse_kms_key_id)
+        self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', request.server_side_encryption_key_id)
         self.assertEqual('tagging-test', request.tagging)
         self.assertEqual(True, request.forbid_overwrite)
         self.assertEqual('requester', request.request_payer)
@@ -2092,7 +2092,7 @@ class TestInitiateMultipartUpload(unittest.TestCase):
             expires='2022-10-12T00:00:00.000Z',
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
-            sse_kms_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
+            server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
             tagging='tagging-test',
             forbid_overwrite=True,
             request_payer='requester',

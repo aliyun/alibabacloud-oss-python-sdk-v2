@@ -50,7 +50,7 @@ def main():
           f' tagging count: {result.tagging_count},' 
           f' server side encryption: {result.server_side_encryption},' 
           f' server side data encryption: {result.server_side_data_encryption},' 
-          f' sse kms key id: {result.sse_kms_key_id},' 
+          f' server side encryption key id: {result.server_side_encryption_key_id},' 
           f' next append position: {result.next_append_position},' 
           f' expiration: {result.expiration},' 
           f' restore: {result.restore},' 

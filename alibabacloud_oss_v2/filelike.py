@@ -193,7 +193,7 @@ class AppendOnlyFile:
         request.content_type = self._create_parameter.content_type
         request.server_side_encryption = self._create_parameter.server_side_encryption
         request.server_side_data_encryption = self._create_parameter.server_side_data_encryption
-        request.sse_kms_key_id = self._create_parameter.sse_kms_key_id
+        request.server_side_encryption_key_id = self._create_parameter.server_side_encryption_key_id
         request.metadata = self._create_parameter.metadata
         request.tagging = self._create_parameter.tagging
 
