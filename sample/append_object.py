@@ -41,7 +41,7 @@ def main():
           f' next position: {result.next_position},' 
           f' server side encryption: {result.server_side_encryption},' 
           f' server side data encryption: {result.server_side_data_encryption},' 
-          f' sse kms key id: {result.sse_kms_key_id},'
+          f' server side encryption key id: {result.server_side_encryption_key_id},'
     )
 
     result = client.append_object(oss.AppendObjectRequest(
@@ -58,7 +58,7 @@ def main():
           f' next position: {result.next_position},' 
           f' server side encryption: {result.server_side_encryption},' 
           f' server side data encryption: {result.server_side_data_encryption},' 
-          f' sse kms key id: {result.sse_kms_key_id},'
+          f' server side encryption key id: {result.server_side_encryption_key_id},'
     )
 
 if __name__ == "__main__":
