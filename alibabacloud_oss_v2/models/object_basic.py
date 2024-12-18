@@ -27,7 +27,7 @@ class PutObjectRequest(serde.RequestModel):
         "expires": {"tag": "input", "position": "header", "rename": "Expires"},
         "server_side_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "tagging": {"tag": "input", "position": "header", "rename": "x-oss-tagging"},
         "callback": {"tag": "input", "position": "header", "rename": "x-oss-callback"},
         "callback_var": {"tag": "input", "position": "header", "rename": "x-oss-callback-var"},
@@ -54,7 +54,7 @@ class PutObjectRequest(serde.RequestModel):
         expires: Optional[str] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
         callback: Optional[str] = None,
         callback_var: Optional[str] = None,
@@ -84,7 +84,7 @@ class PutObjectRequest(serde.RequestModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only
                 when the x-oss-server-side-encryption header is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             tagging (str, optional): The tags that are specified for the object by using a key-value pair.
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             callback (str, optional): A callback parameter is a Base64-encoded string that contains multiple fields in the JSON format.
@@ -112,7 +112,7 @@ class PutObjectRequest(serde.RequestModel):
         self.expires = expires
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.tagging = tagging
         self.callback = callback
         self.callback_var = callback_var
@@ -236,7 +236,7 @@ class HeadObjectResult(serde.ResultModel):
         "tagging_count": {"tag": "output", "position": "header", "rename": "x-oss-tagging-count", "type": "int"},
         "server_side_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "next_append_position": {"tag": "output", "position": "header", "rename": "x-oss-next-append-position", "type": "int"},
         "expiration": {"tag": "output", "position": "header", "rename": "x-oss-expiration"},
         "restore": {"tag": "output", "position": "header", "rename": "x-oss-restore"},
@@ -268,7 +268,7 @@ class HeadObjectResult(serde.ResultModel):
         tagging_count: Optional[int] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         next_append_position: Optional[str] = None,
         expiration: Optional[str] = None,
         restore: Optional[str] = None,
@@ -307,7 +307,7 @@ class HeadObjectResult(serde.ResultModel):
                 The x-oss-server-side-encryption header is included in the response to indicate the encryption algorithm 
                 used to encrypt the object on the server.
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             next_append_position (str, optional): The position for the next append operation.
                 If the type of the object is Appendable, this header is included in the response.
             expiration (str, optional): The lifecycle information about the object.
@@ -343,7 +343,7 @@ class HeadObjectResult(serde.ResultModel):
         self.tagging_count = tagging_count
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.next_append_position = next_append_position
         self.expiration = expiration
         self.restore = restore
@@ -487,7 +487,7 @@ class GetObjectResult(serde.ResultModel):
         "tagging_count": {"tag": "output", "position": "header", "rename": "x-oss-tagging-count", "type": "int"},
         "server_side_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "next_append_position": {"tag": "output", "position": "header", "rename": "x-oss-next-append-position", "type": "int"},
         "expiration": {"tag": "output", "position": "header", "rename": "x-oss-expiration"},
         "restore": {"tag": "output", "position": "header", "rename": "x-oss-restore"},
@@ -516,7 +516,7 @@ class GetObjectResult(serde.ResultModel):
         tagging_count: Optional[int] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         next_append_position: Optional[str] = None,
         expiration: Optional[str] = None,
         restore: Optional[str] = None,
@@ -552,7 +552,7 @@ class GetObjectResult(serde.ResultModel):
                 The x-oss-server-side-encryption header is included in the response to indicate the encryption algorithm 
                 used to encrypt the object on the server.
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             next_append_position (str, optional): The position for the next append operation.
                 If the type of the object is Appendable, this header is included in the response.
             expiration (str, optional): The lifecycle information about the object.
@@ -584,7 +584,7 @@ class GetObjectResult(serde.ResultModel):
         self.tagging_count = tagging_count
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.next_append_position = next_append_position
         self.expiration = expiration
         self.restore = restore
@@ -613,7 +613,7 @@ class AppendObjectRequest(serde.RequestModel):
         "expires": {"tag": "input", "position": "header", "rename": "Expires"},
         "server_side_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "tagging": {"tag": "input", "position": "header", "rename": "x-oss-tagging"},
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
         "traffic_limit": {"tag": "input", "position": "header", "rename": "x-oss-traffic-limit", "type": "int"},
@@ -639,7 +639,7 @@ class AppendObjectRequest(serde.RequestModel):
         expires: Optional[str] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
         forbid_overwrite: Optional[bool] = None,
         traffic_limit: Optional[int] = None,
@@ -670,7 +670,7 @@ class AppendObjectRequest(serde.RequestModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only
                 when the x-oss-server-side-encryption header is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             tagging (str, optional): The tags that are specified for the object by using a key-value pair.
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             callback (str, optional): A callback parameter is a Base64-encoded string that contains multiple fields in the JSON format.
@@ -699,7 +699,7 @@ class AppendObjectRequest(serde.RequestModel):
         self.expires = expires
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.tagging = tagging
         self.forbid_overwrite = forbid_overwrite
         self.traffic_limit = traffic_limit
@@ -717,7 +717,7 @@ class AppendObjectResult(serde.ResultModel):
         "next_position": {"tag": "output", "position": "header", "rename": "x-oss-next-append-position", "type": "int"},
         "server_side_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
     }
 
     def __init__(
@@ -727,7 +727,7 @@ class AppendObjectResult(serde.ResultModel):
         next_position: Optional[int] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -742,7 +742,7 @@ class AppendObjectResult(serde.ResultModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only when the x-oss-server-side-encryption header
                 is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
         """
         super().__init__(**kwargs)
         self.version_id = version_id
@@ -750,7 +750,7 @@ class AppendObjectResult(serde.ResultModel):
         self.next_position = next_position
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
 
 
 class CopyObjectRequest(serde.RequestModel):
@@ -779,7 +779,7 @@ class CopyObjectRequest(serde.RequestModel):
         "metadata_directive": {"tag": "input", "position": "header", "rename": "x-oss-metadata-directive"},
         "server_side_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "tagging": {"tag": "input", "position": "header", "rename": "x-oss-tagging"},
         "tagging_directive": {"tag": "input", "position": "header", "rename": "x-oss-tagging-directive"},
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
@@ -812,7 +812,7 @@ class CopyObjectRequest(serde.RequestModel):
         metadata_directive: Optional[str] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
         tagging_directive: Optional[str] = None,
         forbid_overwrite: Optional[bool] = None,
@@ -861,7 +861,7 @@ class CopyObjectRequest(serde.RequestModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only
                 when the x-oss-server-side-encryption header is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             tagging (str, optional): The tags that are specified for the object by using a key-value pair.
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             tagging_directive (str, optional): The method that is used to configure tags for the destination object.
@@ -897,7 +897,7 @@ class CopyObjectRequest(serde.RequestModel):
         self.metadata_directive = metadata_directive
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.tagging = tagging
         self.tagging_directive = tagging_directive
         self.forbid_overwrite = forbid_overwrite
@@ -915,7 +915,7 @@ class CopyObjectResult(serde.ResultModel):
         "source_version_id": {"tag": "output", "position": "header", "rename": "x-oss-copy-source-version-id"},
         "server_side_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "output", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "output", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "last_modified": {"tag": "xml", "rename": "LastModified", "type": "datetime"},
         "etag": {"tag": "xml", "rename": "ETag"},
     }
@@ -927,7 +927,7 @@ class CopyObjectResult(serde.ResultModel):
         source_version_id: Optional[str] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         last_modified: Optional[datetime.datetime] = None,
         etag: Optional[str] = None,
         **kwargs: Any
@@ -943,7 +943,7 @@ class CopyObjectResult(serde.ResultModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only when the x-oss-server-side-encryption header
                 is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             last_modified (str, optional): The time when the returned objects were last modified.
             etag (str, optional): The entity tag (ETag).
                 An ETag is created when an object is created to identify the content of the object.
@@ -954,7 +954,7 @@ class CopyObjectResult(serde.ResultModel):
         self.source_version_id = source_version_id
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.last_modified = last_modified
         self.etag = etag
 
@@ -1442,7 +1442,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         "expires": {"tag": "input", "position": "header", "rename": "Expires"},
         "server_side_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption"},
         "server_side_data_encryption": {"tag": "input", "position": "header", "rename": "x-oss-server-side-data-encryption"},
-        "sse_kms_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
+        "server_side_encryption_key_id": {"tag": "input", "position": "header", "rename": "x-oss-server-side-encryption-key-id"},
         "tagging": {"tag": "input", "position": "header", "rename": "x-oss-tagging"},
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
@@ -1466,7 +1466,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         expires: Optional[str] = None,
         server_side_encryption: Optional[str] = None,
         server_side_data_encryption: Optional[str] = None,
-        sse_kms_key_id: Optional[str] = None,
+        server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
         forbid_overwrite: Optional[bool] = None,
         request_payer: Optional[str] = None,
@@ -1493,7 +1493,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
             server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
                 that is managed by Key Management Service (KMS). This header is valid only
                 when the x-oss-server-side-encryption header is set to KMS.
-            sse_kms_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
+            server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             tagging (str, optional): The tags that are specified for the object by using a key-value pair.
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
@@ -1520,7 +1520,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         self.expires = expires
         self.server_side_encryption = server_side_encryption
         self.server_side_data_encryption = server_side_data_encryption
-        self.sse_kms_key_id = sse_kms_key_id
+        self.server_side_encryption_key_id = server_side_encryption_key_id
         self.tagging = tagging
         self.forbid_overwrite = forbid_overwrite
         self.request_payer = request_payer

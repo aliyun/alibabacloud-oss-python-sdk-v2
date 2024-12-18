@@ -40,7 +40,7 @@ def main():
           f' source version id: {result.source_version_id},' 
           f' server side encryption: {result.server_side_encryption},' 
           f' server side data encryption: {result.server_side_data_encryption},' 
-          f' sse kms key id: {result.sse_kms_key_id},' 
+          f' sse kms key id: {result.server_side_encryption_key_id},' 
           f' last modified: {result.last_modified},' 
           f' etag: {result.etag},'
     )
