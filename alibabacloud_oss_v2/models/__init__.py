@@ -19,5 +19,6 @@ from .bucket_replication import *
 from .bucket_referer import *
 from .bucket_worm import *
 from .bucket_request_payment import *
+from .public_access_block import *
 from .bucket_resource_group import *
 from .bucket_style import *
