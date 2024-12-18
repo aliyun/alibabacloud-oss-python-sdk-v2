@@ -38,6 +38,7 @@ from .models.bucket_public_access_block import *
 from .models.public_access_block import *
 from .models.bucket_resource_group import *
 from .models.bucket_style import *
+from .models.bucket_tags import *
 
 from .config import Config
 from .client import Client
