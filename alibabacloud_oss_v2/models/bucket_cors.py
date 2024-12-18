@@ -32,8 +32,8 @@ class CORSRule(serde.Model):
         """
         allowed_origins (List[str], optional): The origins from which cross-origin requests are allowed.
         allowed_methods (List[str], optional): The methods that you can use in cross-origin requests.
-        allowed_headers (List[str], optional): Specifies whether the headers specified by Access-Control-Request-Headers in the OPTIONS preflight request are allowed. Each header specified by Access-Control-Request-Headers must match the value of an AllowedHeader element.  You can use only one asterisk (\*) as the wildcard character.
-        expose_headers (List[str], optional): The response headers for allowed access requests from applications, such as an XMLHttpRequest object in JavaScript.  The asterisk (\*) wildcard character is not supported.
+        allowed_headers (List[str], optional): Specifies whether the headers specified by Access-Control-Request-Headers in the OPTIONS preflight request are allowed. Each header specified by Access-Control-Request-Headers must match the value of an AllowedHeader element.  You can use only one asterisk (*) as the wildcard character.
+        expose_headers (List[str], optional): The response headers for allowed access requests from applications, such as an XMLHttpRequest object in JavaScript.  The asterisk (*) wildcard character is not supported.
         max_age_seconds (int, optional): The period of time within which the browser can cache the response to an OPTIONS preflight request for the specified resource. Unit: seconds.You can specify only one MaxAgeSeconds element in a CORS rule.
         """
         super().__init__(**kwargs)

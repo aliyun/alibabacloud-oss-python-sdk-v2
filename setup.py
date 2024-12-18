@@ -14,7 +14,7 @@ AUTHOR_EMAIL = "sdk-team@alibabacloud.com"
 URL = "https://github.com/aliyun/alibabacloud-oss-python-sdk-v2"
 REQUIRES = [
     "requests>=2.18.4",
-    "cryptography>=2.1.4",
+    "pycryptodome>=3.4.7",
     "crcmod-plus>=2.1.0"
 ]
 
