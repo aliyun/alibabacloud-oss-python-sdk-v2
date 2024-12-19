@@ -2064,3 +2064,57 @@ class Client:
             DeleteBucketTagsResult: Response result for DeleteBucketTags operation.
         """
         return operations.delete_bucket_tags(self._client, request, **kwargs)
+
+
+    # meta query
+    def open_meta_query(self, request: models.OpenMetaQueryRequest, **kwargs
+                        ) -> models.OpenMetaQueryResult:
+        """
+        Enables metadata management for a bucket. After you enable the metadata management feature for a bucket, Object Storage Service (OSS) creates a metadata index library for the bucket and creates metadata indexes for all objects in the bucket. After the metadata index library is created, OSS continues to perform quasi-real-time scans on incremental objects in the bucket and creates metadata indexes for the incremental objects.
+
+        Args:
+            request (OpenMetaQueryRequest): Request parameters for OpenMetaQuery operation.
+
+        Returns:
+            OpenMetaQueryResult: Response result for OpenMetaQuery operation.
+        """
+        return operations.open_meta_query(self._client, request, **kwargs)
+
+    def get_meta_query_status(self, request: models.GetMetaQueryStatusRequest, **kwargs
+                              ) -> models.GetMetaQueryStatusResult:
+        """
+        Queries the information about the metadata index library of a bucket.
+
+        Args:
+            request (GetMetaQueryStatusRequest): Request parameters for GetMetaQueryStatus operation.
+
+        Returns:
+            GetMetaQueryStatusResult: Response result for GetMetaQueryStatus operation.
+        """
+        return operations.get_meta_query_status(self._client, request, **kwargs)
+
+    def do_meta_query(self, request: models.DoMetaQueryRequest, **kwargs
+                      ) -> models.DoMetaQueryResult:
+        """
+        Queries the objects in a bucket that meet the specified conditions by using the data indexing feature. The information about the objects is listed based on the specified fields and sorting methods.
+
+        Args:
+            request (DoMetaQueryRequest): Request parameters for DoMetaQuery operation.
+
+        Returns:
+            DoMetaQueryResult: Response result for DoMetaQuery operation.
+        """
+        return operations.do_meta_query(self._client, request, **kwargs)
+
+    def close_meta_query(self, request: models.CloseMetaQueryRequest, **kwargs
+                         ) -> models.CloseMetaQueryResult:
+        """
+        Disables the metadata management feature for an Object Storage Service (OSS) bucket. After the metadata management feature is disabled for a bucket, OSS automatically deletes the metadata index library of the bucket and you cannot perform metadata indexing.
+
+        Args:
+            request (CloseMetaQueryRequest): Request parameters for CloseMetaQuery operation.
+
+        Returns:
+            CloseMetaQueryResult: Response result for CloseMetaQuery operation.
+        """
+        return operations.close_meta_query(self._client, request, **kwargs)
