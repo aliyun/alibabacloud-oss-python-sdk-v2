@@ -40,6 +40,7 @@ from .models.bucket_resource_group import *
 from .models.bucket_style import *
 from .models.bucket_tags import *
 from .models.bucket_meta_query import *
+from .models.bucket_https_config import *
 
 from .config import Config
 from .client import Client

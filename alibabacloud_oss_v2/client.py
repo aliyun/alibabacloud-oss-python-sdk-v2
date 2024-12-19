@@ -2118,3 +2118,33 @@ class Client:
             CloseMetaQueryResult: Response result for CloseMetaQuery operation.
         """
         return operations.close_meta_query(self._client, request, **kwargs)
+
+
+    # bucket https config
+    def get_bucket_https_config(self, request: models.GetBucketHttpsConfigRequest, **kwargs
+                                ) -> models.GetBucketHttpsConfigResult:
+        """
+        Queries the Transport Layer Security (TLS) version configurations of a bucket.
+
+        Args:
+            request (GetBucketHttpsConfigRequest): Request parameters for GetBucketHttpsConfig operation.
+
+        Returns:
+            GetBucketHttpsConfigResult: Response result for GetBucketHttpsConfig operation.
+        """
+        return operations.get_bucket_https_config(self._client, request, **kwargs)
+
+
+    def put_bucket_https_config(self, request: models.PutBucketHttpsConfigRequest, **kwargs
+                                ) -> models.PutBucketHttpsConfigResult:
+        """
+        Enables or disables Transport Layer Security (TLS) version management for a bucket.
+
+        Args:
+            request (PutBucketHttpsConfigRequest): Request parameters for PutBucketHttpsConfig operation.
+
+        Returns:
+            PutBucketHttpsConfigResult: Response result for PutBucketHttpsConfig operation.
+        """
+        return operations.put_bucket_https_config(self._client, request, **kwargs)
+
