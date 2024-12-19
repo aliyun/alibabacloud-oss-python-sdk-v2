@@ -27,3 +27,4 @@ from .public_access_block import *
 from .bucket_resource_group import *
 from .bucket_style import *
 from .bucket_tags import *
+from .bucket_meta_query import *
