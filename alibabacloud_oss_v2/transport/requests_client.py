@@ -170,6 +170,10 @@ class RequestsHttpClient(HttpClient):
             read_timeout = kwargs.pop("readwrite_timeout", self._read_timeout)
             stream = kwargs.pop("stream", False)
 
+            # tell requests not to add 'Accept-Encoding: gzip, deflate' by default
+            if 'accept-encoding' not in request.headers:
+                request.headers.update({'Accept-Encoding': None})
+
             response = self.session.request(
                 request.method,
                 request.url,
