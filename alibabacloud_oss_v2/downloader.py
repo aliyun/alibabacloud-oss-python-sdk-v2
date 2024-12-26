@@ -489,8 +489,12 @@ class _DownloaderDelegate:
         if self._progress_lock:
             with self._progress_lock:
                 self._written += increment
+                if self._reqeust.progress_fn is not None:
+                    self._reqeust.progress_fn(increment, self._written, self._size_in_bytes)
         else:
             self._written += increment
+            if self._reqeust.progress_fn is not None:
+                self._reqeust.progress_fn(increment, self._written, self._size_in_bytes)
 
         #print(f'_update_progress: {increment}, {self._written}, {self._size_in_bytes}\n')
 
