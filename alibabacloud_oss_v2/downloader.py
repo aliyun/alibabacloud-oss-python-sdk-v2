@@ -461,15 +461,21 @@ class _DownloaderDelegate:
                 kwargs['block_size'] = self._options.block_size
 
             try:
+                gotlen = 0
                 for d in result.body.iter_bytes(**kwargs):
                     l = len(d)
                     if l > 0:
                         self._write_to_stream(d, start + got)
                         self._update_progress(l)
                         got += l
+                        gotlen += l
                         if chash:
                             chash.update(d)
 
+                if result.content_length is not None and gotlen < result.content_length:
+                    if not result.body.is_closed:
+                        result.body.close()
+                    continue
                 break
             except Exception:
                 pass
