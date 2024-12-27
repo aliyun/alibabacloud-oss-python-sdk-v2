@@ -41,6 +41,7 @@ from .models.bucket_style import *
 from .models.bucket_tags import *
 from .models.bucket_meta_query import *
 from .models.bucket_https_config import *
+from .models.bucket_object_fc_access_point import *
 
 from .config import Config
 from .client import Client

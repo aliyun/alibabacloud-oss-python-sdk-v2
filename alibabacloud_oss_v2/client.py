@@ -2148,3 +2148,141 @@ class Client:
         """
         return operations.put_bucket_https_config(self._client, request, **kwargs)
 
+    # bucket object fc access point
+    def create_access_point_for_object_process(self, request: models.CreateAccessPointForObjectProcessRequest, **kwargs
+                                               ) -> models.CreateAccessPointForObjectProcessResult:
+        """
+        Creates an Object FC Access Point.
+
+        Args:
+            request (CreateAccessPointForObjectProcessRequest): Request parameters for CreateAccessPointForObjectProcess operation.
+
+        Returns:
+            CreateAccessPointForObjectProcessResult: Response result for CreateAccessPointForObjectProcess operation.
+        """
+        return operations.create_access_point_for_object_process(self._client, request, **kwargs)
+
+
+    def get_access_point_for_object_process(self, request: models.GetAccessPointForObjectProcessRequest, **kwargs
+                                            ) -> models.GetAccessPointForObjectProcessResult:
+        """
+        Queries basic information about an Object FC Access Point.
+
+        Args:
+            request (GetAccessPointForObjectProcessRequest): Request parameters for GetAccessPointForObjectProcess operation.
+
+        Returns:
+            GetAccessPointForObjectProcessResult: Response result for GetAccessPointForObjectProcess operation.
+        """
+        return operations.get_access_point_for_object_process(self._client, request, **kwargs)
+
+
+    def list_access_points_for_object_process(self, request: models.ListAccessPointsForObjectProcessRequest, **kwargs
+                                              ) -> models.ListAccessPointsForObjectProcessResult:
+        """
+        Lists information about Object FC Access Points in an Alibaba Cloud account.
+
+        Args:
+            request (ListAccessPointsForObjectProcessRequest): Request parameters for ListAccessPointsForObjectProcess operation.
+
+        Returns:
+            ListAccessPointsForObjectProcessResult: Response result for ListAccessPointsForObjectProcess operation.
+        """
+        return operations.list_access_points_for_object_process(self._client, request, **kwargs)
+
+
+    def delete_access_point_for_object_process(self, request: models.DeleteAccessPointForObjectProcessRequest, **kwargs
+                                               ) -> models.DeleteAccessPointForObjectProcessResult:
+        """
+        Deletes an Object FC Access Point.
+
+        Args:
+            request (DeleteAccessPointForObjectProcessRequest): Request parameters for DeleteAccessPointForObjectProcess operation.
+
+        Returns:
+            DeleteAccessPointForObjectProcessResult: Response result for DeleteAccessPointForObjectProcess operation.
+        """
+        return operations.delete_access_point_for_object_process(self._client, request, **kwargs)
+
+
+    def get_access_point_config_for_object_process(self, request: models.GetAccessPointConfigForObjectProcessRequest, **kwargs
+                                                   ) -> models.GetAccessPointConfigForObjectProcessResult:
+        """
+        Queries the configurations of an Object FC Access Point.
+
+        Args:
+            request (GetAccessPointConfigForObjectProcessRequest): Request parameters for GetAccessPointConfigForObjectProcess operation.
+
+        Returns:
+            GetAccessPointConfigForObjectProcessResult: Response result for GetAccessPointConfigForObjectProcess operation.
+        """
+        return operations.get_access_point_config_for_object_process(self._client, request, **kwargs)
+
+
+    def put_access_point_config_for_object_process(self, request: models.PutAccessPointConfigForObjectProcessRequest, **kwargs
+                                                   ) -> models.PutAccessPointConfigForObjectProcessResult:
+        """
+        Changes the configurations of an Object FC Access Point.
+
+        Args:
+            request (PutAccessPointConfigForObjectProcessRequest): Request parameters for PutAccessPointConfigForObjectProcess operation.
+
+        Returns:
+            PutAccessPointConfigForObjectProcessResult: Response result for PutAccessPointConfigForObjectProcess operation.
+        """
+        return operations.put_access_point_config_for_object_process(self._client, request, **kwargs)
+
+
+    def put_access_point_policy_for_object_process(self, request: models.PutAccessPointPolicyForObjectProcessRequest, **kwargs
+                                                   ) -> models.PutAccessPointPolicyForObjectProcessResult:
+        """
+        Configures policies for an Object FC Access Point.
+
+        Args:
+            request (PutAccessPointPolicyForObjectProcessRequest): Request parameters for PutAccessPointPolicyForObjectProcess operation.
+
+        Returns:
+            PutAccessPointPolicyForObjectProcessResult: Response result for PutAccessPointPolicyForObjectProcess operation.
+        """
+        return operations.put_access_point_policy_for_object_process(self._client, request, **kwargs)
+
+
+    def get_access_point_policy_for_object_process(self, request: models.GetAccessPointPolicyForObjectProcessRequest, **kwargs
+                                                   ) -> models.GetAccessPointPolicyForObjectProcessResult:
+        """
+        Queries the policies of an Object FC Access Point.
+
+        Args:
+            request (GetAccessPointPolicyForObjectProcessRequest): Request parameters for GetAccessPointPolicyForObjectProcess operation.
+
+        Returns:
+            GetAccessPointPolicyForObjectProcessResult: Response result for GetAccessPointPolicyForObjectProcess operation.
+        """
+        return operations.get_access_point_policy_for_object_process(self._client, request, **kwargs)
+
+
+    def delete_access_point_policy_for_object_process(self, request: models.DeleteAccessPointPolicyForObjectProcessRequest, **kwargs
+                                                      ) -> models.DeleteAccessPointPolicyForObjectProcessResult:
+        """
+        Deletes the policies of an Object FC Access Point.
+
+        Args:
+            request (DeleteAccessPointPolicyForObjectProcessRequest): Request parameters for DeleteAccessPointPolicyForObjectProcess operation.
+
+        Returns:
+            DeleteAccessPointPolicyForObjectProcessResult: Response result for DeleteAccessPointPolicyForObjectProcess operation.
+        """
+        return operations.delete_access_point_policy_for_object_process(self._client, request, **kwargs)
+
+    def write_get_object_response(self, request: models.WriteGetObjectResponseRequest, **kwargs
+                                                      ) -> models.WriteGetObjectResponseResult:
+        """
+        Specifies the return data and response headers for a GetObject request.
+
+        Args:
+            request (WriteGetObjectResponseRequest): Request parameters for WriteGetObjectResponse operation.
+
+        Returns:
+            WriteGetObjectResponseResult: Response result for WriteGetObjectResponse operation.
+        """
+        return operations.write_get_object_response(self._client, request, **kwargs)
