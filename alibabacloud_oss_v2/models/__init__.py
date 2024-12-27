@@ -35,3 +35,4 @@ from .bucket_overwrite_config import *
 from .object_worm import *
 from .bucket_object_worm_configuration import *
 from .data_process import *
+from .bucket_object_fc_access_point import *
