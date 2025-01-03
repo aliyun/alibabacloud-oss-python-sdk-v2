@@ -2148,3 +2148,30 @@ class Client:
         """
         return operations.put_bucket_https_config(self._client, request, **kwargs)
 
+    # select object
+    def select_object(self, request: models.SelectObjectRequest, **kwargs
+                         ) -> models.SelectObjectResult:
+        """
+        SelectObject Executes SQL statements to perform operations on an object and obtains the execution results.
+
+        Args:
+            request (SelectObjectRequest): Request parameters for SelectObject operation.
+
+        Returns:
+            SelectObjectResult: Response result for SelectObject operation.
+        """
+
+        return operations.select_object(self._client, request, **kwargs)
+
+    def create_select_object_meta(self, request: models.CreateSelectObjectMetaRequest, **kwargs
+                                  ) -> models.CreateSelectObjectMetaResult:
+        """
+        CreateSelectObjectMeta You can call the CreateSelectObjectMeta operation to obtain information about an object, such as the total number of rows and the number of splits.
+
+        Args:
+            request (CreateSelectObjectMetaRequest): Request parameters for CreateSelectObjectMeta operation.
+
+        Returns:
+            CreateSelectObjectMetaResult: Response result for CreateSelectObjectMeta operation.
+        """
+        return operations.create_select_object_meta(self._client, request, **kwargs)
