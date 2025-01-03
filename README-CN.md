@@ -16,9 +16,9 @@ alibabacloud-oss-python-sdk-v2 是OSS在Python编译语言下的第二版SDK, �
 > - Python 3.8 及以上。
 
 ## 安装方法
-### 通过 pip 安装预发布版本
+### 通过 pip 安装beta版本
 ```bash
-$ pip install --pre alibabacloud-oss-v2
+$ pip install alibabacloud-oss-v2
 ```
 
 ### 通过解压后的安装程序包安装

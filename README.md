@@ -16,9 +16,9 @@ alibabacloud-oss-python-sdk-v2 is the Developer Preview for the v2 of the OSS SD
 > - Python 3.8 or above. 
 
 ## Installing
-### Install the pre release version through pip
+### Install the beta version through pip
 ```bash
-$ pip install --pre alibabacloud-oss-v2
+$ pip install alibabacloud-oss-v2
 ```
 
 ### Install from the unzipped installer package directly
