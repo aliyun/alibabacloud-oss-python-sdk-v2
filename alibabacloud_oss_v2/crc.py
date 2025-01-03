@@ -228,3 +228,20 @@ class Crc64:
         """Combines two CRC64 values into one CRC64
         """
         return _COMBINE_FUNC(crc1, crc2, size)
+
+class Crc32(object):
+    _POLY = 0x104C11DB7
+    _XOROUT = 0xFFFFFFFF
+
+    def __init__(self, init_crc=0):
+        self.crc32 = crcmod.Crc(self._POLY, initCrc=init_crc, rev=True, xorOut=self._XOROUT)
+
+    def __call__(self, data):
+        self.update(data)
+
+    def update(self, data):
+        self.crc32.update(data)
+
+    @property
+    def crc(self):
+        return self.crc32.crcValue
