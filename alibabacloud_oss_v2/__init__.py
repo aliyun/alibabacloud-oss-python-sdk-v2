@@ -41,6 +41,7 @@ from .models.bucket_tags import *
 from .models.bucket_meta_query import *
 from .models.bucket_https_config import *
 from .models.cloud_box import *
+from .models.select_object import *
 
 from .config import Config
 from .client import Client
