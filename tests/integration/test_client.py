@@ -6,6 +6,7 @@ import datetime
 import requests
 import alibabacloud_oss_v2 as oss
 from . import TestIntegration, random_bucket_name, random_str, REGION, OBJECTNAME_PREFIX, get_client
+from urllib.parse import quote, unquote
 
 
 class TestBucketBasic(TestIntegration):
@@ -926,6 +927,1029 @@ class TestObjectBasic(TestIntegration):
             self.assertEqual(403, serr.status_code)
             self.assertIn('PutObjectAcl', str(e))
             self.assertIn('Endpoint: PUT', str(e))
+
+    def test_copier(self):
+        length = 12
+        data = random_str(length)
+        length_2 = 1024 * 1024
+        data_2 = random_str(length_2)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        key_2 = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put object data
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # put object data2
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+            body=data_2,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # case 1: Copy a single part from the same bucket
+        single_key = 'single_key'
+        result = self.client.copier().copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+
+        result_single_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+        ))
+        self.assertEqual("Normal", result_single_same_bucket_2.object_type)
+        self.assertEqual(12, result_single_same_bucket_1.content_length)
+        self.assertEqual(12, result_single_same_bucket_2.content_length)
+
+        # case 2: Copy a multipart from the same bucket
+        multi_key = 'multipart_key'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+            disable_shallow_copy=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+        ))
+        self.assertEqual("Multipart", result_multi_same_bucket_2.object_type)
+        self.assertEqual(1024 * 1024, result_multi_same_bucket_1.content_length)
+        self.assertEqual(1024 * 1024, result_multi_same_bucket_2.content_length)
+
+        # case 3: Copy a single part from the different bucket
+        single_key_different_bucket = 'single_key_different_bucket'
+        result = self.client.copier(
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_single_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual("Normal", result_single_key_different_bucket_2.object_type)
+        self.assertEqual(12, result_single_key_different_bucket_1.content_length)
+        self.assertEqual(12, result_single_key_different_bucket_2.content_length)
+
+        # case 4: Copy a multipart from the different bucket
+        multi_key_different_bucket = 'multipart_key_different_bucket'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+        self.assertEqual("Multipart", result_multi_key_different_bucket_2.object_type)
+        self.assertEqual(1024 * 1024, result_multi_key_different_bucket_1.content_length)
+        self.assertEqual(1024 * 1024, result_multi_key_different_bucket_2.content_length)
+
+    def test_copier_metadata(self):
+        length = 12
+        data = random_str(length)
+        length_2 = 1024 * 1024
+        data_2 = random_str(length_2)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        key_2 = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put object data
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            metadata={
+                "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "AES/CTR/NoPadding",
+                "client-side-encryption-wrap-alg": "RSA/NONE/PKCS1Padding",
+                "x-oss-auth": "owner",
+                "x-oss-meta-version": "1.01",
+                "flag": "false",
+                "content-type": "utf-8",
+                "Content-Disposition": "attachment;filename=aaa.txt",
+                "Content-Length": "344606",
+            },
+            tagging='TagA=A&TagB=B',
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # put object data2
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+            metadata={
+                "x-oss-auth": "owner",
+                "x-oss-meta-version": "1.01",
+                "flag": "false",
+                "content-type": "utf-8",
+                "Content-Disposition": "attachment;filename=aaa.txt",
+                "Content-Length": "344606",
+            },
+            tagging='TagA=A&TagB=B',
+            body=data_2,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # case 1: Copy a single part from the same bucket
+        single_key = 'single_key'
+        result = self.client.copier().copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+
+        result_single_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+        ))
+        self.assertEqual("Normal", result_single_same_bucket_2.object_type)
+        self.assertEqual(12, result_single_same_bucket_1.content_length)
+        self.assertEqual(12, result_single_same_bucket_2.content_length)
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_same_bucket_1.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_same_bucket_1.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_same_bucket_1.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_same_bucket_1.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.01", result_single_same_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_single_same_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_single_same_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_single_same_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_single_same_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_same_bucket_2.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_same_bucket_2.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_same_bucket_2.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_same_bucket_2.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.01", result_single_same_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_single_same_bucket_2.metadata.get('flag'))
+        self.assertEqual("utf-8", result_single_same_bucket_2.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_single_same_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_single_same_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_single_same_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_tag_single_same_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+        ))
+        self.assertEqual(result_tag_single_same_bucket_1.tag_set.tags, result_tag_single_same_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_same_bucket_1.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        # case 2: Copy a multipart from the same bucket
+        multi_key = 'multipart_key'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+            disable_shallow_copy=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+        ))
+        self.assertEqual("Multipart", result_multi_same_bucket_2.object_type)
+        self.assertEqual(1024 * 1024, result_multi_same_bucket_1.content_length)
+        self.assertEqual(1024 * 1024, result_multi_same_bucket_2.content_length)
+        self.assertEqual("1.01", result_multi_same_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_multi_same_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_multi_same_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_multi_same_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_multi_same_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("1.01", result_multi_same_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_multi_same_bucket_2.metadata.get('flag'))
+        self.assertEqual("utf-8", result_multi_same_bucket_2.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_multi_same_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_multi_same_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_multi_same_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_tag_multi_same_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+        ))
+        self.assertEqual(result_tag_multi_same_bucket_1.tag_set.tags, result_tag_multi_same_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_same_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        # case 3: Copy a single part from the different bucket
+        single_key_different_bucket = 'single_key_different_bucket'
+        result = self.client.copier(
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_single_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual("Normal", result_single_key_different_bucket_2.object_type)
+        self.assertEqual(12, result_single_key_different_bucket_1.content_length)
+        self.assertEqual(12, result_single_key_different_bucket_2.content_length)
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_key_different_bucket_1.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_key_different_bucket_1.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_key_different_bucket_1.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_key_different_bucket_1.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.01", result_single_key_different_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_single_key_different_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_single_key_different_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_single_key_different_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_single_key_different_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_key_different_bucket_2.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_key_different_bucket_2.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_key_different_bucket_2.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_key_different_bucket_2.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.01", result_single_key_different_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_single_key_different_bucket_2.metadata.get('flag'))
+        self.assertEqual("utf-8", result_single_key_different_bucket_2.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_single_key_different_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_single_key_different_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_single_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_tag_single_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual(result_tag_single_key_different_bucket_1.tag_set.tags, result_tag_single_key_different_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        # case 4: Copy a multipart from the different bucket
+        multi_key_different_bucket = 'multipart_key_different_bucket'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+        self.assertEqual("Multipart", result_multi_key_different_bucket_2.object_type)
+        self.assertEqual(1024 * 1024, result_multi_key_different_bucket_1.content_length)
+        self.assertEqual(1024 * 1024, result_multi_key_different_bucket_2.content_length)
+        self.assertEqual("1.01", result_multi_key_different_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_multi_key_different_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_multi_key_different_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_multi_key_different_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_multi_key_different_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("1.01", result_multi_key_different_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_multi_key_different_bucket_2.metadata.get('flag'))
+        self.assertEqual("utf-8", result_multi_key_different_bucket_2.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_multi_key_different_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_multi_key_different_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_multi_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_tag_multi_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+        self.assertEqual(result_tag_multi_key_different_bucket_1.tag_set.tags, result_tag_multi_key_different_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+    def test_copier_header(self):
+        length = 12
+        data = random_str(length)
+        length_2 = 1000 * 1024
+        data_2 = random_str(length_2)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        key_2 = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put object data
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            headers={
+                'Content-Type': 'text/plain',
+                'Cache-Control': 'no-cache',
+                'content-language': 'zh-CN',
+                'content-encoding': 'gzip',
+                'Content-Disposition': 'attachment;filename='+quote('世界')+'.txt',
+                'Expires': '2022-10-12T00:00:00.000Z',
+                'auth': 'owner',
+                'x-oss-auth': 'owner2',
+                'x-oss-meta-auth': 'owner3',
+            },
+            tagging='TagA=A&TagB=B',
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # put object data2
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+            headers={
+                'Content-Type': 'text/plain',
+                'Cache-Control': 'no-cache',
+                'content-language': 'zh-CN',
+                'content-encoding': 'gzip',
+                'Content-Disposition': 'attachment;filename='+quote('世界')+'.txt',
+                'Expires': '2022-10-12T00:00:00.000Z',
+                'auth': 'owner',
+                'x-oss-auth': 'owner2',
+                'x-oss-meta-auth': 'owner3',
+            },
+            tagging='TagA=A&TagB=B',
+            body=data_2,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # case 1: Copy a single part from the same bucket
+        single_key = 'single_key'
+        result = self.client.copier().copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+
+        result_single_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+        ))
+        self.assertEqual("Normal", result_single_same_bucket_2.object_type)
+        self.assertEqual(12, result_single_same_bucket_1.content_length)
+        self.assertEqual(12, result_single_same_bucket_2.content_length)
+        self.assertEqual('text/plain', result_single_same_bucket_1.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_single_same_bucket_1.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_single_same_bucket_1.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_single_same_bucket_1.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_single_same_bucket_1.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_single_same_bucket_1.headers.get('Expires'))
+        self.assertEqual('owner3', result_single_same_bucket_1.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_single_same_bucket_1.metadata.get('auth'))
+        self.assertEqual('text/plain', result_single_same_bucket_2.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_single_same_bucket_2.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_single_same_bucket_2.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_single_same_bucket_2.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_single_same_bucket_2.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_single_same_bucket_2.headers.get('Expires'))
+        self.assertEqual('owner3', result_single_same_bucket_2.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_single_same_bucket_2.metadata.get('auth'))
+        self.assertEqual(None, result_single_same_bucket_1.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_single_same_bucket_1.metadata.get('x-oss-meta-auth'))
+        self.assertEqual(None, result_single_same_bucket_2.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_single_same_bucket_2.metadata.get('x-oss-meta-auth'))
+
+        result_tag_single_same_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_tag_single_same_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=single_key,
+        ))
+        self.assertEqual(result_tag_single_same_bucket_1.tag_set.tags, result_tag_single_same_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_same_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        # case 2: Copy a multipart from the same bucket
+        multi_key = 'multipart_key'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+            disable_shallow_copy=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_same_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_same_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+        ))
+        self.assertEqual("Multipart", result_multi_same_bucket_2.object_type)
+        self.assertEqual(1000 * 1024, result_multi_same_bucket_1.content_length)
+        self.assertEqual(1000 * 1024, result_multi_same_bucket_2.content_length)
+        self.assertEqual("Multipart", result_multi_same_bucket_2.object_type)
+        self.assertEqual('text/plain', result_multi_same_bucket_1.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_multi_same_bucket_1.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_multi_same_bucket_1.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_multi_same_bucket_1.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_multi_same_bucket_1.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_multi_same_bucket_1.headers.get('Expires'))
+        self.assertEqual('owner3', result_multi_same_bucket_1.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_multi_same_bucket_1.metadata.get('auth'))
+        self.assertEqual('text/plain', result_multi_same_bucket_2.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_multi_same_bucket_2.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_multi_same_bucket_2.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_multi_same_bucket_2.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_multi_same_bucket_2.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_multi_same_bucket_2.headers.get('Expires'))
+        self.assertEqual('owner3', result_multi_same_bucket_2.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_multi_same_bucket_2.metadata.get('auth'))
+        self.assertEqual(None, result_multi_same_bucket_1.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_multi_same_bucket_1.metadata.get('x-oss-meta-auth'))
+        self.assertEqual(None, result_multi_same_bucket_2.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_multi_same_bucket_2.metadata.get('x-oss-meta-auth'))
+
+        result_tag_multi_same_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_tag_multi_same_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=multi_key,
+        ))
+        self.assertEqual(result_tag_multi_same_bucket_1.tag_set.tags, result_tag_multi_same_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_same_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+
+        # case 3: Copy a single part from the different bucket
+        single_key_different_bucket = 'single_key_different_bucket'
+        result = self.client.copier(
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_single_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual("Normal", result_single_key_different_bucket_2.object_type)
+        self.assertEqual(12, result_single_key_different_bucket_1.content_length)
+        self.assertEqual(12, result_single_key_different_bucket_2.content_length)
+        self.assertEqual('text/plain', result_single_key_different_bucket_1.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_single_key_different_bucket_1.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_single_key_different_bucket_1.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_single_key_different_bucket_1.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_single_key_different_bucket_1.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_single_key_different_bucket_1.headers.get('Expires'))
+        self.assertEqual('owner3', result_single_key_different_bucket_1.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_single_key_different_bucket_1.metadata.get('auth'))
+        self.assertEqual('text/plain', result_single_key_different_bucket_2.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_single_key_different_bucket_2.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_single_key_different_bucket_2.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_single_key_different_bucket_2.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_single_key_different_bucket_2.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_single_key_different_bucket_2.headers.get('Expires'))
+        self.assertEqual('owner3', result_single_key_different_bucket_2.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_single_key_different_bucket_2.metadata.get('auth'))
+        self.assertEqual(None, result_single_key_different_bucket_1.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_single_key_different_bucket_1.metadata.get('x-oss-meta-auth'))
+        self.assertEqual(None, result_single_key_different_bucket_2.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_single_key_different_bucket_2.metadata.get('x-oss-meta-auth'))
+
+        result_tag_single_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_tag_single_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual(result_tag_single_key_different_bucket_1.tag_set.tags, result_tag_single_key_different_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        # case 4: Copy a multipart from the different bucket
+        multi_key_different_bucket = 'multipart_key_different_bucket'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key_2
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+        self.assertEqual("Multipart", result_multi_key_different_bucket_2.object_type)
+        self.assertEqual(1000 * 1024, result_multi_key_different_bucket_1.content_length)
+        self.assertEqual(1000 * 1024, result_multi_key_different_bucket_2.content_length)
+        self.assertEqual('text/plain', result_multi_key_different_bucket_1.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_multi_key_different_bucket_1.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_multi_key_different_bucket_1.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_multi_key_different_bucket_1.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_multi_key_different_bucket_1.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_multi_key_different_bucket_1.headers.get('Expires'))
+        self.assertEqual('owner3', result_multi_key_different_bucket_1.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_multi_key_different_bucket_1.metadata.get('auth'))
+        self.assertEqual('text/plain', result_multi_key_different_bucket_2.headers.get('Content-Type'))
+        self.assertEqual('no-cache', result_single_key_different_bucket_2.headers.get('Cache-Control'))
+        self.assertEqual('zh-CN', result_multi_key_different_bucket_2.headers.get('Content-Language'))
+        self.assertEqual('gzip', result_multi_key_different_bucket_2.headers.get('Content-Encoding'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_multi_key_different_bucket_2.headers.get('Content-Disposition'))
+        self.assertEqual('2022-10-12T00:00:00.000Z', result_multi_key_different_bucket_2.headers.get('Expires'))
+        self.assertEqual('owner3', result_multi_key_different_bucket_2.headers.get('x-oss-meta-auth'))
+        self.assertEqual('owner3', result_multi_key_different_bucket_2.metadata.get('auth'))
+        self.assertEqual(None, result_multi_key_different_bucket_1.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_multi_key_different_bucket_1.metadata.get('x-oss-meta-auth'))
+        self.assertEqual(None, result_multi_key_different_bucket_2.metadata.get('x-oss-auth'))
+        self.assertEqual(None, result_multi_key_different_bucket_2.metadata.get('x-oss-meta-auth'))
+
+        result_tag_multi_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_tag_multi_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+        self.assertEqual(result_tag_multi_key_different_bucket_1.tag_set.tags, result_tag_multi_key_different_bucket_2.tag_set.tags)
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+    def test_copier_different_bucket_single_replace_meta_and_tag(self):
+        length = 12
+        data = random_str(length)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put object data
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            metadata={
+                "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "AES/CTR/NoPadding",
+                "client-side-encryption-wrap-alg": "RSA/NONE/PKCS1Padding",
+                "x-oss-auth": "owner",
+                "x-oss-meta-version": "1.01",
+                "flag": "false",
+                "content-type": "utf-8",
+                "Content-Disposition": "attachment;filename=aaa.txt",
+                "Content-Length": "344606",
+            },
+            tagging='TagA=A&TagB=B',
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # case 3: Copy a single part from the different bucket
+        single_key_different_bucket = 'single_key_different_bucket'
+        result = self.client.copier(
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key,
+            metadata_directive='replace',
+            metadata={
+                "x-oss-auth": "customer-owner",
+                "x-oss-meta-version": "1.23",
+                "flag": "true",
+                "content-type": "text/txt",
+                'Content-Disposition': 'attachment;filename='+quote('世界')+'.txt',
+                "Content-Length": "116",
+            },
+            tagging='TagA3=A3&TagB3=B3',
+            tagging_directive='replace'
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_single_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+
+        result_single_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+        self.assertEqual("Normal", result_single_key_different_bucket_2.object_type)
+        self.assertEqual(12, result_single_key_different_bucket_1.content_length)
+        self.assertEqual(12, result_single_key_different_bucket_2.content_length)
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_key_different_bucket_1.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_key_different_bucket_1.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_key_different_bucket_1.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_key_different_bucket_1.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.01", result_single_key_different_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_single_key_different_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_single_key_different_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_single_key_different_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_single_key_different_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_single_key_different_bucket_2.metadata.get('client-side-encryption-key'))
+        self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_single_key_different_bucket_2.metadata.get('client-side-encryption-start'))
+        self.assertEqual("AES/CTR/NoPadding", result_single_key_different_bucket_2.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("RSA/NONE/PKCS1Padding", result_single_key_different_bucket_2.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1.23", result_single_key_different_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("true", result_single_key_different_bucket_2.metadata.get('flag'))
+        self.assertEqual("text/txt", result_single_key_different_bucket_2.metadata.get('content-type'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_single_key_different_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("116", result_single_key_different_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_single_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_key_different_bucket_1.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA=A&TagB=B", tags_str)
+
+        result_tag_single_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=single_key_different_bucket,
+        ))
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_single_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA3=A3&TagB3=B3", tags_str)
+
+    def test_copier_different_bucket_multi_replace_meta_and_tag(self):
+        length_2 = 1000 * 1024
+        data_2 = random_str(length_2)
+        key_2 = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put object data2
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+            metadata={
+                "x-oss-auth": "owner",
+                "x-oss-meta-version": "1.01",
+                "flag": "false",
+                "content-type": "utf-8",
+                "Content-Disposition": "attachment;filename=aaa.txt",
+                "Content-Length": "344606",
+            },
+            tagging='TagA2=A2&TagB2=B2',
+            body=data_2,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # case 4: Copy a multipart from the different bucket
+        multi_key_different_bucket = 'multipart_key_different_bucket'
+        result = self.client.copier(
+            part_size=100*1024,
+            parallel_num=5,
+            leave_parts_on_error=True,
+        ).copy(oss.CopyObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+            source_bucket=self.bucket_name,
+            source_key=key_2,
+            metadata_directive='replace',
+            metadata={
+                "client-side-encryption-key": "THIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
+                "client-side-encryption-start": "oSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=",
+                "client-side-encryption-cek-alg": "CTR",
+                "client-side-encryption-wrap-alg": "PKCS1Padding",
+                "client-side-encryption-data-size": "1024000",
+                "client-side-encryption-part-size": "102400",
+                "x-oss-auth": "customer-owner",
+                "x-oss-meta-version": "1.23",
+                "flag": "true",
+                "content-type": "text/txt",
+                'Content-Disposition': 'attachment;filename=' + quote('世界') + '.txt',
+                "Content-Length": "116",
+            },
+            tagging='TagA3=A3&TagB3=B3',
+            tagging_directive='replace'
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result_multi_key_different_bucket_1 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+
+        result_multi_key_different_bucket_2 = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+
+        self.assertEqual("Multipart", result_multi_key_different_bucket_2.object_type)
+        self.assertEqual(1000 * 1024, result_multi_key_different_bucket_1.content_length)
+        self.assertEqual(1000 * 1024, result_multi_key_different_bucket_2.content_length)
+        self.assertEqual("1.01", result_multi_key_different_bucket_1.metadata.get('x-oss-meta-version'))
+        self.assertEqual("false", result_multi_key_different_bucket_1.metadata.get('flag'))
+        self.assertEqual("utf-8", result_multi_key_different_bucket_1.metadata.get('content-type'))
+        self.assertEqual("attachment;filename=aaa.txt", result_multi_key_different_bucket_1.metadata.get('Content-Disposition'))
+        self.assertEqual("344606", result_multi_key_different_bucket_1.metadata.get('Content-Length'))
+        self.assertEqual("THIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-key'))
+        self.assertEqual("oSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-start'))
+        self.assertEqual("CTR", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-cek-alg'))
+        self.assertEqual("PKCS1Padding", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-wrap-alg'))
+        self.assertEqual("1024000", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-data-size'))
+        self.assertEqual("102400", result_multi_key_different_bucket_2.metadata.get('client-side-encryption-part-size'))
+        self.assertEqual("1.23", result_multi_key_different_bucket_2.metadata.get('x-oss-meta-version'))
+        self.assertEqual("true", result_multi_key_different_bucket_2.metadata.get('flag'))
+        self.assertEqual("text/txt", result_multi_key_different_bucket_2.metadata.get('content-type'))
+        self.assertEqual('attachment;filename='+quote('世界')+'.txt', result_multi_key_different_bucket_2.metadata.get('Content-Disposition'))
+        self.assertEqual("116", result_multi_key_different_bucket_2.metadata.get('Content-Length'))
+
+        result_tag_multi_key_different_bucket_1 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=self.bucket_name,
+            key=key_2,
+        ))
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_key_different_bucket_1.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA2=A2&TagB2=B2", tags_str)
+
+        result_tag_multi_key_different_bucket_2 = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=bucket_name,
+            key=multi_key_different_bucket,
+        ))
+
+        # compare tags
+        tags = []
+        tags_str = ''
+        for o in result_tag_multi_key_different_bucket_2.tag_set.tags:
+            tags.append(f"{str(o.key)}={str(o.value)}")
+        if tags:
+            tags_str = '&'.join(tags)
+        self.assertEqual("TagA3=A3&TagB3=B3", tags_str)
 
 class TestMultipartUpload(TestIntegration):
     def test_multipart_upload_object(self):

@@ -223,3 +223,9 @@ class FileNotReadable(BaseError):
     File is not readable.
     """
     fmt = 'File is not readable, {filepath}'
+
+class TimeoutError(BaseError):
+    """
+    Timeout error.
+    """
+    fmt = 'Timeout exception: upload id: {upload_id}, error: {error}'
