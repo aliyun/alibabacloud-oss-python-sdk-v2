@@ -468,3 +468,102 @@ class TestEncryptionCLient(TestIntegration):
                 self.assertEqual(example_data[i:12346], data)
                 self.assertEqual(size, len(data))
 
+
+    def test_upload_object(self):
+        mc = oss.crypto.MasterRsaCipher(
+            mat_desc={"tag": "value"},
+            public_key=RSA_PUBLIC_KEY,
+            private_key=RSA_PRIVATE_KEY
+        )
+        eclient = oss.EncryptionClient(self.client, mc)
+
+        data_lenth = 1 * 1024 * 1024
+        data = random_str(data_lenth)
+        temp = tempfile.NamedTemporaryFile(delete=False)
+        try:
+            print("临时文件路径:", temp.name)
+            temp.write(data.encode())
+            temp.close()  # 关闭文件但不删除
+
+            # upload file
+            key = 'object-upload-file.bin'
+            result = eclient.new_uploader(
+                part_size=100 * 1024,
+                parallel_num=5,
+                leave_parts_on_error=True,
+                enable_checkpoint=True,
+                checkpoint_dir=temp.name
+            ).upload_file(oss.PutObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+            ), filepath=temp.name)
+            self.assertIsNotNone(result)
+            self.assertIsInstance(result, oss.UploadResult)
+            self.assertEqual(200, result.status_code)
+
+            gresult = eclient.unwrap().get_object(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+            ))
+            self.assertIsNotNone(gresult)
+            self.assertIsInstance(gresult, oss.GetObjectResult)
+            self.assertEqual(200, gresult.status_code)
+            self.assertIsNotNone(gresult.headers.get('x-oss-meta-client-side-encryption-start', None))
+            self.assertIsNotNone(gresult.headers.get('x-oss-meta-client-side-encryption-key', None))
+            self.assertEqual('{"tag": "value"}', gresult.headers.get('x-oss-meta-client-side-encryption-matdesc', None))
+            self.assertEqual('AES/CTR/NoPadding', gresult.headers.get('x-oss-meta-client-side-encryption-cek-alg', None))
+            self.assertEqual('RSA/NONE/PKCS1Padding', gresult.headers.get('x-oss-meta-client-side-encryption-wrap-alg', None))
+            self.assertIsNone(gresult.headers.get('x-oss-meta-client-side-encryption-unencrypted-content-md5', None))
+            self.assertIsNone(gresult.headers.get('x-oss-meta-client-side-encryption-unencrypted-content-length', None))
+
+            egresult = eclient.get_object(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+            ))
+            self.assertIsNotNone(egresult)
+            self.assertIsInstance(egresult, oss.GetObjectResult)
+            self.assertEqual(200, egresult.status_code)
+            self.assertIsNotNone(egresult.headers.get('x-oss-meta-client-side-encryption-start', None))
+            self.assertIsNotNone(egresult.headers.get('x-oss-meta-client-side-encryption-key', None))
+            self.assertEqual('{"tag": "value"}', egresult.headers.get('x-oss-meta-client-side-encryption-matdesc', None))
+            self.assertEqual('AES/CTR/NoPadding', egresult.headers.get('x-oss-meta-client-side-encryption-cek-alg', None))
+            self.assertEqual('RSA/NONE/PKCS1Padding', egresult.headers.get('x-oss-meta-client-side-encryption-wrap-alg', None))
+            self.assertIsNone(egresult.headers.get('x-oss-meta-client-side-encryption-unencrypted-content-md5', None))
+            self.assertIsNone(egresult.headers.get('x-oss-meta-client-side-encryption-unencrypted-content-length', None))
+            self.assertEqual(1024 * 1024, len(egresult.body.content))
+
+
+            # upload from
+            example_data = b''
+            key = 'object-upload-from.bin'
+            with open(temp.name, 'rb') as f:
+                result = eclient.new_uploader(
+                    part_size=100 * 1024,
+                    # parallel_num=5,
+                    # leave_parts_on_error=True,
+                    enable_checkpoint=True,
+                    # checkpoint_dir=args.file_path
+                ).upload_from(oss.PutObjectRequest(
+                    bucket=self.bucket_name,
+                    key=key,
+                ), reader=f)
+                self.assertIsNotNone(result)
+                self.assertIsInstance(result, oss.UploadResult)
+                self.assertEqual(200, result.status_code)
+
+                f.seek(0, os.SEEK_SET)
+                example_data = f.read()
+
+            egresult = eclient.get_object(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+            ))
+            self.assertIsNotNone(egresult)
+            self.assertIsInstance(egresult, oss.GetObjectResult)
+            self.assertEqual(200, egresult.status_code)
+            self.assertEqual(1024 * 1024, len(example_data))
+            self.assertEqual(example_data, egresult.body.content)
+
+        finally:
+            # 确保最后删除文件
+            os.remove(temp.name)

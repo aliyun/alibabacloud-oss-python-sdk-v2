@@ -268,7 +268,7 @@ class UploadCheckpoint:
         h.update(absfilepath.encode())
         src_hash = h.hexdigest()
 
-        if len(basedir) == 0:
+        if basedir is None or len(basedir) == 0:
             dirbase = gettempdir()
         else:
             dirbase = os.path.dirname(basedir)

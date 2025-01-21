@@ -155,6 +155,7 @@ class Uploader:
             is_eclient = True
         self._feature_flags = feature_flags
         self._is_eclient = is_eclient
+        self._cse_multipart_context = None
 
 
     def upload_file(
@@ -213,7 +214,7 @@ class Uploader:
 
     def _delegate(
         self,
-        request: models.GetObjectRequest,
+        request: models.PutObjectRequest,
         **kwargs: Any
     ) -> "_UploaderDelegate":
 
@@ -407,6 +408,7 @@ class _UploaderDelegate:
         self._ccrc = ccrc
 
 
+
     def set_reader(self, reader) ->IO[bytes]:
         """_summary_
         """
@@ -524,6 +526,13 @@ class _UploaderDelegate:
 
     def _get_upload_context(self) -> _UploadContext:
         if self._upload_id:
+            # cc = self._client._defualt_ccbuilder.content_cipher()
+            # self._cse_multipart_context = EncryptionMultiPartContext(
+            #     content_cipher=cc,
+            #     part_size=utils.safety_int(request.cse_part_size),
+            #     data_size=utils.safety_int(request.cse_data_size),
+            # )
+
             return _UploadContext(
                 upload_id=self._upload_id,
                 start_num=self._part_number - 1,
@@ -534,8 +543,15 @@ class _UploaderDelegate:
         copy_request(request, self._reqeust)
         if request.content_type is None:
             request.content_type = self._get_content_type()
+        if request.cse_part_size is None:
+            request.cse_part_size = self._options.part_size
+        if request.cse_data_size is None:
+            request.cse_data_size = self._total_size
 
         result = self._client.initiate_multipart_upload(request)
+
+        if not hasattr(self, '_cse_multipart_context') or self._cse_multipart_context is None:
+            self._cse_multipart_context = result.cse_multipart_context
 
         return _UploadContext(
             upload_id=result.upload_id,
@@ -593,7 +609,8 @@ class _UploaderDelegate:
                 upload_id=upload_id,
                 part_number=part_number,
                 body=body,
-                request_payer=self._reqeust.request_payer
+                request_payer=self._reqeust.request_payer,
+                cse_multipart_context=self._cse_multipart_context
             ))
             etag = result.etag
             hash_crc64 = result.hash_crc64
@@ -635,6 +652,8 @@ class _UploaderDelegate:
                         return
                     yield part
                     check_part_number += 1
+
+            cc = self._client._get_envelope_from_list_parts()
         except Exception:
             self._upload_id = None
 
