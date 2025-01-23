@@ -181,8 +181,7 @@ class EncryptionClient:
 
         return self._client.list_parts(request, **kwargs)
 
-    def new_uploader(self, **kwargs
-                     ) -> Uploader:
+    def new_uploader(self, **kwargs) -> Uploader:
         """_summary_
 
         Args:
@@ -192,16 +191,19 @@ class EncryptionClient:
         """
         return Uploader(self, **kwargs)
 
-    def resume_cse_context(self, result: models.ListPartsResult) -> EncryptionMultiPartContext:
+    def get_content_cipher_from_list_parts(self, result: models.ListPartsResult) -> ContentCipher:
+        """
+        Obtain encryption and decryption information based on the results of the list parts.
 
-        cc = self._defualt_ccbuilder.content_cipher()
-        em_context = EncryptionMultiPartContext(
-            content_cipher=cc,
-            part_size=utils.safety_int(result.client_encryption_part_size),
-            data_size=utils.safety_int(result.client_encryption_data_size),
-        )
+        Args:
+            result (ListPartsResult): Result parameters for ListParts operation.
 
-        return em_context
+        Returns:
+            ContentCipher: A data container for storing encrypted or decrypted objects.
+        """
+        envelope = _get_envelope_from_list_parts(result)
+        cc = self._get_ccbuilder(envelope).content_cipher_from_env(envelope)
+        return cc
 
     def _get_ccbuilder(self, envelope: Envelope ) -> ContentCipherBuilder:
         return self._ccbuilders.get(envelope.mat_desc or '', self._defualt_ccbuilder)

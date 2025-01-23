@@ -16,6 +16,7 @@ from .serde import copy_request
 from .checkpoint import UploadCheckpoint
 from .crc import Crc64
 from .paginator import ListPartsPaginator
+import alibabacloud_oss_v2 as oss
 
 class UploadAPIClient(abc.ABC):
     """Abstract base class for uploader client."""
@@ -305,6 +306,8 @@ class _UploaderDelegate:
         self._upload_id = None
         self._part_number = None
 
+        self._list_parts_result = None
+
 
     @property
     def reader_filepath(self) -> str:
@@ -399,6 +402,15 @@ class _UploaderDelegate:
         # update from upload's result
         part_number = uploaded_parts[-1].part_number
         next_offset = part_number * self._options.part_size
+
+        if self._base._is_eclient:
+            cc = self._client.get_content_cipher_from_list_parts(self._list_parts_result)
+
+            self._base._cse_multipart_context = oss.EncryptionMultiPartContext(
+                content_cipher=cc,
+                part_size=utils.safety_int(self._options.part_size),
+                data_size=utils.safety_int(self._total_size),
+            )
 
         #print(f'last part number={part_number}, next offset={next_offset}')
 
@@ -526,13 +538,6 @@ class _UploaderDelegate:
 
     def _get_upload_context(self) -> _UploadContext:
         if self._upload_id:
-            # cc = self._client._defualt_ccbuilder.content_cipher()
-            # self._cse_multipart_context = EncryptionMultiPartContext(
-            #     content_cipher=cc,
-            #     part_size=utils.safety_int(request.cse_part_size),
-            #     data_size=utils.safety_int(request.cse_data_size),
-            # )
-
             return _UploadContext(
                 upload_id=self._upload_id,
                 start_num=self._part_number - 1,
@@ -550,8 +555,7 @@ class _UploaderDelegate:
 
         result = self._client.initiate_multipart_upload(request)
 
-        if not hasattr(self, '_cse_multipart_context') or self._cse_multipart_context is None:
-            self._cse_multipart_context = result.cse_multipart_context
+        self._base._cse_multipart_context = result.cse_multipart_context
 
         return _UploadContext(
             upload_id=result.upload_id,
@@ -610,7 +614,7 @@ class _UploaderDelegate:
                 part_number=part_number,
                 body=body,
                 request_payer=self._reqeust.request_payer,
-                cse_multipart_context=self._cse_multipart_context
+                cse_multipart_context=self._base._cse_multipart_context
             ))
             etag = result.etag
             hash_crc64 = result.hash_crc64
@@ -646,6 +650,7 @@ class _UploaderDelegate:
             ))
             check_part_number = 1
             for page in iterator:
+                self._list_parts_result = page
                 for part in page.parts:
                     if (part.part_number != check_part_number or
                         part.size != self._options.part_size):
@@ -653,7 +658,6 @@ class _UploaderDelegate:
                     yield part
                     check_part_number += 1
 
-            cc = self._client._get_envelope_from_list_parts()
         except Exception:
             self._upload_id = None
 
