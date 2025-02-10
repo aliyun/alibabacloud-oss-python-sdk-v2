@@ -131,6 +131,7 @@ class ObjectProperties(serde.Model):
         "storage_class": {"tag": "xml", "rename": "StorageClass"},
         "owner": {"tag": "xml", "rename": "Owner", "type": "Owner"},
         "restore_info": {"tag": "xml", "rename": "RestoreInfo"},
+        "transition_time": {"tag": "xml", "rename": "TransitionTime"},
     }
 
     _dependency_map = {
@@ -151,6 +152,7 @@ class ObjectProperties(serde.Model):
         storage_class: Optional[str] = None,
         owner: Optional[Owner] = None,
         restore_info: Optional[str] = None,
+        transition_time: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -164,6 +166,7 @@ class ObjectProperties(serde.Model):
             storage_class (str, optional): The storage class of the object.
             owner (str, optional): The container that stores information about the bucket owner.
             restore_info (Owner, optional): The restoration status of the object.
+            transition_time (str): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
         """
         super().__init__(**kwargs)
         self.key = key
@@ -174,6 +177,7 @@ class ObjectProperties(serde.Model):
         self.storage_class = storage_class
         self.owner = owner
         self.restore_info = restore_info
+        self.transition_time = transition_time
 
 
 class CommonPrefix(serde.Model):
@@ -1082,6 +1086,7 @@ class ObjectVersionProperties(serde.Model):
         "storage_class": {"tag": "xml", "rename": "StorageClass"},
         "owner": {"tag": "xml", "rename": "Owner", "type": "Owner"},
         "restore_info": {"tag": "xml", "rename": "RestoreInfo"},
+        "transition_time": {"tag": "xml", "rename": "TransitionTime"},
     }
 
     _dependency_map = {
@@ -1104,6 +1109,7 @@ class ObjectVersionProperties(serde.Model):
         storage_class: Optional[str] = None,
         owner: Optional[Owner] = None,
         restore_info: Optional[str] = None,
+        transition_time: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1119,6 +1125,7 @@ class ObjectVersionProperties(serde.Model):
             storage_class (str, optional): The storage class of the object.
             owner (str, optional): The container that stores information about the bucket owner.
             restore_info (Owner, optional): The restoration status of the object.
+            transition_time (str): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
         """
         super().__init__(**kwargs)
         self.key = key
@@ -1131,6 +1138,7 @@ class ObjectVersionProperties(serde.Model):
         self.storage_class = storage_class
         self.owner = owner
         self.restore_info = restore_info
+        self.transition_time = transition_time
 
 
 class DeleteMarkerProperties(serde.Model):

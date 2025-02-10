@@ -370,6 +370,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertIsNone(result.allow_age)
         self.assertIsNone(result.allow_headers)
         self.assertIsNone(result.expose_headers)
+        self.assertIsNone(result.transition_time)
         self.assertIsInstance(result, serde.Model)
 
         result = model.HeadObjectResult(
@@ -406,6 +407,7 @@ class TestHeadObject(unittest.TestCase):
             allow_age='1111',
             allow_headers='{a:a1, b:b2}',
             expose_headers='{a:a1, b:b2}',
+            transition_time='2024-10-12T00:00:00.000Z',
         )
         self.assertEqual(1024, result.content_length)
         self.assertEqual('text/xml', result.content_type)
@@ -435,6 +437,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('1111', result.allow_age)
         self.assertEqual('{a:a1, b:b2}', result.allow_headers)
         self.assertEqual('{a:a1, b:b2}', result.expose_headers)
+        self.assertEqual('2024-10-12T00:00:00.000Z', result.transition_time)
 
         result = model.HeadObjectResult(
             expose_headers='expose_headers-test',
@@ -1497,11 +1500,11 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertEqual("url", result.encoding_type)
         self.assertEqual("multipart.data", result.deleted_objects[0].key)
         self.assertEqual("CAEQNRiBgICEoPiC0BYiIGMxZWJmYmMzYjE0OTQ0ZmZhYjgzNzkzYjc2NjZk****", result.deleted_objects[0].version_id)
-        self.assertEqual("true", result.deleted_objects[0].delete_marker)
+        self.assertEqual(True, result.deleted_objects[0].delete_marker)
         self.assertEqual("CAEQMhiBgIDXiaaB0BYiIGQzYmRkZGUxMTM1ZDRjOTZhNjk4YjRjMTAyZjhl****", result.deleted_objects[0].delete_marker_version_id)
         self.assertEqual("test.jpg", result.deleted_objects[1].key)
         self.assertEqual("0BYiIGMxZWJmYmMzYjE0OTQ0ZmZhYjgzNzkzYjc2NjZk****", result.deleted_objects[1].version_id)
-        self.assertEqual("true", result.deleted_objects[1].delete_marker)
+        self.assertEqual(True, result.deleted_objects[1].delete_marker)
         self.assertEqual("CAEQMhiBgIDB3aWB0BYiIGUzYTA3YzliMzVmNzRkZGM5NjllYTVlMjYyYWEy****", result.deleted_objects[1].delete_marker_version_id)
 
 
@@ -1572,10 +1575,37 @@ class TestGetObjectMeta(unittest.TestCase):
         self.assertEqual('GET', op_input.method)
         self.assertEqual('bucket_name', op_input.bucket)
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', op_input.parameters.get('versionId'))
 
     def test_constructor_result(self):
         result = model.GetObjectMetaResult()
-        self.assertIsInstance(result, serde.ResultModel)
+        self.assertIsNone(result.content_length)
+        self.assertIsNone(result.etag)
+        self.assertIsNone(result.last_modified)
+        self.assertIsNone(result.last_access_time)
+        self.assertIsNone(result.version_id)
+        self.assertIsNone(result.hash_crc64)
+        self.assertIsNone(result.transition_time)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.GetObjectMetaResult(
+            content_length=101,
+            etag='"D41D8CD98F00B204E9800998ECF8****"',
+            last_modified=datetime.datetime.fromtimestamp(1702743657),
+            last_access_time=datetime.datetime.fromtimestamp(1702743657),
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            hash_crc64='316181249502703****',
+            transition_time='2024-10-12T00:00:00.000Z',
+        )
+        self.assertEqual(101, result.content_length)
+        self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
+        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime("%Y-%m-%dT%H:%M:%S.000Z"))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_access_time)
+        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_access_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
+        self.assertEqual('316181249502703****', result.hash_crc64)
+        self.assertEqual('2024-10-12T00:00:00.000Z', result.transition_time)
 
     def test_deserialize_result(self):
         xml_data = None

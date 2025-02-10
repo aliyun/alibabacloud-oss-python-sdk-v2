@@ -247,6 +247,7 @@ class HeadObjectResult(serde.ResultModel):
         "allow_age": {"tag": "output", "position": "header", "rename": "Access-Control-Allow-Age"},
         "allow_headers": {"tag": "output", "position": "header", "rename": "Access-Control-Allow-Headers"},
         "expose_headers": {"tag": "output", "position": "header", "rename": "Access-Control-Expose-Headers"},
+        'transition_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-transition-time'},
     }
 
     def __init__(
@@ -279,6 +280,7 @@ class HeadObjectResult(serde.ResultModel):
         allow_age: Optional[str] = None,
         allow_headers: Optional[str] = None,
         expose_headers: Optional[str] = None,
+        transition_time: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -324,6 +326,7 @@ class HeadObjectResult(serde.ResultModel):
             allow_age (str, optional): The maximum caching period for CORS. 
             allow_headers (str, optional): The headers allowed for CORS.
             expose_headers (str, optional): The headers that can be accessed by JavaScript applications on the client.
+            transition_time (str, optional): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
         """
         super().__init__(**kwargs)
         self.content_length = content_length
@@ -354,6 +357,7 @@ class HeadObjectResult(serde.ResultModel):
         self.allow_age = allow_age
         self.allow_headers = allow_headers
         self.expose_headers = expose_headers
+        self.transition_time = transition_time
 
 class GetObjectRequest(serde.RequestModel):
     """The request for the GetObject operation."""
@@ -940,9 +944,7 @@ class CopyObjectResult(serde.ResultModel):
             source_version_id (str, optional): The version ID of the source object.
             server_side_encryption (str, optional): The encryption method on the server side when an object is created.
                 Valid values: AES256 and KMS
-            server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
-                that is managed by Key Management Service (KMS). This header is valid only when the x-oss-server-side-encryption header
-                is set to KMS.
+            server_side_data_encryption (str, optional): The server side data encryption algorithm.
             server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             last_modified (str, optional): The time when the returned objects were last modified.
             etag (str, optional): The entity tag (ETag).
@@ -974,7 +976,7 @@ class DeleteObjectRequest(serde.RequestModel):
         bucket: str = None,
         key: str = None,
         version_id: Optional[str] = None,
-         request_payer: Optional[str] = None,
+        request_payer: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1057,7 +1059,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         encoding_type: Optional[str] = None,
         objects: Optional[List[DeleteObject]] = None,
         quiet: Optional[bool] = None,
-         request_payer: Optional[str] = None,
+        request_payer: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1103,7 +1105,7 @@ class DeletedInfo(serde.Model):
     _attribute_map = {
         "key": {"tag": "xml", "rename": "Key"},
         "version_id": {"tag": "xml", "rename": "VersionId"},
-        "delete_marker": {"tag": "xml", "rename": "DeleteMarker"},
+        "delete_marker": {"tag": "xml", "rename": "DeleteMarker", "type": "bool"},
         "delete_marker_version_id": {"tag": "xml", "rename": "DeleteMarkerVersionId"},
     }
     _xml_map = {
@@ -1184,6 +1186,7 @@ class GetObjectMetaResult(serde.ResultModel):
         "last_access_time": {"tag": "output", "position": "header", "rename": "x-oss-last-access-time", "type": "datetime,httptime"},
         "version_id": {"tag": "output", "position": "header", "rename": "x-oss-version-id"},
         "hash_crc64": {"tag": "output", "position": "header", "rename": "x-oss-hash-crc64ecma"},
+        'transition_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-transition-time'},
     }
 
     def __init__(
@@ -1194,6 +1197,7 @@ class GetObjectMetaResult(serde.ResultModel):
         last_access_time: Optional[datetime.datetime] = None,
         version_id: Optional[str] = None,
         hash_crc64: Optional[str] = None,
+        transition_time: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1206,6 +1210,7 @@ class GetObjectMetaResult(serde.ResultModel):
             version_id (str, optional): Version of the object.
             hash_crc64 (str, optional): The 64-bit CRC value of the object.
                 This value is calculated based on the ECMA-182 standard.
+            transition_time (str, optional): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
         """
         super().__init__(**kwargs)
         self.content_length = content_length
@@ -1214,6 +1219,7 @@ class GetObjectMetaResult(serde.ResultModel):
         self.last_access_time = last_access_time
         self.version_id = version_id
         self.hash_crc64 = hash_crc64
+        self.transition_time = transition_time
 
 
 class RestoreRequest(serde.Model):
@@ -2052,7 +2058,7 @@ class Upload(serde.Model):
 
 
 class ListMultipartUploadsResult(serde.ResultModel):
-    """The result for the ListBuckets operation."""
+    """The result for the ListMultipartUploads operation."""
 
     _attribute_map = {
         "encoding_type": {"tag": "xml", "rename": "EncodingType"},
@@ -2804,3 +2810,34 @@ class AsyncProcessObjectResult(serde.ResultModel):
         "task_id": {"tag": "json", "rename": "TaskId"},
         "process_request_id": {"tag": "json", "rename": "RequestId"},
     }
+
+
+class CleanRestoredObjectRequest(serde.RequestModel):
+    """
+    The request for the CleanRestoredObject operation.
+    """
+
+    _attribute_map = {
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
+        'key': {'tag': 'input', 'position': 'path', 'rename': 'key', 'type': 'str', 'required': True},
+    }
+
+    def __init__(
+        self,
+        bucket: str = None,
+        key: str = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        bucket (str, required): The name of the bucket
+        key (str, required): The name of the object.
+        """
+        super().__init__(**kwargs)
+        self.bucket = bucket
+        self.key = key
+
+
+class CleanRestoredObjectResult(serde.ResultModel):
+    """
+    The request for the CleanRestoredObject operation.
+    """

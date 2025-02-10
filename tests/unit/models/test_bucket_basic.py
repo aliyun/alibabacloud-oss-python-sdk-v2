@@ -445,6 +445,7 @@ class TestListObjectsV2(unittest.TestCase):
                     display_name='user_example',
                 ),
                 restore_info='ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"',
+                transition_time='2023-12-17T00:20:57.000Z',
             )],
             common_prefixes=[model.CommonPrefix(
                 prefix='<Prefix>fun/movie/</Prefix>',
@@ -472,6 +473,7 @@ class TestListObjectsV2(unittest.TestCase):
         self.assertEqual('0022012****', result.contents[0].owner.id)
         self.assertEqual('user_example', result.contents[0].owner.display_name)
         self.assertEqual('<Prefix>fun/movie/</Prefix>', result.common_prefixes[0].prefix)
+        self.assertEqual('2023-12-17T00:20:57.000Z', result.contents[0].transition_time)
 
         result = model.ListObjectsV2Result(
             name='example-bucket',
@@ -518,6 +520,7 @@ class TestListObjectsV2(unittest.TestCase):
             <DisplayName>user-example22</DisplayName>
         </Owner>
         <RestoreInfo>ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"</RestoreInfo>
+        <TransitionTime>2023-12-08T08:12:20.000Z</TransitionTime>
   </Contents>
   <CommonPrefixes>
         <Prefix>a/b/</Prefix>
@@ -556,6 +559,7 @@ class TestListObjectsV2(unittest.TestCase):
         self.assertEqual('ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"', result.contents[1].restore_info)
         self.assertEqual('0022012****22', result.contents[1].owner.id)
         self.assertEqual('user-example22', result.contents[1].owner.display_name)
+        self.assertEqual('2023-12-08T08:12:20.000Z', result.contents[1].transition_time)
 
 
 class TestGetBucketStat(unittest.TestCase):
@@ -817,6 +821,7 @@ class TestListObjects(unittest.TestCase):
                     display_name='user_example',
                 ),
                 restore_info='ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"',
+                transition_time='2023-12-17T00:20:57.000Z',
             )],
             common_prefixes=[model.CommonPrefix(
                 prefix='<Prefix>fun/movie/</Prefix>',
@@ -840,6 +845,7 @@ class TestListObjects(unittest.TestCase):
         self.assertEqual('0022012****', result.contents[0].owner.id)
         self.assertEqual('user_example', result.contents[0].owner.display_name)
         self.assertEqual('<Prefix>fun/movie/</Prefix>', result.common_prefixes[0].prefix)
+        self.assertEqual('2023-12-17T00:20:57.000Z', result.contents[0].transition_time)
 
         result = model.ListObjectsV2Result(
             name='example-bucket',
@@ -885,6 +891,7 @@ class TestListObjects(unittest.TestCase):
             <DisplayName>user-example22</DisplayName>
         </Owner>
         <RestoreInfo>ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"</RestoreInfo>
+        <TransitionTime>2023-12-08T08:12:20.000Z</TransitionTime>
   </Contents>
   <CommonPrefixes>
         <Prefix>a/b/</Prefix>
@@ -920,6 +927,7 @@ class TestListObjects(unittest.TestCase):
         self.assertEqual('ongoing-request="false", expiry-date="Sat, 05 Nov 2022 07:38:08 GMT"', result.contents[1].restore_info)
         self.assertEqual('0022012****22', result.contents[1].owner.id)
         self.assertEqual('user-example22', result.contents[1].owner.display_name)
+        self.assertEqual('2023-12-08T08:12:20.000Z', result.contents[1].transition_time)
 
 
 class TestGetBucketInfo(unittest.TestCase):
@@ -1436,6 +1444,7 @@ class TestListObjectVersions(unittest.TestCase):
                     display_name='1250000000',
                 ),
                 restore_info='ongoing-request="true"',
+                transition_time='2023-12-17T00:20:57.000Z',
             )],
             delete_marker=[model.DeleteMarkerProperties(
                 key='demo%2FREADME-CN.md',
@@ -1510,6 +1519,7 @@ class TestListObjectVersions(unittest.TestCase):
         self.assertEqual('250692521021****', result.delete_marker[1].owner.display_name)
         self.assertEqual('demo%2F.git%2F', result.common_prefixes[0].prefix)
         self.assertEqual('demo%2F.idea%2F', result.common_prefixes[1].prefix)
+        self.assertEqual('2023-12-17T00:20:57.000Z', result.version[1].transition_time)
 
         result = model.ListObjectVersionsResult(
             version_id_marker='BgICDzK6NnBgiIGRlZWJhY',
@@ -1560,6 +1570,7 @@ class TestListObjectVersions(unittest.TestCase):
             <DisplayName>1250000000</DisplayName>
         </Owner>
         <RestoreInfo>ongoing-request="true"</RestoreInfo>
+        <TransitionTime>2023-12-08T08:12:20.000Z</TransitionTime>
     </Version>
   <DeleteMarker>
     <Key>demo%2FREADME-CN.md</Key>
@@ -1637,3 +1648,4 @@ class TestListObjectVersions(unittest.TestCase):
         self.assertEqual('250692521021****', result.delete_marker[1].owner.display_name)
         self.assertEqual('demo%2F.git%2F', result.common_prefixes[0].prefix)
         self.assertEqual('demo%2F.idea%2F', result.common_prefixes[1].prefix)
+        self.assertEqual('2023-12-08T08:12:20.000Z', result.version[1].transition_time)

@@ -65,7 +65,7 @@ class Client:
             request (ListBucketsRequest): Request parameters for ListBuckets operation.
 
         Returns:
-            ListBucketsResult: Reponse result for ListBuckets operation.
+            ListBucketsResult: Response result for ListBuckets operation.
         """
 
         return operations.list_buckets(self._client, request, **kwargs)
@@ -97,7 +97,7 @@ class Client:
             request (PutBucketRequest): Request parameters for PutBucket operation.
 
         Returns:
-            PutBucketResult: Reponse result for PutBucket operation.
+            PutBucketResult: Response result for PutBucket operation.
         """
 
         return operations.put_bucket(self._client, request, **kwargs)
@@ -111,7 +111,7 @@ class Client:
             request (DeleteBucketRequest): Request parameters for DeleteBucket operation.
 
         Returns:
-            DeleteBucketResult: Reponse result for DeleteBucket operation.
+            DeleteBucketResult: Response result for DeleteBucket operation.
         """
 
         return operations.delete_bucket(self._client, request, **kwargs)
@@ -125,7 +125,7 @@ class Client:
             request (ListObjectsRequest): Request parameters for ListObjects operation.
 
         Returns:
-            ListObjectsResult: Reponse result for ListObjects operation.
+            ListObjectsResult: Response result for ListObjects operation.
         """
 
         return operations.list_objects(self._client, request, **kwargs)
@@ -168,7 +168,7 @@ class Client:
             request (ListObjectsV2Request): Request parameters for ListObjectsV2 operation.
 
         Returns:
-            ListObjectsV2Result: Reponse result for ListObjectsV2 operation.
+            ListObjectsV2Result: Response result for ListObjectsV2 operation.
         """
 
         return operations.list_objects_v2(self._client, request, **kwargs)
@@ -253,7 +253,7 @@ class Client:
             request (ListObjectVersionsRequest): Request parameters for ListObjectVersions operation.
 
         Returns:
-            ListObjectVersionsResult: Reponse result for ListObjectVersions operation.
+            ListObjectVersionsResult: Response result for ListObjectVersions operation.
         """
 
         return operations.list_object_versions(self._client, request, **kwargs)
@@ -268,7 +268,7 @@ class Client:
             request (PutObjectRequest): Request parameters for PutObject operation.
 
         Returns:
-            PutObjectResult: Reponse result for PutObject operation.
+            PutObjectResult: Response result for PutObject operation.
         """
 
         return operations.put_object(self._client, request, **kwargs)
@@ -282,7 +282,7 @@ class Client:
             request (GetObjectRequest): Request parameters for GetObject operation.
 
         Returns:
-            GetObjectResult: Reponse result for GetObject operation.
+            GetObjectResult: Response result for GetObject operation.
         """
 
         return operations.get_object(self._client, request, **kwargs)
@@ -296,7 +296,7 @@ class Client:
             request (CopyObjectRequest): Request parameters for CopyObject operation.
 
         Returns:
-            CopyObjectResult: Reponse result for CopyObject operation.
+            CopyObjectResult: Response result for CopyObject operation.
         """
 
         return operations.copy_object(self._client, request, **kwargs)
@@ -311,7 +311,7 @@ class Client:
             request (AppendObjectRequest): Request parameters for AppendObject operation.
 
         Returns:
-            AppendObjectResult: Reponse result for AppendObject operation.
+            AppendObjectResult: Response result for AppendObject operation.
         """
 
         return operations.append_object(self._client, request, **kwargs)
@@ -325,21 +325,21 @@ class Client:
             request (DeleteObjectRequest): Request parameters for DeleteObject operation.
 
         Returns:
-            DeleteObjectResult: Reponse result for DeleteObject operation.
+            DeleteObjectResult: Response result for DeleteObject operation.
         """
 
         return operations.delete_object(self._client, request, **kwargs)
 
-    def delete_multiple_objects(self, request: models.DeleteMultipleObjectsResult, **kwargs
+    def delete_multiple_objects(self, request: models.DeleteMultipleObjectsRequest, **kwargs
                     ) -> models.DeleteMultipleObjectsResult:
         """
         Deletes multiple objects from a bucket.
 
         Args:
-            request (DeleteMultipleObjectsResult): Request parameters for DeleteMultipleObjects operation.
+            request (DeleteMultipleObjectsRequest): Request parameters for DeleteMultipleObjects operation.
 
         Returns:
-            DeleteMultipleObjectsResult: Reponse result for DeleteMultipleObjects operation.
+            DeleteMultipleObjectsResult: Response result for DeleteMultipleObjects operation.
         """
 
         return operations.delete_multiple_objects(self._client, request, **kwargs)
@@ -353,7 +353,7 @@ class Client:
             request (HeadObjectRequest): Request parameters for HeadObject operation.
 
         Returns:
-            HeadObjectResult: Reponse result for HeadObject operation.
+            HeadObjectResult: Response result for HeadObject operation.
         """
 
         return operations.head_object(self._client, request, **kwargs)
@@ -367,7 +367,7 @@ class Client:
             request (GetObjectMetaRequest): Request parameters for GetObjectMeta operation.
 
         Returns:
-            GetObjectMetaResult: Reponse result for GetObjectMeta operation.
+            GetObjectMetaResult: Response result for GetObjectMeta operation.
         """
 
         return operations.get_object_meta(self._client, request, **kwargs)
@@ -381,7 +381,7 @@ class Client:
             request (RestoreObjectRequest): Request parameters for RestoreObject operation.
 
         Returns:
-            RestoreObjectResult: Reponse result for RestoreObject operation.
+            RestoreObjectResult: Response result for RestoreObject operation.
         """
 
         return operations.restore_object(self._client, request, **kwargs)
@@ -395,7 +395,7 @@ class Client:
             request (PutObjectAclRequest): Request parameters for PutObjectAcl operation.
 
         Returns:
-            PutObjectAclResult: Reponse result for PutObjectAcl operation.
+            PutObjectAclResult: Response result for PutObjectAcl operation.
         """
 
         return operations.put_object_acl(self._client, request, **kwargs)
@@ -409,7 +409,7 @@ class Client:
             request (GetObjectAclRequest): Request parameters for GetObjectAcl operation.
 
         Returns:
-            GetObjectAclResult: Reponse result for GetObjectAcl operation.
+            GetObjectAclResult: Response result for GetObjectAcl operation.
         """
 
         return operations.get_object_acl(self._client, request, **kwargs)
@@ -423,7 +423,7 @@ class Client:
             request (InitiateMultipartUploadRequest): Request parameters for InitiateMultipartUpload operation.
 
         Returns:
-            InitiateMultipartUploadResult: Reponse result for InitiateMultipartUpload operation.
+            InitiateMultipartUploadResult: Response result for InitiateMultipartUpload operation.
         """
 
         return operations.initiate_multipart_upload(self._client, request, **kwargs)
@@ -437,7 +437,7 @@ class Client:
             request (UploadPartRequest): Request parameters for UploadPart operation.
 
         Returns:
-            UploadPartResult: Reponse result for UploadPart operation.
+            UploadPartResult: Response result for UploadPart operation.
         """
 
         return operations.upload_part(self._client, request, **kwargs)
@@ -452,7 +452,7 @@ class Client:
             request (UploadPartCopyRequest): Request parameters for UploadPartCopy operation.
 
         Returns:
-            UploadPartCopyResult: Reponse result for UploadPartCopy operation.
+            UploadPartCopyResult: Response result for UploadPartCopy operation.
         """
 
         return operations.upload_part_copy(self._client, request, **kwargs)
@@ -466,7 +466,7 @@ class Client:
             request (CompleteMultipartUploadRequest): Request parameters for CompleteMultipartUpload operation.
 
         Returns:
-            CompleteMultipartUploadResult: Reponse result for CompleteMultipartUpload operation.
+            CompleteMultipartUploadResult: Response result for CompleteMultipartUpload operation.
         """
 
         return operations.complete_multipart_upload(self._client, request, **kwargs)
@@ -480,7 +480,7 @@ class Client:
             request (AbortMultipartUploadRequest): Request parameters for AbortMultipartUpload operation.
 
         Returns:
-            AbortMultipartUploadResult: Reponse result for AbortMultipartUpload operation.
+            AbortMultipartUploadResult: Response result for AbortMultipartUpload operation.
         """
 
         return operations.abort_multipart_upload(self._client, request, **kwargs)
@@ -494,7 +494,7 @@ class Client:
             request (ListMultipartUploadsRequest): Request parameters for ListMultipartUploads operation.
 
         Returns:
-            ListMultipartUploadsResult: Reponse result for ListMultipartUploads operation.
+            ListMultipartUploadsResult: Response result for ListMultipartUploads operation.
         """
 
         return operations.list_multipart_uploads(self._client, request, **kwargs)
@@ -508,7 +508,7 @@ class Client:
             request (ListPartsRequest): Request parameters for ListParts operation.
 
         Returns:
-            ListPartsResult: Reponse result for ListParts operation.
+            ListPartsResult: Response result for ListParts operation.
         """
 
         return operations.list_parts(self._client, request, **kwargs)
@@ -523,7 +523,7 @@ class Client:
             request (PutSymlinkRequest): Request parameters for PutSymlink operation.
 
         Returns:
-            PutSymlinkResult: Reponse result for PutSymlink operation.
+            PutSymlinkResult: Response result for PutSymlink operation.
         """
 
         return operations.put_symlink(self._client, request, **kwargs)
@@ -537,7 +537,7 @@ class Client:
             request (GetSymlinkRequest): Request parameters for GetSymlink operation.
 
         Returns:
-            GetSymlinkResult: Reponse result for GetSymlink operation.
+            GetSymlinkResult: Response result for GetSymlink operation.
         """
 
         return operations.get_symlink(self._client, request, **kwargs)
@@ -551,7 +551,7 @@ class Client:
             request (PutObjectTaggingRequest): Request parameters for PutObjectTagging operation.
 
         Returns:
-            PutObjectTaggingResult: Reponse result for PutObjectTagging operation.
+            PutObjectTaggingResult: Response result for PutObjectTagging operation.
         """
 
         return operations.put_object_tagging(self._client, request, **kwargs)
@@ -565,7 +565,7 @@ class Client:
             request (GetObjectTaggingRequest): Request parameters for GetObjectTagging operation.
 
         Returns:
-            GetObjectTaggingResult: Reponse result for GetObjectTagging operation.
+            GetObjectTaggingResult: Response result for GetObjectTagging operation.
         """
 
         return operations.get_object_tagging(self._client, request, **kwargs)
@@ -579,7 +579,7 @@ class Client:
             request (DeleteObjectTaggingRequest): Request parameters for DeleteObjectTagging operation.
 
         Returns:
-            DeleteObjectTaggingResult: Reponse result for DeleteObjectTagging operation.
+            DeleteObjectTaggingResult: Response result for DeleteObjectTagging operation.
         """
 
         return operations.delete_object_tagging(self._client, request, **kwargs)
@@ -593,7 +593,7 @@ class Client:
             request (ProcessObjectRequest): Request parameters for ProcessObject operation.
 
         Returns:
-            ProcessObjectResult: Reponse result for ProcessObject operation.
+            ProcessObjectResult: Response result for ProcessObject operation.
         """
 
         return operations.process_object(self._client, request, **kwargs)
@@ -607,7 +607,7 @@ class Client:
             request (AsyncProcessObjectRequest): Request parameters for AsyncProcessObject operation.
 
         Returns:
-            AsyncProcessObjectResult: Reponse result for AsyncProcessObject operation.
+            AsyncProcessObjectResult: Response result for AsyncProcessObject operation.
         """
 
         return operations.async_process_object(self._client, request, **kwargs)
@@ -635,7 +635,7 @@ class Client:
         """
         return ListObjectsPaginator(self, **kwargs)
 
-    def list_objects_v2_paginator(self, **kwargs) -> ListObjectsPaginator:
+    def list_objects_v2_paginator(self, **kwargs) -> ListObjectsV2Paginator:
         """Creates a paginator for ListObjectsV2
 
         Returns:
@@ -2148,3 +2148,16 @@ class Client:
         """
         return operations.put_bucket_https_config(self._client, request, **kwargs)
 
+    # clean restored
+    def clean_restored_object(self, request: models.CleanRestoredObjectRequest, **kwargs
+                              ) -> models.CleanRestoredObjectResult:
+        """
+        You can call this operation to clean an object restored from Archive or Cold Archive state. After that, the restored object returns to the frozen state.
+
+        Args:
+            request (CleanRestoredObjectRequest): Request parameters for CleanRestoredObject operation.
+
+        Returns:
+            CleanRestoredObjectResult: Response result for CleanRestoredObject operation.
+        """
+        return operations.clean_restored_object(self._client, request, **kwargs)
