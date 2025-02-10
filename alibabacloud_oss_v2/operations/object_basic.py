@@ -283,7 +283,7 @@ def delete_multiple_objects(client: _SyncClientImpl, request: models.DeleteMulti
     )
 
 
-def get_object_meta(client: _SyncClientImpl, request: models.HeadObjectRequest, **kwargs) -> models.GetObjectMetaResult:
+def get_object_meta(client: _SyncClientImpl, request: models.GetObjectMetaRequest, **kwargs) -> models.GetObjectMetaResult:
     """
     get object meta synchronously
 
@@ -988,5 +988,47 @@ def async_process_object(client: _SyncClientImpl, request: models.AsyncProcessOb
         custom_deserializer=[
             serde.deserialize_output_headers,
             serde_utils.deserialize_process_body
+        ],
+    )
+
+def clean_restored_object(client: _SyncClientImpl, request: models.CleanRestoredObjectRequest, **kwargs) -> models.CleanRestoredObjectResult:
+    """
+    clean_restored_object synchronously
+
+    Args:
+        client (_SyncClientImpl): A agent that sends the request.
+        request (CleanRestoredObjectRequest): The request for the CleanRestoredObject operation.
+
+    Returns:
+        CleanRestoredObjectResult: The result for the CleanRestoredObject operation.
+    """
+
+    op_input = serde.serialize_input(
+        request=request,
+        op_input=OperationInput(
+            op_name='CleanRestoredObject',
+            method='POST',
+            headers=CaseInsensitiveDict({
+                'Content-Type': 'application/xml',
+            }),
+            parameters={
+                'cleanRestoredObject': '',
+            },
+            bucket=request.bucket,
+            key=request.key,
+            op_metadata={'sub-resource': ['cleanRestoredObject']},
+        ),
+        custom_serializer=[
+            serde_utils.add_content_md5
+        ]
+    )
+
+    op_output = client.invoke_operation(op_input, **kwargs)
+
+    return serde.deserialize_output(
+        result=models.CleanRestoredObjectResult(),
+        op_output=op_output,
+        custom_deserializer=[
+            serde.deserialize_output_xmlbody
         ],
     )

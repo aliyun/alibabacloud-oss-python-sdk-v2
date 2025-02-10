@@ -298,6 +298,7 @@ class TestGetBucketInventory(unittest.TestCase):
                 <Field>StorageClass</Field>
                 <Field>IsMultipartUploaded</Field>
                 <Field>EncryptionStatus</Field>
+                <Field>TransitionTime</Field>
              </OptionalFields>
           </InventoryConfiguration>
         '''
@@ -331,6 +332,7 @@ class TestGetBucketInventory(unittest.TestCase):
         self.assertEqual(InventoryOptionalFieldType.STORAGE_CLASS, result.inventory_configuration.optional_fields.fields[3])
         self.assertEqual(InventoryOptionalFieldType.IS_MULTIPART_UPLOADED, result.inventory_configuration.optional_fields.fields[4])
         self.assertEqual(InventoryOptionalFieldType.ENCRYPTION_STATUS, result.inventory_configuration.optional_fields.fields[5])
+        self.assertEqual(InventoryOptionalFieldType.TRANSITION_TIME, result.inventory_configuration.optional_fields.fields[6])
 
 
 class TestListBucketInventory(unittest.TestCase):
