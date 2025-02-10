@@ -31,6 +31,7 @@ class InventoryOptionalFieldType(str, Enum):
     STORAGE_CLASS = 'StorageClass'
     IS_MULTIPART_UPLOADED = 'IsMultipartUploaded'
     ENCRYPTION_STATUS = 'EncryptionStatus'
+    TRANSITION_TIME = 'TransitionTime'
 
 
 class SSEKMS(serde.Model):
