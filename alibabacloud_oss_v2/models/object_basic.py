@@ -944,9 +944,7 @@ class CopyObjectResult(serde.ResultModel):
             source_version_id (str, optional): The version ID of the source object.
             server_side_encryption (str, optional): The encryption method on the server side when an object is created.
                 Valid values: AES256 and KMS
-            server_side_data_encryption (str, optional): The ID of the customer master key (CMK)
-                that is managed by Key Management Service (KMS). This header is valid only when the x-oss-server-side-encryption header
-                is set to KMS.
+            server_side_data_encryption (str, optional): The server side data encryption algorithm.
             server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             last_modified (str, optional): The time when the returned objects were last modified.
             etag (str, optional): The entity tag (ETag).
@@ -2060,7 +2058,7 @@ class Upload(serde.Model):
 
 
 class ListMultipartUploadsResult(serde.ResultModel):
-    """The result for the ListBuckets operation."""
+    """The result for the ListMultipartUploads operation."""
 
     _attribute_map = {
         "encoding_type": {"tag": "xml", "rename": "EncodingType"},
