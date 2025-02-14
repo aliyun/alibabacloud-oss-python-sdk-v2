@@ -19,18 +19,18 @@ class _AESCtrCipher(ContentCipher):
         self._cipher = _AesCtr(cipher_data, offset)
 
     def encrypt_content(self, data: Any) -> Any:
-        """_summary_
+        """encrypt content
         """
         return self._cipher.encrypt(data)
 
     def decrypt_content(self, data: Any) -> Any:
-        """_summary_
+        """decrypt content
         """
         reader = self._cipher.decrypt(data)
         return reader
 
     def clone(self, **kwargs) -> ContentCipher:
-        """_summary_
+        """clone
         """
         return _AESCtrCipher(
             cipher_data=self._cipher_data,
@@ -50,7 +50,7 @@ class _AESCtrCipher(ContentCipher):
 
 
 class AESCtrCipherBuilder(ContentCipherBuilder):
-    """_summary_
+    """AES Ctr Cipher Builder
 
     Args:
         ContentCipherBuilder (_type_): _description_
