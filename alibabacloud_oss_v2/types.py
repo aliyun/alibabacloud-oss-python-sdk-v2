@@ -1,4 +1,4 @@
-"""_summary_
+"""Type Information
 """
 import abc
 import datetime
@@ -344,7 +344,7 @@ class Signer(abc.ABC):
 
 
 class OperationInput:
-    """_summary_
+    """Operation Input
     """
 
     def __init__(
@@ -371,7 +371,7 @@ class OperationInput:
         return str(self.__dict__)
 
 class OperationOutput:
-    """_summary_
+    """Operation Output
     """
 
     def __init__(

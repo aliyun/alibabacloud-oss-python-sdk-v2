@@ -1,4 +1,4 @@
-"""_summary_
+"""exception information
 """
 
 

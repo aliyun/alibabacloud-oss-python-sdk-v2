@@ -66,7 +66,8 @@ class UploadAPIClient(abc.ABC):
         """
 
 class UploaderOptions:
-    """_summary_
+    """
+    uploader options
     """
 
     def __init__(
@@ -85,7 +86,8 @@ class UploaderOptions:
 
 
 class UploadResult:
-    """_summary_
+    """
+    upload result
     """
 
     def __init__(
@@ -163,7 +165,7 @@ class Uploader:
         filepath: str,
         **kwargs: Any
     ) -> UploadResult:
-        """_summary_
+        """upload file
 
         Args:
             request (models.PutObjectRequest): _description_
@@ -198,7 +200,7 @@ class Uploader:
         reader: IO[bytes],
         **kwargs: Any
     ) -> UploadResult:
-        """_summary_
+        """upload from
 
         Args:
             request (models.PutObjectRequest): _description_
@@ -307,12 +309,12 @@ class _UploaderDelegate:
 
     @property
     def reader_filepath(self) -> str:
-        """_summary_
+        """reader filepath
         """
         return self._filepath
 
     def check_source(self, filepath:str):
-        """_summary_
+        """check source
         """
         if len(filepath) == 0:
             raise exceptions.ParamInvalidError(field='filepath')
@@ -328,7 +330,7 @@ class _UploaderDelegate:
         self._file_stat = os.stat(absfilepath)
 
     def apply_source(self, reader):
-        """_summary_
+        """apply source
         """
         if reader is None:
             raise exceptions.ParamInvalidError(field = 'reader')
@@ -348,7 +350,7 @@ class _UploaderDelegate:
         self._reader_seekable = utils.is_seekable(reader)
 
     def check_checkpoint(self):
-        """_summary_
+        """check checkpoint
         """
         if not self._options.enable_checkpoint:
             return
@@ -372,7 +374,7 @@ class _UploaderDelegate:
 
 
     def update_crc_flag(self):
-        """_summary_
+        """update crc flag
         """
         #FF_ENABLE_CRC64_CHECK_UPLOAD = 0x00000008
         if (self._base._feature_flags & 0x00000008) > 0:
@@ -408,12 +410,12 @@ class _UploaderDelegate:
 
 
     def set_reader(self, reader) ->IO[bytes]:
-        """_summary_
+        """set reader
         """
         self._reader = reader
 
     def close_reader(self):
-        """_summary_
+        """close reader
         """
 
         if self._checkpoint:
@@ -423,7 +425,7 @@ class _UploaderDelegate:
         self._checkpoint = None
 
     def upload(self) -> UploadResult:
-        """_summary_
+        """Breakpoint upload
         """
         if self._total_size >= 0 and self._total_size < self._options.part_size:
             return self._single_part()

@@ -275,7 +275,7 @@ def add_process_action(request: serde.Model, op_input: OperationInput) -> Operat
 
 
 def deserialize_process_body(result: serde.Model, op_output: OperationOutput) -> serde.Model:
-    """_summary_
+    """deserialize process body
 
     Args:
         result (Model): _description_

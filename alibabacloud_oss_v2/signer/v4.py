@@ -1,4 +1,4 @@
-"""_summary_
+"""V4 signature information
 """
 import datetime
 from email.utils import format_datetime
@@ -12,7 +12,7 @@ from ..types import HttpRequest, SigningContext, Signer
 
 
 class SignerV4(Signer):
-    """_summary_
+    """Signer V4
     """
 
     def sign(self, signing_ctx: SigningContext) -> None:

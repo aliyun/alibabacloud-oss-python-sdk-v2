@@ -1,4 +1,4 @@
-"""_summary_
+"""Serializer & Deserializer for models
 """
 import datetime
 import sys
@@ -294,7 +294,7 @@ def _serialize_xml_any(tag: str, value: Any, atype: str) -> ET.Element:
 
 
 def _serialize_xml_model(obj, root: Optional[str] = None) -> ET.Element:
-    """_summary_
+    """serialize xml model
 
     Args:
         model (Model): _description_
@@ -358,7 +358,7 @@ def _serialize_to_str(value: Any, atype: str) -> str:
 
 
 def _deserialize_xml_model(root: ET.Element, obj: Any) -> None:
-    """_summary_
+    """deserialize xml model
     """
     attributes = getattr(obj, '_attribute_map')
     for attr, attr_desc in attributes.items():
@@ -455,7 +455,7 @@ def _deserialize_to_any(value: Optional[str], atype: str) -> Any:
 
 
 def serialize_xml(obj, root: Optional[str] = None) -> Any:
-    """_summary_
+    """serialize xml
 
     Args:
         model (Model): _description_
@@ -470,7 +470,7 @@ def serialize_xml(obj, root: Optional[str] = None) -> Any:
 
 
 def deserialize_xml(xml_data: Any, obj: Any, expect_tag: Optional[str] = None) -> None:
-    """_summary_
+    """deserialize xml
     """
     if not isinstance(obj, Model):
         return
@@ -486,7 +486,7 @@ def deserialize_xml(xml_data: Any, obj: Any, expect_tag: Optional[str] = None) -
 
 def serialize_input(request: Model, op_input: OperationInput,
                     custom_serializer: Optional[List[Any]] = None) -> OperationInput:
-    """_summary_
+    """serialize input
 
     Args:
         request (Model): _description_
@@ -568,7 +568,7 @@ def serialize_input(request: Model, op_input: OperationInput,
 
 def deserialize_output(result: Model, op_output: OperationOutput,
                        custom_deserializer: Optional[List[Any]] = None) -> Model:
-    """_summary_
+    """deserialize output
 
     Args:
         result (Model): _description_
@@ -596,7 +596,7 @@ def deserialize_output(result: Model, op_output: OperationOutput,
 
 
 def deserialize_output_headers(result: Model, op_output: OperationOutput) -> Model:
-    """_summary_
+    """deserialize output headers
 
     Args:
         result (Model): _description_
@@ -633,7 +633,7 @@ def deserialize_output_headers(result: Model, op_output: OperationOutput) -> Mod
 
 
 def deserialize_output_xmlbody(result: Model, op_output: OperationOutput) -> Model:
-    """_summary_
+    """deserialize output xmlbody
 
     Args:
         result (Model): _description_
@@ -681,7 +681,7 @@ def deserialize_output_xmlbody(result: Model, op_output: OperationOutput) -> Mod
 
 
 def deserialize_output_discardbody(result: Model, op_output: OperationOutput) -> Model:
-    """_summary_
+    """deserialize output discardbody
 
     Args:
         result (Model): _description_
@@ -696,7 +696,7 @@ def deserialize_output_discardbody(result: Model, op_output: OperationOutput) ->
 
 
 def copy_request(dst: RequestModel, src: RequestModel):
-    """_summary_
+    """copy request
 
     Args:
         dst (RequestModel): _description_

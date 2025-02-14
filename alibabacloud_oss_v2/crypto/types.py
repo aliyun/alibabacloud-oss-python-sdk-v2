@@ -9,22 +9,22 @@ class MasterCipher(abc.ABC):
 
     @abc.abstractmethod
     def encrypt(self, data: bytes) -> bytes:
-        """_summary_
+        """encrypt data
         """
 
     @abc.abstractmethod
     def decrypt(self, data: bytes) -> bytes:
-        """_summary_
+        """decrypt data
         """
 
     @abc.abstractmethod
     def get_wrap_algorithm(self) -> str:
-        """_summary_
+        """get wrap algorithm
         """
 
     @abc.abstractmethod
     def get_mat_desc(self) -> str:
-        """_summary_
+        """get mat desc
         """
 
 class ContentCipher(abc.ABC):
@@ -32,32 +32,32 @@ class ContentCipher(abc.ABC):
 
     @abc.abstractmethod
     def encrypt_content(self, data: Any) -> Any:
-        """_summary_
+        """encrypt content
         """
 
     @abc.abstractmethod
     def decrypt_content(self, data: Any) -> Any:
-        """_summary_
+        """decrypt content
         """
 
     @abc.abstractmethod
     def clone(self, **kwargs) -> "ContentCipher":
-        """_summary_
+        """clone
         """
 
     @abc.abstractmethod
     def get_encrypted_len(self, plain_text_len: int) -> int:
-        """_summary_
+        """get encrypted len
         """
 
     @abc.abstractmethod
     def get_cipher_data(self) -> "CipherData":
-        """_summary_
+        """get cipher data
         """
 
     @abc.abstractmethod
     def get_align_len(self) -> int:
-        """_summary_
+        """get align len
         """
 
 
@@ -83,7 +83,7 @@ class Envelope:
         self.unencrypted_content_length = unencrypted_content_length
 
     def is_valid(self) -> bool:
-        """_summary_
+        """is valid
 
         Returns:
             bool: _description_
@@ -95,7 +95,7 @@ class Envelope:
 
 
     def random_key_iv(self):
-        """_summary_
+        """random key iv
         """
 
 class CipherData:
@@ -120,7 +120,7 @@ class CipherData:
         self.cek_algorithm = cek_algorithm
 
     def clone(self) -> "CipherData":
-        """_summary_
+        """clone
 
         Returns:
             CipherData: _description_
@@ -128,7 +128,7 @@ class CipherData:
         return copy.deepcopy(self)
 
     def random_key_iv(self):
-        """_summary_
+        """random key iv
         """
 
 
@@ -137,15 +137,15 @@ class ContentCipherBuilder(abc.ABC):
 
     @abc.abstractmethod
     def content_cipher(self) -> ContentCipher:
-        """_summary_
+        """content cipher
         """
 
     @abc.abstractmethod
     def content_cipher_from_env(self, env: Envelope, **kwargs) -> ContentCipher:
-        """_summary_
+        """content cipher from env
         """
 
     @abc.abstractmethod
     def get_mat_desc(self) -> str:
-        """_summary_
+        """get mat desc
         """

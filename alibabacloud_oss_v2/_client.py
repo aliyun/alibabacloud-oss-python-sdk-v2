@@ -32,7 +32,7 @@ from .types import (
 
 
 class AddressStyle():
-    """_summary_
+    """address style information
     """
     Virtual = 1
     Path = 2
@@ -62,7 +62,7 @@ class _MarkedBody:
             self._seekable = False
 
     def is_seekable(self) -> bool:
-        """'_summary_
+        """'is seekable
 
         Returns:
             bool: _description_
@@ -70,7 +70,7 @@ class _MarkedBody:
         return self._seekable
 
     def mark(self) -> None:
-        """_summary_
+        """Set the current marked position in the stream.
         """
         if self.is_seekable() is False:
             return
@@ -79,7 +79,7 @@ class _MarkedBody:
             self._io_curr = self._body.tell()
 
     def reset(self) -> None:
-        """_summary_
+        """Resets the buffer to the marked position.  The marked position
         """
         if self.is_seekable() is False:
             return
@@ -208,14 +208,14 @@ class _ClientImplMixIn:
             raise exceptions.ObjectNameInvalidError()
 
     def apply_operation(self, options: _Options, op_input: OperationInput) -> None:
-        """_summary_"""
+        """apply operation"""
         self._apply_operation_options(options) # pylint: disable=no-member
         _apply_operation_metadata(op_input, options)
 
 
     def build_request_context(self, op_input: OperationInput, options: _Options, inner: _InnerOptions
                               ) -> SigningContext:
-        """_summary_
+        """build request context
         """
         # host & path
         url = _build_url(op_input, options)
@@ -273,7 +273,7 @@ class _ClientImplMixIn:
         return context
 
     def retry_max_attempts(self, options: _Options) -> int:
-        """_summary_"""
+        """retry max attempts"""
         if options.retry_max_attempts is not None:
             attempts = int(options.retry_max_attempts)
         elif options.retryer is not None:
@@ -284,11 +284,11 @@ class _ClientImplMixIn:
         return max(1, attempts)
 
     def has_feature(self, flag: int) -> bool:
-        """_summary_"""
+        """has feature"""
         return (self._options.feature_flags & flag) > 0 # pylint: disable=no-member
 
     def get_retry_attempts(self) -> bool:
-        """_summary_"""
+        """sumget retry attemptsmary"""
         return self.retry_max_attempts(self._options) # pylint: disable=no-member
 
 class _SyncClientImpl(_ClientImplMixIn):
@@ -303,7 +303,7 @@ class _SyncClientImpl(_ClientImplMixIn):
         self._inner = inner
 
     def invoke_operation(self, op_input: OperationInput, **kwargs) -> OperationOutput:
-        """_summary_
+        """Common class interface invoice operation
 
         Args:
             op_input (OperationInput): _description_

@@ -46,7 +46,7 @@ from .defaults import (
 # }
 
 class DownloadCheckpoint:
-    """_summary_
+    """Download Checkpoint
     """
     def __init__(
         self,
@@ -189,7 +189,7 @@ class DownloadCheckpoint:
         return False
 
     def dump(self) -> bool:
-        """_summary_
+        """dump
 
         Returns:
             _type_: _description_
@@ -247,7 +247,7 @@ class DownloadCheckpoint:
 # }
 
 class UploadCheckpoint:
-    """_summary_
+    """Upload Checkpoint
     """
     def __init__(
         self,
@@ -352,7 +352,7 @@ class UploadCheckpoint:
         return False
 
     def dump(self) -> bool:
-        """_summary_
+        """dump
 
         Returns:
             _type_: _description_
@@ -377,7 +377,7 @@ class UploadCheckpoint:
         return True
 
     def remove(self) -> None:
-        """_summary_
+        """remove
         """
         try:
             os.remove(self.cp_filepath)

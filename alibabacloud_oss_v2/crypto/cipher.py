@@ -6,7 +6,7 @@ class Encrypter(abc.ABC):
 
     @abc.abstractmethod
     def encrypt(self, reader: Any) -> Any:
-        """_summary_
+        """encrypt
         """
 
 
@@ -15,9 +15,9 @@ class Decrypter(abc.ABC):
 
     @abc.abstractmethod
     def decrypt(self, reader: Any) -> Any:
-        """_summary_
+        """decrypt
         """
 
 class Cipher(Encrypter, Decrypter):
-    """_summary_
+    """Cipher
     """

@@ -793,7 +793,7 @@ class _PrefetchDelegate:
             return None
 
     def get_task(self) -> Future:
-        """_summary_
+        """get task
 
         Returns:
             Future: _description_
@@ -801,7 +801,7 @@ class _PrefetchDelegate:
         return self._task
 
     def close(self):
-        """_summary_
+        """close
         """
         if self._closed:
             return

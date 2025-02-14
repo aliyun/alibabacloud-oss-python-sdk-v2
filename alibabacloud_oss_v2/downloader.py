@@ -29,7 +29,7 @@ class DownloadAPIClient(abc.ABC):
         """
 
 class DownloaderOptions:
-    """_summary_
+    """downloader options
     """
 
     def __init__(
@@ -52,7 +52,7 @@ class DownloaderOptions:
 
 
 class DownloadResult:
-    """_summary_
+    """download result
     """
 
     def __init__(
@@ -116,7 +116,7 @@ class Downloader:
         filepath: str,
         **kwargs: Any
     ) -> DownloadResult:
-        """_summary_
+        """download file
 
         Args:
             request (models.GetObjectRequest): _description_
@@ -156,7 +156,7 @@ class Downloader:
         writer: IO[bytes],
         **kwargs: Any
     ) -> DownloadResult:
-        """_summary_
+        """download to
 
         Args:
             request (models.GetObjectRequest): _description_
@@ -270,12 +270,12 @@ class _DownloaderDelegate:
 
     @property
     def writer_filepath(self) -> str:
-        """_summary_
+        """writer filepath
         """
         return self._temp_filepath
 
     def check_source(self):
-        """_summary_
+        """check source
         """
         request = models.HeadObjectRequest(self._reqeust.bucket, self._reqeust.key)
         copy_request(request, self._reqeust)
@@ -287,7 +287,7 @@ class _DownloaderDelegate:
         self._headers = result.headers
 
     def check_destination(self, filepath: str):
-        """_summary_
+        """check destination
         """
         if len(utils.safety_str(filepath)) == 0:
             raise exceptions.ParamInvalidError(field='filepath')
@@ -302,7 +302,7 @@ class _DownloaderDelegate:
 
 
     def adjust_range(self):
-        """_summary_
+        """adjust range
         """
         self._pos = 0
         self._rstart = 0
@@ -320,7 +320,7 @@ class _DownloaderDelegate:
                 self._epos = min(range_header[1] + 1, self._size_in_bytes)
 
     def check_checkpoint(self):
-        """_summary_
+        """check checkpoint
         """
         if not self._options.enable_checkpoint:
             return
@@ -347,7 +347,7 @@ class _DownloaderDelegate:
 
 
     def adjust_writer(self, writer:IO[bytes]):
-        """_summary_
+        """adjust writer
 
         Args:
             writer (_type_): _description_
@@ -360,7 +360,7 @@ class _DownloaderDelegate:
         self._writer = writer
 
     def close_writer(self, writer:IO[bytes]):
-        """_summary_
+        """close writer
 
         Args:
             writer (_type_): _description_
@@ -378,7 +378,7 @@ class _DownloaderDelegate:
         self._checkpoint = None
 
     def update_crc_flag(self):
-        """_summary_
+        """update crc flag
         """
         #FF_ENABLE_CRC64_CHECK_DOWNLOAD
         if (self._base._feature_flags & 0x00000010) > 0:
@@ -386,7 +386,7 @@ class _DownloaderDelegate:
             self._calc_crc = (self._checkpoint is not None and self._checkpoint.verify_data) or self._check_crc
 
     def download(self) -> DownloadResult:
-        """_summary_
+        """Breakpoint download
         """
         parallel = self._options.parallel_num > 1
         seekable = utils.is_seekable(self._writer)
