@@ -28,6 +28,20 @@ def main():
         bucket=args.bucket,
         key=args.key,
     ))
+
+    # Load all the data into memory and then process it.
+    with result.body as f:
+        data = f.read()
+        # TODO
+
+    # # Read a block, process a block.
+    # with result.body as f:
+    #     # You can control the size of the data returned each time by setting the block_size parameter.
+    #     # for chunk in f.iter_bytes(block_size=256*1024):
+    #     for chunk in f.iter_bytes():
+    #         # TODO
+    #         pass
+
     print(f'status code: {result.status_code},'
           f' request id: {result.request_id},'
           f' content length: {result.content_length},' 
