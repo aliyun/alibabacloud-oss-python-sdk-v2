@@ -32,7 +32,7 @@ def main():
             days=1,
             # The restoration priority of Cold Archive or Deep Cold Archive objects.
             # Valid values:Expedited,Standard,Bulk
-            tier="Expedited",
+            tier="Standard",
         )
     ))
 
