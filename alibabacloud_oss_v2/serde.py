@@ -713,3 +713,15 @@ def copy_request(dst: RequestModel, src: RequestModel):
         if src_value is None:
             continue
         setattr(dst, attr, src_value)
+
+
+def deserialize_output_callbackbody(result: Model, op_output: OperationOutput):
+    """deserialize output callback body
+
+    Args:
+        result (Model): _description_
+        op_output (OperationOutput): _description_
+    """
+    callback_body = op_output.http_response.content
+    callback_result = callback_body.decode()
+    setattr(result, 'callback_result', callback_result)

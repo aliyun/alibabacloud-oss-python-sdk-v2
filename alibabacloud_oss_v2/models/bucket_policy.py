@@ -1,5 +1,5 @@
 from typing import Optional, List, Any, Union
-from .. import serde
+from .. import serde, BodyType
 
 
 class PolicyStatus(serde.Model):
@@ -36,18 +36,18 @@ class PutBucketPolicyRequest(serde.RequestModel):
 
     _attribute_map = { 
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
-        'body': {'tag': 'input', 'position': 'body', 'rename': 'nop', 'type': 'str', 'required': True},
+        'body': {'tag': 'input', 'position': 'body', 'rename': 'nop', 'required': True},
     }
 
     def __init__(
         self,
         bucket: str = None,
-        body: Optional[str] = None,
+        body: Optional[BodyType] = None,
         **kwargs: Any
     ) -> None:
         """
         bucket (str, required): The name of the bucket.
-        body (str, required): The request parameters.
+        body (BodyType, required): The request parameters.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
