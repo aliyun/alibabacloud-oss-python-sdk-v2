@@ -11,6 +11,7 @@ from . import operations
 from . import exceptions
 from .downloader import Downloader
 from .uploader import Uploader
+from .copier import Copier
 from .progress import Progress
 from .crc import Crc64
 from .paginator import (
@@ -695,6 +696,14 @@ class Client:
             Uploader: _description_
         """
         return Uploader(self, **kwargs)
+
+    def copier(self, **kwargs) -> Copier:
+        """_summary_
+
+        Returns:
+            copier: _description_
+        """
+        return Copier(self, **kwargs)
 
     # file like objects
     def append_file(self, bucket: str, key: str,

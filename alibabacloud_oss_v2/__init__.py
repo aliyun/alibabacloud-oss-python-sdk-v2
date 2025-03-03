@@ -58,6 +58,12 @@ from .uploader import (
     UploadError
 )
 
+from .copier import (
+    Copier,
+    CopyResult,
+    CopyError
+)
+
 from .paginator import (
     ListObjectsPaginator,
     ListObjectsV2Paginator,
