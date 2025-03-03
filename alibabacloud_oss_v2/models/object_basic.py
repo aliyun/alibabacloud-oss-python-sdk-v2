@@ -1454,8 +1454,8 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
         "cse_data_size": {},
         "cse_part_size": {},
+        "disable_auto_detect_mime_type": {},
     }
-
     def __init__(
         self,
         bucket: str = None,
@@ -1478,6 +1478,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         request_payer: Optional[str] = None,
         cse_data_size: Optional[int] = None,
         cse_part_size: Optional[int] = None,
+        disable_auto_detect_mime_type: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1510,6 +1511,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
             cse_part_size (int, optional): The part size when using client side encryption.
                 Only valid in EncryptionClient.
                 It must be aligned to the secret iv length.
+            disable_auto_detect_mime_type (bool, optional): To disable the feature that Content-Type is automatically added based on the object name if not specified.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -1532,6 +1534,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         self.request_payer = request_payer
         self.cse_data_size = cse_data_size
         self.cse_part_size = cse_part_size
+        self.disable_auto_detect_mime_type = disable_auto_detect_mime_type
 
 class InitiateMultipartUploadResult(serde.ResultModel):
     """The result for the InitiateMultipartUpload operation."""

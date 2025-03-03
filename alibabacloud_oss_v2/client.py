@@ -11,6 +11,7 @@ from . import operations
 from . import exceptions
 from .downloader import Downloader
 from .uploader import Uploader
+from .copier import Copier
 from .progress import Progress
 from .crc import Crc64
 from .paginator import (
@@ -679,22 +680,54 @@ class Client:
 
     # transfer managers
     def downloader(self, **kwargs) -> Downloader:
-        """downloader
+        """Creates a downloader to download objects.
 
         Args:
+            kwargs: Extra keyword arguments used to initialize the downloader.
+                - part_size (int): The part size. Default value: 6 MiB.
+                - parallel_num (int): The number of the download tasks in parallel. Default value: 3.
+                - block_size (int): The block size is the number of bytes it should read into memory. Default value: 16 KiB.
+                - use_temp_file (bool): Whether to use a temporary file when you download an object. A temporary file is used by default.
+                - enable_checkpoint (bool): Whether to enable checkpoint. Defaults to False.
+                - checkpoint_dir (str): The directory to store checkpoint.
+                - verify_data (bool): Whether to verify data when the download is resumed. Defaults to False.
 
         Returns:
-            Downloader: _description_
+            Downloader: a downloader instance.
         """
         return Downloader(self, **kwargs)
 
     def uploader(self, **kwargs) -> Uploader:
-        """uploader
+        """Creates a uploader to upload data to server.
+
+        Args:
+            kwargs: Extra keyword arguments used to initialize the uploader.
+                - part_size (int): The part size. Default value: 6 MiB.
+                - parallel_num (int): The number of the upload tasks in parallel. Default value: 3.
+                - leave_parts_on_error (bool): Whether to retain the uploaded parts when an upload task fails. By default, the uploaded parts are not retained.
+                - enable_checkpoint (bool): Whether to enable checkpoint. Defaults to False.
+                - checkpoint_dir (str): The directory to store checkpoint.
 
         Returns:
-            Uploader: _description_
+            Uploader: a uploader instance.
         """
         return Uploader(self, **kwargs)
+
+    def copier(self, **kwargs) -> Copier:
+        """Creates a copier to copy source object to destination object.
+
+        Args:
+            kwargs: Extra keyword arguments used to initialize the copier.
+            - part_size (int): The part size. Default value: 64 MiB.
+            - parallel_num (int): The number of the copy tasks in parallel. Default value: 3.
+            - multipart_copy_threshold (int): The minimum object size for calling the multipart copy operation. Default value: 200 MiB.
+            - leave_parts_on_error (bool): Whether to retain the copied parts when an upload task fails. By default, the copied parts are not retained.
+            - disable_shallow_copy (bool): Whether to use shallow copy capability. Defaults to True.
+
+        Returns:
+            Copier: a copier instance.
+        """
+        return Copier(self, **kwargs)
 
     # file like objects
     def append_file(self, bucket: str, key: str,
