@@ -61,6 +61,9 @@ DEFAULT_PREFETCH_NUM = DEFAULT_PARALLEL
 # Default prefetch chunk size for async read in ReadOnlyFile
 DEFAULT_PREFETCH_CHUNK_SIZE = DEFAULT_PART_SIZE
 
+# Default threshold to use muitipart copy in Copier, 200MiB
+DEFAULT_COPY_THRESHOLD = 200 * 1024 * 1024
+
 # Temp file suffix
 DEFAULT_TEMP_FILE_SUFFIX = ".temp"
 

@@ -449,6 +449,10 @@ def initiate_multipart_upload(client: _SyncClientImpl, request: models.InitiateM
         InitiateMultipartUploadResult: The result for the InitiateMultipartUpload operation.
     """
 
+    serializer = [serde_utils.add_content_md5]
+    if not request.disable_auto_detect_mime_type:
+        serializer.append(serde_utils.add_content_type)
+
     op_input = serde.serialize_input(
         request=request,
         op_input=OperationInput(
@@ -461,10 +465,7 @@ def initiate_multipart_upload(client: _SyncClientImpl, request: models.InitiateM
                 'encoding-type': 'url',
             }
         ),
-        custom_serializer=[
-            serde_utils.add_content_md5,
-            serde_utils.add_content_type,
-        ],
+        custom_serializer=serializer,
     )
 
     op_output = client.invoke_operation(op_input, **kwargs)
@@ -589,17 +590,17 @@ def complete_multipart_upload(client: _SyncClientImpl, request: models.CompleteM
 
     op_output = client.invoke_operation(op_input, **kwargs)
 
-    serdes = [serde.deserialize_output_headers]
+    deserializer = [serde.deserialize_output_headers]
     if request.callback is None:
-        serdes.append(serde.deserialize_output_xmlbody)
-        serdes.append(serde_utils.deserialize_encode_type)
+        deserializer.append(serde.deserialize_output_xmlbody)
+        deserializer.append(serde_utils.deserialize_encode_type)
     else:
-        serdes.append(serde.deserialize_output_callbackbody)
+        deserializer.append(serde.deserialize_output_callbackbody)
 
     return serde.deserialize_output(
         result=models.CompleteMultipartUploadResult(),
         op_output=op_output,
-        custom_deserializer=serdes,
+        custom_deserializer=deserializer,
     )
 
 
