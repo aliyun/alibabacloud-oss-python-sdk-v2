@@ -43,13 +43,19 @@ def put_object(client: _SyncClientImpl, request: models.PutObjectRequest, **kwar
 
     op_output = client.invoke_operation(op_input, **kwargs)
 
+    serdes = [
+        serde.deserialize_output_headers
+    ]
+
+    if request.callback is None:
+        serdes.append(serde.deserialize_output_discardbody)
+    else:
+        serdes.append(serde.deserialize_output_callbackbody)
+
     return serde.deserialize_output(
         result=models.PutObjectResult(),
         op_output=op_output,
-        custom_deserializer=[
-            serde.deserialize_output_discardbody,
-            serde.deserialize_output_headers
-        ],
+        custom_deserializer=serdes,
     )
 
 
@@ -583,14 +589,17 @@ def complete_multipart_upload(client: _SyncClientImpl, request: models.CompleteM
 
     op_output = client.invoke_operation(op_input, **kwargs)
 
+    serdes = [serde.deserialize_output_headers]
+    if request.callback is None:
+        serdes.append(serde.deserialize_output_xmlbody)
+        serdes.append(serde_utils.deserialize_encode_type)
+    else:
+        serdes.append(serde.deserialize_output_callbackbody)
+
     return serde.deserialize_output(
         result=models.CompleteMultipartUploadResult(),
         op_output=op_output,
-        custom_deserializer=[
-            serde.deserialize_output_xmlbody,
-            serde.deserialize_output_headers,
-            serde_utils.deserialize_encode_type
-        ],
+        custom_deserializer=serdes,
     )
 
 
