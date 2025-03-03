@@ -460,6 +460,8 @@ class _SyncClientImpl(_ClientImplMixIn):
         send_kwargs = {}
         if options.response_stream is not None:
             send_kwargs['stream'] = options.response_stream
+        if options.readwrite_timeout is not None:
+            send_kwargs['readwrite_timeout'] = options.readwrite_timeout
 
         response = options.http_client.send(context.request, **send_kwargs)
 
