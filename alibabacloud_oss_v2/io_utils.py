@@ -26,12 +26,12 @@ class TeeIterator:
         return d
 
     def seekable(self):
-        """_summary_
+        """Is there a file pointer offset
         """
         return self._seekable
 
     def reset(self) -> None:
-        """_summary_
+        """Resets the buffer to the marked position.
         """
         if self._writers is not None:
             for w in self._writers:
@@ -76,7 +76,7 @@ class TeeIterator:
 
 
 class _TeeIteratorStr(TeeIterator):
-    """_summary_
+    """Iterator str information
     """
 
     def __init__(
@@ -97,7 +97,7 @@ class _TeeIteratorStr(TeeIterator):
         return len(self._data)
 
     def iter_bytes(self):
-        """_summary_
+        """iter bytes
         """
         self._content = self._data.encode()
         self._total = len(self._content)
@@ -105,7 +105,7 @@ class _TeeIteratorStr(TeeIterator):
         return self
 
     def next(self):
-        """_summary_
+        """Next data
         """
         if self._offset >= self._total:
             raise StopIteration
@@ -120,7 +120,7 @@ class _TeeIteratorStr(TeeIterator):
 
 
 class _TeeIteratorBytes(TeeIterator):
-    """_summary_
+    """Iterator bytes information
     """
 
     def __init__(
@@ -141,7 +141,7 @@ class _TeeIteratorBytes(TeeIterator):
         return len(self._data)
 
     def iter_bytes(self):
-        """_summary_
+        """iter bytes
         """
         self._content = self._data
         self._total = len(self._content)
@@ -149,7 +149,7 @@ class _TeeIteratorBytes(TeeIterator):
         return self
 
     def next(self):
-        """_summary_
+        """Next data
         """
         if self._offset >= self._total:
             raise StopIteration
@@ -163,7 +163,7 @@ class _TeeIteratorBytes(TeeIterator):
         return ret
 
 class _TeeIteratorIOLen(TeeIterator):
-    """_summary_
+    """Iterator io len information
     """
 
     def __init__(
@@ -185,7 +185,7 @@ class _TeeIteratorIOLen(TeeIterator):
         return self._total
 
     def iter_bytes(self):
-        """_summary_
+        """iter bytes
         """
         if self._seekable:
             self._data.seek(self._start_offset, os.SEEK_SET)
@@ -193,7 +193,7 @@ class _TeeIteratorIOLen(TeeIterator):
         return self
 
     def next(self):
-        """_summary_
+        """Next data
         """
         d = self._data.read(self._block_size)
 
@@ -203,7 +203,7 @@ class _TeeIteratorIOLen(TeeIterator):
         raise StopIteration
 
 class _TeeIteratorIO(TeeIterator):
-    """_summary_
+    """Iterator io information
     """
 
     def __init__(
@@ -225,7 +225,7 @@ class _TeeIteratorIO(TeeIterator):
             setattr(self, '__len__', lambda x: x._total)
 
     def iter_bytes(self):
-        """_summary_
+        """iter bytes
         """
         if self._seekable:
             self._data.seek(self._start_offset, os.SEEK_SET)
@@ -233,7 +233,7 @@ class _TeeIteratorIO(TeeIterator):
         return self
 
     def next(self):
-        """_summary_
+        """Next data
         """
         d = self._data.read(self._block_size)
 
@@ -244,7 +244,7 @@ class _TeeIteratorIO(TeeIterator):
 
 
 class _TeeIteratorIter(TeeIterator):
-    """_summary_
+    """Iterator iter information
     """
 
     def __init__(
@@ -260,7 +260,7 @@ class _TeeIteratorIter(TeeIterator):
         self._cast_func = None
 
     def iter_bytes(self):
-        """_summary_
+        """iter bytes
         """
         if isinstance(self._data, Iterator):
             self._iter = self._data
@@ -269,7 +269,7 @@ class _TeeIteratorIter(TeeIterator):
         return self
 
     def next(self):
-        """_summary_
+        """Next data
         """
         return self._to_bytes(next(self._iter))
 
@@ -288,7 +288,7 @@ class _TeeIteratorIter(TeeIterator):
 
 
 def is_seekable_io(fileobj):
-    """_summary_
+    """is seekable io
     """
     if hasattr(fileobj, 'seekable'):
         return fileobj.seekable()
@@ -327,81 +327,81 @@ class ReadAtReader:
 
     @property
     def mode(self) -> str:
-        """_summary_
+        """mode
         """
         return self._reader.mode
 
     @property
     def name(self) -> str:
-        """_summary_
+        """name
         """
         return f'{self._reader.name} with read_at'
 
     def close(self) -> None:
-        """_summary_
+        """close
         """
         self._reader.close()
 
     @property
     def closed(self) -> bool:
-        """_summary_
+        """closed
         """
         return self._reader.closed
 
     def fileno(self) -> int:
-        """_summary_
+        """file no
         """
         return self._reader.fileno()
 
     def flush(self) -> None:
-        """_summary_
+        """flush
         """
         self._reader.flush()
 
     def isatty(self) -> bool:
-        """_summary_
+        """is atty
         """
         return self._reader.isatty()
 
     def read(self, n: int = -1) -> AnyStr:
-        """_summary_
+        """read
         """
         return self._reader.read(n)
 
     def read_at(self, off: int, n: int = -1) -> AnyStr:
-        """_summary_
+        """read at
         """
         with self._readat_lock:
             self._reader.seek(off)
             return self._reader.read(n)
 
     def readable(self) -> bool:
-        """_summary_
+        """read able
         """
         return self._reader.readable()
 
     def readline(self, limit: int = -1) -> AnyStr:
-        """_summary_
+        """read line
         """
         return self._reader.readline(limit)
 
     def readlines(self, hint: int = -1) -> List[AnyStr]:
-        """_summary_
+        """read lines
         """
         return self._reader.readlines(hint)
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        """_summary_
+        """seek
         """
         return self._reader.seek(offset, whence)
 
     def seekable(self) -> bool:
-        """_summary_
+        """seek able
         """
         return self._reader.seekable()
 
     def tell(self) -> int:
-        """_summary_
+        """tell
         """
         return self._reader.tell()
 
@@ -432,7 +432,7 @@ class SectionReader:
         self._limit = remaining
 
     def read(self, n: int = -1) -> AnyStr:
-        """_summary_
+        """read
         """
         if self._off >= self._limit:
             return b''
@@ -446,7 +446,7 @@ class SectionReader:
         return d
 
     def read_at(self, off: int, n: int = -1) -> AnyStr:
-        """_summary_
+        """read at
         """
         if off < 0 or off >= self._limit - self._base:
             return b''
@@ -459,12 +459,12 @@ class SectionReader:
         return self._reader.read_at(self._off, n)
 
     def readable(self) -> bool:
-        """_summary_
+        """read able
         """
         return self._reader.readable()
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        """_summary_
+        """seek
         """
         if whence == os.SEEK_SET:
             offset += self._base
@@ -483,12 +483,12 @@ class SectionReader:
         return offset - self._base
 
     def seekable(self) -> bool:
-        """_summary_
+        """seek able
         """
         return self._reader.seekable()
 
     def tell(self) -> int:
-        """_summary_
+        """tell
         """
         return self._off - self._base
 
@@ -536,7 +536,7 @@ class StreamBodyReader(StreamBody):
         return self._response.iter_bytes(**kwargs)
 
 class StreamBodyDiscarder(StreamBody):
-    """_summary_
+    """stream body discarder information
     """
     def __init__(
         self,
@@ -588,7 +588,7 @@ class StreamBodyDiscarder(StreamBody):
 
 
 class LimitReader:
-    """_summary_
+    """limit reader information
     """
     def __init__(
         self,
@@ -599,7 +599,7 @@ class LimitReader:
         self._n = n
 
     def read(self, n: int = -1) -> AnyStr:
-        """_summary_
+        """read data
         """
         if self._n <= 0:
             return b''

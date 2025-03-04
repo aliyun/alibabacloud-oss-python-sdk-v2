@@ -225,14 +225,6 @@ class Crc64:
 
     @staticmethod
     def combine(crc1, crc2, size) -> int:
-        """_summary_
-
-        Args:
-            crc1 (_type_): _description_
-            crc2 (_type_): _description_
-            size (_type_): _description_
-
-        Returns:
-            int: _description_
+        """Combines two CRC64 values into one CRC64
         """
         return _COMBINE_FUNC(crc1, crc2, size)

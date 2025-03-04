@@ -46,7 +46,7 @@ from .defaults import (
 # }
 
 class DownloadCheckpoint:
-    """_summary_
+    """Download Checkpoint
     """
     def __init__(
         self,
@@ -189,10 +189,7 @@ class DownloadCheckpoint:
         return False
 
     def dump(self) -> bool:
-        """_summary_
-
-        Returns:
-            _type_: _description_
+        """dump the checkpoint to local file
         """
         #Calculate MD5
         self.cp_info["Data"]["DownloadInfo"] = {
@@ -247,7 +244,7 @@ class DownloadCheckpoint:
 # }
 
 class UploadCheckpoint:
-    """_summary_
+    """Upload Checkpoint
     """
     def __init__(
         self,
@@ -352,10 +349,7 @@ class UploadCheckpoint:
         return False
 
     def dump(self) -> bool:
-        """_summary_
-
-        Returns:
-            _type_: _description_
+        """dump the checkpoint to local file
         """
         #Calculate MD5
         self.cp_info["Data"]["UploadInfo"] = {
@@ -377,7 +371,7 @@ class UploadCheckpoint:
         return True
 
     def remove(self) -> None:
-        """_summary_
+        """remove the checkpoint file
         """
         try:
             os.remove(self.cp_filepath)

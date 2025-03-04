@@ -29,7 +29,7 @@ class DownloadAPIClient(abc.ABC):
         """
 
 class DownloaderOptions:
-    """_summary_
+    """Options for downloader
     """
 
     def __init__(
@@ -42,6 +42,20 @@ class DownloaderOptions:
         checkpoint_dir: Optional[str] = None,
         verify_data: Optional[bool] = None,
     ) -> None:
+        """
+        part_size (int, optional): The part size. Default value: 6 MiB.
+        parallel_num (int, optional): The number of the download tasks in parallel. Default value: 3.
+        block_size (int, optional): The block size is the number of bytes it should read into memory. Default value: 16 KiB.
+        use_temp_file (bool, optional): Specifies whether to use a temporary file when you download an object.
+            A temporary file is used by default. The object is downloaded to the temporary file.
+            Then, the temporary file is renamed and uses the same name as the object that you want to download.
+        enable_checkpoint (bool, optional): Specifies whether to record the download progress in the checkpoint file.
+            By default, no download progress is recorded.
+        checkpoint_dir (str, optional): The path in which the checkpoint file is stored. Example: /local/dir/.
+            This parameter is valid only if enable_checkpoint is set to true.
+        verify_data (bool, optional): Specifies whether to verify the CRC-64 of the downloaded object when the download is resumed.
+            By default, the CRC-64 is not verified. This parameter is valid only if enable_checkpoint is set to true.
+        """
         self.part_size = part_size
         self.parallel_num = parallel_num
         self.block_size = block_size
@@ -52,13 +66,16 @@ class DownloaderOptions:
 
 
 class DownloadResult:
-    """_summary_
+    """The result about the download operation.
     """
 
     def __init__(
         self,
         written: Optional[int],
     ) -> None:
+        """
+        written (int, optional): The size of the downloaded data, in bytes.
+        """
         self.written = written
 
 class DownloadError(exceptions.BaseError):
@@ -116,14 +133,14 @@ class Downloader:
         filepath: str,
         **kwargs: Any
     ) -> DownloadResult:
-        """_summary_
+        """Downloads an object into a local file.
 
         Args:
-            request (models.GetObjectRequest): _description_
-            file_path (str): _description_
+            request (models.GetObjectRequest):  the request parameters for the download operation.
+            filepath (str): The path of a local file.
 
         Returns:
-            DownloadResult: _description_
+            DownloadResult: The result for the download operation.
         """
         delegate = self._delegate(request, **kwargs)
 
@@ -156,15 +173,14 @@ class Downloader:
         writer: IO[bytes],
         **kwargs: Any
     ) -> DownloadResult:
-        """_summary_
+        """Downloads an object into a stream.
 
         Args:
-            request (models.GetObjectRequest): _description_
-            writer (IO[bytes]): _description_
-            options (Optional[DownloaderOptions], optional): _description_. Defaults to None.
+            request (models.GetObjectRequest):  the request parameters for the download operation.
+            writer (IO[bytes]): writes the data into writer
 
         Returns:
-            DownloadResult: _description_
+            DownloadResult: The result for the download operation.
         """
         delegate = self._delegate(request, **kwargs)
 
@@ -270,12 +286,12 @@ class _DownloaderDelegate:
 
     @property
     def writer_filepath(self) -> str:
-        """_summary_
+        """writer filepath
         """
         return self._temp_filepath
 
     def check_source(self):
-        """_summary_
+        """check source
         """
         request = models.HeadObjectRequest(self._reqeust.bucket, self._reqeust.key)
         copy_request(request, self._reqeust)
@@ -287,7 +303,7 @@ class _DownloaderDelegate:
         self._headers = result.headers
 
     def check_destination(self, filepath: str):
-        """_summary_
+        """check destination
         """
         if len(utils.safety_str(filepath)) == 0:
             raise exceptions.ParamInvalidError(field='filepath')
@@ -302,7 +318,7 @@ class _DownloaderDelegate:
 
 
     def adjust_range(self):
-        """_summary_
+        """adjust range
         """
         self._pos = 0
         self._rstart = 0
@@ -320,7 +336,7 @@ class _DownloaderDelegate:
                 self._epos = min(range_header[1] + 1, self._size_in_bytes)
 
     def check_checkpoint(self):
-        """_summary_
+        """check checkpoint
         """
         if not self._options.enable_checkpoint:
             return
@@ -347,7 +363,7 @@ class _DownloaderDelegate:
 
 
     def adjust_writer(self, writer:IO[bytes]):
-        """_summary_
+        """adjust writer
 
         Args:
             writer (_type_): _description_
@@ -360,7 +376,7 @@ class _DownloaderDelegate:
         self._writer = writer
 
     def close_writer(self, writer:IO[bytes]):
-        """_summary_
+        """close writer
 
         Args:
             writer (_type_): _description_
@@ -378,7 +394,7 @@ class _DownloaderDelegate:
         self._checkpoint = None
 
     def update_crc_flag(self):
-        """_summary_
+        """update crc flag
         """
         #FF_ENABLE_CRC64_CHECK_DOWNLOAD
         if (self._base._feature_flags & 0x00000010) > 0:
@@ -386,7 +402,7 @@ class _DownloaderDelegate:
             self._calc_crc = (self._checkpoint is not None and self._checkpoint.verify_data) or self._check_crc
 
     def download(self) -> DownloadResult:
-        """_summary_
+        """Breakpoint download
         """
         parallel = self._options.parallel_num > 1
         seekable = utils.is_seekable(self._writer)

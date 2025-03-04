@@ -1,5 +1,5 @@
 # pylint: disable=line-too-long
-"""_summary_"""
+"""Client used to interact with **Alibaba Cloud Object Storage Service (OSS)**."""
 import copy
 from typing import Optional
 from .config import Config
@@ -29,11 +29,11 @@ from .presigner import (
 from .filelike import AppendOnlyFile, ReadOnlyFile
 
 class Client:
-    """_summary_
+    """Client
     """
 
     def __init__(self, config: Config, **kwargs) -> None:
-        """_summary_
+        """Initialize Client
 
         Args:
             config (Config): _description_
@@ -45,7 +45,7 @@ class Client:
 
     def invoke_operation(self, op_input: OperationInput, **kwargs
                          ) -> OperationOutput:
-        """_summary_
+        """invoke operation
 
         Args:
             op_input (OperationInput): _description_
@@ -679,7 +679,7 @@ class Client:
 
     # transfer managers
     def downloader(self, **kwargs) -> Downloader:
-        """_summary_
+        """downloader
 
         Args:
 
@@ -689,7 +689,7 @@ class Client:
         return Downloader(self, **kwargs)
 
     def uploader(self, **kwargs) -> Uploader:
-        """_summary_
+        """uploader
 
         Returns:
             Uploader: _description_
@@ -818,14 +818,14 @@ class Client:
         return result is not None
 
     def put_object_from_file(self, request: models.PutObjectRequest, filepath: str, **kwargs) -> models.PutObjectResult:
-        """_summary_
+        """put an object from file
 
         Args:
-            request (models.PutObjectRequest): _description_
-            filepath (str): _description_
+            request (PutObjectRequest): Request parameters for PutObject operation.
+            filepath (str): The path of the file to upload.
 
         Returns:
-            models.PutObjectResult: _description_
+            PutObjectResult: Response result for PutObject operation.
         """
         with open(filepath, 'rb') as f:
             req = copy.copy(request)
@@ -833,14 +833,14 @@ class Client:
             return self.put_object(req, **kwargs)
 
     def get_object_to_file(self, request: models.GetObjectRequest, filepath: str, **kwargs) -> models.GetObjectResult:
-        """_summary_
+        """get an object to file
 
         Args:
-            request (models.GetObjectRequest): _description_
-            filepath (str): _description_
+            request (GetObjectRequest): Request parameters for GetObject operation.
+            filepath (str): The path of the file to download.
 
         Returns:
-            models.GetObjectResult: _description_
+            GetObjectResult: Response result for GetObject operation.
         """
         prog = None
         if request.progress_fn:

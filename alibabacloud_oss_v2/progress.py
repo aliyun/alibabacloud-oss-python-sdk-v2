@@ -3,7 +3,7 @@ from typing import Optional
 
 
 class Progress:
-    """_summary_
+    """Progress
     """
 
     def __init__(
@@ -17,13 +17,13 @@ class Progress:
         self._lwritten = 0
 
     def reset(self):
-        """_summary_
+        """reset
         """
         self._lwritten = self._written
         self._written = 0
 
     def write(self, s: bytes):
-        """_summary_
+        """write
         """
         n = _len(s)
         self._written = self._written + n

@@ -275,14 +275,7 @@ def add_process_action(request: serde.Model, op_input: OperationInput) -> Operat
 
 
 def deserialize_process_body(result: serde.Model, op_output: OperationOutput) -> serde.Model:
-    """_summary_
-
-    Args:
-        result (Model): _description_
-        op_output (OperationOutput): _description_
-
-    Returns:
-        Any: _description_
+    """deserialize process body
     """
     xml_data = op_output.http_response.content
 
