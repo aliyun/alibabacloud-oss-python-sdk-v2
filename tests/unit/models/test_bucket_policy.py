@@ -137,7 +137,7 @@ class TestGetBucketPolicy(unittest.TestCase):
             status_code=200,
             http_response=MockHttpResponse()
         )
-        deserializer = [serde.deserialize_output_xmlbody]
+        deserializer = []
         serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
         self.assertEqual('OK', result.status)
         self.assertEqual(xml_data, result.body)

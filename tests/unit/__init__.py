@@ -41,6 +41,11 @@ class MockHttpResponse(HttpResponse):
 
     @property
     def content(self) -> bytes:
+        if self._body is not None:
+            if not isinstance(self._body, (bytes, str)):
+                raise TypeError(f"not support type {type(self._body)}")
+            if isinstance(self._body, str):
+                return self._body.encode()
         return self._body
 
     def __repr__(self) -> str:

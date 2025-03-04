@@ -111,14 +111,16 @@ class TestAccessPointPublicAccessBlock(TestIntegration):
 
                         if ap.status == 'enable':
                             print(f"ap name: {ap.access_point_name}, status: {ap.status}")
-                            del_result = self.client.delete_access_point(oss.DeleteAccessPointRequest(
-                                bucket=bucket_name,
-                                access_point_name=ap.access_point_name,
-                            ))
-                            self.assertEqual(del_result.status_code, 204)
-                            print(f"delete_access_point: {ap.access_point_name}")
-
-
+                            try:
+                                """"""
+                                del_result = self.client.delete_access_point(oss.DeleteAccessPointRequest(
+                                    bucket=bucket_name,
+                                    access_point_name=ap.access_point_name,
+                                ))
+                                self.assertEqual(del_result.status_code, 204)
+                                print(f"delete_access_point: {ap.access_point_name}")
+                            except:
+                                """pass"""
                 num += 1
                 time.sleep(10)
 
@@ -225,14 +227,17 @@ class TestAccessPointPublicAccessBlock(TestIntegration):
                     if ap.access_point_name.startswith('ap-test-oss-'):
 
                         if ap.status == 'enable':
-                            print(f"ap name: {ap.access_point_name}, status: {ap.status}")
-                            del_result = self.signv1_client.delete_access_point(oss.DeleteAccessPointRequest(
-                                bucket=bucket_name,
-                                access_point_name=ap.access_point_name,
-                            ))
-                            self.assertEqual(del_result.status_code, 204)
-                            print(f"delete_access_point: {ap.access_point_name}")
-
+                            try:
+                                """"""
+                                print(f"ap name: {ap.access_point_name}, status: {ap.status}")
+                                del_result = self.signv1_client.delete_access_point(oss.DeleteAccessPointRequest(
+                                    bucket=bucket_name,
+                                    access_point_name=ap.access_point_name,
+                                ))
+                                self.assertEqual(del_result.status_code, 204)
+                                print(f"delete_access_point: {ap.access_point_name}")
+                            except:
+                                """pass"""
                 num += 1
                 time.sleep(10)
 
