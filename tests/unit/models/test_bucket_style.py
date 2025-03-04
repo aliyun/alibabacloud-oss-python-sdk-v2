@@ -231,7 +231,7 @@ class TestListStyle(unittest.TestCase):
         self.assertEqual('Wed, 20 May 2020 12:07:15 GMT', result.style_list.styles[0].create_time)
         self.assertEqual('Wed, 21 May 2020 12:07:15 GMT', result.style_list.styles[0].last_modify_time)
         self.assertEqual('image', result.style_list.styles[0].category)
-        self.assertEqual('example-bucket', result.style_list.styles[1].name)
+        self.assertEqual('example-bucket2', result.style_list.styles[1].name)
         self.assertEqual('image/resize,w_200', result.style_list.styles[1].content)
         self.assertEqual('Wed, 20 May 2020 12:08:04 GMT', result.style_list.styles[1].create_time)
         self.assertEqual('Wed, 21 May 2020 12:08:04 GMT', result.style_list.styles[1].last_modify_time)
