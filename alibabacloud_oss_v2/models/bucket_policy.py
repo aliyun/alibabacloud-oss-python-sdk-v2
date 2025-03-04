@@ -95,7 +95,7 @@ class GetBucketPolicyResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        body (io.ReadCloser, optional): <no value>
+        body (str, optional): <no value>
         """
         super().__init__(**kwargs)
         self.body = body
