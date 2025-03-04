@@ -66,7 +66,8 @@ class UploadAPIClient(abc.ABC):
         """
 
 class UploaderOptions:
-    """_summary_
+    """
+    Options for uploader
     """
 
     def __init__(
@@ -77,6 +78,16 @@ class UploaderOptions:
         enable_checkpoint: Optional[bool] = None,
         checkpoint_dir: Optional[str] = None,
     ) -> None:
+        """
+        part_size (int, optional): The part size. Default value: 6 MiB.
+        parallel_num (int, optional): The number of the upload tasks in parallel. Default value: 3.
+        leave_parts_on_error (bool, optional): Specifies whether to retain the uploaded parts when an upload task fails.
+            By default, the uploaded parts are not retained.
+        enable_checkpoint (bool, optional): Specifies whether to record the resumable upload progress in the checkpoint file.
+            By default, no resumable upload progress is recorded.
+        checkpoint_dir (str, optional): The path in which the checkpoint file is stored. Example: /local/dir/.
+            This parameter is valid only if EnableCheckpoint is set to true.
+        """
         self.part_size = part_size
         self.parallel_num = parallel_num
         self.leave_parts_on_error = leave_parts_on_error or False
@@ -85,7 +96,8 @@ class UploaderOptions:
 
 
 class UploadResult:
-    """_summary_
+    """
+    The result about the upload operation.
     """
 
     def __init__(
@@ -95,6 +107,13 @@ class UploadResult:
         version_id: Optional[str] = None,
         hash_crc64: Optional[str] = None,
     ) -> None:
+        """
+        upload_id (str, optional): The upload ID that uniquely identifies the multipart upload task.
+        etag (str, optional): Entity tag for the uploaded object.
+        version_id (str, optional): The version ID of the object.
+        hash_crc64 (str, optional): The 64-bit CRC value of the object.
+            This value is calculated based on the ECMA-182 standard.
+        """
         self.upload_id = upload_id
         self.etag = etag
         self.version_id = version_id
@@ -163,14 +182,14 @@ class Uploader:
         filepath: str,
         **kwargs: Any
     ) -> UploadResult:
-        """_summary_
+        """Uploads a local file.
 
         Args:
-            request (models.PutObjectRequest): _description_
-            filepath (str): _description_
+            request (models.PutObjectRequest):  the request parameters for the upload operation.
+            filepath (str): The path of a local file.
 
         Returns:
-            UploadResult: _description_
+            UploadResult: The result for the upload operation.
         """
         delegate = self._delegate(request, **kwargs)
 
@@ -198,14 +217,14 @@ class Uploader:
         reader: IO[bytes],
         **kwargs: Any
     ) -> UploadResult:
-        """_summary_
+        """Uploads a stream.
 
         Args:
-            request (models.PutObjectRequest): _description_
-            reader (IO[bytes]): _description_
+            request (models.PutObjectRequest):  The request parameters for the upload operation.
+            reader (IO[bytes]): The stream to be uploaded.
 
         Returns:
-            UploadResult: _description_
+            UploadResult: The result for the upload operation.
         """
         delegate = self._delegate(request, **kwargs)
         delegate.apply_source(reader)
@@ -307,12 +326,12 @@ class _UploaderDelegate:
 
     @property
     def reader_filepath(self) -> str:
-        """_summary_
+        """reader filepath
         """
         return self._filepath
 
     def check_source(self, filepath:str):
-        """_summary_
+        """check source
         """
         if len(filepath) == 0:
             raise exceptions.ParamInvalidError(field='filepath')
@@ -328,7 +347,7 @@ class _UploaderDelegate:
         self._file_stat = os.stat(absfilepath)
 
     def apply_source(self, reader):
-        """_summary_
+        """apply source
         """
         if reader is None:
             raise exceptions.ParamInvalidError(field = 'reader')
@@ -348,7 +367,7 @@ class _UploaderDelegate:
         self._reader_seekable = utils.is_seekable(reader)
 
     def check_checkpoint(self):
-        """_summary_
+        """check checkpoint
         """
         if not self._options.enable_checkpoint:
             return
@@ -372,7 +391,7 @@ class _UploaderDelegate:
 
 
     def update_crc_flag(self):
-        """_summary_
+        """update crc flag
         """
         #FF_ENABLE_CRC64_CHECK_UPLOAD = 0x00000008
         if (self._base._feature_flags & 0x00000008) > 0:
@@ -408,12 +427,12 @@ class _UploaderDelegate:
 
 
     def set_reader(self, reader) ->IO[bytes]:
-        """_summary_
+        """set reader
         """
         self._reader = reader
 
     def close_reader(self):
-        """_summary_
+        """close reader
         """
 
         if self._checkpoint:
@@ -423,7 +442,7 @@ class _UploaderDelegate:
         self._checkpoint = None
 
     def upload(self) -> UploadResult:
-        """_summary_
+        """Breakpoint upload
         """
         if self._total_size >= 0 and self._total_size < self._options.part_size:
             return self._single_part()

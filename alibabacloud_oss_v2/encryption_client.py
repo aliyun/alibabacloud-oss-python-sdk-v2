@@ -1,5 +1,5 @@
 # pylint: disable=line-too-long
-"""_summary_"""
+"""Encryption Client"""
 import copy
 import base64
 from typing import MutableMapping, List, Optional, cast
@@ -27,7 +27,7 @@ class EncryptionMultiPartContext:
         self.part_size = part_size
 
     def is_valid(self) -> bool:
-        """_summary_
+        """is valid
         """
         if (self.content_cipher is None or
             self.data_size == 0 or
@@ -37,7 +37,7 @@ class EncryptionMultiPartContext:
         return True
 
 class EncryptionClient:
-    """_summary_
+    """Encryption Client
     """
 
     def __init__(
@@ -57,7 +57,7 @@ class EncryptionClient:
                 self._ccbuilders[mat_desc] = AESCtrCipherBuilder(mc)
 
     def unwrap(self) -> Client:
-        """_summary_
+        """unwrap
 
         Returns:
             Client: _description_

@@ -17,7 +17,7 @@ def _iv_to_big_int(iv: bytes) -> int:
     return iv_big_int
   
 class IteratorEncryptor():
-    """_summary_
+    """Iterator Encryptor
     """
 
     def __init__(
@@ -73,7 +73,7 @@ class IteratorEncryptor():
             raise err
 
 class IterableEncryptor():
-    """_summary_
+    """Iterable Encryptor
     """
 
     def __init__(
@@ -93,7 +93,7 @@ class IterableEncryptor():
             counter=self._counter)
 
 class FileLikeEncryptor():
-    """_summary_
+    """File Like Encryptor
     """
     def __init__(
         self,
@@ -109,7 +109,7 @@ class FileLikeEncryptor():
         self._offset = offset
 
     def read(self, n: int = -1) -> AnyStr:
-        """_summary_
+        """read
 
         Args:
             n (int, optional): _description_. Defaults to -1.
@@ -131,7 +131,7 @@ class FileLikeEncryptor():
         return self._cipher.encrypt(self._reader.read(n))
 
     def seek(self, offset: int, whence: int = 0) -> int:
-        """_summary_
+        """seek
 
         Args:
             offset (int): _description_
@@ -149,13 +149,13 @@ class FileLikeEncryptor():
         return offset
 
     def tell(self) -> int:
-        """_summary_
+        """tell
         """
         return self._reader.tell()
 
 
 class StreamBodyDecryptor(StreamBody):
-    """_summary_
+    """Stream Body Decryptor
     """
     def __init__(
         self,
@@ -219,13 +219,7 @@ class _AesCtr:
         self.no_str = False
 
     def encrypt(self, src: Any) -> Any:
-        """_summary_
-
-        Args:
-            src (Any): _description_
-
-        Returns:
-            Any: _description_
+        """encrypt data
         """
         if not self.no_str and isinstance(src, str):
             return self._get_cipher().encrypt(src.encode())
@@ -246,7 +240,7 @@ class _AesCtr:
         raise TypeError(f'src is not str/bytes/file-like/Iterable type, got {type(src)}')
 
     def decrypt(self, src: Any) -> Any:
-        """_summary_
+        """decrypt data
 
         Args:
             src (Any): _description_
@@ -268,7 +262,7 @@ class _AesCtr:
 
     @staticmethod
     def random_key() -> bytes:
-        """_summary_
+        """random key
 
         Returns:
             bytes: _description_
@@ -277,7 +271,7 @@ class _AesCtr:
 
     @staticmethod
     def random_iv() -> bytes:
-        """_summary_
+        """random iv
 
         Returns:
             bytes: _description_

@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+"""V1 signature implentation
+"""
 import base64
 import datetime
 from typing import Optional
@@ -10,7 +12,7 @@ from .. import exceptions
 from ..types import SigningContext, Signer
 
 class SignerV1(Signer):
-    """_summary_
+    """Signer V1
     """
     _subresource_key_set = frozenset(
         ['acl', 'bucketInfo', 'location', 'stat', 'delete', 'append',
