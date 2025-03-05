@@ -474,6 +474,18 @@ class TestSyncClient(unittest.TestCase):
             )
             self.assertIsInstance(self.save_options.http_client, MockHttpClient)
 
+            # "operation_timeout"
+            self.assertEqual(None, clinet._client._options.operation_timeout)
+            clinet.invoke_operation(
+                OperationInput(
+                    op_name='InvokeOperation',
+                    method='GET',
+                    bucket='bucket',
+                ),
+                operation_timeout=40,
+            )
+            self.assertEqual(40, self.save_options.operation_timeout)
+
 
     def test_invoke_operation_user_agent(self):
         self.save_op_context: SigningContext = None
@@ -1161,6 +1173,121 @@ class TestSyncClient(unittest.TestCase):
             self.assertEqual(1, len(self.save_data))
             for d in self.save_data:
                 self.assertEqual(data, d)
+
+    def test_invoke_operation_retryable_with_operation_timeout(self):
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            self.assertIsInstance(request.body, io_utils.TeeIterator)
+            raise exceptions.ServiceError(
+                status_code=500,
+                code='InternalError',
+                request_id='id-1234',
+                message='Please contact the server administrator, oss@service.aliyun.com.',
+                ec='',
+                timestamp='',
+                request_target=''
+            )
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+
+        # str, no operation_timeout
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                self.assertIn("InternalError", str(err))
+
+            self.assertEqual(3, len(self.save_request))
+            self.assertEqual(3, len(self.save_data))
+            for d in self.save_data:
+                self.assertEqual(data.encode(), d)
+
+        # str, with 0 operation_timeout
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ), operation_timeout=0)
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                self.assertIn("InternalError", str(err))
+
+            self.assertEqual(1, len(self.save_request))
+            self.assertEqual(1, len(self.save_data))
+            for d in self.save_data:
+                self.assertEqual(data.encode(), d)
+
+        # str, with 10s operation_timeout
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ), operation_timeout=10)
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                self.assertIn("InternalError", str(err))
+
+            self.assertEqual(3, len(self.save_request))
+            self.assertEqual(3, len(self.save_data))
+            for d in self.save_data:
+                self.assertEqual(data.encode(), d)
+
+        # str, with 4s operation_timeout 2
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+            retryer=retry.StandardRetryer(backoff_delayer=retry.FixedDelayBackoff(2.5))
+        )
+        clinet = client.Client(cfg)
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ), operation_timeout=4)
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                self.assertIn("InternalError", str(err))
+
+            self.assertEqual(2, len(self.save_request))
+            self.assertEqual(2, len(self.save_data))
+            for d in self.save_data:
+                self.assertEqual(data.encode(), d)
 
     def test_invoke_operation_addressing_mode(self):
         """ """
