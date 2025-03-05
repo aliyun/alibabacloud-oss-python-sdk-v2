@@ -102,12 +102,13 @@ class _Options:
         credentials_provider: Optional[CredentialsProvider] = None,
         http_client: Optional[Union[HttpClient]] = None,
         address_style: Optional[AddressStyle] = None,
-        readwrite_timeout: Optional[int] = None,
+        readwrite_timeout: Optional[Union[int, float]] = None,
         response_handlers: Optional[List] = None,
         response_stream: Optional[bool] = None,
         auth_method: Optional[str] = None,
         feature_flags: Optional[int] = None,
         additional_headers: Optional[List[str]] = None,
+        operation_timeout: Optional[Union[int, float]] = None,
     ) -> None:
         self.product = product
         self.region = region
@@ -124,6 +125,7 @@ class _Options:
         self.auth_method = auth_method
         self.feature_flags = feature_flags or defaults.FF_DEFAULT
         self.additional_headers = additional_headers
+        self.operation_timeout = operation_timeout
 
 
 class _InnerOptions:
@@ -188,6 +190,7 @@ class _ClientImplMixIn:
         options.http_client = kwargs.get("http_client", options.http_client)
         options.readwrite_timeout = kwargs.get("readwrite_timeout", options.readwrite_timeout)
         options.auth_method = kwargs.get("auth_method", options.auth_method)
+        options.operation_timeout = kwargs.get("operation_timeout", None)
 
     def verify_operation(self, op_input: OperationInput, options: _Options) -> None:
         """verify input and options"""
@@ -398,6 +401,11 @@ class _SyncClientImpl(_ClientImplMixIn):
         retryer = options.retryer
         max_attempts = self.retry_max_attempts(options)
 
+        # operation timeout
+        dealline = None
+        if isinstance(options.operation_timeout, (int, float)):
+            dealline = time.time() +  options.operation_timeout
+
         # Mark body
         marked_body = _MarkedBody(request.body)
         marked_body.mark()
@@ -419,12 +427,20 @@ class _SyncClientImpl(_ClientImplMixIn):
                 dealy = retryer.retry_delay(tries, error)
                 time.sleep(dealy)
 
+                # operation timeout
+                if dealline is not None and (time.time() > dealline):
+                    break
+
             try:
                 error = None
                 response = self._sent_http_request_once(context, options)
                 break
             except Exception as e:
                 error = e
+
+            # operation timeout
+            if dealline is not None and (time.time() > dealline):
+                break
 
             if marked_body.is_seekable() is False:
                 break
