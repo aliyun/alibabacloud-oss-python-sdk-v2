@@ -151,6 +151,12 @@ class Uploader:
     ) -> None:
         """
             client (UploadAPIClient): A agent that implements the PutObject and Multipart Upload api.
+            kwargs: Extra keyword arguments used to initialize the uploader.
+                - part_size (int): The part size. Default value: 6 MiB.
+                - parallel_num (int): The number of the upload tasks in parallel. Default value: 3.
+                - leave_parts_on_error (bool): Whether to retain the uploaded parts when an upload task fails. By default, the uploaded parts are not retained.
+                - enable_checkpoint (bool): Whether to enable checkpoint. Defaults to False.
+                - checkpoint_dir (str): The directory to store checkpoint.            
         """
         part_size = kwargs.get('part_size', defaults.DEFAULT_UPLOAD_PART_SIZE)
         parallel_num = kwargs.get('parallel_num', defaults.DEFAULT_UPLOAD_PARALLEL)
@@ -187,6 +193,12 @@ class Uploader:
         Args:
             request (models.PutObjectRequest):  the request parameters for the upload operation.
             filepath (str): The path of a local file.
+            kwargs: Extra keyword arguments.
+                - part_size (int): The part size.
+                - parallel_num (int): The number of the upload tasks in parallel.
+                - leave_parts_on_error (bool): Whether to retain the uploaded parts when an upload task fails.
+                - enable_checkpoint (bool): Whether to enable checkpoint.
+                - checkpoint_dir (str): The directory to store checkpoint.            
 
         Returns:
             UploadResult: The result for the upload operation.
@@ -222,7 +234,10 @@ class Uploader:
         Args:
             request (models.PutObjectRequest):  The request parameters for the upload operation.
             reader (IO[bytes]): The stream to be uploaded.
-
+            kwargs: Extra keyword arguments.
+                - part_size (int): The part size.
+                - parallel_num (int): The number of the upload tasks in parallel.
+                - leave_parts_on_error (bool): Whether to retain the uploaded parts when an upload task fails.
         Returns:
             UploadResult: The result for the upload operation.
         """
