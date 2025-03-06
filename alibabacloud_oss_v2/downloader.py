@@ -103,7 +103,14 @@ class Downloader:
     ) -> None:
         """
             client (DownloadAPIClient): A agent that implements the HeadObject and GetObject api.
-            downloader_options (DownloaderOptions, optional): optional.
+            kwargs: Extra keyword arguments used to initialize the downloader.
+                - part_size (int): The part size. Default value: 6 MiB.
+                - parallel_num (int): The number of the download tasks in parallel. Default value: 3.
+                - block_size (int): The block size is the number of bytes it should read into memory. Default value: 16 KiB.
+                - use_temp_file (bool): Whether to use a temporary file when you download an object. A temporary file is used by default.
+                - enable_checkpoint (bool): Whether to enable checkpoint. Defaults to False.
+                - checkpoint_dir (str): The directory to store checkpoint.
+                - verify_data (bool): Whether to verify data when the download is resumed. Defaults to False.            
         """
         part_size = kwargs.get('part_size', defaults.DEFAULT_DOWNLOAD_PART_SIZE)
         parallel_num = kwargs.get('parallel_num', defaults.DEFAULT_DOWNLOAD_PARALLEL)
@@ -138,7 +145,14 @@ class Downloader:
         Args:
             request (models.GetObjectRequest):  the request parameters for the download operation.
             filepath (str): The path of a local file.
-
+            kwargs: Extra keyword arguments.
+                - part_size (int): The part size.
+                - parallel_num (int): The number of the download tasks in parallel.
+                - block_size (int): The block size is the number of bytes it should read into memory.
+                - use_temp_file (bool): Whether to use a temporary file when you download an object.
+                - enable_checkpoint (bool): Whether to enable checkpoint.
+                - checkpoint_dir (str): The directory to store checkpoint.
+                - verify_data (bool): Whether to verify data when the download is resumed.
         Returns:
             DownloadResult: The result for the download operation.
         """
@@ -178,7 +192,10 @@ class Downloader:
         Args:
             request (models.GetObjectRequest):  the request parameters for the download operation.
             writer (IO[bytes]): writes the data into writer
-
+            kwargs: Extra keyword arguments.
+                - part_size (int): The part size.
+                - parallel_num (int): The number of the download tasks in parallel.
+                - block_size (int): The block size is the number of bytes it should read into memory.
         Returns:
             DownloadResult: The result for the download operation.
         """
