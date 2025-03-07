@@ -84,7 +84,6 @@ SDK需要凭证（访问密钥）来签署对 OSS 的请求, 所以您需要显�
 * [环境变量](#环境变量)
 * [ECS实例角色](#ecs实例角色)
 * [静态凭证](#静态凭证)
-* [外部进程](#外部进程)
 * [RAM角色](#ram角色)
 * [OIDC角色SSO](#oidc角色sso)
 * [自定义凭证提供者](#自定义凭证提供者)
@@ -206,32 +205,6 @@ cfg = oss.config.load_default()
 cfg.credentials_provider = credentials_provider
 ```
 
-### 外部进程
-
-您可以在应用程序中，通过外部进程获取凭证。
-> **注意:**
-> </br>生成凭证的命令不可由未经批准的进程或用户访问，则可能存在安全风险。
-> </br>生成凭证的命令不会把任何秘密信息写入 stderr 或 stdout，因为该信息可能会被捕获或记录，可能会将其向未经授权的用户公开。
-
-外部命令返回的凭证，支持长期凭证和临时凭证，其格式如下：
-1. 长期凭证
-```
-{
-  "AccessKeyId" : "AKId",
-  "AccessKeySecret" : "AKSecrect",
-}
-```
-
-2. 临时凭证
-```
-{
-  "AccessKeyId" : "AKId",
-  "AccessKeySecret" : "AKSecrect",
-  "Expiration" : "2023-12-29T07:45:02Z",
-  "SecurityToken" : "token",
-}
-```
-
 
 ### RAM角色
 
@@ -241,24 +214,11 @@ SDK 不直接提供该访问凭证实现，需要结合阿里云凭证库[creden
 
 ```
 # -*- coding: utf-8 -*-
-
+import os
 from alibabacloud_credentials.client import Client
 from alibabacloud_credentials.models import Config
-from alibabacloud_oss_v2 import CredentialsProvider, Credentials
 import alibabacloud_oss_v2 as oss
-import os
-
-class CredentialProviderWrapper(CredentialsProvider):
-    def __init__(self, client):
-        self.client = client
-
-    def get_credentials(self):
-        credential = self.client.get_credential()
-        access_key_id = credential.access_key_id
-        access_key_secret = credential.access_key_secret
-        security_token = credential.security_token
-        return Credentials(access_key_id, access_key_secret, security_token)
-
+from alibabacloud_oss_v2 import credentials, Credentials
 
 config = Config(
     # 从环境变量中获取RAM用户的访问密钥（AccessKey ID和AccessKey Secret）
@@ -275,14 +235,16 @@ config = Config(
     role_session_expiration=3600
 )
 
+cred_client = Client(config)
+cred = cred_client.get_credential()
 
-cred = Client(config)
-
-credentials_provider = CredentialProviderWrapper(cred)
+provider = credentials.CredentialsProviderFunc(
+    func=lambda: Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
+)
 
 cfg = oss.config.load_default()
-cfg.credentials_provider = credentials_provider
-cfg.region = 'cn-chengdu'
+cfg.credentials_provider = provider
+cfg.region = 'cn-hangzhou'
 
 client = oss.Client(cfg)
 
@@ -297,25 +259,11 @@ SDK 不直接提供该访问凭证实现，需要结合阿里云凭证库[creden
 
 ```
 # -*- coding: utf-8 -*-
-import oss2
+import os
 from alibabacloud_credentials.client import Client
 from alibabacloud_credentials.models import Config
-from alibabacloud_oss_v2 import CredentialsProvider, Credentials
 import alibabacloud_oss_v2 as oss
-import os
-
-
-class CredentialProviderWrapper(CredentialsProvider):
-    def __init__(self, client):
-        self.client = client
-
-    def get_credentials(self):
-        credential = self.client.get_credential()
-        access_key_id = credential.access_key_id
-        access_key_secret = credential.access_key_secret
-        security_token = credential.security_token
-        return Credentials(access_key_id, access_key_secret, security_token)
-
+from alibabacloud_oss_v2 import credentials, Credentials
 
 config = Config(
     # 指定Credential类型，固定值为oidc_role_arn。
@@ -334,14 +282,16 @@ config = Config(
     role_session_expiration=3600
 )
 
+cred_client = Client(config)
+cred = cred_client.get_credential()
 
-cred = Client(config)
-
-credentials_provider = CredentialProviderWrapper(cred)
+provider = credentials.CredentialsProviderFunc(
+    func=lambda: Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
+)
 
 cfg = oss.config.load_default()
-cfg.credentials_provider = credentials_provider
-cfg.region = 'cn-chengdu'
+cfg.credentials_provider = provider
+cfg.region = 'cn-hangzhou'
 
 client = oss.Client(cfg)
 
@@ -351,8 +301,9 @@ client = oss.Client(cfg)
 
 ### 自定义凭证提供者
 
-当以上凭证配置方式不满足要求时，您可以自定义获取凭证的方式。
+当以上凭证配置方式不满足要求时，您可以自定义获取凭证的方式。SDK 支持多种实现方式。
 
+1. 实现 credentials.CredentialsProvider 接口
 ```
 # -*- coding: utf-8 -*-
 from alibabacloud_oss_v2 import CredentialsProvider, Credentials
@@ -382,6 +333,32 @@ client = oss.Client(cfg)
 # 使用client进行后续操作...
 
 ```
+
+2. 通过 credentials.CredentialsProviderFunc
+
+credentials.CredentialsProviderFunc 是 credentials.CredentialsProvider 的 易用性封装。
+
+```
+# -*- coding: utf-8 -*-
+import alibabacloud_oss_v2 as oss
+from alibabacloud_oss_v2 import credentials, Credentials
+
+provider = credentials.CredentialsProviderFunc(
+    # 返回长期凭证
+    func=lambda: Credentials(access_key_id='access_key_id', access_key_secret='access_key_security')
+    # # 返回临时凭证
+    # func=lambda: Credentials(access_key_id='access_key_id', access_key_secret='access_key_security', security_token='security_token')
+)
+
+cfg = oss.config.load_default()
+cfg.credentials_provider = provider
+cfg.region = 'cn-hangzhou'
+
+client = oss.Client(cfg)
+
+# 使用client进行后续操作...
+```
+
 
 ## 访问域名
 
@@ -560,7 +537,7 @@ cfg.retry_max_attempts = 5
 
 或者
 
-cfg.retryer = oss.retry.retryer_impl.StandardRetryer(max_attempts=5)
+cfg.retryer = oss.retry.StandardRetryer(max_attempts=5)
 ```
 
 ### 调整退避延迟
