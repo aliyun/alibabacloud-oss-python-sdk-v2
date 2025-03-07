@@ -2204,7 +2204,7 @@ V2 版本使用 传输管理器 'Uploader'，'Downloader' 和 'Copier' 分别 �
 |下载-并发默认值|3|1
 |下载-阈值|分片大小|无
 |下载-记录checkpoint|支持|支持
-|拷贝-分片默认值|64 MiB|Bucket.UploadFile
+|拷贝-分片默认值|64 MiB|无
 |拷贝-并发默认值|3|1
 |拷贝-阈值|200 MiB|无
 |拷贝-记录checkpoint|不支持|支持
