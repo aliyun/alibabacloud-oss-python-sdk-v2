@@ -127,59 +127,51 @@ cfg.credentials_provider = credentials_provider
 
 1. 指定实例角色，例如角色名为 EcsRoleExample
 ```
-class CredentialProviderWrapper(CredentialsProvider):
-    def __init__(self, client):
-        self.client = client
-
-    def get_credentials(self):
-        credential = self.client.get_credential()
-        access_key_id = credential.access_key_id
-        access_key_secret = credential.access_key_secret
-        security_token = credential.security_token
-        return Credentials(access_key_id, access_key_secret, security_token)
-
+from alibabacloud_credentials.client import Client
+from alibabacloud_credentials.models import Config
+import alibabacloud_oss_v2 as oss
 
 config = Config(
     type='ecs_ram_role',      # 访问凭证类型。固定为ecs_ram_role。
-    role_name='<RoleName>'    # 为ECS授予的RAM角色的名称。可选参数。如果不设置，将自动检索。强烈建议设置，以减少请求。
+    role_name='EcsRoleExample'    # 为ECS授予的RAM角色的名称。可选参数。如果不设置，将自动检索。强烈建议设置，以减少请求。
 )
 
+cred_client = Client(config)
 
-cred = Client(config)
+def get_credentials_wrapper():
+    cred = cred_client.get_credential()
+    return oss.credentials.Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
 
-credentials_provider = CredentialProviderWrapper(cred)
+provider = oss.credentials.CredentialsProviderFunc(func=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
-cfg.credentials_provider = credentials_provider
+cfg.credentials_provider = provider
+cfg.region = 'cn-hangzhou'
 
 client = oss.Client(cfg)
 ```
    
 2. 不指定实例角色
 ```
-class CredentialProviderWrapper(CredentialsProvider):
-    def __init__(self, client):
-        self.client = client
-
-    def get_credentials(self):
-        credential = self.client.get_credential()
-        access_key_id = credential.access_key_id
-        access_key_secret = credential.access_key_secret
-        security_token = credential.security_token
-        return Credentials(access_key_id, access_key_secret, security_token)
-
+from alibabacloud_credentials.client import Client
+from alibabacloud_credentials.models import Config
+import alibabacloud_oss_v2 as oss
 
 config = Config(
     type='ecs_ram_role',      # 访问凭证类型。固定为ecs_ram_role。
 )
 
+cred_client = Client(config)
 
-cred = Client(config)
+def get_credentials_wrapper():
+    cred = cred_client.get_credential()
+    return oss.credentials.Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
 
-credentials_provider = CredentialProviderWrapper(cred)
+provider = oss.credentials.CredentialsProviderFunc(func=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
-cfg.credentials_provider = credentials_provider
+cfg.credentials_provider = provider
+cfg.region = 'cn-hangzhou'
 
 client = oss.Client(cfg)
 ```
@@ -218,7 +210,6 @@ import os
 from alibabacloud_credentials.client import Client
 from alibabacloud_credentials.models import Config
 import alibabacloud_oss_v2 as oss
-from alibabacloud_oss_v2 import credentials, Credentials
 
 config = Config(
     # 从环境变量中获取RAM用户的访问密钥（AccessKey ID和AccessKey Secret）
@@ -236,11 +227,12 @@ config = Config(
 )
 
 cred_client = Client(config)
-cred = cred_client.get_credential()
 
-provider = credentials.CredentialsProviderFunc(
-    func=lambda: Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
-)
+def get_credentials_wrapper():
+    cred = cred_client.get_credential()
+    return oss.credentials.Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
+
+provider = oss.credentials.CredentialsProviderFunc(func=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = provider
@@ -263,7 +255,6 @@ import os
 from alibabacloud_credentials.client import Client
 from alibabacloud_credentials.models import Config
 import alibabacloud_oss_v2 as oss
-from alibabacloud_oss_v2 import credentials, Credentials
 
 config = Config(
     # 指定Credential类型，固定值为oidc_role_arn。
@@ -283,11 +274,12 @@ config = Config(
 )
 
 cred_client = Client(config)
-cred = cred_client.get_credential()
 
-provider = credentials.CredentialsProviderFunc(
-    func=lambda: Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
-)
+def get_credentials_wrapper():
+    cred = cred_client.get_credential()
+    return oss.credentials.Credentials(access_key_id=cred.access_key_id, access_key_secret=cred.access_key_secret, security_token=cred.security_token)
+
+provider = oss.credentials.CredentialsProviderFunc(func=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = provider
@@ -296,30 +288,28 @@ cfg.region = 'cn-hangzhou'
 client = oss.Client(cfg)
 
 # 使用client进行后续操作...
-
 ```
 
 ### 自定义凭证提供者
 
-当以上凭证配置方式不满足要求时，您可以自定义获取凭证的方式。SDK 支持多种实现方式。
+当以上凭证配置方式不满足要求时，您可以自定义获取凭证的方式。SDK支持多种实现方式。
 
 1. 实现 credentials.CredentialsProvider 接口
 ```
 # -*- coding: utf-8 -*-
-from alibabacloud_oss_v2 import CredentialsProvider, Credentials
 import alibabacloud_oss_v2 as oss
 
-class CredentialProviderWrapper(CredentialsProvider):
+class CredentialProviderWrapper(oss.credentials.CredentialsProvider):
     def get_credentials(self):
         # TODO
         # 自定义访问凭证的获取方法
 
         # 返回长期凭证access_key_id, access_key_secrect
-        return Credentials('<access_key_id>', '<access_key_secrect>')
+        return oss.credentials.Credentials('<access_key_id>', '<access_key_secrect>')
 
         # 返回 临时凭证access_key_id, access_key_secrect, token
         # 对于临时凭证，需要根据过期时间，刷新凭证。
-        # return Credentials('<access_key_id>', '<access_key_secrect>', '<token>');
+        # return oss.credentials.Credentials('<access_key_id>', '<access_key_secrect>', '<token>');
 
 
 credentials_provider = CredentialProviderWrapper()
@@ -341,14 +331,14 @@ credentials.CredentialsProviderFunc 是 credentials.CredentialsProvider 的 易�
 ```
 # -*- coding: utf-8 -*-
 import alibabacloud_oss_v2 as oss
-from alibabacloud_oss_v2 import credentials, Credentials
 
-provider = credentials.CredentialsProviderFunc(
+def get_credentials_wrapper():
     # 返回长期凭证
-    func=lambda: Credentials(access_key_id='access_key_id', access_key_secret='access_key_security')
+    oss.credentials.Credentials(access_key_id='access_key_id', access_key_secret='access_key_security')
     # # 返回临时凭证
-    # func=lambda: Credentials(access_key_id='access_key_id', access_key_secret='access_key_security', security_token='security_token')
-)
+    # return oss.credentials.Credentials(access_key_id='access_key_id', access_key_secret='access_key_security', security_token='security_token')
+
+provider = oss.credentials.CredentialsProviderFunc(unc=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = provider
@@ -516,7 +506,7 @@ cfg.http_client = oss.transport.RequestsHttpClient(**kwargs)
 
 ### 默认重试策略
 
-当没有配置重试策略时，SDK 使用 retryer_impl.StandardRetryer() 作为客户端的默认实现，其默认配置如下：
+当没有配置重试策略时，SDK 使用 StandardRetryer() 作为客户端的默认实现，其默认配置如下：
 
 |参数名称 | 说明 | 默认值 
 |:-------|:-------|:-------
@@ -545,7 +535,7 @@ cfg.retryer = oss.retry.StandardRetryer(max_attempts=5)
 例如 调整 BaseDelay 为 500毫秒，最大退避时间为 25秒
 
 ```
-cfg.retryer = oss.retry.retryer_impl.StandardRetryer(max_backoff=25, base_delay=0.5)
+cfg.retryer = oss.retry.StandardRetryer(max_backoff=25, base_delay=0.5)
 ```
 
 ### 调整退避算法
@@ -553,7 +543,7 @@ cfg.retryer = oss.retry.retryer_impl.StandardRetryer(max_backoff=25, base_delay=
 例如 使用固定时间退避算法，每次延迟2秒 
 
 ```
-cfg.retryer = oss.retry.retryer_impl.StandardRetryer(backoff_delayer=oss.retry.FixedDelayBackoff(2))
+cfg.retryer = oss.retry.StandardRetryer(backoff_delayer=oss.retry.FixedDelayBackoff(2))
 ```
 
 ### 调整重试错误
@@ -567,7 +557,7 @@ class CustomErrorCodeRetryable(error_retryable.ErrorRetryable):
         # return true
         return False
 
-cfg.retryer = oss.retry.retryer_impl.StandardRetryer(
+cfg.retryer = oss.retry.StandardRetryer(
             error_retryables=[CustomErrorCodeRetryable()]
         )
 ```
@@ -576,7 +566,7 @@ cfg.retryer = oss.retry.retryer_impl.StandardRetryer(
 
 当您希望禁用所有重试尝试时，可以使用 retry.NopRetryer 实现
 ```
-cfg.retryer = oss.retry.retryer_impl.NopRetryer()
+cfg.retryer = oss.retry.NopRetryer()
 ```
 
 ## 日志
