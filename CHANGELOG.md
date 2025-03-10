@@ -1,5 +1,14 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.1.0 日期：2025-03-10
+### 变更内容
+- Feature：Add clean restored object api
+- Feature：Add operation level read-write timeout
+- Feature：Add operation level total timeout
+- Feature：Add copier
+- Fix：The issue that callback result can not be obtained
+- Update：Change the type of body parameter of some api
+
 ## 版本号：1.0.2b0 日期：2025-01-03
 ### 变更内容
 - Feature：Add bucket worm api
