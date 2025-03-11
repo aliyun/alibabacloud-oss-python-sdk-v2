@@ -645,7 +645,7 @@ def <OperationName>(self, request: models.<OperationRequestName>, **kwargs
 client = oss.Client(cfg)
 
 result = client.put_bucket(oss.PutBucketRequest(
-    bucket=args.bucket,
+    bucket="example_bucket",
     acl='private',
     create_bucket_configuration=oss.CreateBucketConfiguration(
         storage_class='IA'
@@ -663,10 +663,10 @@ kwargs: Dict[str, Any] = {}
 kwargs["readwrite_timeout"] = 30
 
 result = client.copy_object(oss.CopyObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
-    source_key=args.source_key,
-    source_bucket=args.source_bucket,
+    bucket="example_bucket",
+    key="example_key",
+    source_key="example_source_key",
+    source_bucket="example_source_bucket",
     ), **kwargs)
 print(vars(result))
 ```
@@ -731,8 +731,8 @@ def presign(self, request: PresignRequest, **kwargs) -> PresignResult:
 client = oss.Client(cfg)
 
 pre_result = client.presign(oss.GetObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
+    bucket="example_bucket",
+    key="example_key",
 ))
 
 with requests.get(pre_result.url) as resp:
@@ -749,8 +749,8 @@ kwargs: Dict[str, Any] = {}
 kwargs["expires"] = datetime.timedelta(minutes=10)
 
 pre_result = client.presign(oss.PutObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
+    bucket="example_bucket",
+    key="example_key",
     content_type='text/txt'
 ), **kwargs)
 
@@ -803,7 +803,7 @@ PaginatorOptions 选项说明：
 |Limit|指定返回结果的最大数
 
 
-以 ListObjects 为例，分页器遍历所有对象 和 手动分页遍历所有对象 对比
+以 list_objects 为例，分页器遍历所有对象 和 手动分页遍历所有对象 对比
 
 ```
 // 分页器遍历所有对象
@@ -815,7 +815,7 @@ paginator = client.list_objects_paginator()
 
 # Iterate through the object pages
 for page in paginator.iter_page(oss.ListObjectsRequest(
-        bucket=args.bucket
+        bucket="example_bucket"
     )
 ):
     for o in page.contents:
@@ -830,7 +830,7 @@ client = oss.Client(cfg)
 marker=''
 while True:
     result = client.list_objects(oss.ListObjectsRequest(
-            bucket=args.bucket,
+            bucket="example_bucket",
             marker=marker
         ))
     for o in result.contents:
@@ -1276,7 +1276,7 @@ with client.open_file("example_bucket", "example_key") as f:
 
 ### 追加写文件(AppendOnlyFile)
 
-调用AppendObject接口以追加写的方式上传数据。如果对象不存在，则创建追加类型的对象。如果对象存在，并且不为追加类型的对象时，则返回错误。
+调用append_object接口以追加写的方式上传数据。如果对象不存在，则创建追加类型的对象。如果对象存在，并且不为追加类型的对象时，则返回错误。
 
 ```
 class AppendOnlyFile:
@@ -1412,11 +1412,6 @@ def __init__(self,client: Client, master_cipher: MasterCipher, decrypt_master_ci
 |list_parts|列举指定上传事件所属的所有已经上传成功分片
 
 
-|**高级接口名**|**说明**
-|:-------|:-------
-|downloader|创建下载管理器实例
-|uploader|创建上传管理器实例
-|open_file|创建ReadOnlyFile实例
 |**辅助接口名**|**说明**
 |unwrap|获取非加密客户端实例，可以通过该实例访问其它基础接口
 
@@ -1434,7 +1429,7 @@ credentials_provider = oss.credentials.EnvironmentVariableCredentialsProvider()
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = credentials_provider
-cfg.region = args.region
+cfg.region = "cn-hangzhou"
 
 client = oss.Client(cfg)
 
@@ -1666,9 +1661,9 @@ result = client.put_object_from_file(oss.PutObjectRequest(
 print(vars(result))
 ```
 
-### GetObjectToFile
+### get_object_to_file
 
-使用GetObject接口，把存储空间的对象下载到本地文件，该接口不支持并发。
+使用get_object接口，把存储空间的对象下载到本地文件，该接口不支持并发。
 
 ```
 def get_object_to_file(self, request: models.GetObjectRequest, filepath: str, **kwargs) -> models.GetObjectResult: 
@@ -1789,8 +1784,8 @@ print(vars(result))
 client = oss.Client(cfg)
 
 result = client.get_object(oss.GetObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
+    bucket="example_bucket",
+    key="example_key",
 ))
 
 total_size = result.content_length
@@ -1828,8 +1823,8 @@ md5 = base64.b64encode(h.digest()).decode()
 print(f'md5: {md5}')
 
 result = client.put_object(oss.PutObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
+    bucket="example_bucket",
+    key="example_key",
     content_md5=md5,
     body=data,
 ))
@@ -1851,8 +1846,8 @@ print(vars(result))
 client = oss.Client(cfg)
 
 result = client.get_object(oss.GetObjectRequest(
-    bucket=args.bucket,
-    key=args.key,
+    bucket="example_bucket",
+    key="example_key",
 ))
 
 # 响应头返回的是整个文件的CRC64值，如果是范围下载，不支持CRC64校验.status_code为206表示是范围下载
@@ -1872,7 +1867,7 @@ if result.status_code == 200:
 print(vars(result))
 ```
 
-如果您需要关闭CRC64校验，通过Config.WithDisableDownloadCRC64Check 和  Config.WithDisableUploadCRC64Check 配置，例如
+如果您需要关闭CRC64校验，通过Config.disable_download_crc64_check 和  Config.disable_upload_crc64_check 配置，例如
 ```
 cfg = oss.config.load_default()
 
@@ -1895,7 +1890,7 @@ V2 版本 要求 python 版本最低为 3.8。
 V2 版本使用新的代码仓库，同时也对代码结构进行了调整，按照功能模块组织，以下是这些模块路径和说明：
 
 | 模块路径                                                                                               | 说明 
-|:---------------------------------------------------------------------------------------------------|:-------
+|:------------------------------|:-------
 | alibabacloud_oss_v2        |SDK核心，接口 和 高级接口实现
 | alibabacloud_oss_v2.credentials   |访问凭证相关
 | alibabacloud_oss_v2.retry     |重试相关
@@ -2115,7 +2110,7 @@ V2 版本使用 传输管理器 'Uploader'，'Downloader' 和 'Copier' 分别 �
 |场景|v2|v1
 |:-------|:-------|:-------
 |上传文件|Uploader.upload_file|bucket.put_object_from_file
-|上传流<br/>|Uploader.upload_from|不支持
+|上传流|Uploader.upload_from|不支持
 |下载到文件|Downloader.download_file|bucket.get_object_to_file
 |拷贝对象|Copier.copy|bucket.copy_object
 
@@ -2182,7 +2177,7 @@ credentials_provider = oss.credentials.EnvironmentVariableCredentialsProvider()
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = credentials_provider
-cfg.region = args.region
+cfg.region = "cn-hangzhou"
 
 client = oss.Client(cfg)
 
