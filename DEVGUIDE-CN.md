@@ -41,7 +41,7 @@ pip show alibabacloud-oss-v2
 ```
 
 # 配置
-您可以配置服务客户端的常用设置，例如超时、日志级别和重试配置，大多数设置都是可选的。
+您可以配置服务客户端的常用设置，例如超时和重试配置，大多数设置都是可选的。
 但是，对于每个客户端，您必须指定区域和凭证。 SDK使用这些信息签署请求并将其发送到正确的区域。
 
 此部分的其它主题
@@ -50,7 +50,6 @@ pip show alibabacloud-oss-v2
 * [访问域名](#访问域名)
 * [HTTP客户端](#http客户端)
 * [重试](#重试)
-* [日志](#日志)
 * [配置参数汇总](#配置参数汇总)
 
 ## 加载配置
@@ -114,6 +113,7 @@ $ set OSS_SESSION_TOKEN=TOKEN
 使用环境变量凭证
 
 ```
+credentials_provider = oss.credentials.EnvironmentVariableCredentialsProvider()
 cfg = oss.config.load_default()
 cfg.credentials_provider = credentials_provider
 
@@ -334,11 +334,11 @@ import alibabacloud_oss_v2 as oss
 
 def get_credentials_wrapper():
     # 返回长期凭证
-    oss.credentials.Credentials(access_key_id='access_key_id', access_key_secret='access_key_security')
+    return oss.credentials.Credentials(access_key_id='access_key_id', access_key_secret='access_key_security')
     # # 返回临时凭证
     # return oss.credentials.Credentials(access_key_id='access_key_id', access_key_secret='access_key_security', security_token='security_token')
 
-provider = oss.credentials.CredentialsProviderFunc(unc=get_credentials_wrapper)
+provider = oss.credentials.CredentialsProviderFunc(func=get_credentials_wrapper)
 
 cfg = oss.config.load_default()
 cfg.credentials_provider = provider
@@ -569,21 +569,6 @@ cfg.retryer = oss.retry.StandardRetryer(
 cfg.retryer = oss.retry.NopRetryer()
 ```
 
-## 日志
-
-为了方便追查问题，SDK提供了日志记录功能，您可以在应用程序中启用调试信息以调试和诊断请求问题。
-
-当需要启用日志记录功能时，您需要配置日志级别。当不设置日志接口时，默认将日志信息发送到进程的标准输出(stdout).
-
-日志级别：oss.LogError, oss.LogWarn, oss.LogInfo, oss.LogDebug
-
-日志接口: oss.LogPrinter, oss.LogPrinterFunc
-
-例如，开启日志功能，设置日志级别为 Info，输出到标准错误输出(stderr)
-
-```
-# TODO
-```
 
 ## 配置参数汇总
 
@@ -591,30 +576,28 @@ cfg.retryer = oss.retry.NopRetryer()
 
 |参数名字 | 说明                               | 示例 
 |:-------|:---------------------------------|:-------
-|Region| (必选)请求发送的区域, 必选                  |oss.config.Config(region="cn-hangzhou")
-|CredentialsProvider| (必选)设置访问凭证                       |oss.config.Config(credentials_provider=provider)
-|Endpoint| 访问域名                             |oss.config.Config(endpoint="oss-cn-hanghzou.aliyuncs.com")
-|HttpClient| HTTP客户都端                         |oss.config.Config(http_client=customClient)
-|RetryMaxAttempts| HTTP请求时的最大尝试次数, 默认值为 3           |oss.config.Config(retry_max_attempts=5)
-|Retryer| HTTP请求时的重试实现                     |oss.config.Config(retryer=customRetryer)
-|ConnectTimeout| 建立连接的超时时间, 默认值为 10 秒             |oss.config.Config(connect_timeout=20)
-|ReadWriteTimeout| 应用读写数据的超时时间, 默认值为 20 秒           |oss.config.Config(readwrite_timeout30)
-|InsecureSkipVerify| 是否跳过SSL证书校验，默认检查SSL证书            |oss.config.Config(insecure_skip_verify=true)
-|EnabledRedirect| 是否开启HTTP重定向, 默认不开启               |oss.config.Config(enabled_redirect=true)
-|ProxyHost| 设置代理服务器                          |oss.config.Config(proxy_host="http://user:passswd@proxy.example-***.com")
-|SignatureVersion| 签名版本，默认值为v4                      |oss.config.Config(signature_version="v1")
-|LogLevel| 设置日志级别                           |# TODO
-|LogPrinter| 设置日志打印接口                         |# TODO
-|DisableSSL| 不使用https请求，默认使用https             |oss.config.Config(disable_ssl=true)
-|UsePathStyle| 使用路径请求风格，即二级域名请求风格，默认为bucket托管域名 |oss.config.Config(use_path_style=true)
-|UseCName| 是否使用自定义域名访问，默认不使用                |oss.config.Config(use_cname=true)
-|UseDualStackEndpoint| 是否使用双栈域名访问，默认不使用                 |oss.config.Config(use_dualstack_endpoint=true)
-|UseAccelerateEndpoint| 是否使用传输加速域名访问，默认不使用               |oss.config.Config(use_accelerate_endpoint=true)
-|UseInternalEndpoint| 是否使用内网域名访问，默认不使用                 |oss.config.Config(use_internal_endpoint=true)
-|DisableUploadCRC64Check| 上传时关闭CRC64校验，默认开启CRC64校验         |oss.config.Config(disable_upload_crc64_check=true)
-|DisableDownloadCRC64Check| 下载时关闭CRC64校验，默认开启CRC64校验         |oss.config.Config(disable_download_crc64_check=true)
-|AdditionalHeaders| 指定额外的签名请求头，V4签名下有效               |oss.config.Config(additional_headers=["content-length"])
-|UserAgent| 指定额外的User-Agent信息                |oss.config.Config(user_agent="user identifier")
+|region| (必选)请求发送的区域, 必选                  |oss.config.Config(region="cn-hangzhou")
+|credentials_provider| (必选)设置访问凭证                       |oss.config.Config(credentials_provider=provider)
+|endpoint| 访问域名                             |oss.config.Config(endpoint="oss-cn-hanghzou.aliyuncs.com")
+|http_client| HTTP客户都端                         |oss.config.Config(http_client=customClient)
+|retry_max_attempts| HTTP请求时的最大尝试次数, 默认值为 3           |oss.config.Config(retry_max_attempts=5)
+|retryer| HTTP请求时的重试实现                     |oss.config.Config(retryer=customRetryer)
+|connect_timeout| 建立连接的超时时间, 默认值为 10 秒             |oss.config.Config(connect_timeout=20)
+|readwrite_timeout30| 应用读写数据的超时时间, 默认值为 20 秒           |oss.config.Config(readwrite_timeout30)
+|insecure_skip_verify| 是否跳过SSL证书校验，默认检查SSL证书            |oss.config.Config(insecure_skip_verify=true)
+|enabled_redirect| 是否开启HTTP重定向, 默认不开启               |oss.config.Config(enabled_redirect=true)
+|proxy_host| 设置代理服务器                          |oss.config.Config(proxy_host="http://user:passswd@proxy.example-***.com")
+|signature_version| 签名版本，默认值为v4                      |oss.config.Config(signature_version="v1")
+|disable_ssl| 不使用https请求，默认使用https             |oss.config.Config(disable_ssl=true)
+|use_path_style| 使用路径请求风格，即二级域名请求风格，默认为bucket托管域名 |oss.config.Config(use_path_style=true)
+|use_cname| 是否使用自定义域名访问，默认不使用                |oss.config.Config(use_cname=true)
+|use_dualstack_endpoint| 是否使用双栈域名访问，默认不使用                 |oss.config.Config(use_dualstack_endpoint=true)
+|use_accelerate_endpoint| 是否使用传输加速域名访问，默认不使用               |oss.config.Config(use_accelerate_endpoint=true)
+|use_internal_endpoint| 是否使用内网域名访问，默认不使用                 |oss.config.Config(use_internal_endpoint=true)
+|disable_upload_crc64_check| 上传时关闭CRC64校验，默认开启CRC64校验         |oss.config.Config(disable_upload_crc64_check=true)
+|disable_download_crc64_check| 下载时关闭CRC64校验，默认开启CRC64校验         |oss.config.Config(disable_download_crc64_check=true)
+|additional_headers| 指定额外的签名请求头，V4签名下有效               |oss.config.Config(additional_headers=["content-length"])
+|user_agent| 指定额外的User-Agent信息                |oss.config.Config(user_agent="user identifier")
 
 # 接口说明
 
@@ -1107,6 +1090,7 @@ def copy(self, request: models.CopyObjectRequest, **kwargs: Any) -> CopyResult:
 |:-------|:-------|:-------
 |part_size|int|指定分片大小，默认值为 64MiB
 |parallel_num|int|指定上传任务的并发数，默认值为 3。针对的是单次调用的并发限制，而不是全局的并发限制
+|multipart_copy_threshold|int|使用分片拷贝的阈值，默认值为 200MiB
 |leave_parts_on_error|bool|当拷贝失败时，是否保留已拷贝的分片，默认不保留 
 |disable_shallow_copy|bool|不使用浅拷贝行为，默认使用
 
@@ -1516,28 +1500,6 @@ result = encryption_client.get_object(oss.GetObjectRequest(
 print(vars(result))
 
 
-// Use Downloader
-down_loader = encryption_client.downloader()
-
-result = down_loader.download_file(oss.GetObjectRequest(
-    bucket="example_bucket",
-    key="example_key",
-), filepath="/local/dir/example")
-
-print(vars(result))
-
-
-// Use Uploader
-up_loader = encryption_client.uploader()
-
-result = up_loader.upload_file(oss.PutObjectRequest(
-    bucket="example_bucket",
-    key="example_key",
-), filepath="/local/dir/example")
-
-print(vars(result))
-
-
 // Use ReadOnlyFile
 rf: oss.ReadOnlyFile = None
 with encryption_client.open_file("example_bucket", "example_key") as f:
@@ -1932,14 +1894,14 @@ V2 版本 要求 python 版本最低为 3.8。
 
 V2 版本使用新的代码仓库，同时也对代码结构进行了调整，按照功能模块组织，以下是这些模块路径和说明：
 
-|模块路径 | 说明 
-|:-------|:-------
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2|SDK核心，接口 和 高级接口实现
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2/credentials|访问凭证相关
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2/retry|重试相关
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2/signer|签名相关
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2/transport|HTTP客户端相关
-|https://github.com/aliyun/alibabacloud-oss-python-sdk-v2/tree/master/alibabacloud_oss_v2/crypto|客户端加密相关
+| 模块路径                                                                                               | 说明 
+|:---------------------------------------------------------------------------------------------------|:-------
+| alibabacloud_oss_v2        |SDK核心，接口 和 高级接口实现
+| alibabacloud_oss_v2.credentials   |访问凭证相关
+| alibabacloud_oss_v2.retry     |重试相关
+| alibabacloud_oss_v2.signer    |签名相关
+| alibabacloud_oss_v2.transport |HTTP客户端相关
+| alibabacloud_oss_v2.crypto    |客户端加密相关
 
 示例 
 
@@ -2006,8 +1968,6 @@ cfg.connect_timeout = 20
 cfg.readwrite_timeout = 60
 # 不校验SSL证书校验
 cfg.insecure_skip_verify = True
-# 设置日志
-# TODO
 # 设置区域
 cfg.region = "cn-hangzhou"
 
@@ -2186,7 +2146,7 @@ V2 版本 使用 EncryptionClient 来提供 客户端加密功能，同时也对
 
 另外，该版本 仅保留 基于 RSA 自主管理的主密钥 的参考实现。
 
-对于 KSM 的实现，可以参考[sample/encryption_kms_put_object.py](sample/encryption_kms_put_object.py)。
+对于 KSM 的实现，可以参考[sample/encryption_kms.py](sample/encryption_kms.py)。
 
 关于客户端加密的详细使用说明，请参考[客户端加密](#客户端加密)。
 
