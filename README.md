@@ -2,7 +2,7 @@
 
 [![GitHub version](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2.svg)](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2)
 
-alibabacloud-oss-python-sdk-v2 is the Developer Preview for the v2 of the OSS SDK for the Python programming language
+alibabacloud-oss-python-sdk-v2 is the v2 of the OSS SDK for the Python programming language
 
 ## [README in Chinese](README-CN.md)
 
@@ -141,7 +141,7 @@ More example projects can be found in the `sample` folder
 > - Take list_buckets.python as an example，run `python list_buckets.python --region cn-hangzhou` command。
 
 ## Resources
-[Developer Guide](DEVGUIDE.md) - Use this document to learn how to get started and use this sdk.
+[Developer Guide](DEVGUIDE-CN.md) - Use this document to learn how to get started and use this sdk.
 
 ## License
 > - Apache-2.0, see [license file](LICENSE)
