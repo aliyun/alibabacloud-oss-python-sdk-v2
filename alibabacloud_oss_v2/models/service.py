@@ -27,6 +27,7 @@ class ListBucketsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             marker (str, optional): The name of the bucket from which the list operation begins.
             max_keys (int, optional): The maximum number of buckets that can be returned in the single query.
                 Valid values: 1 to 1000.
@@ -68,6 +69,7 @@ class BucketProperties(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             name (str, optional): The name of the bucket.
             location (str, optional): The data center in which the bucket is located.
             creation_date (datetime, optional): The time when the bucket was created.
@@ -121,6 +123,7 @@ class ListBucketsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             prefix (str, optional): The prefix contained in the names of the returned bucket.
             marker (str, optional): The name of the bucket after which the ListBuckets operation starts
             max_keys (int, optional): The maximum number of buckets that can be returned for the request.

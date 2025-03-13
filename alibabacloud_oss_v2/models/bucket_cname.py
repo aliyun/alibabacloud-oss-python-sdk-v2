@@ -33,13 +33,14 @@ class CnameCertificate(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        fingerprint (str, optional): The signature of the certificate.
-        valid_start_date (str, optional): The time when the certificate takes effect.
-        valid_end_date (str, optional): The time when the certificate expires.
-        type (str, optional): The source of the certificate.Valid values:*   CAS            *   Upload            
-        cert_id (str, optional): The ID of the certificate.
-        status (str, optional): The status of the certificate.Valid values:*   Enabled            *   Disabled            
-        creation_date (str, optional): The time when the certificate was bound.
+        Args:
+            fingerprint (str, optional): The signature of the certificate.
+            valid_start_date (str, optional): The time when the certificate takes effect.
+            valid_end_date (str, optional): The time when the certificate expires.
+            type (str, optional): The source of the certificate.Valid values:*   CAS            *   Upload
+            cert_id (str, optional): The ID of the certificate.
+            status (str, optional): The status of the certificate.Valid values:*   Enabled            *   Disabled
+            creation_date (str, optional): The time when the certificate was bound.
         """
         super().__init__(**kwargs)
         self.fingerprint = fingerprint
@@ -76,10 +77,11 @@ class CnameToken(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        cname (str, optional): The name of the CNAME record that is mapped to the bucket.
-        token (str, optional): The CNAME token that is returned by OSS.
-        expire_time (str, optional): The time when the CNAME token expires.
-        bucket (str, optional): The name of the bucket to which the CNAME record is mapped.
+        Args:
+            cname (str, optional): The name of the CNAME record that is mapped to the bucket.
+            token (str, optional): The CNAME token that is returned by OSS.
+            expire_time (str, optional): The time when the CNAME token expires.
+            bucket (str, optional): The name of the bucket to which the CNAME record is mapped.
         """
         super().__init__(**kwargs)
         self.cname = cname
@@ -117,12 +119,13 @@ class CertificateConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        certificate (str, optional): The public key of the certificate.
-        private_key (str, optional): The private key of the certificate.
-        previous_cert_id (str, optional): The ID of the certificate. If the Force parameter is not set to true, the OSS server checks whether the value of the Force parameter matches the current certificate ID. If the value does not match the certificate ID, an error is returned.noticeIf you do not specify the PreviousCertId parameter when you bind a certificate, you must set the Force parameter to true./notice
-        force (bool, optional): Specifies whether to overwrite the certificate. Valid values:- true: overwrites the certificate.- false: does not overwrite the certificate.
-        delete_certificate (bool, optional): Specifies whether to delete the certificate. Valid values:- true: deletes the certificate.- false: does not delete the certificate.
-        cert_id (str, optional): The ID of the certificate.
+        Args:
+            certificate (str, optional): The public key of the certificate.
+            private_key (str, optional): The private key of the certificate.
+            previous_cert_id (str, optional): The ID of the certificate. If the Force parameter is not set to true, the OSS server checks whether the value of the Force parameter matches the current certificate ID. If the value does not match the certificate ID, an error is returned.noticeIf you do not specify the PreviousCertId parameter when you bind a certificate, you must set the Force parameter to true./notice
+            force (bool, optional): Specifies whether to overwrite the certificate. Valid values:- true: overwrites the certificate.- false: does not overwrite the certificate.
+            delete_certificate (bool, optional): Specifies whether to delete the certificate. Valid values:- true: deletes the certificate.- false: does not delete the certificate.
+            cert_id (str, optional): The ID of the certificate.
         """
         super().__init__(**kwargs)
         self.certificate = certificate
@@ -158,8 +161,9 @@ class Cname(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        domain (str, optional): The custom domain name.
-        certificate_configuration (CertificateConfiguration, optional): The container for which the certificate is configured.
+        Args:
+            domain (str, optional): The custom domain name.
+            certificate_configuration (CertificateConfiguration, optional): The container for which the certificate is configured.
         """
         super().__init__(**kwargs)
         self.domain = domain
@@ -189,7 +193,8 @@ class BucketCnameConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        cname (Cname, optional): The container that stores the CNAME information.
+        Args:
+            cname (Cname, optional): The container that stores the CNAME information.
         """
         super().__init__(**kwargs)
         self.cname = cname
@@ -224,10 +229,11 @@ class CnameInfo(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        domain (str, optional): The custom domain name.
-        last_modified (str, optional): The time when the custom domain name was mapped.
-        status (str, optional): The status of the domain name. Valid values:*   Enabled*   Disabled
-        certificate (CnameCertificate, optional): The container in which the certificate information is stored.
+        Args:
+            domain (str, optional): The custom domain name.
+            last_modified (str, optional): The time when the custom domain name was mapped.
+            status (str, optional): The status of the domain name. Valid values:*   Enabled*   Disabled
+            certificate (CnameCertificate, optional): The container in which the certificate information is stored.
         """
         super().__init__(**kwargs)
         self.domain = domain
@@ -253,8 +259,9 @@ class PutCnameRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -281,7 +288,8 @@ class ListCnameRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -310,9 +318,10 @@ class ListCnameResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        cnames (List[CnameInfo], optional): The container that is used to store the information about all CNAME records.
-        bucket (str, optional): The name of the bucket to which the CNAME records you want to query are mapped.
-        owner (str, optional): The name of the bucket owner.
+        Args:
+            cnames (List[CnameInfo], optional): The container that is used to store the information about all CNAME records.
+            bucket (str, optional): The name of the bucket to which the CNAME records you want to query are mapped.
+            owner (str, optional): The name of the bucket owner.
         """
         super().__init__(**kwargs)
         self.cnames = cnames
@@ -336,8 +345,9 @@ class DeleteCnameRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -366,8 +376,9 @@ class GetCnameTokenRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        cname (str, required): The name of the CNAME record that is mapped to the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
+            cname (str, required): The name of the CNAME record that is mapped to the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -393,7 +404,8 @@ class GetCnameTokenResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        cname_token (CnameToken, optional): The container in which the CNAME token is stored.
+        Args:
+            cname_token (CnameToken, optional): The container in which the CNAME token is stored.
         """
         super().__init__(**kwargs)
         self.cname_token = cname_token
@@ -415,8 +427,9 @@ class CreateCnameTokenRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            bucket_cname_configuration (BucketCnameConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -442,7 +455,8 @@ class CreateCnameTokenResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        cname_token (CnameToken, optional): The container in which the CNAME token is stored.
+        Args:
+            cname_token (CnameToken, optional): The container in which the CNAME token is stored.
         """
         super().__init__(**kwargs)
         self.cname_token = cname_token

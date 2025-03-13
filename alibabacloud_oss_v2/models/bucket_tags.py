@@ -27,7 +27,8 @@ class Tagging(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        tag_set (TagSet, optional): The container that stores the returned tags of the bucket.
+        Args:
+            tag_set (TagSet, optional): The container that stores the returned tags of the bucket.
         """
         super().__init__(**kwargs)
         self.tag_set = tag_set
@@ -50,8 +51,9 @@ class PutBucketTagsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        tagging (Tagging, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            tagging (Tagging, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -78,7 +80,8 @@ class GetBucketTagsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -103,7 +106,8 @@ class GetBucketTagsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        tagging (Tagging, optional): The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
+        Args:
+            tagging (Tagging, optional): The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
         """
         super().__init__(**kwargs)
         self.tagging = tagging
@@ -123,7 +127,8 @@ class DeleteBucketTagsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

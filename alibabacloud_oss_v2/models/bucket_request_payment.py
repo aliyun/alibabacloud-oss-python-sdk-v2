@@ -22,7 +22,8 @@ class RequestPaymentConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        payer (str, optional): Indicates who pays the download and request fees.
+        Args:
+            payer (str, optional): Indicates who pays the download and request fees.
         """
         super().__init__(**kwargs)
         self.payer = payer
@@ -47,8 +48,9 @@ class PutBucketRequestPaymentRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        request_payment_configuration (RequestPaymentConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            request_payment_configuration (RequestPaymentConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -75,7 +77,8 @@ class GetBucketRequestPaymentRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -100,7 +103,8 @@ class GetBucketRequestPaymentResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        request_payment_configuration (RequestPaymentConfiguration, optional): Indicates the container for the payer.
+        Args:
+            request_payment_configuration (RequestPaymentConfiguration, optional): Indicates the container for the payer.
         """
         super().__init__(**kwargs)
         self.request_payment_configuration = request_payment_configuration
