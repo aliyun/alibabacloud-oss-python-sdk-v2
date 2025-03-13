@@ -22,7 +22,8 @@ class ArchiveDirectReadConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        enabled (bool, optional): Specifies whether to enable real-time access of Archive objects for a bucket. Valid values:- true- false
+        Args:
+            enabled (bool, optional): Specifies whether to enable real-time access of Archive objects for a bucket. Valid values:- true- false
         """
         super().__init__(**kwargs)
         self.enabled = enabled
@@ -45,8 +46,9 @@ class PutBucketArchiveDirectReadRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        archive_direct_read_configuration (ArchiveDirectReadConfiguration, optional): The request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            archive_direct_read_configuration (ArchiveDirectReadConfiguration, optional): The request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -74,7 +76,8 @@ class GetBucketArchiveDirectReadRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -99,7 +102,8 @@ class GetBucketArchiveDirectReadResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        archive_direct_read_configuration (ArchiveDirectReadConfiguration, optional): The container that stores the configurations for real-time access of Archive objects.
+        Args:
+            archive_direct_read_configuration (ArchiveDirectReadConfiguration, optional): The container that stores the configurations for real-time access of Archive objects.
         """
         super().__init__(**kwargs)
         self.archive_direct_read_configuration = archive_direct_read_configuration

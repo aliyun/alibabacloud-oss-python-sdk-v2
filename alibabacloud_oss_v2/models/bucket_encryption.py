@@ -25,9 +25,10 @@ class ApplyServerSideEncryptionByDefault(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        kms_master_key_id (str, optional): The CMK ID that is specified when SSEAlgorithm is set to KMS and a specified CMK is used for encryption. In other cases, leave this parameter empty.
-        kms_data_encryption (str, optional): The algorithm that is used to encrypt objects. If this parameter is not specified, objects are encrypted by using AES256. This parameter is valid only when SSEAlgorithm is set to KMS. Valid value: SM4.
-        sse_algorithm (str, optional): The default server-side encryption method. Valid values: KMS, AES256, and SM4. You are charged when you call API operations to encrypt or decrypt data by using CMKs managed by KMS. For more information, see [Billing of KMS](~~52608~~). If the default server-side encryption method is configured for the destination bucket and ReplicaCMKID is configured in the CRR rule:*   If objects in the source bucket are not encrypted, they are encrypted by using the default encryption method of the destination bucket after they are replicated.*   If objects in the source bucket are encrypted by using SSE-KMS or SSE-OSS, they are encrypted by using the same method after they are replicated.For more information, see [Use data replication with server-side encryption](~~177216~~).
+        Args:
+            kms_master_key_id (str, optional): The CMK ID that is specified when SSEAlgorithm is set to KMS and a specified CMK is used for encryption. In other cases, leave this parameter empty.
+            kms_data_encryption (str, optional): The algorithm that is used to encrypt objects. If this parameter is not specified, objects are encrypted by using AES256. This parameter is valid only when SSEAlgorithm is set to KMS. Valid value: SM4.
+            sse_algorithm (str, optional): The default server-side encryption method. Valid values: KMS, AES256, and SM4. You are charged when you call API operations to encrypt or decrypt data by using CMKs managed by KMS. For more information, see [Billing of KMS](~~52608~~). If the default server-side encryption method is configured for the destination bucket and ReplicaCMKID is configured in the CRR rule:*   If objects in the source bucket are not encrypted, they are encrypted by using the default encryption method of the destination bucket after they are replicated.*   If objects in the source bucket are encrypted by using SSE-KMS or SSE-OSS, they are encrypted by using the same method after they are replicated.For more information, see [Use data replication with server-side encryption](~~177216~~).
         """
         super().__init__(**kwargs)
         self.kms_master_key_id = kms_master_key_id
@@ -58,7 +59,8 @@ class ServerSideEncryptionRule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        apply_server_side_encryption_by_default (ApplyServerSideEncryptionByDefault, optional): The container that stores the default server-side encryption method.
+        Args:
+            apply_server_side_encryption_by_default (ApplyServerSideEncryptionByDefault, optional): The container that stores the default server-side encryption method.
         """
         super().__init__(**kwargs)
         self.apply_server_side_encryption_by_default = apply_server_side_encryption_by_default
@@ -83,8 +85,9 @@ class PutBucketEncryptionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        server_side_encryption_rule (ServerSideEncryptionRule, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            server_side_encryption_rule (ServerSideEncryptionRule, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -111,7 +114,8 @@ class GetBucketEncryptionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -136,7 +140,8 @@ class GetBucketEncryptionResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        server_side_encryption_rule (ServerSideEncryptionRule, optional): The container that stores server-side encryption rules.
+        Args:
+            server_side_encryption_rule (ServerSideEncryptionRule, optional): The container that stores server-side encryption rules.
         """
         super().__init__(**kwargs)
         self.server_side_encryption_rule = server_side_encryption_rule
@@ -156,7 +161,8 @@ class DeleteBucketEncryptionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

@@ -22,7 +22,8 @@ class PublicAccessBlockConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
+        Args:
+            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
         """
         super().__init__(**kwargs)
         self.block_public_access = block_public_access
@@ -45,7 +46,8 @@ class GetBucketPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): 
+        Args:
+            bucket (str, optional):
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -70,7 +72,8 @@ class GetBucketPublicAccessBlockResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        public_access_block_configuration (PublicAccessBlockConfiguration, optional): The container in which the Block Public Access configurations are stored.
+        Args:
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): The container in which the Block Public Access configurations are stored.
         """
         super().__init__(**kwargs)
         self.public_access_block_configuration = public_access_block_configuration
@@ -92,8 +95,9 @@ class PutBucketPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
-        public_access_block_configuration (PublicAccessBlockConfiguration, optional): Request body.
+        Args:
+            bucket (str, optional): The name of the bucket.
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): Request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -120,7 +124,8 @@ class DeleteBucketPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
+        Args:
+            bucket (str, optional): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

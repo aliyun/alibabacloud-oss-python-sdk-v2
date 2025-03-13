@@ -30,11 +30,12 @@ class StyleInfo(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        name (str, optional): The style name.
-        content (str, optional): The content of the style.
-        create_time (str, optional): The time when the style was created.
-        last_modify_time (str, optional): The time when the style was last modified.
-        category (str, optional): The category of this style。  Invalid value：image、document、video。
+        Args:
+            name (str, optional): The style name.
+            content (str, optional): The content of the style.
+            create_time (str, optional): The time when the style was created.
+            last_modify_time (str, optional): The time when the style was last modified.
+            category (str, optional): The category of this style。  Invalid value：image、document、video。
         """
         super().__init__(**kwargs)
         self.name = name
@@ -67,7 +68,8 @@ class StyleList(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        styles (List[StyleInfo], optional): The list of styles.
+        Args:
+            styles (List[StyleInfo], optional): The list of styles.
         """
         super().__init__(**kwargs)
         self.styles = styles
@@ -91,7 +93,8 @@ class StyleContent(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        content (str, optional): The content of the style.
+        Args:
+            content (str, optional): The content of the style.
         """
         super().__init__(**kwargs)
         self.content = content
@@ -117,10 +120,11 @@ class PutStyleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        style_name (str, required): The name of the image style.
-        category (str, optional): The category of the style.
-        style (Style, optional): The container that stores the content information about the image style.
+        Args:
+            bucket (str, required): The name of the bucket.
+            style_name (str, required): The name of the image style.
+            category (str, optional): The category of the style.
+            style (Style, optional): The container that stores the content information about the image style.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -149,7 +153,8 @@ class ListStyleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
+        Args:
+            bucket (str, optional): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -174,7 +179,8 @@ class ListStyleResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        style_list (StyleList, optional): The container that was used to query the information about image styles.
+        Args:
+            style_list (StyleList, optional): The container that was used to query the information about image styles.
         """
         super().__init__(**kwargs)
         self.style_list = style_list
@@ -196,8 +202,9 @@ class GetStyleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        style_name (str, required): The name of the image style.
+        Args:
+            bucket (str, required): The name of the bucket.
+            style_name (str, required): The name of the image style.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -223,7 +230,8 @@ class GetStyleResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        style (StyleInfo, optional): The container that stores the information about the image style.
+        Args:
+            style (StyleInfo, optional): The container that stores the information about the image style.
         """
         super().__init__(**kwargs)
         self.style = style
@@ -245,8 +253,9 @@ class DeleteStyleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        style_name (str, required): The name of the image style.
+        Args:
+            bucket (str, required): The name of the bucket.
+            style_name (str, required): The name of the image style.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

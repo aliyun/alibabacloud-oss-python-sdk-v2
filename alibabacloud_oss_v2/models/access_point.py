@@ -22,7 +22,8 @@ class AccessPointVpcConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        vpc_id (str, optional): The ID of the VPC that is required only when the NetworkOrigin parameter is set to vpc.
+        Args:
+            vpc_id (str, optional): The ID of the VPC that is required only when the NetworkOrigin parameter is set to vpc.
         """
         super().__init__(**kwargs)
         self.vpc_id = vpc_id
@@ -54,9 +55,10 @@ class CreateAccessPointConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        access_point_name (str, optional): The name of the access point. The name of the access point must meet the following naming rules:*   The name must be unique in a region of your Alibaba Cloud account.*   The name cannot end with -ossalias.*   The name can contain only lowercase letters, digits, and hyphens (-). It cannot start or end with a hyphen (-).*   The name must be 3 to 19 characters in length.
-        network_origin (str, optional): The network origin of the access point.
-        vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
+        Args:
+            access_point_name (str, optional): The name of the access point. The name of the access point must meet the following naming rules:*   The name must be unique in a region of your Alibaba Cloud account.*   The name cannot end with -ossalias.*   The name can contain only lowercase letters, digits, and hyphens (-). It cannot start or end with a hyphen (-).*   The name must be 3 to 19 characters in length.
+            network_origin (str, optional): The network origin of the access point.
+            vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
         """
         super().__init__(**kwargs)
         self.access_point_name = access_point_name
@@ -82,8 +84,9 @@ class CreateAccessPointRequest(serde.RequestModel):
             **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        create_access_point_configuration (CreateAccessPointConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            create_access_point_configuration (CreateAccessPointConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -111,8 +114,9 @@ class CreateAccessPointResult(serde.ResultModel):
             **kwargs: Any
     ) -> None:
         """
-        access_point_arn (str, optional): The Alibaba Cloud Resource Name (ARN) of the access point.
-        alias (str, optional): The alias of the access point.
+        Args:
+            access_point_arn (str, optional): The Alibaba Cloud Resource Name (ARN) of the access point.
+            alias (str, optional): The alias of the access point.
         """
         super().__init__(**kwargs)
         self.access_point_arn = access_point_arn
@@ -139,8 +143,9 @@ class Endpoints(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        public_endpoint (str, optional): The public endpoint of the access point.
-        internal_endpoint (str, optional): 接入点的内网Endpoint。
+        Args:
+            public_endpoint (str, optional): The public endpoint of the access point.
+            internal_endpoint (str, optional): 接入点的内网Endpoint。
         """
         super().__init__(**kwargs)
         self.public_endpoint = public_endpoint
@@ -166,7 +171,8 @@ class PublicAccessBlockConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
+        Args:
+            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
         """
         super().__init__(**kwargs)
         self.block_public_access = block_public_access
@@ -189,8 +195,9 @@ class GetAccessPointRequest(serde.RequestModel):
             **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_point_name (str, required): The name of the access point.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_point_name (str, required): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -242,17 +249,18 @@ class GetAccessPointResult(serde.ResultModel):
             **kwargs: Any
     ) -> None:
         """
-        account_id (str, optional): The ID of the Alibaba Cloud account for which the access point is configured.
-        network_origin (str, optional): The network origin of the access point. Valid values: vpc and internet. vpc: You can only use the specified VPC ID to access the access point. internet: You can use public endpoints and internal endpoints to access the access point.
-        access_point_arn (str, optional): The ARN of the access point.
-        status (str, optional): The status of the access point.
-        creation_date (str, optional): 接入点创建时间。
-        access_point_name (str, optional): The name of the access point.
-        bucket (str, optional): The name of the bucket for which the access point is configured.
-        endpoints (Endpoints, optional): The container that stores the network origin information about the access point.
-        public_access_block_configuration (PublicAccessBlockConfiguration, optional): 保存接入点阻止公共访问的配置
-        vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
-        alias (str, optional): The alias of the access point.
+        Args:
+            account_id (str, optional): The ID of the Alibaba Cloud account for which the access point is configured.
+            network_origin (str, optional): The network origin of the access point. Valid values: vpc and internet. vpc: You can only use the specified VPC ID to access the access point. internet: You can use public endpoints and internal endpoints to access the access point.
+            access_point_arn (str, optional): The ARN of the access point.
+            status (str, optional): The status of the access point.
+            creation_date (str, optional): 接入点创建时间。
+            access_point_name (str, optional): The name of the access point.
+            bucket (str, optional): The name of the bucket for which the access point is configured.
+            endpoints (Endpoints, optional): The container that stores the network origin information about the access point.
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): 保存接入点阻止公共访问的配置
+            vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
+            alias (str, optional): The alias of the access point.
         """
         super().__init__(**kwargs)
         self.account_id = account_id
@@ -301,12 +309,13 @@ class AccessPoint(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        network_origin (str, optional): The network origin of the access point.
-        vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
-        status (str, optional): The status of the access point.
-        bucket (str, optional): The name of the bucket for which the access point is configured.
-        access_point_name (str, optional): The name of the access point.
-        alias (str, optional): The alias of the access point.
+        Args:
+            network_origin (str, optional): The network origin of the access point.
+            vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
+            status (str, optional): The status of the access point.
+            bucket (str, optional): The name of the bucket for which the access point is configured.
+            access_point_name (str, optional): The name of the access point.
+            alias (str, optional): The alias of the access point.
         """
         super().__init__(**kwargs)
         self.network_origin = network_origin
@@ -337,9 +346,10 @@ class ListAccessPointsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        max_keys (int, optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
-        continuation_token (str, optional): The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
+        Args:
+            bucket (str, required): The name of the bucket.
+            max_keys (int, optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
+            continuation_token (str, optional): The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -379,11 +389,12 @@ class ListAccessPointsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        access_points (List[AccessPoint], optional): The container that stores the information about all access point.
-        max_keys (int, optional): The maximum number of results set for this enumeration operation.
-        is_truncated (str, bool): Indicates whether the returned list is truncated. Valid values: * true: indicates that not all results are returned. * false: indicates that all results are returned.
-        next_continuation_token (str, optional): Indicates that this ListAccessPoints request does not return all results that can be listed. You can use NextContinuationToken to continue obtaining list results.
-        account_id (str, optional): The ID of the Alibaba Cloud account to which the access point belongs.
+        Args:
+            access_points (List[AccessPoint], optional): The container that stores the information about all access point.
+            max_keys (int, optional): The maximum number of results set for this enumeration operation.
+            is_truncated (str, bool): Indicates whether the returned list is truncated. Valid values: * true: indicates that not all results are returned. * false: indicates that all results are returned.
+            next_continuation_token (str, optional): Indicates that this ListAccessPoints request does not return all results that can be listed. You can use NextContinuationToken to continue obtaining list results.
+            account_id (str, optional): The ID of the Alibaba Cloud account to which the access point belongs.
         """
         super().__init__(**kwargs)
         self.access_points = access_points
@@ -410,8 +421,9 @@ class DeleteAccessPointRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_point_name (str, required): The name of the access point.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_point_name (str, required): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -443,9 +455,10 @@ class PutAccessPointPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
-        access_point_name (str, optional): The name of the access point.
-        body (BodyType, optional): The configurations of the access point policy.
+        Args:
+            bucket (str, optional): The name of the bucket.
+            access_point_name (str, optional): The name of the access point.
+            body (BodyType, optional): The configurations of the access point policy.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -475,8 +488,9 @@ class GetAccessPointPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_point_name (str, required): The name of the access point.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_point_name (str, required): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -498,7 +512,8 @@ class GetAccessPointPolicyResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        body (io.ReadCloser, optional): <no value>
+        Args:
+            body (io.ReadCloser, optional): <no value>
         """
         super().__init__(**kwargs)
         self.body = body
@@ -520,8 +535,9 @@ class DeleteAccessPointPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_point_name (str, required): The name of the access point.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_point_name (str, required): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
