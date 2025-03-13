@@ -32,7 +32,8 @@ class AccessMonitorConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        status (str | AccessMonitorStatusType, optional): The access tracking status of the bucket. Valid values:- Enabled: Access tracking is enabled.- Disabled: Access tracking is disabled.
+        Args:
+            status (str | AccessMonitorStatusType, optional): The access tracking status of the bucket. Valid values:- Enabled: Access tracking is enabled.- Disabled: Access tracking is disabled.
         """
         super().__init__(**kwargs)
         self.status = status
@@ -55,8 +56,9 @@ class PutBucketAccessMonitorRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_monitor_configuration (AccessMonitorConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_monitor_configuration (AccessMonitorConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -83,7 +85,8 @@ class GetBucketAccessMonitorRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -112,7 +115,8 @@ class GetBucketAccessMonitorResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        access_monitor_configuration (AccessMonitorConfiguration, optional): The container that stores access monitor configuration.
+        Args:
+            access_monitor_configuration (AccessMonitorConfiguration, optional): The container that stores access monitor configuration.
         """
         super().__init__(**kwargs)
         self.access_monitor_configuration = access_monitor_configuration
