@@ -22,7 +22,8 @@ class RefererList(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        referers (List[str], optional): The addresses in the Referer whitelist.
+        Args:
+            referers (List[str], optional): The addresses in the Referer whitelist.
         """
         super().__init__(**kwargs)
         self.referers = referers
@@ -47,7 +48,8 @@ class RefererBlacklist(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        referers (List[str], optional): The addresses in the Referer blacklist.
+        Args:
+            referers (List[str], optional): The addresses in the Referer blacklist.
         """
         super().__init__(**kwargs)
         self.referers = referers
@@ -85,11 +87,12 @@ class RefererConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        allow_empty_referer (bool, optional): Specifies whether to allow a request whose Referer field is empty. Valid values:*   true (default)*   false
-        allow_truncate_query_string (bool, optional): Specifies whether to truncate the query string in the URL when the Referer is matched. Valid values:*   true (default)*   false
-        truncate_path (bool, optional): Specifies whether to truncate the path and parts that follow the path in the URL when the Referer is matched. Valid values:*   true*   false
-        referer_list (RefererList, optional): The container that stores the Referer whitelist.  ****The PutBucketReferer operation overwrites the existing Referer whitelist with the Referer whitelist specified in RefererList. If RefererList is not specified in the request, which specifies that no Referer elements are included, the operation clears the existing Referer whitelist.
-        referer_blacklist (RefererBlacklist, optional): The container that stores the Referer blacklist.
+        Args:
+            allow_empty_referer (bool, optional): Specifies whether to allow a request whose Referer field is empty. Valid values:*   true (default)*   false
+            allow_truncate_query_string (bool, optional): Specifies whether to truncate the query string in the URL when the Referer is matched. Valid values:*   true (default)*   false
+            truncate_path (bool, optional): Specifies whether to truncate the path and parts that follow the path in the URL when the Referer is matched. Valid values:*   true*   false
+            referer_list (RefererList, optional): The container that stores the Referer whitelist.  ****The PutBucketReferer operation overwrites the existing Referer whitelist with the Referer whitelist specified in RefererList. If RefererList is not specified in the request, which specifies that no Referer elements are included, the operation clears the existing Referer whitelist.
+            referer_blacklist (RefererBlacklist, optional): The container that stores the Referer blacklist.
         """
         super().__init__(**kwargs)
         self.allow_empty_referer = allow_empty_referer
@@ -118,8 +121,9 @@ class PutBucketRefererRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        referer_configuration (RefererConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            referer_configuration (RefererConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -146,7 +150,8 @@ class GetBucketRefererRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -171,7 +176,8 @@ class GetBucketRefererResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        referer_configuration (RefererConfiguration, optional): The container that stores the hotlink protection configurations.
+        Args:
+            referer_configuration (RefererConfiguration, optional): The container that stores the hotlink protection configurations.
         """
         super().__init__(**kwargs)
         self.referer_configuration = referer_configuration

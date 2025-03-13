@@ -21,7 +21,8 @@ class PolicyStatus(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        is_public (bool, optional): Indicates whether the current bucket policy allows public access.truefalse
+        Args:
+            is_public (bool, optional): Indicates whether the current bucket policy allows public access.truefalse
         """
         super().__init__(**kwargs)
         self.is_public = is_public
@@ -46,8 +47,9 @@ class PutBucketPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        body (BodyType, required): The request parameters.
+        Args:
+            bucket (str, required): The name of the bucket.
+            body (BodyType, required): The request parameters.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -74,7 +76,8 @@ class GetBucketPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -95,7 +98,8 @@ class GetBucketPolicyResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        body (str, optional): <no value>
+        Args:
+            body (str, optional): <no value>
         """
         super().__init__(**kwargs)
         self.body = body
@@ -115,7 +119,8 @@ class DeleteBucketPolicyRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -141,7 +146,8 @@ class GetBucketPolicyStatusRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
+        Args:
+            bucket (str, optional): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -166,7 +172,8 @@ class GetBucketPolicyStatusResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        policy_status (PolicyStatus, optional): The container that stores public access information.
+        Args:
+            policy_status (PolicyStatus, optional): The container that stores public access information.
         """
         super().__init__(**kwargs)
         self.policy_status = policy_status

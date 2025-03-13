@@ -22,7 +22,8 @@ class TransferAccelerationConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        enabled (bool, optional): Whether the transfer acceleration is enabled for this bucket.
+        Args:
+            enabled (bool, optional): Whether the transfer acceleration is enabled for this bucket.
         """
         super().__init__(**kwargs)
         self.enabled = enabled
@@ -47,8 +48,9 @@ class PutBucketTransferAccelerationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        transfer_acceleration_configuration (TransferAccelerationConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            transfer_acceleration_configuration (TransferAccelerationConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -75,7 +77,8 @@ class GetBucketTransferAccelerationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -100,7 +103,8 @@ class GetBucketTransferAccelerationResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        transfer_acceleration_configuration (TransferAccelerationConfiguration, optional): The container that stores the transfer acceleration configurations.
+        Args:
+            transfer_acceleration_configuration (TransferAccelerationConfiguration, optional): The container that stores the transfer acceleration configurations.
         """
         super().__init__(**kwargs)
         self.transfer_acceleration_configuration = transfer_acceleration_configuration

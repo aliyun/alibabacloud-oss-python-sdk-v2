@@ -24,7 +24,7 @@ class StatusType(str, Enum):
 
 class HistoricalObjectReplicationType(str, Enum):
     """
-    
+    Specify whether to copy historical data.
     """
 
     ENABLED = 'enabled'
@@ -50,7 +50,8 @@ class TransferTypes(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        types (List[str], optional): The data transfer type that is used to transfer data in data replication. Valid values:*   internal (default): the default data transfer link used in OSS.*   oss_acc: the link in which data transmission is accelerated. You can set TransferType to oss_acc only when you create CRR rules.
+        Args:
+            types (List[str], optional): The data transfer type that is used to transfer data in data replication. Valid values:*   internal (default): the default data transfer link used in OSS.*   oss_acc: the link in which data transmission is accelerated. You can set TransferType to oss_acc only when you create CRR rules.
         """
         super().__init__(**kwargs)
         self.types = types
@@ -77,8 +78,9 @@ class ReplicationProgressInformation(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        historical_object (str, optional): The percentage of the replicated historical data. This parameter is valid only when HistoricalObjectReplication is set to enabled.
-        new_object (str, optional): The time used to determine whether data is replicated to the destination bucket. Data that is written to the source bucket before the time is replicated to the destination bucket. The value of this parameter is in the GMT format. Example: Thu, 24 Sep 2015 15:39:18 GMT.
+        Args:
+            historical_object (str, optional): The percentage of the replicated historical data. This parameter is valid only when HistoricalObjectReplication is set to enabled.
+            new_object (str, optional): The time used to determine whether data is replicated to the destination bucket. Data that is written to the source bucket before the time is replicated to the destination bucket. The value of this parameter is in the GMT format. Example: Thu, 24 Sep 2015 15:39:18 GMT.
         """
         super().__init__(**kwargs)
         self.historical_object = historical_object
@@ -104,7 +106,8 @@ class ReplicationPrefixSet(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        prefixs (List[str], optional): The prefix that is used to specify the object that you want to replicate. Only objects whose names contain the specified prefix are replicated to the destination bucket.*   The value of the Prefix parameter can be up to 1,023 characters in length.*   If you specify the Prefix parameter in a data replication rule, OSS synchronizes new data and historical data based on the value of the Prefix parameter.
+        Args:
+            prefixs (List[str], optional): The prefix that is used to specify the object that you want to replicate. Only objects whose names contain the specified prefix are replicated to the destination bucket.*   The value of the Prefix parameter can be up to 1,023 characters in length.*   If you specify the Prefix parameter in a data replication rule, OSS synchronizes new data and historical data based on the value of the Prefix parameter.
         """
         super().__init__(**kwargs)
         self.prefixs = prefixs
@@ -129,7 +132,8 @@ class ReplicationRules(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        ids (List[str], optional): The ID of data replication rules that you want to delete. You can call the GetBucketReplication operation to obtain the ID.
+        Args:
+            ids (List[str], optional): The ID of data replication rules that you want to delete. You can call the GetBucketReplication operation to obtain the ID.
         """
         super().__init__(**kwargs)
         self.ids = ids
@@ -154,7 +158,8 @@ class LocationRTCConstraint(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        locations (List[str], optional): The regions where RTC is supported.
+        Args:
+            locations (List[str], optional): The regions where RTC is supported.
         """
         super().__init__(**kwargs)
         self.locations = locations
@@ -183,9 +188,10 @@ class ReplicationDestination(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The destination bucket to which data is replicated.
-        location (str, optional): The region in which the destination bucket is located.
-        transfer_type (str | TransferType, optional): The link that is used to transfer data during data replication. Valid values:*   internal (default): the default data transfer link used in OSS.*   oss_acc: the transfer acceleration link. You can set TransferType to oss_acc only when you create CRR rules.
+        Args:
+            bucket (str, optional): The destination bucket to which data is replicated.
+            location (str, optional): The region in which the destination bucket is located.
+            transfer_type (str | TransferType, optional): The link that is used to transfer data during data replication. Valid values:*   internal (default): the default data transfer link used in OSS.*   oss_acc: the transfer acceleration link. You can set TransferType to oss_acc only when you create CRR rules.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -212,7 +218,8 @@ class ReplicationTimeControl(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        status (str, optional): Specifies whether to enable RTC.Valid values:*   disabled            *   enabled            
+        Args:
+            status (str, optional): Specifies whether to enable RTC.Valid values:*   disabled            *   enabled
         """
         super().__init__(**kwargs)
         self.status = status
@@ -243,8 +250,9 @@ class LocationTransferType(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        location (str, optional): The regions in which the destination bucket can be located.
-        transfer_types (TransferTypes, optional): The container that stores the transfer type.
+        Args:
+            location (str, optional): The regions in which the destination bucket can be located.
+            transfer_types (TransferTypes, optional): The container that stores the transfer type.
         """
         super().__init__(**kwargs)
         self.location = location
@@ -269,7 +277,8 @@ class SseKmsEncryptedObjects(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        status (str | StatusType, optional): Specifies whether to replicate objects that are encrypted by using SSE-KMS. Valid values:*   Enabled*   Disabled
+        Args:
+            status (str | StatusType, optional): Specifies whether to replicate objects that are encrypted by using SSE-KMS. Valid values:*   Enabled*   Disabled
         """
         super().__init__(**kwargs)
         self.status = status
@@ -294,7 +303,8 @@ class ReplicationEncryptionConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        replica_kms_key_id (str, optional):
+        Args:
+            replica_kms_key_id (str, optional):
         """
         super().__init__(**kwargs)
         self.replica_kms_key_id = replica_kms_key_id
@@ -323,7 +333,8 @@ class LocationTransferTypeConstraint(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        location_transfer_types (List[LocationTransferType], optional): The container that stores regions in which the destination bucket can be located with the TransferType information.
+        Args:
+            location_transfer_types (List[LocationTransferType], optional): The container that stores regions in which the destination bucket can be located with the TransferType information.
         """
         super().__init__(**kwargs)
         self.location_transfer_types = location_transfer_types
@@ -354,8 +365,9 @@ class RtcConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        rtc (RTC, optional): The container that stores the status of RTC.
-        id (str, optional): The ID of the data replication rule for which you want to configure RTC.
+        Args:
+            rtc (RTC, optional): The container that stores the status of RTC.
+            id (str, optional): The ID of the data replication rule for which you want to configure RTC.
         """
         super().__init__(**kwargs)
         self.rtc = rtc
@@ -399,13 +411,14 @@ class ReplicationProgressRule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        historical_object_replication (str, optional): Specifies whether to replicate historical data that exists before data replication is enabled from the source bucket to the destination bucket.*   enabled (default): replicates historical data to the destination bucket.*   disabled: ignores historical data and replicates only data uploaded to the source bucket after data replication is enabled for the source bucket.
-        progress (Progress, optional): The container that stores the progress of the data replication task. This parameter is returned only when the data replication task is in the doing state.
-        id (str, optional): The ID of the data replication rule.
-        prefix_set (ReplicationPrefixSet, optional): The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
-        action (str, optional): The operations that are synchronized to the destination bucket.*   ALL: PUT, DELETE, and ABORT operations are synchronized to the destination bucket.*   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
-        destination (ReplicationDestination, optional): The container that stores the information about the destination bucket.
-        status (str, optional): The status of the data replication task. Valid values:*   starting: OSS creates a data replication task after a data replication rule is configured.*   doing: The replication rule is effective and the replication task is in progress.*   closing: OSS clears a data replication task after the corresponding data replication rule is deleted.
+        Args:
+            historical_object_replication (str, optional): Specifies whether to replicate historical data that exists before data replication is enabled from the source bucket to the destination bucket.*   enabled (default): replicates historical data to the destination bucket.*   disabled: ignores historical data and replicates only data uploaded to the source bucket after data replication is enabled for the source bucket.
+            progress (Progress, optional): The container that stores the progress of the data replication task. This parameter is returned only when the data replication task is in the doing state.
+            id (str, optional): The ID of the data replication rule.
+            prefix_set (ReplicationPrefixSet, optional): The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
+            action (str, optional): The operations that are synchronized to the destination bucket.*   ALL: PUT, DELETE, and ABORT operations are synchronized to the destination bucket.*   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
+            destination (ReplicationDestination, optional): The container that stores the information about the destination bucket.
+            status (str, optional): The status of the data replication task. Valid values:*   starting: OSS creates a data replication task after a data replication rule is configured.*   doing: The replication rule is effective and the replication task is in progress.*   closing: OSS clears a data replication task after the corresponding data replication rule is deleted.
         """
         super().__init__(**kwargs)
         self.historical_object_replication = historical_object_replication
@@ -440,7 +453,8 @@ class ReplicationSourceSelectionCriteria(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        sse_kms_encrypted_objects (SseKmsEncryptedObjects, optional): The container that is used to filter the source objects that are encrypted by using SSE-KMS. This parameter must be specified if the SourceSelectionCriteria parameter is specified in the data replication rule.
+        Args:
+            sse_kms_encrypted_objects (SseKmsEncryptedObjects, optional): The container that is used to filter the source objects that are encrypted by using SSE-KMS. This parameter must be specified if the SourceSelectionCriteria parameter is specified in the data replication rule.
         """
         super().__init__(**kwargs)
         self.sse_kms_encrypted_objects = sse_kms_encrypted_objects
@@ -491,16 +505,17 @@ class ReplicationRule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        source_selection_criteria (ReplicationSourceSelectionCriteria, optional): The container that specifies other conditions used to filter the source objects that you want to replicate. Filter conditions can be specified only for source objects encrypted by using SSE-KMS.
-        rtc (RTC, optional): The container that stores the status of the RTC feature.
-        destination (ReplicationDestination, optional): The container that stores the information about the destination bucket.
-        historical_object_replication (str | HistoricalObjectReplicationType, optional): Specifies whether to replicate historical data that exists before data replication is enabled from the source bucket to the destination bucket. Valid values:*   enabled (default): replicates historical data to the destination bucket.*   disabled: does not replicate historical data to the destination bucket. Only data uploaded to the source bucket after data replication is enabled for the source bucket is replicated.
-        sync_role (str, optional): The role that you want to authorize OSS to use to replicate data. If you want to use SSE-KMS to encrypt the objects that are replicated to the destination bucket, you must specify this parameter.
-        status (str, optional): The status of the data replication task. Valid values:*   starting: OSS creates a data replication task after a data replication rule is configured.*   doing: The replication rule is effective and the replication task is in progress.*   closing: OSS clears a data replication task after the corresponding data replication rule is deleted.
-        encryption_configuration (ReplicationEncryptionConfiguration, optional): The encryption configuration for the objects replicated to the destination bucket. If the Status parameter is set to Enabled, you must specify this parameter.
-        id (str, optional): The ID of the rule.
-        prefix_set (ReplicationPrefixSet, optional): The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
-        action (str, optional): The operations that can be synchronized to the destination bucket. If you configure Action in a data replication rule, OSS synchronizes new data and historical data based on the specified value of Action. You can set Action to one or more of the following operation types. Valid values:*   ALL (default): PUT, DELETE, and ABORT operations are synchronized to the destination bucket.*   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
+        Args:
+            source_selection_criteria (ReplicationSourceSelectionCriteria, optional): The container that specifies other conditions used to filter the source objects that you want to replicate. Filter conditions can be specified only for source objects encrypted by using SSE-KMS.
+            rtc (RTC, optional): The container that stores the status of the RTC feature.
+            destination (ReplicationDestination, optional): The container that stores the information about the destination bucket.
+            historical_object_replication (str | HistoricalObjectReplicationType, optional): Specifies whether to replicate historical data that exists before data replication is enabled from the source bucket to the destination bucket. Valid values:*   enabled (default): replicates historical data to the destination bucket.*   disabled: does not replicate historical data to the destination bucket. Only data uploaded to the source bucket after data replication is enabled for the source bucket is replicated.
+            sync_role (str, optional): The role that you want to authorize OSS to use to replicate data. If you want to use SSE-KMS to encrypt the objects that are replicated to the destination bucket, you must specify this parameter.
+            status (str, optional): The status of the data replication task. Valid values:*   starting: OSS creates a data replication task after a data replication rule is configured.*   doing: The replication rule is effective and the replication task is in progress.*   closing: OSS clears a data replication task after the corresponding data replication rule is deleted.
+            encryption_configuration (ReplicationEncryptionConfiguration, optional): The encryption configuration for the objects replicated to the destination bucket. If the Status parameter is set to Enabled, you must specify this parameter.
+            id (str, optional): The ID of the rule.
+            prefix_set (ReplicationPrefixSet, optional): The container that stores prefixes. You can specify up to 10 prefixes in each data replication rule.
+            action (str, optional): The operations that can be synchronized to the destination bucket. If you configure Action in a data replication rule, OSS synchronizes new data and historical data based on the specified value of Action. You can set Action to one or more of the following operation types. Valid values:*   ALL (default): PUT, DELETE, and ABORT operations are synchronized to the destination bucket.*   PUT: Write operations are synchronized to the destination bucket, including PutObject, PostObject, AppendObject, CopyObject, PutObjectACL, InitiateMultipartUpload, UploadPart, UploadPartCopy, and CompleteMultipartUpload.
         """
         super().__init__(**kwargs)
         self.source_selection_criteria = source_selection_criteria
@@ -538,7 +553,8 @@ class ReplicationConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        rules (List[ReplicationRule], optional): The container that stores the data replication rules.
+        Args:
+            rules (List[ReplicationRule], optional): The container that stores the data replication rules.
         """
         super().__init__(**kwargs)
         self.rules = rules
@@ -567,7 +583,8 @@ class ReplicationProgress(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        rules (List[ReplicationProgressRule], optional): The container that stores the progress of the data replication task corresponding to each data replication rule.
+        Args:
+            rules (List[ReplicationProgressRule], optional): The container that stores the progress of the data replication task corresponding to each data replication rule.
         """
         super().__init__(**kwargs)
         self.rules = rules
@@ -601,9 +618,10 @@ class ReplicationLocation(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        locations (List[str], optional): The regions in which the destination bucket can be located.
-        location_transfer_type_constraint (LocationTransferTypeConstraint, optional): The container that stores regions in which the destination bucket can be located with TransferType specified.
-        locationrtc_constraint (LocationRTCConstraint, optional): The container that stores regions in which the RTC can be enabled.
+        Args:
+            locations (List[str], optional): The regions in which the destination bucket can be located.
+            location_transfer_type_constraint (LocationTransferTypeConstraint, optional): The container that stores regions in which the destination bucket can be located with TransferType specified.
+            locationrtc_constraint (LocationRTCConstraint, optional): The container that stores regions in which the RTC can be enabled.
         """
         super().__init__(**kwargs)
         self.locations = locations
@@ -628,8 +646,9 @@ class PutBucketRtcRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        rtc_configuration (RtcConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            rtc_configuration (RtcConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -658,8 +677,9 @@ class PutBucketReplicationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        replication_configuration (ReplicationConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            replication_configuration (ReplicationConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -681,7 +701,8 @@ class PutBucketReplicationResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        replication_rule_id (str, optional): <no value>
+        Args:
+            replication_rule_id (str, optional): <no value>
         """
         super().__init__(**kwargs)
         self.replication_rule_id = replication_rule_id
@@ -701,7 +722,8 @@ class GetBucketReplicationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -726,7 +748,8 @@ class GetBucketReplicationResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        replication_configuration (ReplicationConfiguration, optional): The container that stores data replication configurations.
+        Args:
+            replication_configuration (ReplicationConfiguration, optional): The container that stores data replication configurations.
         """
         super().__init__(**kwargs)
         self.replication_configuration = replication_configuration
@@ -746,7 +769,8 @@ class GetBucketReplicationLocationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -771,7 +795,8 @@ class GetBucketReplicationLocationResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        replication_location (ReplicationLocation, optional): The container that stores the region in which the destination bucket can be located.
+        Args:
+            replication_location (ReplicationLocation, optional): The container that stores the region in which the destination bucket can be located.
         """
         super().__init__(**kwargs)
         self.replication_location = replication_location
@@ -793,8 +818,9 @@ class GetBucketReplicationProgressRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucekt.
-        rule_id (str, required): The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.
+        Args:
+            bucket (str, required): The name of the bucekt.
+            rule_id (str, required): The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -820,7 +846,8 @@ class GetBucketReplicationProgressResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        replication_progress (ReplicationProgress, optional): The container that is used to store the progress of data replication tasks.
+        Args:
+            replication_progress (ReplicationProgress, optional): The container that is used to store the progress of data replication tasks.
         """
         super().__init__(**kwargs)
         self.replication_progress = replication_progress
@@ -842,8 +869,9 @@ class DeleteBucketReplicationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        replication_rules (ReplicationRules, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            replication_rules (ReplicationRules, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

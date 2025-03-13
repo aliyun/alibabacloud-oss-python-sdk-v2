@@ -22,7 +22,8 @@ class PublicAccessBlockConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
+        Args:
+            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
         """
         super().__init__(**kwargs)
         self.block_public_access = block_public_access
@@ -47,9 +48,10 @@ class PutAccessPointPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        access_point_name (str, required): The name of the access point.
-        public_access_block_configuration (PublicAccessBlockConfiguration, optional): The request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            access_point_name (str, required): The name of the access point.
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): The request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -80,8 +82,9 @@ class GetAccessPointPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
-        access_point_name (str, optional): The name of the access point.
+        Args:
+            bucket (str, optional): The name of the bucket.
+            access_point_name (str, optional): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -107,7 +110,8 @@ class GetAccessPointPublicAccessBlockResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        public_access_block_configuration (PublicAccessBlockConfiguration, optional): The container in which the Block Public Access configurations are stored.
+        Args:
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): The container in which the Block Public Access configurations are stored.
         """
         super().__init__(**kwargs)
         self.public_access_block_configuration = public_access_block_configuration
@@ -130,8 +134,9 @@ class DeleteAccessPointPublicAccessBlockRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
-        access_point_name (str, optional): The name of the access point.
+        Args:
+            bucket (str, optional): The name of the bucket.
+            access_point_name (str, optional): The name of the access point.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

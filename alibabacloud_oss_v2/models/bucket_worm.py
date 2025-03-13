@@ -32,7 +32,8 @@ class InitiateWormConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        retention_period_in_days (int, optional): The number of days for which objects can be retained.
+        Args:
+            retention_period_in_days (int, optional): The number of days for which objects can be retained.
         """
         super().__init__(**kwargs)
         self.retention_period_in_days = retention_period_in_days
@@ -57,7 +58,8 @@ class ExtendWormConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        retention_period_in_days (int, optional): The number of days for which objects can be retained.
+        Args:
+            retention_period_in_days (int, optional): The number of days for which objects can be retained.
         """
         super().__init__(**kwargs)
         self.retention_period_in_days = retention_period_in_days
@@ -90,11 +92,12 @@ class WormConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        worm_id (str, optional): The ID of the retention policy.Note If the specified retention policy ID that is used to query the retention policy configurations of the bucket does not exist, OSS returns the 404 error code.
-        state (str | BucketWormStateType, optional): The status of the retention policy. Valid values:- InProgress: indicates that the retention policy is in the InProgress state. By default, a retention policy is in the InProgress state after it is created. The policy remains in this state for 24 hours.- Locked: indicates that the retention policy is in the Locked state.
-        retention_period_in_days (int, optional): The number of days for which objects can be retained.
-        creation_date (str, optional): The time at which the retention policy was created.
-        expiration_date (str, optional): The time at which the retention policy will be expired.
+        Args:
+            worm_id (str, optional): The ID of the retention policy.Note If the specified retention policy ID that is used to query the retention policy configurations of the bucket does not exist, OSS returns the 404 error code.
+            state (str | BucketWormStateType, optional): The status of the retention policy. Valid values:- InProgress: indicates that the retention policy is in the InProgress state. By default, a retention policy is in the InProgress state after it is created. The policy remains in this state for 24 hours.- Locked: indicates that the retention policy is in the Locked state.
+            retention_period_in_days (int, optional): The number of days for which objects can be retained.
+            creation_date (str, optional): The time at which the retention policy was created.
+            expiration_date (str, optional): The time at which the retention policy will be expired.
         """
         super().__init__(**kwargs)
         self.worm_id = worm_id
@@ -121,8 +124,9 @@ class InitiateBucketWormRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        initiate_worm_configuration (InitiateWormConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            initiate_worm_configuration (InitiateWormConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -144,7 +148,8 @@ class InitiateBucketWormResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        worm_id (str, optional): <no value>
+        Args:
+            worm_id (str, optional): <no value>
         """
         super().__init__(**kwargs)
         self.worm_id = worm_id
@@ -164,7 +169,8 @@ class AbortBucketWormRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -192,8 +198,9 @@ class CompleteBucketWormRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        worm_id (str, required): The ID of the retention policy.
+        Args:
+            bucket (str, required): The name of the bucket.
+            worm_id (str, required): The ID of the retention policy.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -224,9 +231,10 @@ class ExtendBucketWormRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        worm_id (str, required): The ID of the retention policy.  If the ID of the retention policy that specifies the number of days for which objects can be retained does not exist, the HTTP status code 404 is returned.
-        extend_worm_configuration (ExtendWormConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            worm_id (str, required): The ID of the retention policy.  If the ID of the retention policy that specifies the number of days for which objects can be retained does not exist, the HTTP status code 404 is returned.
+            extend_worm_configuration (ExtendWormConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -254,7 +262,8 @@ class GetBucketWormRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -279,7 +288,8 @@ class GetBucketWormResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        worm_configuration (WormConfiguration, optional): The container that stores the information about retention policies of the bucket.
+        Args:
+            worm_configuration (WormConfiguration, optional): The container that stores the information about retention policies of the bucket.
         """
         super().__init__(**kwargs)
         self.worm_configuration = worm_configuration

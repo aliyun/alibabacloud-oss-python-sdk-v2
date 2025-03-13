@@ -30,11 +30,12 @@ class CORSRule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        allowed_origins (List[str], optional): The origins from which cross-origin requests are allowed.
-        allowed_methods (List[str], optional): The methods that you can use in cross-origin requests.
-        allowed_headers (List[str], optional): Specifies whether the headers specified by Access-Control-Request-Headers in the OPTIONS preflight request are allowed. Each header specified by Access-Control-Request-Headers must match the value of an AllowedHeader element.  You can use only one asterisk (*) as the wildcard character.
-        expose_headers (List[str], optional): The response headers for allowed access requests from applications, such as an XMLHttpRequest object in JavaScript.  The asterisk (*) wildcard character is not supported.
-        max_age_seconds (int, optional): The period of time within which the browser can cache the response to an OPTIONS preflight request for the specified resource. Unit: seconds.You can specify only one MaxAgeSeconds element in a CORS rule.
+        Args:
+            allowed_origins (List[str], optional): The origins from which cross-origin requests are allowed.
+            allowed_methods (List[str], optional): The methods that you can use in cross-origin requests.
+            allowed_headers (List[str], optional): Specifies whether the headers specified by Access-Control-Request-Headers in the OPTIONS preflight request are allowed. Each header specified by Access-Control-Request-Headers must match the value of an AllowedHeader element.  You can use only one asterisk (*) as the wildcard character.
+            expose_headers (List[str], optional): The response headers for allowed access requests from applications, such as an XMLHttpRequest object in JavaScript.  The asterisk (*) wildcard character is not supported.
+            max_age_seconds (int, optional): The period of time within which the browser can cache the response to an OPTIONS preflight request for the specified resource. Unit: seconds.You can specify only one MaxAgeSeconds element in a CORS rule.
         """
         super().__init__(**kwargs)
         self.allowed_origins = allowed_origins
@@ -69,8 +70,9 @@ class CORSConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        cors_rules (List[CORSRule], optional): The container that stores CORS rules. Up to 10 rules can be configured for a bucket.
-        response_vary (bool, optional): Indicates whether the Vary: Origin header was returned. Default value: false.- true: The Vary: Origin header is returned regardless whether the request is a cross-origin request or whether the cross-origin request succeeds.- false: The Vary: Origin header is not returned.
+        Args:
+            cors_rules (List[CORSRule], optional): The container that stores CORS rules. Up to 10 rules can be configured for a bucket.
+            response_vary (bool, optional): Indicates whether the Vary: Origin header was returned. Default value: false.- true: The Vary: Origin header is returned regardless whether the request is a cross-origin request or whether the cross-origin request succeeds.- false: The Vary: Origin header is not returned.
         """
         super().__init__(**kwargs)
         self.cors_rules = cors_rules
@@ -96,8 +98,9 @@ class PutBucketCorsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        cors_configuration (CORSConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            cors_configuration (CORSConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -124,7 +127,8 @@ class GetBucketCorsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -149,7 +153,8 @@ class GetBucketCorsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        cors_configuration (CORSConfiguration, optional): The container that stores CORS configuration.
+        Args:
+            cors_configuration (CORSConfiguration, optional): The container that stores CORS configuration.
         """
         super().__init__(**kwargs)
         self.cors_configuration = cors_configuration
@@ -169,7 +174,8 @@ class DeleteBucketCorsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -203,11 +209,12 @@ class OptionObjectRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        key (str, required): The full path of the object.
-        origin (str, optional): The origin of the request. It is used to identify a cross-origin request. You can specify only one Origin header in a cross-origin request. By default, this header is left empty.
-        access_control_request_method (str, optional): The method to be used in the actual cross-origin request. You can specify only one Access-Control-Request-Method header in a cross-origin request. By default, this header is left empty.
-        access_control_request_headers (str, optional): The custom headers to be sent in the actual cross-origin request. You can configure multiple custom headers in a cross-origin request. Custom headers are separated by commas (,). By default, this header is left empty.
+        Args:
+            bucket (str, required): The name of the bucket.
+            key (str, required): The full path of the object.
+            origin (str, optional): The origin of the request. It is used to identify a cross-origin request. You can specify only one Origin header in a cross-origin request. By default, this header is left empty.
+            access_control_request_method (str, optional): The method to be used in the actual cross-origin request. You can specify only one Access-Control-Request-Method header in a cross-origin request. By default, this header is left empty.
+            access_control_request_headers (str, optional): The custom headers to be sent in the actual cross-origin request. You can configure multiple custom headers in a cross-origin request. Custom headers are separated by commas (,). By default, this header is left empty.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -240,11 +247,12 @@ class OptionObjectResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        access_control_allow_origin (str, optional): <no value>
-        access_control_allow_methods (str, optional): <no value>
-        access_control_allow_headers (str, optional): <no value>
-        access_control_expose_headers (str, optional): <no value>
-        access_control_max_age (int, optional): <no value>
+        Args:
+            access_control_allow_origin (str, optional): <no value>
+            access_control_allow_methods (str, optional): <no value>
+            access_control_allow_headers (str, optional): <no value>
+            access_control_expose_headers (str, optional): <no value>
+            access_control_max_age (int, optional): <no value>
         """
         super().__init__(**kwargs)
         self.access_control_allow_origin = access_control_allow_origin

@@ -24,8 +24,9 @@ class TLS(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        enable (bool, optional): Specifies whether to enable TLS version management for the bucket.Valid values:*true     *false
-        tls_versions (List[str], optional): The TLS versions.
+        Args:
+            enable (bool, optional): Specifies whether to enable TLS version management for the bucket.Valid values:*true     *false
+            tls_versions (List[str], optional): The TLS versions.
         """
         super().__init__(**kwargs)
         self.enable = enable
@@ -55,7 +56,8 @@ class HttpsConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        tls (TLS, optional): The container that stores TLS version configurations.
+        Args:
+            tls (TLS, optional): The container that stores TLS version configurations.
         """
         super().__init__(**kwargs)
         self.tls = tls
@@ -78,7 +80,8 @@ class GetBucketHttpsConfigRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -103,7 +106,8 @@ class GetBucketHttpsConfigResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        https_configuration (HttpsConfiguration, optional): The container that stores HTTPS configurations.
+        Args:
+            https_configuration (HttpsConfiguration, optional): The container that stores HTTPS configurations.
         """
         super().__init__(**kwargs)
         self.https_configuration = https_configuration
@@ -125,8 +129,9 @@ class PutBucketHttpsConfigRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): This name of the bucket.
-        https_configuration (HttpsConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, required): This name of the bucket.
+            https_configuration (HttpsConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

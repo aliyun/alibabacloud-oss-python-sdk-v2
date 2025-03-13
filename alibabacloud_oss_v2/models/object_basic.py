@@ -1027,6 +1027,7 @@ class DeleteObject(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the object that you want to delete.
             version_id (str, optional): The version ID of the object that you want to delete.
         """
@@ -1091,6 +1092,7 @@ class DeletedInfo(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the deleted object.
             version_id (str, optional): The version ID of the object that you deleted.
             delete_marker (bool, optional): Indicates whether the deleted version is a delete marker.
@@ -1136,6 +1138,7 @@ class DeleteMultipleObjectsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             deleted_objects ([DeletedInfo], optional): The container that stores information about the deleted objects.
             encoding_type (str, optional): The encoding type of the content in the response.
                 If encoding-type is specified in the request, the object name is encoded in the returned result.
@@ -1232,6 +1235,7 @@ class RestoreRequest(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             days (int, optional): The duration within which the restored object remains in the restored state.
             tier (str, optional): The restoration priority of Cold Archive or Deep Cold Archive objects.
                 Valid values:Expedited,Standard,Bulk
@@ -1270,6 +1274,7 @@ class RestoreObjectRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             version_id (str, optional): The version ID of the source object.
@@ -1330,6 +1335,7 @@ class PutObjectAclRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             acl (str, required): The access control list (ACL) of the object.
@@ -1383,6 +1389,7 @@ class GetObjectAclRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             version_id (str, optional): The version ID of the source object.
@@ -1787,6 +1794,7 @@ class UploadPart(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             part_number (int, optional): The number of parts.
             etag (str, optional): The ETag values that are returned by OSS after parts are uploaded.
         """
@@ -1812,6 +1820,7 @@ class CompleteMultipartUpload(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             parts ([UploadPart], optional): The uploaded parts.
         """
         super().__init__(**kwargs)
@@ -2002,6 +2011,7 @@ class ListMultipartUploadsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket to create.
             delimiter (str, optional): The character that is used to group objects by name. 
                 If you specify the delimiter parameter in the request, the response contains 
@@ -2041,6 +2051,7 @@ class Upload(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the object for which a multipart upload task was initiated.
             upload_id (str, optional): The ID of the multipart upload task.
             initiated (str, optional): The time when the multipart upload task was initialized.
@@ -2099,6 +2110,7 @@ class ListMultipartUploadsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             encoding_type (str, optional): The method used to encode the object name in the response.
                 If encoding-type is specified in the request, values of those elements including
                 Delimiter, KeyMarker, Prefix, NextKeyMarker, and Key are encoded in the returned result.
@@ -2154,6 +2166,7 @@ class ListPartsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             upload_id (str, required): The ID of the multipart upload task.
@@ -2188,6 +2201,7 @@ class Part(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             part_number (int, optional): The number that identifies a part.
             etag (str, optional): The ETag value of the content of the uploaded part.
             last_modified (datetime, optional): The time when the part was uploaded.
@@ -2263,6 +2277,7 @@ class ListPartsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             encoding_type (str, optional): The method used to encode the object name in the response.
                 If encoding-type is specified in the request, values of those elements including
                 Key are encoded in the returned result.
@@ -2455,6 +2470,7 @@ class Tag(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The key of the tag.
             value (str, optional): The value of the tag.
         """
@@ -2479,6 +2495,7 @@ class TagSet(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             tags ([Tag], optional): A list of tags.
         """
         super().__init__(**kwargs)
@@ -2505,6 +2522,7 @@ class Tagging(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             tag_set (TagSet, optional): The collection of tags.
         """
         super().__init__(**kwargs)
@@ -2832,8 +2850,9 @@ class CleanRestoredObjectRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket
-        key (str, required): The name of the object.
+        Args:
+            bucket (str, required): The name of the bucket
+            key (str, required): The name of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

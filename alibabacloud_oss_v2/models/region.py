@@ -18,6 +18,7 @@ class DescribeRegionsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             regions (str, optional): Regional information
         """
         super().__init__(**kwargs)
@@ -46,6 +47,7 @@ class RegionInfo(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             region (str, optional): OSS dedicated region ID.
             internet_endpoint (str, optional): External endpoint.
             internal_endpoint (str, optional): Internal network endpoint.
@@ -78,6 +80,7 @@ class DescribeRegionsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             region_info (RegionInfo, optional): The result for the DescribeRegions operation.
         """
         super().__init__(**kwargs)

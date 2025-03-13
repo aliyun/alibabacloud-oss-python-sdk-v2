@@ -22,7 +22,8 @@ class BucketResourceGroupConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        resource_group_id (str, optional): The ID of the resource group to which the bucket belongs.
+        Args:
+            resource_group_id (str, optional): The ID of the resource group to which the bucket belongs.
         """
         super().__init__(**kwargs)
         self.resource_group_id = resource_group_id
@@ -45,7 +46,8 @@ class GetBucketResourceGroupRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket that you want to query.
+        Args:
+            bucket (str, required): The name of the bucket that you want to query.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -70,7 +72,8 @@ class GetBucketResourceGroupResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket_resource_group_configuration (BucketResourceGroupConfiguration, optional): The container that stores the ID of the resource group.
+        Args:
+            bucket_resource_group_configuration (BucketResourceGroupConfiguration, optional): The container that stores the ID of the resource group.
         """
         super().__init__(**kwargs)
         self.bucket_resource_group_configuration = bucket_resource_group_configuration
@@ -92,8 +95,9 @@ class PutBucketResourceGroupRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The bucket for which you want to modify the ID of the resource group.
-        bucket_resource_group_configuration (BucketResourceGroupConfiguration, optional): The request body schema.
+        Args:
+            bucket (str, optional): The bucket for which you want to modify the ID of the resource group.
+            bucket_resource_group_configuration (BucketResourceGroupConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

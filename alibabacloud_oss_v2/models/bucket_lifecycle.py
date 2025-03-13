@@ -34,12 +34,13 @@ class LifecycleRuleTransition(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
-        days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
-        storage_class (str | StorageClassType, optional): The storage class to which objects are converted. Valid values:*   IA*   Archive*   ColdArchive  You can convert the storage class of objects in an IA bucket to only Archive or Cold Archive.
-        is_access_time (bool, optional): Specifies whether the lifecycle rule applies to objects based on their last access time. Valid values:*   true: The rule applies to objects based on their last access time.*   false: The rule applies to objects based on their last modified time.
-        return_to_std_when_visit (bool, optional): Specifies whether to convert the storage class of non-Standard objects back to Standard after the objects are accessed. This parameter takes effect only when the IsAccessTime parameter is set to true. Valid values:*   true: converts the storage class of the objects to Standard.*   false: does not convert the storage class of the objects to Standard.
-        allow_small_file (bool, optional): Specifies whether to convert the storage class of objects whose sizes are less than 64 KB to IA, Archive, or Cold Archive based on their last access time. Valid values:*   true: converts the storage class of objects that are smaller than 64 KB to IA, Archive, or Cold Archive. Objects that are smaller than 64 KB are charged as 64 KB. Objects that are greater than or equal to 64 KB are charged based on their actual sizes. If you set this parameter to true, the storage fees may increase.*   false: does not convert the storage class of an object that is smaller than 64 KB.
+        Args:
+            created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
+            days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
+            storage_class (str | StorageClassType, optional): The storage class to which objects are converted. Valid values:*   IA*   Archive*   ColdArchive  You can convert the storage class of objects in an IA bucket to only Archive or Cold Archive.
+            is_access_time (bool, optional): Specifies whether the lifecycle rule applies to objects based on their last access time. Valid values:*   true: The rule applies to objects based on their last access time.*   false: The rule applies to objects based on their last modified time.
+            return_to_std_when_visit (bool, optional): Specifies whether to convert the storage class of non-Standard objects back to Standard after the objects are accessed. This parameter takes effect only when the IsAccessTime parameter is set to true. Valid values:*   true: converts the storage class of the objects to Standard.*   false: does not convert the storage class of the objects to Standard.
+            allow_small_file (bool, optional): Specifies whether to convert the storage class of objects whose sizes are less than 64 KB to IA, Archive, or Cold Archive based on their last access time. Valid values:*   true: converts the storage class of objects that are smaller than 64 KB to IA, Archive, or Cold Archive. Objects that are smaller than 64 KB are charged as 64 KB. Objects that are greater than or equal to 64 KB are charged based on their actual sizes. If you set this parameter to true, the storage fees may increase.*   false: does not convert the storage class of an object that is smaller than 64 KB.
         """
         super().__init__(**kwargs)
         self.created_before_date = created_before_date
@@ -70,7 +71,8 @@ class NoncurrentVersionExpiration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        noncurrent_days (int, optional): The number of days from when the objects became previous versions to when the lifecycle rule takes effect.
+        Args:
+            noncurrent_days (int, optional): The number of days from when the objects became previous versions to when the lifecycle rule takes effect.
         """
         super().__init__(**kwargs)
         self.noncurrent_days = noncurrent_days
@@ -97,8 +99,9 @@ class LifecycleRuleAbortMultipartUpload(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
-        created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
+        Args:
+            days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
+            created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
         """
         super().__init__(**kwargs)
         self.days = days
@@ -128,9 +131,10 @@ class LifecycleRuleExpiration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. The value of this parameter is in the yyyy-MM-ddT00:00:00.000Z format.Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
-        days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
-        expired_object_delete_marker (bool, optional): Specifies whether to automatically remove expired delete markers.*   true: Expired delete markers are automatically removed. If you set this parameter to true, you cannot specify the Days or CreatedBeforeDate parameter.*   false: Expired delete markers are not automatically removed. If you set this parameter to false, you must specify the Days or CreatedBeforeDate parameter.
+        Args:
+            created_before_date (datetime.datetime, optional): The date based on which the lifecycle rule takes effect. OSS performs the specified operation on data whose last modified date is earlier than this date. The value of this parameter is in the yyyy-MM-ddT00:00:00.000Z format.Specify the time in the ISO 8601 standard. The time must be at 00:00:00 in UTC.
+            days (int, optional): The number of days from when the objects were last modified to when the lifecycle rule takes effect.
+            expired_object_delete_marker (bool, optional): Specifies whether to automatically remove expired delete markers.*   true: Expired delete markers are automatically removed. If you set this parameter to true, you cannot specify the Days or CreatedBeforeDate parameter.*   false: Expired delete markers are not automatically removed. If you set this parameter to false, you must specify the Days or CreatedBeforeDate parameter.
         """
         super().__init__(**kwargs)
         self.created_before_date = created_before_date
@@ -165,11 +169,12 @@ class NoncurrentVersionTransition(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        is_access_time (bool, optional): Specifies whether the lifecycle rule applies to objects based on their last access time. Valid values:*   true: The rule applies to objects based on their last access time.*   false: The rule applies to objects based on their last modified time.
-        return_to_std_when_visit (bool, optional): Specifies whether to convert the storage class of non-Standard objects back to Standard after the objects are accessed. This parameter takes effect only when the IsAccessTime parameter is set to true. Valid values:*   true: converts the storage class of the objects to Standard.*   false: does not convert the storage class of the objects to Standard.
-        allow_small_file (bool, optional): Specifies whether to convert the storage class of objects whose sizes are less than 64 KB to IA, Archive, or Cold Archive based on their last access time. Valid values:*   true: converts the storage class of objects that are smaller than 64 KB to IA, Archive, or Cold Archive. Objects that are smaller than 64 KB are charged as 64 KB. Objects that are greater than or equal to 64 KB are charged based on their actual sizes. If you set this parameter to true, the storage fees may increase.*   false: does not convert the storage class of an object that is smaller than 64 KB.
-        noncurrent_days (int, optional): The number of days from when the objects became previous versions to when the lifecycle rule takes effect.
-        storage_class (str | StorageClassType, optional): The storage class to which objects are converted. Valid values:*   IA*   Archive*   ColdArchive  You can convert the storage class of objects in an IA bucket to only Archive or Cold Archive.
+        Args:
+            is_access_time (bool, optional): Specifies whether the lifecycle rule applies to objects based on their last access time. Valid values:*   true: The rule applies to objects based on their last access time.*   false: The rule applies to objects based on their last modified time.
+            return_to_std_when_visit (bool, optional): Specifies whether to convert the storage class of non-Standard objects back to Standard after the objects are accessed. This parameter takes effect only when the IsAccessTime parameter is set to true. Valid values:*   true: converts the storage class of the objects to Standard.*   false: does not convert the storage class of the objects to Standard.
+            allow_small_file (bool, optional): Specifies whether to convert the storage class of objects whose sizes are less than 64 KB to IA, Archive, or Cold Archive based on their last access time. Valid values:*   true: converts the storage class of objects that are smaller than 64 KB to IA, Archive, or Cold Archive. Objects that are smaller than 64 KB are charged as 64 KB. Objects that are greater than or equal to 64 KB are charged based on their actual sizes. If you set this parameter to true, the storage fees may increase.*   false: does not convert the storage class of an object that is smaller than 64 KB.
+            noncurrent_days (int, optional): The number of days from when the objects became previous versions to when the lifecycle rule takes effect.
+            storage_class (str | StorageClassType, optional): The storage class to which objects are converted. Valid values:*   IA*   Archive*   ColdArchive  You can convert the storage class of objects in an IA bucket to only Archive or Cold Archive.
         """
         super().__init__(**kwargs)
         self.is_access_time = is_access_time
@@ -203,8 +208,9 @@ class LifecycleRuleNot(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        prefix (str, optional): The prefix in the names of the objects to which the lifecycle rule does not apply.
-        tag (Tag, optional): The tag of the objects to which the lifecycle rule does not apply.
+        Args:
+            prefix (str, optional): The prefix in the names of the objects to which the lifecycle rule does not apply.
+            tag (Tag, optional): The tag of the objects to which the lifecycle rule does not apply.
         """
         super().__init__(**kwargs)
         self.prefix = prefix
@@ -238,9 +244,10 @@ class LifecycleRuleFilter(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        object_size_greater_than (int, optional): This lifecycle rule only applies to files larger than this size.
-        object_size_less_than (int, optional): This lifecycle rule only applies to files smaller than this size.
-        filter_not (List[LifecycleRuleNot], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
+        Args:
+            object_size_greater_than (int, optional): This lifecycle rule only applies to files larger than this size.
+            object_size_less_than (int, optional): This lifecycle rule only applies to files smaller than this size.
+            filter_not (List[LifecycleRuleNot], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
         """
         super().__init__(**kwargs)
         self.object_size_greater_than = object_size_greater_than
@@ -297,17 +304,18 @@ class LifecycleRule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        tags (List[Tag], optional): The tag of the objects to which the lifecycle rule applies. You can specify multiple tags.
-        noncurrent_version_expiration (NoncurrentVersionExpiration, optional): The delete operation that you want OSS to perform on the previous versions of the objects that match the lifecycle rule when the previous versions expire.
-        filter (LifecycleRuleFilter, optional): The container that stores the Not parameter that is used to filter objects.
-        id (str, optional): The ID of the lifecycle rule. The ID can contain up to 255 characters. If you do not specify the ID, OSS automatically generates a unique ID for the lifecycle rule.
-        expiration (LifecycleRuleExpiration, optional): The delete operation to perform on objects based on the lifecycle rule. For an object in a versioning-enabled bucket, the delete operation specified by this parameter is performed only on the current version of the object.The period of time from when the objects expire to when the objects are deleted must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA or Archive.
-        transitions (List[LifecycleRuleTransition], optional): The conversion of the storage class of objects that match the lifecycle rule when the objects expire. The storage class of the objects can be converted to IA, Archive, and ColdArchive. The storage class of Standard objects in a Standard bucket can be converted to IA, Archive, or Cold Archive. The period of time from when the objects expire to when the storage class of the objects is converted to Archive must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA. For example, if the validity period is set to 30 for objects whose storage class is converted to IA after the validity period, the validity period must be set to a value greater than 30 for objects whose storage class is converted to Archive.  Either Days or CreatedBeforeDate is required.
-        noncurrent_version_transitions (List[NoncurrentVersionTransition], optional): The conversion of the storage class of previous versions of the objects that match the lifecycle rule when the previous versions expire. The storage class of the previous versions can be converted to IA or Archive. The period of time from when the previous versions expire to when the storage class of the previous versions is converted to Archive must be longer than the period of time from when the previous versions expire to when the storage class of the previous versions is converted to IA.
-        atime_base (int, optional): Timestamp for when access tracking was enabled.
-        prefix (str, optional): The prefix in the names of the objects to which the rule applies. The prefixes specified by different rules cannot overlap.*   If Prefix is specified, this rule applies only to objects whose names contain the specified prefix in the bucket.*   If Prefix is not specified, this rule applies to all objects in the bucket.
-        status (str, optional): Specifies whether to enable the rule. Valid values:*   Enabled: enables the rule. OSS periodically executes the rule.*   Disabled: does not enable the rule. OSS ignores the rule.
-        abort_multipart_upload (LifecycleRuleAbortMultipartUpload, optional): The delete operation that you want OSS to perform on the parts that are uploaded in incomplete multipart upload tasks when the parts expire.
+        Args:
+            tags (List[Tag], optional): The tag of the objects to which the lifecycle rule applies. You can specify multiple tags.
+            noncurrent_version_expiration (NoncurrentVersionExpiration, optional): The delete operation that you want OSS to perform on the previous versions of the objects that match the lifecycle rule when the previous versions expire.
+            filter (LifecycleRuleFilter, optional): The container that stores the Not parameter that is used to filter objects.
+            id (str, optional): The ID of the lifecycle rule. The ID can contain up to 255 characters. If you do not specify the ID, OSS automatically generates a unique ID for the lifecycle rule.
+            expiration (LifecycleRuleExpiration, optional): The delete operation to perform on objects based on the lifecycle rule. For an object in a versioning-enabled bucket, the delete operation specified by this parameter is performed only on the current version of the object.The period of time from when the objects expire to when the objects are deleted must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA or Archive.
+            transitions (List[LifecycleRuleTransition], optional): The conversion of the storage class of objects that match the lifecycle rule when the objects expire. The storage class of the objects can be converted to IA, Archive, and ColdArchive. The storage class of Standard objects in a Standard bucket can be converted to IA, Archive, or Cold Archive. The period of time from when the objects expire to when the storage class of the objects is converted to Archive must be longer than the period of time from when the objects expire to when the storage class of the objects is converted to IA. For example, if the validity period is set to 30 for objects whose storage class is converted to IA after the validity period, the validity period must be set to a value greater than 30 for objects whose storage class is converted to Archive.  Either Days or CreatedBeforeDate is required.
+            noncurrent_version_transitions (List[NoncurrentVersionTransition], optional): The conversion of the storage class of previous versions of the objects that match the lifecycle rule when the previous versions expire. The storage class of the previous versions can be converted to IA or Archive. The period of time from when the previous versions expire to when the storage class of the previous versions is converted to Archive must be longer than the period of time from when the previous versions expire to when the storage class of the previous versions is converted to IA.
+            atime_base (int, optional): Timestamp for when access tracking was enabled.
+            prefix (str, optional): The prefix in the names of the objects to which the rule applies. The prefixes specified by different rules cannot overlap.*   If Prefix is specified, this rule applies only to objects whose names contain the specified prefix in the bucket.*   If Prefix is not specified, this rule applies to all objects in the bucket.
+            status (str, optional): Specifies whether to enable the rule. Valid values:*   Enabled: enables the rule. OSS periodically executes the rule.*   Disabled: does not enable the rule. OSS ignores the rule.
+            abort_multipart_upload (LifecycleRuleAbortMultipartUpload, optional): The delete operation that you want OSS to perform on the parts that are uploaded in incomplete multipart upload tasks when the parts expire.
         """
         super().__init__(**kwargs)
         self.tags = tags
@@ -346,7 +354,8 @@ class LifecycleConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        rules (List[LifecycleRule], optional): The container that stores the lifecycle rules.
+        Args:
+            rules (List[LifecycleRule], optional): The container that stores the lifecycle rules.
         """
         super().__init__(**kwargs)
         self.rules = rules
@@ -371,9 +380,10 @@ class PutBucketLifecycleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        allow_same_action_overlap (str, optional): Specifies whether to allow overlapped prefixes. Valid values:true: Overlapped prefixes are allowed.false: Overlapped prefixes are not allowed.
-        lifecycle_configuration (LifecycleConfiguration, optional): The container of the request body.
+        Args:
+            bucket (str, required): The name of the bucket.
+            allow_same_action_overlap (str, optional): Specifies whether to allow overlapped prefixes. Valid values:true: Overlapped prefixes are allowed.false: Overlapped prefixes are not allowed.
+            lifecycle_configuration (LifecycleConfiguration, optional): The container of the request body.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -401,7 +411,8 @@ class GetBucketLifecycleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -426,7 +437,8 @@ class GetBucketLifecycleResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        lifecycle_configuration (LifecycleConfiguration, optional): The container that stores the lifecycle rules configured for the bucket.
+        Args:
+            lifecycle_configuration (LifecycleConfiguration, optional): The container that stores the lifecycle rules configured for the bucket.
         """
         super().__init__(**kwargs)
         self.lifecycle_configuration = lifecycle_configuration
@@ -446,7 +458,8 @@ class DeleteBucketLifecycleRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
+        Args:
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

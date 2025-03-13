@@ -36,14 +36,15 @@ class BucketDataRedundancyTransition(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, optional): The name of the bucket.
-        task_id (str, optional): The ID of the redundancy type conversion task. The ID can be used to view and delete the redundancy type conversion task.
-        status (str, optional): The state of the redundancy type change task. Valid values:QueueingProcessingFinished.
-        create_time (str, optional): The time when the redundancy type change task was created.
-        start_time (str, optional): The time when the redundancy type change task was performed. This element is available when the task is in the Processing or Finished state.
-        end_time (str, optional): The time when the redundancy type change task was finished. This element is available when the task is in the Finished state.
-        process_percentage (str, optional): The progress of the redundancy type change task in percentage. Valid values: 0 to 100. This element is available when the task is in the Processing or Finished state.
-        estimated_remaining_time (str, optional): The estimated period of time that is required for the redundancy type change task. Unit: hours. This element is available when the task is in the Processing or Finished state.
+        Args:
+            bucket (str, optional): The name of the bucket.
+            task_id (str, optional): The ID of the redundancy type conversion task. The ID can be used to view and delete the redundancy type conversion task.
+            status (str, optional): The state of the redundancy type change task. Valid values:QueueingProcessingFinished.
+            create_time (str, optional): The time when the redundancy type change task was created.
+            start_time (str, optional): The time when the redundancy type change task was performed. This element is available when the task is in the Processing or Finished state.
+            end_time (str, optional): The time when the redundancy type change task was finished. This element is available when the task is in the Finished state.
+            process_percentage (str, optional): The progress of the redundancy type change task in percentage. Valid values: 0 to 100. This element is available when the task is in the Processing or Finished state.
+            estimated_remaining_time (str, optional): The estimated period of time that is required for the redundancy type change task. Unit: hours. This element is available when the task is in the Processing or Finished state.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -83,9 +84,10 @@ class ListBucketDataRedundancyTransition(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        bucket_data_redundancy_transition (List[BucketDataRedundancyTransition], optional): The container in which the redundancy type conversion task is stored.
-        is_truncated (bool, optional): Specifies whether to list all inventory tasks configured for the bucket.Valid values: true and false- The value of false indicates that all inventory tasks configured for the bucket are listed.- The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.
-        next_continuation_token (str, optional): If the value of IsTruncated in the response is true and value of this header is not null, set the continuation-token parameter in the next request to the value of this header.
+        Args:
+            bucket_data_redundancy_transition (List[BucketDataRedundancyTransition], optional): The container in which the redundancy type conversion task is stored.
+            is_truncated (bool, optional): Specifies whether to list all inventory tasks configured for the bucket.Valid values: true and false- The value of false indicates that all inventory tasks configured for the bucket are listed.- The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.
+            next_continuation_token (str, optional): If the value of IsTruncated in the response is true and value of this header is not null, set the continuation-token parameter in the next request to the value of this header.
         """
         super().__init__(**kwargs)
         self.bucket_data_redundancy_transition = bucket_data_redundancy_transition
@@ -110,8 +112,9 @@ class CreateBucketDataRedundancyTransitionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        target_redundancy_type (str, required): The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.
+        Args:
+            bucket (str, required): The name of the bucket.
+            target_redundancy_type (str, required): The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -137,7 +140,8 @@ class CreateBucketDataRedundancyTransitionResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket_data_redundancy_transition (BucketDataRedundancyTransition, optional): The container in which the redundancy type conversion task is stored.
+        Args:
+            bucket_data_redundancy_transition (BucketDataRedundancyTransition, optional): The container in which the redundancy type conversion task is stored.
         """
         super().__init__(**kwargs)
         self.bucket_data_redundancy_transition = bucket_data_redundancy_transition
@@ -159,8 +163,9 @@ class GetBucketDataRedundancyTransitionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        redundancy_transition_taskid (str, required): The ID of the redundancy change task.
+        Args:
+            bucket (str, required): The name of the bucket.
+            redundancy_transition_taskid (str, required): The ID of the redundancy change task.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -186,7 +191,8 @@ class GetBucketDataRedundancyTransitionResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket_data_redundancy_transition (BucketDataRedundancyTransition, optional): The container for a specific redundancy type change task.
+        Args:
+            bucket_data_redundancy_transition (BucketDataRedundancyTransition, optional): The container for a specific redundancy type change task.
         """
         super().__init__(**kwargs)
         self.bucket_data_redundancy_transition = bucket_data_redundancy_transition
@@ -207,7 +213,8 @@ class ListBucketDataRedundancyTransitionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required):
+        Args:
+            bucket (str, required):
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -233,7 +240,8 @@ class ListBucketDataRedundancyTransitionResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        list_bucket_data_redundancy_transition (ListBucketDataRedundancyTransition, optional): The container for listed redundancy type change tasks.
+        Args:
+            list_bucket_data_redundancy_transition (ListBucketDataRedundancyTransition, optional): The container for listed redundancy type change tasks.
         """
         super().__init__(**kwargs)
         self.list_bucket_data_redundancy_transition = list_bucket_data_redundancy_transition
@@ -256,8 +264,9 @@ class ListUserDataRedundancyTransitionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        max_keys (int, optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
-        continuation_token (str, optional): The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
+        Args:
+            max_keys (int, optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
+            continuation_token (str, optional): The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
         """
         super().__init__(**kwargs)
         self.max_keys = max_keys
@@ -284,7 +293,8 @@ class ListUserDataRedundancyTransitionResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        list_bucket_data_redundancy_transition (ListBucketDataRedundancyTransition, optional): The container for listed redundancy type change tasks.
+        Args:
+            list_bucket_data_redundancy_transition (ListBucketDataRedundancyTransition, optional): The container for listed redundancy type change tasks.
         """
         super().__init__(**kwargs)
         self.list_bucket_data_redundancy_transition = list_bucket_data_redundancy_transition
@@ -307,8 +317,9 @@ class DeleteBucketDataRedundancyTransitionRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        redundancy_transition_taskid (str, required): The ID of the redundancy type change task.
+        Args:
+            bucket (str, required): The name of the bucket.
+            redundancy_transition_taskid (str, required): The ID of the redundancy type change task.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

@@ -53,7 +53,8 @@ class SSEKMS(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        key_id (str, optional): The ID of the key that is managed by Key Management Service (KMS).
+        Args:
+            key_id (str, optional): The ID of the key that is managed by Key Management Service (KMS).
         """
         super().__init__(**kwargs)
         self.key_id = key_id
@@ -79,7 +80,8 @@ class InventorySchedule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        frequency (str | InventoryFrequencyType, optional): The frequency at which the inventory list is exported. Valid values:- Daily: The inventory list is exported on a daily basis. - Weekly: The inventory list is exported on a weekly basis. 
+        Args:
+            frequency (str | InventoryFrequencyType, optional): The frequency at which the inventory list is exported. Valid values:- Daily: The inventory list is exported on a daily basis. - Weekly: The inventory list is exported on a weekly basis.
         """
         super().__init__(**kwargs)
         self.frequency = frequency
@@ -115,12 +117,13 @@ class InventoryFilter(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        lower_size_bound (int, optional): The minimum size of the specified object. Unit: B.Valid values: [0 B, 48.8 TB]
-        upper_size_bound (int, optional): The maximum size of the specified object. Unit: B.Valid values: (0 B, 48.8 TB]
-        storage_class (str, optional): The storage class of the object. You can specify multiple storage classes.Valid values:StandardIAArchiveColdArchiveAll
-        prefix (str, optional): The prefix that is specified in the inventory.
-        last_modify_begin_time_stamp (int, optional): The beginning of the time range during which the object was last modified. Unit: seconds.Valid values: [1262275200, 253402271999]
-        last_modify_end_time_stamp (int, optional): The end of the time range during which the object was last modified. Unit: seconds.Valid values: [1262275200, 253402271999]
+        Args:
+            lower_size_bound (int, optional): The minimum size of the specified object. Unit: B.Valid values: [0 B, 48.8 TB]
+            upper_size_bound (int, optional): The maximum size of the specified object. Unit: B.Valid values: (0 B, 48.8 TB]
+            storage_class (str, optional): The storage class of the object. You can specify multiple storage classes.Valid values:StandardIAArchiveColdArchiveAll
+            prefix (str, optional): The prefix that is specified in the inventory.
+            last_modify_begin_time_stamp (int, optional): The beginning of the time range during which the object was last modified. Unit: seconds.Valid values: [1262275200, 253402271999]
+            last_modify_end_time_stamp (int, optional): The end of the time range during which the object was last modified. Unit: seconds.Valid values: [1262275200, 253402271999]
         """
         super().__init__(**kwargs)
         self.lower_size_bound = lower_size_bound
@@ -151,7 +154,8 @@ class OptionalFields(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        fields (List[Union[str, InventoryOptionalFieldType]], optional): The configuration fields that are included in inventory lists. Available configuration fields:*   Size: the size of the object.*   LastModifiedDate: the time when the object was last modified.*   ETag: the ETag of the object. It is used to identify the content of the object.*   StorageClass: the storage class of the object.*   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.*   EncryptionStatus: the encryption status of the object.
+        Args:
+            fields (List[Union[str, InventoryOptionalFieldType]], optional): The configuration fields that are included in inventory lists. Available configuration fields:*   Size: the size of the object.*   LastModifiedDate: the time when the object was last modified.*   ETag: the ETag of the object. It is used to identify the content of the object.*   StorageClass: the storage class of the object.*   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.*   EncryptionStatus: the encryption status of the object.
         """
         super().__init__(**kwargs)
         self.fields = fields
@@ -182,8 +186,9 @@ class InventoryEncryption(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        sse_kms (SSEKMS, optional): The container that stores the customer master key (CMK) used for SSE-KMS encryption.
-        sse_oss (str, optional): The container that stores information about the SSE-OSS encryption method.
+        Args:
+            sse_kms (SSEKMS, optional): The container that stores the customer master key (CMK) used for SSE-KMS encryption.
+            sse_oss (str, optional): The container that stores information about the SSE-OSS encryption method.
         """
         super().__init__(**kwargs)
         self.sse_kms = sse_kms
@@ -222,12 +227,13 @@ class InventoryOSSBucketDestination(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        format (str | InventoryFormatType, optional): The format of exported inventory lists. The exported inventory lists are CSV objects compressed by using GZIP.
-        account_id (str, optional): The ID of the account to which permissions are granted by the bucket owner.
-        role_arn (str, optional): The Alibaba Cloud Resource Name (ARN) of the role that has the permissions to read all objects from the source bucket and write objects to the destination bucket. Format: `acs:ram::uid:role/rolename`.
-        bucket (str, optional): The name of the bucket in which exported inventory lists are stored.
-        prefix (str, optional): The prefix of the path in which the exported inventory lists are stored.
-        encryption (InventoryEncryption, optional): The container that stores the encryption method of the exported inventory lists.
+        Args:
+            format (str | InventoryFormatType, optional): The format of exported inventory lists. The exported inventory lists are CSV objects compressed by using GZIP.
+            account_id (str, optional): The ID of the account to which permissions are granted by the bucket owner.
+            role_arn (str, optional): The Alibaba Cloud Resource Name (ARN) of the role that has the permissions to read all objects from the source bucket and write objects to the destination bucket. Format: `acs:ram::uid:role/rolename`.
+            bucket (str, optional): The name of the bucket in which exported inventory lists are stored.
+            prefix (str, optional): The prefix of the path in which the exported inventory lists are stored.
+            encryption (InventoryEncryption, optional): The container that stores the encryption method of the exported inventory lists.
         """
         super().__init__(**kwargs)
         self.format = format
@@ -262,7 +268,8 @@ class InventoryDestination(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        oss_bucket_destination (InventoryOSSBucketDestination, optional): The container that stores information about the bucket in which exported inventory lists are stored.
+        Args:
+            oss_bucket_destination (InventoryOSSBucketDestination, optional): The container that stores information about the bucket in which exported inventory lists are stored.
         """
         super().__init__(**kwargs)
         self.oss_bucket_destination = oss_bucket_destination
@@ -306,13 +313,14 @@ class InventoryConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        included_object_versions (str, optional): Specifies whether to include the version information about the objects in inventory lists. Valid values:*   All: The information about all versions of the objects is exported.*   Current: Only the information about the current versions of the objects is exported.
-        optional_fields (OptionalFields, optional): The container that stores the configuration fields in inventory lists.
-        id (str, optional): The name of the inventory. The name must be unique in the bucket.
-        is_enabled (bool, optional): Specifies whether to enable the bucket inventory feature. Valid values:*   true*   false
-        destination (InventoryDestination, optional): The container that stores the exported inventory lists.
-        schedule (InventorySchedule, optional): The container that stores information about the frequency at which inventory lists are exported.
-        filter (InventoryFilter, optional): The container that stores the prefix used to filter objects. Only objects whose names contain the specified prefix are included in the inventory.
+        Args:
+            included_object_versions (str, optional): Specifies whether to include the version information about the objects in inventory lists. Valid values:*   All: The information about all versions of the objects is exported.*   Current: Only the information about the current versions of the objects is exported.
+            optional_fields (OptionalFields, optional): The container that stores the configuration fields in inventory lists.
+            id (str, optional): The name of the inventory. The name must be unique in the bucket.
+            is_enabled (bool, optional): Specifies whether to enable the bucket inventory feature. Valid values:*   true*   false
+            destination (InventoryDestination, optional): The container that stores the exported inventory lists.
+            schedule (InventorySchedule, optional): The container that stores information about the frequency at which inventory lists are exported.
+            filter (InventoryFilter, optional): The container that stores the prefix used to filter objects. Only objects whose names contain the specified prefix are included in the inventory.
         """
         super().__init__(**kwargs)
         self.included_object_versions = included_object_versions
@@ -351,9 +359,10 @@ class ListInventoryConfigurationsResult(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        inventory_configurations (List[InventoryConfiguration], optional): The container that stores inventory configurations.
-        is_truncated (bool, optional): Specifies whether to list all inventory tasks configured for the bucket.Valid values: true and false- The value of false indicates that all inventory tasks configured for the bucket are listed.- The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.
-        next_continuation_token (str, optional): If the value of IsTruncated in the response is true and value of this header is not null, set the continuation-token parameter in the next request to the value of this header.
+        Args:
+            inventory_configurations (List[InventoryConfiguration], optional): The container that stores inventory configurations.
+            is_truncated (bool, optional): Specifies whether to list all inventory tasks configured for the bucket.Valid values: true and false- The value of false indicates that all inventory tasks configured for the bucket are listed.- The value of true indicates that not all inventory tasks configured for the bucket are listed. To list the next page of inventory configurations, set the continuation-token parameter in the next request to the value of the NextContinuationToken header in the response to the current request.
+            next_continuation_token (str, optional): If the value of IsTruncated in the response is true and value of this header is not null, set the continuation-token parameter in the next request to the value of this header.
         """
         super().__init__(**kwargs)
         self.inventory_configurations = inventory_configurations
@@ -383,9 +392,10 @@ class PutBucketInventoryRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        inventory_id (str, required): The name of the inventory.
-        inventory_configuration (InventoryConfiguration, optional): Request body schema.
+        Args:
+            bucket (str, required): The name of the bucket.
+            inventory_id (str, required): The name of the inventory.
+            inventory_configuration (InventoryConfiguration, optional): Request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -415,8 +425,9 @@ class GetBucketInventoryRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        inventory_id (str, required): The name of the inventory to be queried.
+        Args:
+            bucket (str, required): The name of the bucket.
+            inventory_id (str, required): The name of the inventory to be queried.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -442,7 +453,8 @@ class GetBucketInventoryResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        inventory_configuration (InventoryConfiguration, optional): The inventory task configured for a bucket.
+        Args:
+            inventory_configuration (InventoryConfiguration, optional): The inventory task configured for a bucket.
         """
         super().__init__(**kwargs)
         self.inventory_configuration = inventory_configuration
@@ -464,8 +476,9 @@ class ListBucketInventoryRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        continuation_token (str, optional): Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory's result.
+        Args:
+            bucket (str, required): The name of the bucket.
+            continuation_token (str, optional): Specify the start position of the list operation. You can obtain this token from the NextContinuationToken field of last ListBucketInventory's result.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -491,7 +504,8 @@ class ListBucketInventoryResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
-        list_inventory_configurations_result (ListInventoryConfigurationsResult, optional): The container that stores inventory configuration list.
+        Args:
+            list_inventory_configurations_result (ListInventoryConfigurationsResult, optional): The container that stores inventory configuration list.
         """
         super().__init__(**kwargs)
         self.list_inventory_configurations_result = list_inventory_configurations_result
@@ -513,8 +527,9 @@ class DeleteBucketInventoryRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
-        bucket (str, required): The name of the bucket.
-        inventory_id (str, required): The name of the inventory that you want to delete.
+        Args:
+            bucket (str, required): The name of the bucket.
+            inventory_id (str, required): The name of the inventory that you want to delete.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

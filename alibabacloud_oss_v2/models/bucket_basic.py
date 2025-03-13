@@ -17,6 +17,7 @@ class CreateBucketConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             storage_class (str, optional): The storage class of the bucket.
             data_redundancy_type (str, optional): The redundancy type of the bucket.
         """
@@ -52,6 +53,7 @@ class PutBucketRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket to create.
             acl (str, optional): The access control list (ACL) of the bucket.
             resource_group_id (str, optional): The ID of the resource group.
@@ -82,6 +84,7 @@ class DeleteBucketRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket to create.
         """
         super().__init__(**kwargs)
@@ -111,6 +114,7 @@ class Owner(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             id (str, optional): The ID of the bucket owner.
             display_name (str, optional): The name of the object owner..
         """
@@ -156,6 +160,7 @@ class ObjectProperties(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the object.
             object_type (str, optional): The type of the object.
                 Valid values: Normal, Multipart and Appendable
@@ -203,6 +208,7 @@ class CommonPrefix(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             prefix (str, optional): The prefix contained in the returned object names.
         """
         super().__init__(**kwargs)
@@ -234,6 +240,7 @@ class ListObjectsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket to create.
             delimiter (str, optional): The character that is used to group objects by name. 
                 If you specify the delimiter parameter in the request, the response contains 
@@ -297,6 +304,7 @@ class ListObjectsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             name (str, optional): The name of the bucket.
             prefix (str, optional): The prefix contained in the returned object names.
             marker (str, optional): The name of the object after which the list operation begins.
@@ -339,6 +347,7 @@ class PutBucketAclRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             acl (str, optional): The access control list (ACL) of the object.
         """
@@ -364,6 +373,7 @@ class GetBucketAclRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
@@ -386,6 +396,7 @@ class AccessControlList(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
@@ -415,6 +426,7 @@ class GetBucketAclResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             owner (str, optional): The container that stores information about the bucket owner.
             acl (str, optional): The access control list (ACL) of the object.
         """
@@ -452,6 +464,7 @@ class ListObjectsV2Request(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             delimiter (str, optional): The character that is used to group objects by name.
                 If you specify the delimiter parameter in the request, the response contains
@@ -523,6 +536,7 @@ class ListObjectsV2Result(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             name (str, optional): The name of the bucket.
             prefix (str, optional): The prefix contained in the returned object names.
             continuation_token (str, optional): The name of the object after which the list operation begins.
@@ -569,6 +583,7 @@ class GetBucketStatRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
@@ -631,6 +646,7 @@ class GetBucketStatResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             storage (int, optional): The total actual storage capacity of the bucket, measured in bytes.
             object_count (int, optional): The total number of objects in the bucket.
             multi_part_upload_count (int, optional): The number of Multipart Uploads in the Bucket that have been initialized but not yet completed (Complete) or aborted (Abort).
@@ -687,6 +703,7 @@ class GetBucketLocationRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
@@ -709,6 +726,7 @@ class GetBucketLocationResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             location (str, optional): The region in which the bucket is located.
         """
         super().__init__(**kwargs)
@@ -736,6 +754,7 @@ class SSERule(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             kms_master_key_id (str, optional): The customer master key (CMK) ID in use. A valid value is returned only if you set SSEAlgorithm to KMS
                  and specify the CMK ID. In other cases, an empty value is returned.
             sse_algorithm (str, optional): The server-side encryption method that is used by default.
@@ -767,6 +786,7 @@ class BucketPolicy(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             log_bucket (str, optional): The name of the bucket that stores the logs.
                  and specify the CMK ID. In other cases, an empty value is returned.
             log_prefix (str, optional): The directory in which logs are stored.
@@ -834,6 +854,7 @@ class BucketInfo(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             name (str, optional): The name of the bucket.
             access_monitor (str, optional): Indicates whether access tracking is enabled for the bucket.
             location (str, optional): The region in which the bucket is located.
@@ -887,6 +908,7 @@ class GetBucketInfoRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
@@ -913,6 +935,7 @@ class GetBucketInfoResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket_info (BucketInfo, optional): BucketInfo defines Bucket information.
         """
         super().__init__(**kwargs)
@@ -936,6 +959,7 @@ class VersioningConfiguration(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             status (str, optional): The versioning state of the bucket. Valid values: Enabled,Suspended
         """
         super().__init__(**kwargs)
@@ -961,6 +985,7 @@ class PutBucketVersioningRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             versioning_configuration (VersioningConfiguration, optional): A container for storing version control status.
         """
@@ -985,6 +1010,7 @@ class GetBucketVersioningRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
@@ -1007,6 +1033,7 @@ class GetBucketVersioningResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             version_status (str, optional): The versioning state of the bucket. Valid values: Enabled,Suspended
         """
         super().__init__(**kwargs)
@@ -1040,6 +1067,7 @@ class ListObjectVersionsRequest(serde.RequestModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             bucket (str, required): The name of the bucket.
             delimiter (str, optional): The character that is used to group objects by name.
                 If you specify the delimiter parameter in the request, the response contains
@@ -1113,6 +1141,7 @@ class ObjectVersionProperties(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the object.
             version_id (str, optional): The version ID of the object.
             is_latest (bool, optional): Indicates whether the version is the current version.
@@ -1170,6 +1199,7 @@ class DeleteMarkerProperties(serde.Model):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             key (str, optional): The name of the object.
             version_id (str, optional): The version ID of the object.
             is_latest (bool, optional): Indicates whether the version is the current version.
@@ -1231,6 +1261,7 @@ class ListObjectVersionsResult(serde.ResultModel):
         **kwargs: Any
     ) -> None:
         """
+        Args:
             name (str, optional): The name of the bucket.
             key_marker (str, optional): Indicates the object from which the ListObjectVersions (GetBucketVersions) operation starts.
             next_key_marker (str, optional): If not all results are returned for the request, the NextKeyMarker parameter is included
