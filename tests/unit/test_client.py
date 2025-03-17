@@ -1539,6 +1539,150 @@ class TestSyncClient(unittest.TestCase):
                 self.assertIn("invalid field", str(err))
 
 
+    def test_resolve_cloud_box(self):
+        # default product
+        cfg = config.Config()
+        c1 = client.Client(cfg)
+        self.assertEqual("oss", c1._client._options.product)
+
+        # default region, endpiont
+        cfg = config.Config(
+            region="test-region",
+            endpoint="test-endpoint",
+        )
+        c2 = client.Client(cfg)
+        self.assertEqual("oss", c1._client._options.product)
+        self.assertEqual("test-region", c2._client._options.region)
+        self.assertIsNotNone(c2._client._options.endpoint)
+        self.assertEqual("test-endpoint", c2._client._options.endpoint.hostname)
+
+        # set cloudbox id
+        cfg = config.Config(
+            region="test-region",
+            endpoint="test-endpoint",
+            cloud_box_id="test-cloudbox-id",
+        )
+        c3 = client.Client(cfg)
+        self.assertEqual("oss-cloudbox", c3._client._options.product)
+        self.assertEqual("test-cloudbox-id", c3._client._options.region)
+        self.assertIsNotNone(c3._client._options.endpoint)
+        self.assertEqual("test-endpoint", c3._client._options.endpoint.hostname)
+
+        # cb - ** *.{region}.oss - cloudbox - control.aliyuncs.com
+        # cb - ** *.{region}.oss - cloudbox.aliyuncs.com
+
+        # auto detect cloudbox id default
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox-control.aliyuncs.com",
+        )
+        c4 = client.Client(cfg)
+        self.assertEqual("oss", c4._client._options.product)
+        self.assertEqual("test-region", c4._client._options.region)
+        self.assertIsNotNone(c4._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox-control.aliyuncs.com", c4._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox.aliyuncs.com",
+        )
+        c5 = client.Client(cfg)
+        self.assertEqual("oss", c5._client._options.product)
+        self.assertEqual("test-region", c5._client._options.region)
+        self.assertIsNotNone(c5._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox.aliyuncs.com", c5._client._options.endpoint.hostname)
+
+        # auto detect cloudbox id set false
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox-control.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=False,
+        )
+        c6 = client.Client(cfg)
+        self.assertEqual("oss", c6._client._options.product)
+        self.assertEqual("test-region", c6._client._options.region)
+        self.assertIsNotNone(c6._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox-control.aliyuncs.com", c6._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=False,
+        )
+        c7 = client.Client(cfg)
+        self.assertEqual("oss", c7._client._options.product)
+        self.assertEqual("test-region", c7._client._options.region)
+        self.assertIsNotNone(c7._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox.aliyuncs.com", c7._client._options.endpoint.hostname)
+
+        # auto detect cloudbox id set true
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox-control.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c8 = client.Client(cfg)
+        self.assertEqual("oss-cloudbox", c8._client._options.product)
+        self.assertEqual("cb-123", c8._client._options.region)
+        self.assertIsNotNone(c8._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox-control.aliyuncs.com", c8._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c9 = client.Client(cfg)
+        self.assertEqual("oss-cloudbox", c9._client._options.product)
+        self.assertEqual("cb-123", c9._client._options.region)
+        self.assertIsNotNone(c9._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox.aliyuncs.com", c9._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss-cloudbox.aliyuncs.com/test?123",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c10 = client.Client(cfg)
+        self.assertEqual("oss-cloudbox", c10._client._options.product)
+        self.assertEqual("cb-123", c10._client._options.region)
+        self.assertIsNotNone(c10._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss-cloudbox.aliyuncs.com", c10._client._options.endpoint.hostname)
+
+        # auto detect cloudbox id set true + non cloud box endpoint
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.test-region.oss.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c11 = client.Client(cfg)
+        self.assertEqual("oss", c11._client._options.product)
+        self.assertEqual("test-region", c11._client._options.region)
+        self.assertIsNotNone(c11._client._options.endpoint)
+        self.assertEqual("cb-123.test-region.oss.aliyuncs.com", c11._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="ncb-123.test-region.oss-cloudbox.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c12 = client.Client(cfg)
+        self.assertEqual("oss", c12._client._options.product)
+        self.assertEqual("test-region", c12._client._options.region)
+        self.assertIsNotNone(c12._client._options.endpoint)
+        self.assertEqual("ncb-123.test-region.oss-cloudbox.aliyuncs.com", c12._client._options.endpoint.hostname)
+
+        cfg = config.Config(
+            region="test-region",
+            endpoint="cb-123.oss-cloudbox.aliyuncs.com",
+            enable_auto_detect_cloud_box_id=True,
+        )
+        c13 = client.Client(cfg)
+        self.assertEqual("oss", c13._client._options.product)
+        self.assertEqual("test-region", c13._client._options.region)
+        self.assertIsNotNone(c13._client._options.endpoint)
+        self.assertEqual("cb-123.oss-cloudbox.aliyuncs.com", c13._client._options.endpoint.hostname)
+
 class TestClientBase(unittest.TestCase):
     def setUp(self):
         self.set_requestFunc(None)
