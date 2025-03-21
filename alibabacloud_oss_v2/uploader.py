@@ -308,7 +308,7 @@ class _UploaderDelegate:
         """
         self._base = base
         self._client = client
-        self._reqeust = request
+        self._request = request
         self._options = options
 
         parallel = options.parallel_num > 1
@@ -394,7 +394,7 @@ class _UploaderDelegate:
             return
 
         checkpoint = UploadCheckpoint(
-            request=self._reqeust,
+            request=self._request,
             filepath=self._filepath,
             basedir=self._options.checkpoint_dir,
             fileinfo=self._file_stat,
@@ -478,7 +478,7 @@ class _UploaderDelegate:
 
     def _single_part(self) -> UploadResult:
         request = models.PutObjectRequest()
-        copy_request(request, self._reqeust)
+        copy_request(request, self._request)
         request.body = self._reader
         if request.content_type is None:
             request.content_type = self._get_content_type()
@@ -531,7 +531,7 @@ class _UploaderDelegate:
         cmresult: models.CompleteMultipartUploadResult = None
         if len(self._upload_errors) == 0:
             request = models.CompleteMultipartUploadRequest()
-            copy_request(request, self._reqeust)
+            copy_request(request, self._request)
             parts = sorted(self._uploaded_parts, key=lambda p: p.part_number)
             request.upload_id = upload_ctx.upload_id
             request.complete_multipart_upload = models.CompleteMultipartUpload(parts=parts)
@@ -546,7 +546,7 @@ class _UploaderDelegate:
                 try:
                     abort_request = models.AbortMultipartUploadRequest()
                     abort_request.upload_id = upload_ctx.upload_id
-                    copy_request(request, self._reqeust)
+                    copy_request(request, self._request)
                     self._client.abort_multipart_upload(abort_request)
                 except Exception as _:
                     pass
@@ -577,7 +577,7 @@ class _UploaderDelegate:
 
 	    #if not exist or fail, create a new upload id
         request = models.InitiateMultipartUploadRequest()
-        copy_request(request, self._reqeust)
+        copy_request(request, self._request)
         if request.content_type is None:
             request.content_type = self._get_content_type()
         if request.cse_part_size is None:
@@ -640,12 +640,12 @@ class _UploaderDelegate:
         hash_crc64 = None
         try:
             result = self._client.upload_part(models.UploadPartRequest(
-                bucket=self._reqeust.bucket,
-                key=self._reqeust.key,
+                bucket=self._request.bucket,
+                key=self._request.key,
                 upload_id=upload_id,
                 part_number=part_number,
                 body=body,
-                request_payer=self._reqeust.request_payer,
+                request_payer=self._request.request_payer,
                 cse_multipart_context=self._base._cse_multipart_context
             ))
             etag = result.etag
@@ -660,12 +660,12 @@ class _UploaderDelegate:
         if self._progress_lock:
             with self._progress_lock:
                 self._transferred += increment
-                if self._reqeust.progress_fn is not None:
-                    self._reqeust.progress_fn(increment, self._transferred, self._total_size)
+                if self._request.progress_fn is not None:
+                    self._request.progress_fn(increment, self._transferred, self._total_size)
         else:
             self._transferred += increment
-            if self._reqeust.progress_fn is not None:
-                self._reqeust.progress_fn(increment, self._transferred, self._total_size)
+            if self._request.progress_fn is not None:
+                self._request.progress_fn(increment, self._transferred, self._total_size)
 
     def _save_error(self, error) -> None:
         if self._upload_part_lock:
@@ -686,9 +686,9 @@ class _UploaderDelegate:
         try:
             paginator = ListPartsPaginator(self._client)
             iterator = paginator.iter_page(models.ListPartsRequest(
-                bucket=self._reqeust.bucket,
-                key=self._reqeust.key,
-                request_payer=self._reqeust.request_payer,
+                bucket=self._request.bucket,
+                key=self._request.key,
+                request_payer=self._request.request_payer,
                 upload_id=self._upload_id,
             ))
             check_part_number = 1
@@ -738,6 +738,6 @@ class _UploaderDelegate:
     def _wrap_error(self, upload_id: str, error: Exception) -> Exception:
         return UploadError(
             upload_id=upload_id,
-            path=f'oss://{self._reqeust.bucket}/{self._reqeust.key}',
+            path=f'oss://{self._request.bucket}/{self._request.key}',
             error=error
         )
