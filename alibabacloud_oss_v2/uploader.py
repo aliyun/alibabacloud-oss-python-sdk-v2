@@ -16,6 +16,7 @@ from .serde import copy_request
 from .checkpoint import UploadCheckpoint
 from .crc import Crc64
 from .paginator import ListPartsPaginator
+import alibabacloud_oss_v2 as oss
 
 class UploadAPIClient(abc.ABC):
     """Abstract base class for uploader client."""
@@ -180,6 +181,7 @@ class Uploader:
             is_eclient = True
         self._feature_flags = feature_flags
         self._is_eclient = is_eclient
+        self._cse_multipart_context = None
 
 
     def upload_file(
@@ -247,7 +249,7 @@ class Uploader:
 
     def _delegate(
         self,
-        request: models.GetObjectRequest,
+        request: models.PutObjectRequest,
         **kwargs: Any
     ) -> "_UploaderDelegate":
 
@@ -337,6 +339,7 @@ class _UploaderDelegate:
         # resumable upload
         self._upload_id = None
         self._part_number = None
+        self._list_parts_result = None
 
 
     @property
@@ -432,6 +435,15 @@ class _UploaderDelegate:
         # update from upload's result
         part_number = uploaded_parts[-1].part_number
         next_offset = part_number * self._options.part_size
+
+        if self._base._is_eclient:
+            cc = self._client.get_content_cipher_from_list_parts(self._list_parts_result)
+
+            self._base._cse_multipart_context = oss.EncryptionMultiPartContext(
+                content_cipher=cc,
+                part_size=utils.safety_int(self._options.part_size),
+                data_size=utils.safety_int(self._total_size),
+            )
 
         #print(f'last part number={part_number}, next offset={next_offset}')
 
@@ -568,8 +580,14 @@ class _UploaderDelegate:
         copy_request(request, self._reqeust)
         if request.content_type is None:
             request.content_type = self._get_content_type()
+        if request.cse_part_size is None:
+            request.cse_part_size = self._options.part_size
+        if request.cse_data_size is None:
+            request.cse_data_size = self._total_size
 
         result = self._client.initiate_multipart_upload(request)
+
+        self._base._cse_multipart_context = result.cse_multipart_context
 
         return _UploadContext(
             upload_id=result.upload_id,
@@ -627,15 +645,27 @@ class _UploaderDelegate:
                 upload_id=upload_id,
                 part_number=part_number,
                 body=body,
-                request_payer=self._reqeust.request_payer
+                request_payer=self._reqeust.request_payer,
+                cse_multipart_context=self._base._cse_multipart_context
             ))
             etag = result.etag
             hash_crc64 = result.hash_crc64
         except Exception as err:
             error = err
+        self._update_progress(size)
 
         return part_number, etag, error, hash_crc64, size
 
+    def _update_progress(self, increment: int):
+        if self._progress_lock:
+            with self._progress_lock:
+                self._transferred += increment
+                if self._reqeust.progress_fn is not None:
+                    self._reqeust.progress_fn(increment, self._transferred, self._total_size)
+        else:
+            self._transferred += increment
+            if self._reqeust.progress_fn is not None:
+                self._reqeust.progress_fn(increment, self._transferred, self._total_size)
 
     def _save_error(self, error) -> None:
         if self._upload_part_lock:
@@ -663,6 +693,7 @@ class _UploaderDelegate:
             ))
             check_part_number = 1
             for page in iterator:
+                self._list_parts_result = page
                 for part in page.parts:
                     if (part.part_number != check_part_number or
                         part.size != self._options.part_size):
