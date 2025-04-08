@@ -421,6 +421,61 @@ class TestSignerV4(unittest.TestCase):
         self.assertEqual('abc%3Bzabc', queries.get(
             'x-oss-additional-headers', ''))
 
+    def test_auth_query_long_expiration(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "PUT", "http://bucket.oss-cn-hangzhou.aliyuncs.com")
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'application/octet-stream',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss',
+            region='cn-hangzhou',
+            signing_time=datetime.datetime.fromtimestamp(1702781677),
+        )
+        context.expiration_time = datetime.datetime.fromtimestamp(1702781677 + 5*24*60*60)
+        context.auth_method_query = True
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+
+        signer.sign(context)
+
+        queries = _get_url_query(request.url)
+
+        self.assertEqual('OSS4-HMAC-SHA256',
+                         queries.get('x-oss-signature-version'))
+        self.assertEqual('432000', queries.get('x-oss-expires'))
+        self.assertEqual(
+            'ak%2F20231217%2Fcn-hangzhou%2Foss%2Faliyun_v4_request',
+            queries.get('x-oss-credential'))
+        self.assertEqual(
+            '31029123dc7732d2d2cfd4006ea4fdb6cf86da6478f813e2bf8f87877c7b9fec',
+            queries.get('x-oss-signature'))
+        self.assertEqual('', queries.get('x-oss-additional-headers', ''))
 
 def _get_url_query(url: str):
     encoded_pairs = {}
