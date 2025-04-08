@@ -119,7 +119,7 @@ class SignerV4(Signer):
 
         datetime_now_iso8601 = datetime_now.strftime('%Y%m%dT%H%M%SZ')
         date_now_iso8601 = datetime_now_iso8601[:8]
-        expires = (expiration_time - datetime_now).seconds
+        expires = int((expiration_time - datetime_now).total_seconds())
 
         # Scope
         region = signing_ctx.region or ''
