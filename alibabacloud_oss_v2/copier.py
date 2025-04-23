@@ -502,7 +502,7 @@ class _CopierDelegate:
         part_number = part[1]
         range = part[2]
         timeout = part[3]
-        life_size = part[4]
+        part_size = part[4]
         error: Exception = None
         etag = None
 
@@ -518,7 +518,7 @@ class _CopierDelegate:
         except Exception as err:
             error = err
 
-        self._update_progress(life_size)
+        self._update_progress(part_size)
 
         return part_number, etag, error
 
