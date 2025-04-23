@@ -265,7 +265,7 @@ class _CopierDelegate:
         self._total_size = 0
         self._transferred = 0
 
-        parallel = options.parallel_num > 1
+        parallel = options.parallel_num > 1 and self._request.progress_fn is not None
         self._progress_lock = threading.Lock() if parallel else None
 
         #Source's Info
@@ -527,15 +527,16 @@ class _CopierDelegate:
         return part_number, etag, error
 
     def _update_progress(self, increment: int):
+        if self._request.progress_fn is None:
+            return
+
         if self._progress_lock:
             with self._progress_lock:
                 self._transferred += increment
-                if self._request.progress_fn is not None:
-                    self._request.progress_fn(increment, self._transferred, self._total_size)
+                self._request.progress_fn(increment, self._transferred, self._total_size)
         else:
             self._transferred += increment
-            if self._request.progress_fn is not None:
-                self._request.progress_fn(increment, self._transferred, self._total_size)
+            self._request.progress_fn(increment, self._transferred, self._total_size)
 
     def _update_upload_result_lock(self, result) -> None:
         if self._copy_part_lock:
