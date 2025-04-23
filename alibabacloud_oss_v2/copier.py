@@ -333,6 +333,8 @@ class _CopierDelegate:
     def _single_copy(self) -> CopyResult:
         result = self._client.copy_object(self._request)
 
+        self._update_progress(self._total_size)
+
         ret = CopyResult(
             etag=result.etag,
             version_id=result.version_id,
@@ -354,6 +356,8 @@ class _CopierDelegate:
             if (datetime.datetime.now() > starttime + datetime.timedelta(seconds=30)):
                 return self._multipart_copy()
             raise
+
+        self._update_progress(self._total_size)
 
         ret = CopyResult(
             etag=result.etag,
