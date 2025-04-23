@@ -487,11 +487,12 @@ class _CopierDelegate:
                 n = bytes_left
 
             range_end = self._reader_pos + n - 1
+            life_size = range_end - self._reader_pos
             range = f'bytes={self._reader_pos}-{range_end}'
             self._reader_pos += n
 
             start_part_num += 1
-            yield upload_id, start_part_num, range, timeout, part_size
+            yield upload_id, start_part_num, range, timeout, life_size
 
     def _copy_part(self, part):
         # When an error occurs, ignore other upload requests
@@ -502,7 +503,7 @@ class _CopierDelegate:
         part_number = part[1]
         range = part[2]
         timeout = part[3]
-        part_size = part[4]
+        life_size = part[4]
         error: Exception = None
         etag = None
 
@@ -518,7 +519,7 @@ class _CopierDelegate:
         except Exception as err:
             error = err
 
-        self._update_progress(part_size)
+        self._update_progress(life_size)
 
         return part_number, etag, error
 
