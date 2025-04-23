@@ -2194,3 +2194,18 @@ class Client:
             CleanRestoredObjectResult: Response result for CleanRestoredObject operation.
         """
         return operations.clean_restored_object(self._client, request, **kwargs)
+
+    # cloud box
+    def list_cloud_boxes(self, request: models.ListCloudBoxesRequest, **kwargs
+                    ) -> models.ListCloudBoxesResult:
+        """
+        ListCloudBoxes Lists cloud box buckets that belong to the current account.
+
+        Args:
+            request (ListCloudBoxesRequest): Request parameters for ListCloudBoxes operation.
+
+        Returns:
+            ListCloudBoxesResult: Response result for ListCloudBoxes operation.
+        """
+
+        return operations.list_cloud_boxes(self._client, request, **kwargs)
