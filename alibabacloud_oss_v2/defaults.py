@@ -10,6 +10,9 @@ DEFAULT_SIGNATURE_VERSION = "v4"
 # Product for signing
 DEFAULT_PRODUCT = "oss"
 
+# CloudBoxProduct Product of cloud box for signing
+CLOUD_BOX_PRODUCT = "oss-cloudbox"
+
 # The URL's scheme, default is https
 DEFAULT_ENDPOINT_SCHEME = "https"
 

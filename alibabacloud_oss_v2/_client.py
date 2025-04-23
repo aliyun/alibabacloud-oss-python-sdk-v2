@@ -151,6 +151,7 @@ class _ClientImplMixIn:
         _resolve_signer(config, options)
         _resolve_address_style(config, options)
         _resolve_feature_flags(config, options)
+        _resolve_cloud_box(config, options)
         self._resolve_httpclient(config, options) # pylint: disable=no-member
 
         inner = _InnerOptions()
@@ -567,6 +568,29 @@ def _resolve_feature_flags(config: Config, options: _Options) -> None:
 
     if utils.safety_bool(config.disable_download_crc64_check):
         options.feature_flags = options.feature_flags & ~defaults.FF_ENABLE_CRC64_CHECK_DOWNLOAD
+
+
+def _resolve_cloud_box(config: Config, options: _Options) -> None:
+    """cloud box"""
+    if config.cloud_box_id is not None:
+        options.region = str(config.cloud_box_id)
+        options.product = defaults.CLOUD_BOX_PRODUCT
+        return
+
+    if not config.enable_auto_detect_cloud_box_id:
+        return
+
+    host = options.endpoint.hostname
+    if not (host.endswith(".oss-cloudbox.aliyuncs.com") or
+            host.endswith(".oss-cloudbox-control.aliyuncs.com")):
+        return
+
+    keys = host.split(".")
+    if len(keys) != 5 or not keys[0].startswith("cb-"):
+        return
+    options.region = keys[0]
+    options.product = defaults.CLOUD_BOX_PRODUCT
+
 
 def _apply_operation_metadata(op_input: OperationInput, options: _Options) -> None:
     handlers = op_input.op_metadata.get('opm-response-handler', None)

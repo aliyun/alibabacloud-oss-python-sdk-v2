@@ -476,6 +476,154 @@ class TestSignerV4(unittest.TestCase):
             '31029123dc7732d2d2cfd4006ea4fdb6cf86da6478f813e2bf8f87877c7b9fec',
             queries.get('x-oss-signature'))
         self.assertEqual('', queries.get('x-oss-additional-headers', ''))
+    def test_auth_header_cloud_box(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "PUT", "http://bucket.cb-123.cn-hangzhou.oss-cloudbox.aliyuncs.com/1234+-/123/1.txt")
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'text/plain',
+                'x-oss-content-sha256': 'UNSIGNED-PAYLOAD',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss-cloudbox',
+            region='cb-123',
+            signing_time=datetime.datetime.fromtimestamp(1702743657),
+        )
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+
+        signer.sign(context)
+
+        auth_pat = 'OSS4-HMAC-SHA256 Credential=ak/20231216/cb-123/oss-cloudbox/aliyun_v4_request,Signature=94ce1f12c17d148ea681030275a94449d3357f5b5b21133996eec80af3e08a43'
+        self.assertEqual(auth_pat, context.request.headers.get('Authorization'))
+
+    def test_auth_query_with_cloud_box(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "PUT", "http://bucket.cb-123.cn-hangzhou.oss-cloudbox.aliyuncs.com/1234+-/123/1.txt")
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'application/octet-stream',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss-cloudbox',
+            region='cb-123',
+            signing_time=datetime.datetime.fromtimestamp(1702781677),
+            additional_headers={'ZAbc', 'abc'}
+        )
+        context.expiration_time = datetime.datetime.fromtimestamp(1702782276)
+        context.auth_method_query = True
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+
+        signer.sign(context)
+
+        queries = _get_url_query(request.url)
+
+        self.assertEqual('OSS4-HMAC-SHA256', queries.get('x-oss-signature-version'))
+        self.assertEqual('20231217T025437Z', queries.get('x-oss-date'))
+        self.assertEqual('599', queries.get('x-oss-expires'))
+        self.assertEqual('ak%2F20231217%2Fcb-123%2Foss-cloudbox%2Faliyun_v4_request', queries.get('x-oss-credential'))
+        self.assertEqual('07284191b9b4978ac3520cd39ee2dea2747eda454089359371ff463a6c7ba20f', queries.get('x-oss-signature'))
+        self.assertEqual('abc%3Bzabc', queries.get('x-oss-additional-headers', ''))
+
+        # with default signed header
+        request = HttpRequest(
+            "PUT", "http://bucket.cb-123.cn-hangzhou.oss-cloudbox.aliyuncs.com/1234+-/123/1.txt")
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'application/octet-stream',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss-cloudbox',
+            region='cb-123',
+            signing_time=datetime.datetime.fromtimestamp(1702783809),
+            additional_headers={'x-oss-no-exist', 'ZAbc', 'x-oss-head1', 'abc'}
+        )
+        context.expiration_time = datetime.datetime.fromtimestamp(1702784408)
+        context.auth_method_query = True
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+
+        signer.sign(context)
+
+        queries = _get_url_query(request.url)
+
+        self.assertEqual('OSS4-HMAC-SHA256', queries.get('x-oss-signature-version'))
+        self.assertEqual('20231217T033009Z', queries.get('x-oss-date'))
+        self.assertEqual('599', queries.get('x-oss-expires'))
+        self.assertEqual('ak%2F20231217%2Fcb-123%2Foss-cloudbox%2Faliyun_v4_request', queries.get('x-oss-credential'))
+        self.assertEqual('16782cc8a7a554523db055eb804b508522e7e370073108ad88ee2f47496701dd', queries.get('x-oss-signature'))
+        self.assertEqual('abc%3Bzabc', queries.get('x-oss-additional-headers', ''))
 
 def _get_url_query(url: str):
     encoded_pairs = {}
