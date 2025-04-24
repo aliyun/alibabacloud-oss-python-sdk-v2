@@ -519,10 +519,10 @@ class _CopierDelegate:
             result = self._client.upload_part_copy(request, readwrite_timeout=timeout)
             etag = result.etag
 
+            self._update_progress(part_size)
         except Exception as err:
             error = err
 
-        self._update_progress(part_size)
 
         return part_number, etag, error
 
