@@ -23,13 +23,21 @@ class TestCloudBoxes(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # list cloud boxes
-        result = self.client.list_cloud_boxes(oss.ListCloudBoxesRequest(
-            max_keys=10,
-        ))
-        self.assertEqual(200, result.status_code)
-        self.assertEqual('OK', result.status)
-        self.assertEqual(24, len(result.request_id))
-        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        try:
+            result = self.client.list_cloud_boxes(oss.ListCloudBoxesRequest(
+                max_keys=10,
+            ))
+            self.assertEqual(200, result.status_code)
+            self.assertEqual('OK', result.status)
+            self.assertEqual(24, len(result.request_id))
+            self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('You are forbidden to oss-cloudbox:ListCloudBoxes', serr.message)
 
 
     def test_cloud_boxes_v1(self):
@@ -48,15 +56,23 @@ class TestCloudBoxes(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # list cloud boxes
-        result = self.signv1_client.list_cloud_boxes(oss.ListCloudBoxesRequest(
-            marker='ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
-            max_keys=10,
-            prefix='aaa',
-        ))
-        self.assertEqual(200, result.status_code)
-        self.assertEqual('OK', result.status)
-        self.assertEqual(24, len(result.request_id))
-        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        try:
+            result = self.signv1_client.list_cloud_boxes(oss.ListCloudBoxesRequest(
+                marker='ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA',
+                max_keys=10,
+                prefix='aaa',
+            ))
+            self.assertEqual(200, result.status_code)
+            self.assertEqual('OK', result.status)
+            self.assertEqual(24, len(result.request_id))
+            self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('You are forbidden to oss-cloudbox:ListCloudBoxes', serr.message)
 
 
     def test_cloud_boxes_fail(self):
