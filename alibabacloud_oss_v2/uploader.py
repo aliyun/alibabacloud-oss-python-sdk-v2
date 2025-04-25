@@ -274,6 +274,9 @@ class Uploader:
         if options.parallel_num <= 0:
             options.parallel_num = defaults.DEFAULT_UPLOAD_PARALLEL
 
+        if hasattr(request, "parameters") and request.parameters.get('sequential') is not None:
+            options.parallel_num = 1
+
         delegate = _UploaderDelegate(
             base=self,
             client=self._client,
