@@ -1,5 +1,11 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.1.1 日期：2025-04-25
+### 变更内容
+- Feature：Add list cloud boxes api and add cloud box id param
+- Update：Copier supports progress
+- Fix：The expiration time was incorrect
+
 ## 版本号：1.1.0 日期：2025-03-10
 ### 变更内容
 - Feature：Add clean restored object api
