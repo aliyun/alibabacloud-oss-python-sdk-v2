@@ -265,6 +265,9 @@ class _CopierDelegate:
         self._total_size = 0
         self._transferred = 0
 
+        parallel = options.parallel_num > 1 and self._request.progress_fn is not None
+        self._progress_lock = threading.Lock() if parallel else None
+
         #Source's Info
         self._metadata_prop = metadata_prop
         self._tag_prop = tag_prop
@@ -330,6 +333,8 @@ class _CopierDelegate:
     def _single_copy(self) -> CopyResult:
         result = self._client.copy_object(self._request)
 
+        self._update_progress(self._total_size)
+
         ret = CopyResult(
             etag=result.etag,
             version_id=result.version_id,
@@ -351,6 +356,8 @@ class _CopierDelegate:
             if (datetime.datetime.now() > starttime + datetime.timedelta(seconds=30)):
                 return self._multipart_copy()
             raise
+
+        self._update_progress(self._total_size)
 
         ret = CopyResult(
             etag=result.etag,
@@ -488,7 +495,7 @@ class _CopierDelegate:
             self._reader_pos += n
 
             start_part_num += 1
-            yield upload_id, start_part_num, range, timeout
+            yield upload_id, start_part_num, range, timeout, n
 
     def _copy_part(self, part):
         # When an error occurs, ignore other upload requests
@@ -499,6 +506,7 @@ class _CopierDelegate:
         part_number = part[1]
         range = part[2]
         timeout = part[3]
+        part_size = part[4]
         error: Exception = None
         etag = None
 
@@ -511,10 +519,24 @@ class _CopierDelegate:
             result = self._client.upload_part_copy(request, readwrite_timeout=timeout)
             etag = result.etag
 
+            self._update_progress(part_size)
         except Exception as err:
             error = err
 
+
         return part_number, etag, error
+
+    def _update_progress(self, increment: int):
+        if self._request.progress_fn is None:
+            return
+
+        if self._progress_lock:
+            with self._progress_lock:
+                self._transferred += increment
+                self._request.progress_fn(increment, self._transferred, self._total_size)
+        else:
+            self._transferred += increment
+            self._request.progress_fn(increment, self._transferred, self._total_size)
 
     def _update_upload_result_lock(self, result) -> None:
         if self._copy_part_lock:

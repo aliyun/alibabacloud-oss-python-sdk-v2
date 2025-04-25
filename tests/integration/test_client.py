@@ -3834,3 +3834,293 @@ class TestCopier(TestIntegration):
             self.assertIn('crc is inconsistent, ', str(e))
             self.assertIn('dst-key-crc-check-fail, ', str(e))
 
+
+    def test_copier_progress_with_single_copy(self):
+        length = 100 * 1024 + 123
+        src_data = random_str(length)
+        src_key = OBJECTNAME_PREFIX + random_str(16)
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+            body=src_data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+        ))
+        src_crc64 = hresult.hash_crc64
+        self.assertIsNotNone(src_crc64)
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+
+        copier = self.client.copier()
+
+        dst_key = 'single_copy_key'
+        result = copier.copy(oss.CopyObjectRequest(
+                bucket=self.bucket_name,
+                key=dst_key,
+                source_bucket=self.bucket_name,
+                source_key=src_key,
+                progress_fn=_progress_fn
+            ),
+                part_size=10 * 1024,
+                parallel_num=5,
+                leave_parts_on_error=True
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(bytes_added, length)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=dst_key
+        ))
+        self.assertEqual("Normal", hresult.object_type)
+        self.assertEqual(src_crc64, hresult.hash_crc64)
+
+    def test_copier_progress_with_shallow_copy(self):
+        length = 100 * 1024 + 123
+        src_data = random_str(length)
+        src_key = OBJECTNAME_PREFIX + random_str(16)
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+            body=src_data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+        ))
+        src_crc64 = hresult.hash_crc64
+        self.assertIsNotNone(src_crc64)
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+
+        copier = self.client.copier()
+
+        dst_key = 'shallow_copy_key'
+        result = copier.copy(oss.CopyObjectRequest(
+                bucket=self.bucket_name,
+                key=dst_key,
+                source_bucket=self.bucket_name,
+                source_key=src_key,
+                progress_fn=_progress_fn
+            ),
+                part_size=10 * 1024,
+                parallel_num=5,
+                leave_parts_on_error=True,
+                multipart_copy_threshold=100 * 1024,
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(bytes_added, length)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=dst_key
+        ))
+        self.assertEqual("Normal", hresult.object_type)
+        self.assertEqual(src_crc64, hresult.hash_crc64)
+
+    def test_copier_progress_with_single_multipart_copy(self):
+        length = 100 * 1024 + 123
+        src_data = random_str(length)
+        src_key = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+            body=src_data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+        ))
+        src_crc64 = hresult.hash_crc64
+        self.assertIsNotNone(src_crc64)
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+
+        copier = self.client.copier()
+
+        dst_key = 'single_multipart_copy_key'
+        result = copier.copy(oss.CopyObjectRequest(
+                bucket=bucket_name,
+                key=dst_key,
+                source_bucket=self.bucket_name,
+                source_key=src_key,
+                progress_fn=_progress_fn
+            ),
+                part_size=100 * 1024,
+                parallel_num=1,
+                leave_parts_on_error=True,
+                multipart_copy_threshold=100 * 1024,
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(bytes_added, length)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=dst_key
+        ))
+        self.assertEqual("Multipart", hresult.object_type)
+        self.assertEqual(src_crc64, hresult.hash_crc64)
+
+    def test_copier_progress_with_thread_multipart_copy(self):
+        length = 500 * 1024 + 123
+        src_data = random_str(length)
+        src_key = OBJECTNAME_PREFIX + random_str(16)
+        bucket_name = random_bucket_name()
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        # put bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+            body=src_data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+        ))
+        src_crc64 = hresult.hash_crc64
+        self.assertIsNotNone(src_crc64)
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+
+        copier = self.client.copier()
+
+        dst_key = 'thread_multipart_copy_key'
+        result = copier.copy(oss.CopyObjectRequest(
+                bucket=bucket_name,
+                key=dst_key,
+                source_bucket=self.bucket_name,
+                source_key=src_key,
+                progress_fn=_progress_fn
+            ),
+                part_size=100 * 1024,
+                parallel_num=5,
+                leave_parts_on_error=True,
+                multipart_copy_threshold=100 * 1024,
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(bytes_added, length)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=bucket_name,
+            key=dst_key
+        ))
+        self.assertEqual("Multipart", hresult.object_type)
+        self.assertEqual(src_crc64, hresult.hash_crc64)
+
