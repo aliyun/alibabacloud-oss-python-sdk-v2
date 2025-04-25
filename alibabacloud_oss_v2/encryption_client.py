@@ -12,6 +12,7 @@ from . import io_utils
 from .crypto import MasterCipher, Envelope, ContentCipherBuilder, ContentCipher, CipherData
 from .crypto.aes_ctr_cipher import AESCtrCipherBuilder
 from .crypto.aes_ctr import _BLOCK_SIZE_LEN
+from .uploader import Uploader
 
 class EncryptionMultiPartContext:
     """EncryptionMultiPartContext save encryption or decryption information
@@ -179,6 +180,26 @@ class EncryptionClient:
         """
 
         return self._client.list_parts(request, **kwargs)
+
+    def uploader(self, **kwargs) -> Uploader:
+        """creates a Uploader instance to upload objects.
+        Args:
+        Returns:
+            Uploader: _description_
+        """
+        return Uploader(self, **kwargs)
+
+    def get_content_cipher_from_list_parts(self, result: models.ListPartsResult) -> ContentCipher:
+        """
+        Obtain encryption and decryption information based on the results of the list parts.
+        Args:
+            result (ListPartsResult): Result parameters for ListParts operation.
+        Returns:
+            ContentCipher: A data container for storing encrypted or decrypted objects.
+        """
+        envelope = _get_envelope_from_list_parts(result)
+        cc = self._get_ccbuilder(envelope).content_cipher_from_env(envelope)
+        return cc
 
     def _get_ccbuilder(self, envelope: Envelope ) -> ContentCipherBuilder:
         return self._ccbuilders.get(envelope.mat_desc or '', self._defualt_ccbuilder)
