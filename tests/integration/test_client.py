@@ -3873,9 +3873,6 @@ class TestCopier(TestIntegration):
             last_written = written
             total_bytes_expected = total
 
-            rate = int(100 * (written / total))
-            print(f'\r{rate}% ')
-
 
         copier = self.client.copier()
 
@@ -3941,9 +3938,6 @@ class TestCopier(TestIntegration):
             total_bytes_transferred = written
             last_written = written
             total_bytes_expected = total
-
-            rate = int(100 * (written / total))
-            print(f'\r{rate}% ')
 
 
         copier = self.client.copier()
@@ -4023,9 +4017,6 @@ class TestCopier(TestIntegration):
             last_written = written
             total_bytes_expected = total
 
-            rate = int(100 * (written / total))
-            print(f'\r{rate}% ')
-
 
         copier = self.client.copier()
 
@@ -4103,9 +4094,6 @@ class TestCopier(TestIntegration):
             total_bytes_transferred = written
             last_written = written
             total_bytes_expected = total
-
-            rate = int(100 * (written / total))
-            # print(f'\r{rate}% ')
 
 
         copier = self.client.copier()
