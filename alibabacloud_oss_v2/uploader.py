@@ -274,6 +274,9 @@ class Uploader:
         if options.parallel_num <= 0:
             options.parallel_num = defaults.DEFAULT_UPLOAD_PARALLEL
 
+        if hasattr(request, "parameters") and request.parameters.get('sequential') is not None:
+            options.parallel_num = 1
+
         delegate = _UploaderDelegate(
             base=self,
             client=self._client,
@@ -471,6 +474,9 @@ class _UploaderDelegate:
         if request.content_type is None:
             request.content_type = self._get_content_type()
 
+        if hasattr(self._reqeust, "parameters"):
+            request.parameters = self._reqeust.parameters
+
         try:
             result = self._client.put_object(request)
         except Exception as err:
@@ -520,6 +526,10 @@ class _UploaderDelegate:
         if len(self._upload_errors) == 0:
             request = models.CompleteMultipartUploadRequest()
             copy_request(request, self._reqeust)
+
+            if hasattr(self._reqeust, "parameters"):
+                request.parameters = self._reqeust.parameters
+
             parts = sorted(self._uploaded_parts, key=lambda p: p.part_number)
             request.upload_id = upload_ctx.upload_id
             request.complete_multipart_upload = models.CompleteMultipartUpload(parts=parts)
@@ -535,6 +545,10 @@ class _UploaderDelegate:
                     abort_request = models.AbortMultipartUploadRequest()
                     abort_request.upload_id = upload_ctx.upload_id
                     copy_request(request, self._reqeust)
+
+                    if hasattr(self._reqeust, "parameters"):
+                        request.parameters = self._reqeust.parameters
+
                     self._client.abort_multipart_upload(abort_request)
                 except Exception as _:
                     pass
@@ -566,6 +580,10 @@ class _UploaderDelegate:
 	    #if not exist or fail, create a new upload id
         request = models.InitiateMultipartUploadRequest()
         copy_request(request, self._reqeust)
+
+        if hasattr(self._reqeust, "parameters"):
+            request.parameters = self._reqeust.parameters
+
         if request.content_type is None:
             request.content_type = self._get_content_type()
 
