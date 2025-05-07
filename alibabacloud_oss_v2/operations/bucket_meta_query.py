@@ -73,7 +73,7 @@ def close_meta_query(client: _SyncClientImpl, request: models.CloseMetaQueryRequ
                 'metaQuery': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['metaQuery' ,'comp']},
+            op_metadata={'sub-resource': ['metaQuery', 'comp']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -115,7 +115,7 @@ def do_meta_query(client: _SyncClientImpl, request: models.DoMetaQueryRequest, *
                 'metaQuery': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['metaQuery' ,'comp']},
+            op_metadata={'sub-resource': ['metaQuery', 'comp']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -157,7 +157,7 @@ def open_meta_query(client: _SyncClientImpl, request: models.OpenMetaQueryReques
                 'metaQuery': '', 
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['metaQuery' ,'comp']},
+            op_metadata={'sub-resource': ['metaQuery', 'comp']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
