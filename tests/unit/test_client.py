@@ -320,7 +320,7 @@ class TestSyncClient(unittest.TestCase):
         clinet = client.Client(cfg)
         self.assertIsInstance(clinet._client._options.http_client, transport.RequestsHttpClient)
         httpclient = cast(transport.RequestsHttpClient, clinet._client._options.http_client)
-        self.assertEqual('http://127.0.0.1:8080', httpclient._proxies)
+        self.assertEqual({'http://': 'http://127.0.0.1:8080', 'https://': 'http://127.0.0.1:8080'}, httpclient._proxies)
 
     def test_config_user_agent(self):
         cfg = config.Config(

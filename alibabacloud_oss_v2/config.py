@@ -23,7 +23,7 @@ class Config(object):
         enabled_redirect: Optional[bool] = None,
         use_cname: Optional[bool] = None,
         use_path_style: Optional[bool] = None,
-        proxy_host: Optional[str] = None,
+        proxy_host: Optional[Union[str, dict]] = None,
         disable_upload_crc64_check: Optional[bool] = None,
         disable_download_crc64_check: Optional[bool] = None,
         additional_headers: Optional[List[str]] = None,
@@ -60,7 +60,9 @@ class Config(object):
             use_internal_endpoint (bool, optional): You can use an internal endpoint to communicate between Alibaba Cloud services located 
                 within the same region over the internal network. You are not charged for the traffic generated over the internal network.
                 Set this to True to use a internal endpoint for the requests.
-            proxy_host: (str, optional): The proxy setting.
+            proxy_host: (Union[str, dict], optional): The proxy setting.
+                If proxy_host is str type, i.e. 'http://10.10.1.10:3128', both HTTP and HTTPS are supported.
+                Or give a proxy for a specific scheme by dict type, i.e. {'http': 'http://10.10.1.10:3128/'}.
             disable_upload_crc64_check: (bool, optional): Check data integrity of uploads via the crc64 by default.
                 This feature takes effect for put_object, append_object, upload_part, uploader.upload_from and uploader.upload_file
                 Set this to `true` to disable this feature.
