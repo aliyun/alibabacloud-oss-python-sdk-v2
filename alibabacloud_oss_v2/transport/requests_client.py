@@ -5,6 +5,8 @@ from urllib3.util.retry import Retry
 from urllib3.exceptions import NewConnectionError, ConnectTimeoutError
 import requests
 import requests.adapters
+
+from ..endpoints import SCHEME_REGEXP
 from ..types import HttpRequest, HttpResponse, HttpClient
 from .. import exceptions
 from .. import defaults
@@ -91,6 +93,28 @@ class _RequestsHttpResponseImpl(HttpResponse):
         self._is_stream_consumed = True
         self.close()
 
+def convert_proxy_host(proxy_host, disable_ssl=None):
+    if proxy_host is None:
+        return None
+
+    if isinstance(proxy_host, str):
+        if disable_ssl is None:
+            return {"http://": proxy_host, "https://": proxy_host}
+
+        if proxy_host and not SCHEME_REGEXP.match(proxy_host):
+            scheme = 'http' if disable_ssl else defaults.DEFAULT_ENDPOINT_SCHEME
+            proxy_host = f'{scheme}://{proxy_host}'
+        else:
+            scheme = 'http' if proxy_host.startswith('http://') else 'https'
+
+        return {f"{scheme}://": proxy_host}
+
+    if isinstance(proxy_host, dict):
+        return proxy_host
+
+    raise exceptions.RequestError(error="proxy_host must be str or dict")
+
+
 class RequestsHttpClient(HttpClient):
     """Implements a basic requests HTTP sender.
 
@@ -122,7 +146,7 @@ class RequestsHttpClient(HttpClient):
         if kwargs.get("insecure_skip_verify") is True:
             self._verify = False
         self._allow_redirects = kwargs.get("enabled_redirect", False)
-        self._proxies = kwargs.get("proxy_host", None)
+        self._proxies = convert_proxy_host(kwargs.get("proxy_host", None), kwargs.get("disable_ssl", None))
         self._block_size = kwargs.get("block_size", defaults.DEFAULT_BLOCK_SIZE)
 
     def __enter__(self):

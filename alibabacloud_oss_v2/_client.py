@@ -353,6 +353,9 @@ class _SyncClientImpl(_ClientImplMixIn):
         if config.proxy_host:
             kwargs["proxy_host"] = config.proxy_host
 
+        if config.disable_ssl is not None:
+            kwargs["disable_ssl"] = config.disable_ssl
+
         options.http_client = transport.RequestsHttpClient(**kwargs)
 
 
