@@ -266,7 +266,7 @@ class _DownloaderDelegate:
         """
         self._base = base
         self._client = client
-        self._reqeust = request
+        self._request = request
         self._options = options
 
         self._rstart = 0
@@ -310,8 +310,8 @@ class _DownloaderDelegate:
     def check_source(self):
         """check source
         """
-        request = models.HeadObjectRequest(self._reqeust.bucket, self._reqeust.key)
-        copy_request(request, self._reqeust)
+        request = models.HeadObjectRequest(self._request.bucket, self._request.key)
+        copy_request(request, self._request)
         result = self._client.head_object(request)
 
         self._size_in_bytes = result.content_length
@@ -341,10 +341,10 @@ class _DownloaderDelegate:
         self._rstart = 0
         self._epos = self._size_in_bytes
 
-        if self._reqeust.range_header is not None:
-            range_header = utils.parse_http_range(self._reqeust.range_header)
+        if self._request.range_header is not None:
+            range_header = utils.parse_http_range(self._request.range_header)
             if range_header[0] >= self._size_in_bytes:
-                raise ValueError(f'invalid range, size :{self._size_in_bytes}, range: {self._reqeust.range_header}')
+                raise ValueError(f'invalid range, size :{self._size_in_bytes}, range: {self._request.range_header}')
             if range_header[0] > 0:
                 self._pos = range_header[0]
             self._rstart = self._pos
@@ -359,7 +359,7 @@ class _DownloaderDelegate:
             return
 
         checkpoint = DownloadCheckpoint(
-            request=self._reqeust,
+            request=self._request,
             filepath=self._temp_filepath,
             basedir=self._options.checkpoint_dir,
             headers=self._headers,
@@ -415,7 +415,7 @@ class _DownloaderDelegate:
         """
         #FF_ENABLE_CRC64_CHECK_DOWNLOAD
         if (self._base._feature_flags & 0x00000010) > 0:
-            self._check_crc = self._reqeust.range_header is None
+            self._check_crc = self._request.range_header is None
             self._calc_crc = (self._checkpoint is not None and self._checkpoint.verify_data) or self._check_crc
 
     def download(self) -> DownloadResult:
@@ -470,7 +470,7 @@ class _DownloaderDelegate:
             return None
 
         size = self._calc_part_size(start)
-        request = copy.copy(self._reqeust)
+        request = copy.copy(self._request)
 
         got = 0
         error: Exception = None
@@ -528,12 +528,12 @@ class _DownloaderDelegate:
         if self._progress_lock:
             with self._progress_lock:
                 self._written += increment
-                if self._reqeust.progress_fn is not None:
-                    self._reqeust.progress_fn(increment, self._written, self._size_in_bytes)
+                if self._request.progress_fn is not None:
+                    self._request.progress_fn(increment, self._written, self._size_in_bytes)
         else:
             self._written += increment
-            if self._reqeust.progress_fn is not None:
-                self._reqeust.progress_fn(increment, self._written, self._size_in_bytes)
+            if self._request.progress_fn is not None:
+                self._request.progress_fn(increment, self._written, self._size_in_bytes)
 
         #print(f'_update_progress: {increment}, {self._written}, {self._size_in_bytes}\n')
 
@@ -584,6 +584,6 @@ class _DownloaderDelegate:
 
     def _wrap_error(self, error: Exception) -> Exception:
         return DownloadError(
-            path=f'oss://{self._reqeust.bucket}/{self._reqeust.key}',
+            path=f'oss://{self._request.bucket}/{self._request.key}',
             error=error
         )
