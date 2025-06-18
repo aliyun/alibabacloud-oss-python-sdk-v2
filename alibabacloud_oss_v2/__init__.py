@@ -7,7 +7,6 @@ from . import signer
 from . import transport
 from . import models
 from . import exceptions
-from . import crypto
 from . import checkpoint
 
 # all types in models
@@ -45,7 +44,13 @@ from .models.cloud_box import *
 
 from .config import Config
 from .client import Client
-from .encryption_client import EncryptionClient, EncryptionMultiPartContext
+
+# If the Crypto(pycryptodome) module was not imported, the encryption feature is not supported.
+try:
+    from . import crypto
+    from .encryption_client import EncryptionClient, EncryptionMultiPartContext
+except ImportError:
+    pass
 
 from .downloader import (
     Downloader,
