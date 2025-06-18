@@ -6,6 +6,8 @@ from aliyunsdkkms.request.v20160120.EncryptRequest import EncryptRequest
 from alibabacloud_dkms_transfer.kms_transfer_acs_client import KmsTransferAcsClient
 from typing import Optional, Dict
 import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.crypto
+from alibabacloud_oss_v2.encryption_client import EncryptionClient, EncryptionMultiPartContext
 
 
 parser = argparse.ArgumentParser(description="encryption kms sample")
