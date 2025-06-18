@@ -1,5 +1,7 @@
 import argparse
 import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.crypto
+from alibabacloud_oss_v2.encryption_client import EncryptionClient, EncryptionMultiPartContext
 
 parser = argparse.ArgumentParser(description="encryption put object sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
