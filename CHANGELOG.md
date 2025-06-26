@@ -1,5 +1,11 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.1.2 日期：2025-06-26
+### 变更内容
+- Update：proxy_host supports both dictionary and string types
+- Update：Meta query api supports more search condition settings
+- Update：Ignore the import error for the Crypto module
+
 ## 版本号：1.1.1 日期：2025-04-25
 ### 变更内容
 - Feature：Add list cloud boxes api and add cloud box id param
