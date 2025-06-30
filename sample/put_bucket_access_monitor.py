@@ -18,7 +18,6 @@ def main():
     cfg = oss.config.load_default()
     cfg.credentials_provider = credentials_provider
     cfg.region = args.region
-    cfg.signature_version = 'v1'
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
