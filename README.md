@@ -124,7 +124,7 @@ def main():
             body=f,
         ))
 
-    print(f'put object sucessfully, ETag {result.etag}')
+    print(f'put object successfully, ETag {result.etag}')
 
 
 if __name__ == "__main__":

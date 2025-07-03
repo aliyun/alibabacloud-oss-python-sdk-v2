@@ -778,7 +778,7 @@ with requests.put(pre_result.url, headers=pre_result.signed_headers, data=data) 
 
 分页器 包含了 分页器对象 '\<OperationName\>Paginator' 和 分页器创建方法 '\<OperationName\>_paginator'。分页器创建方法返回一个分页器对象，该对象实现了 'iter_page' 方法，用于调用操作来获取下一页。
 
-分页器创建方法 '\<OperationName\>_paginator' 里的 request 参数类型 与 '\<OperationName\>' 接口中的 reqeust 参数类型一致。
+分页器创建方法 '\<OperationName\>_paginator' 里的 request 参数类型 与 '\<OperationName\>' 接口中的 request 参数类型一致。
 
 '\<OperationName\>_paginator.iter_page' 返回的结果类型 和 '\<OperationName\>' 接口 返回的结果类型 一致。
 
