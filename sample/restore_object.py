@@ -50,7 +50,7 @@ def main():
         ))
 
         if result.restore and result.restore != 'ongoing-request="true"':
-            print('restore is sucess')
+            print('restore is success')
             break
         time.sleep(5)
         print(result.restore)
