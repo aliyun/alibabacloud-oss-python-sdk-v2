@@ -515,7 +515,7 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
                 max_results=29847,
                 query='俯瞰白雪覆盖的森林',
                 order=model.MetaQueryOrderType.DESC,
-                media_types=model.MediaTypes(
+                media_types=model.MetaQueryMediaTypes(
                     media_type=['image', 'doc']
                 ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
@@ -539,7 +539,7 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
                 max_results=29847,
                 query='俯瞰白雪覆盖的森林',
                 order=model.MetaQueryOrderType.DESC,
-                media_types=model.MediaTypes(
+                media_types=model.MetaQueryMediaTypes(
                     media_type=['image', 'doc']
                 ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',

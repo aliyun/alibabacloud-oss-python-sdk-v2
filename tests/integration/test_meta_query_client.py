@@ -129,7 +129,7 @@ class TestOpenMetaQuery(TestIntegration):
                 max_results=1000,
                 query='俯瞰白雪覆盖的森林',
                 order='desc',
-                media_types=oss.MediaTypes(
+                media_types=oss.MetaQueryMediaTypes(
                     media_type=['image']
                 ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
@@ -270,7 +270,7 @@ class TestOpenMetaQuery(TestIntegration):
                 max_results=1000,
                 query='俯瞰白雪覆盖的森林',
                 order='desc',
-                media_types=oss.MediaTypes(
+                media_types=oss.MetaQueryMediaTypes(
                     media_type=['image']
                 ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
@@ -426,7 +426,7 @@ class TestOpenMetaQuery(TestIntegration):
                     max_results=1000,
                     query='俯瞰白雪覆盖的森林',
                     order='desc',
-                    media_types=oss.MediaTypes(
+                    media_types=oss.MetaQueryMediaTypes(
                         media_type=['image']
                     ),
                     simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
