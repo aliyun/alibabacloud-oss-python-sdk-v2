@@ -515,7 +515,9 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
                 max_results=29847,
                 query='俯瞰白雪覆盖的森林',
                 order=model.MetaQueryOrderType.DESC,
-                media_types=['image', 'doc'],
+                media_types=model.MediaTypes(
+                    media_type=['image', 'doc']
+                ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
             ),
         )
@@ -524,8 +526,8 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
         self.assertEqual(29847, request.meta_query.max_results)
         self.assertEqual('俯瞰白雪覆盖的森林', request.meta_query.query)
         self.assertEqual(model.MetaQueryOrderType.DESC, request.meta_query.order)
-        self.assertEqual('image', request.meta_query.media_types[0])
-        self.assertEqual('doc', request.meta_query.media_types[1])
+        self.assertEqual('image', request.meta_query.media_types.media_type[0])
+        self.assertEqual('doc', request.meta_query.media_types.media_type[1])
         self.assertEqual('{"Operation":"gt", "Field": "Size", "Value": "30"}', request.meta_query.simple_query)
 
 
@@ -537,7 +539,9 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
                 max_results=29847,
                 query='俯瞰白雪覆盖的森林',
                 order=model.MetaQueryOrderType.DESC,
-                media_types=['image', 'doc'],
+                media_types=model.MediaTypes(
+                    media_type=['image', 'doc']
+                ),
                 simple_query='{"Operation":"gt", "Field": "Size", "Value": "30"}',
             ),
         )
