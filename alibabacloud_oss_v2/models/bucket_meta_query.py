@@ -595,6 +595,31 @@ class MetaQueryAggregations(serde.Model):
         super().__init__(**kwargs)
         self.aggregations = aggregations
 
+class MetaQueryMediaTypes(serde.Model):
+    """
+    Multimedia metadata retrieval criteria.
+    """
+
+    _attribute_map = {
+        'media_type': {'tag': 'xml', 'rename': 'MediaType', 'type': '[str]'},
+    }
+
+    _xml_map = {
+        'name': 'MediaTypes'
+    }
+
+    def __init__(
+        self,
+        media_type: Optional[List[str]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            media_type (List[str], optional): The type of multimedia that you want to query. Valid values: image, video, audio, document
+        """
+        super().__init__(**kwargs)
+        self.media_type = media_type
+
 
 class MetaQuery(serde.Model):
     """
@@ -608,7 +633,7 @@ class MetaQuery(serde.Model):
         'query': {'tag': 'xml', 'rename': 'Query', 'type': 'str'},
         'sort': {'tag': 'xml', 'rename': 'Sort', 'type': 'str'},
         'order': {'tag': 'xml', 'rename': 'Order', 'type': 'str'},
-        'media_types': {'tag': 'xml', 'rename': 'MediaTypes', 'type': '[str]'},
+        'media_types': {'tag': 'xml', 'rename': 'MediaTypes', 'type': 'MetaQueryMediaTypes'},
         'simple_query': {'tag': 'xml', 'rename': 'SimpleQuery', 'type': 'str'},
     }
 
@@ -628,7 +653,7 @@ class MetaQuery(serde.Model):
         query: Optional[str] = None,
         sort: Optional[str] = None,
         order: Optional[Union[str, MetaQueryOrderType]] = None,
-        media_types: Optional[List[str]] = None,
+        media_types: Optional[MetaQueryMediaTypes] = None,
         simple_query: Optional[str] = None,
         **kwargs: Any
     ) -> None:
@@ -640,7 +665,7 @@ class MetaQuery(serde.Model):
             query (str, optional): The query conditions. A query condition includes the following elements:*   Operation: the operator. Valid values: eq (equal to), gt (greater than), gte (greater than or equal to), lt (less than), lte (less than or equal to), match (fuzzy query), prefix (prefix query), and (AND), or (OR), and not (NOT).*   Field: the field name.*   Value: the field value.*   SubQueries: the subquery conditions. Options that are included in this element are the same as those of simple query. You need to set subquery conditions only when Operation is set to and, or, or not.
             sort (str, optional): The field based on which the results are sorted.
             order (str | MetaQueryOrderType, optional): The sort order.
-            media_types (List[str], optional): The type of multimedia that you want to query. Valid values: image, video, audio, document
+            media_types (MetaQueryMediaTypes, optional): Container for multimedia metadata retrieval conditions
             simple_query (str, optional): The query conditions
         """
         super().__init__(**kwargs)
