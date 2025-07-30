@@ -1,5 +1,9 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.1.3 日期：2025-07-30
+### 变更内容
+- Break Change: change MetaQuery.media_types type to MetaQueryMediaTypes
+
 ## 版本号：1.1.2 日期：2025-06-26
 ### 变更内容
 - Update：proxy_host supports both dictionary and string types
