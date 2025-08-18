@@ -9,6 +9,9 @@ import xml.etree.ElementTree as ET
 from . import exceptions
 from .types import OperationInput, OperationOutput, CaseInsensitiveDict
 
+from dataclasses import dataclass, asdict
+import json
+
 _model_allow_attribute_map = ["headers", "parameters", "payload"]
 
 ISO8601 = '%Y-%m-%dT%H:%M:%SZ'
@@ -661,3 +664,90 @@ def deserialize_output_callbackbody(result: Model, op_output: OperationOutput):
     if callback_body is not None:
         callback_result = callback_body.decode()
         setattr(result, 'callback_result', callback_result)
+
+def model_to_dict(obj):
+    result = {}
+    for attr_name, attr_info in getattr(obj, '_attribute_map', {}).items():
+        value = getattr(obj, attr_name, None)
+        rename = attr_info.get('rename', attr_name)
+        if hasattr(value, 'serialize'):
+            result[rename] = value.serialize()
+        elif isinstance(value, list):
+            result[rename] = [item.serialize() if hasattr(item, 'serialize') else item for item in value]
+        else:
+            result[rename] = value
+    return result
+
+def serialize_inputs_json(request: Model, op_input: OperationInput,
+                    custom_serializer: Optional[List[Any]] = None) -> OperationInput:
+    """Serialize the model request to input parameter
+    """
+
+    if not isinstance(request, RequestModel):
+        raise exceptions.SerializationError(
+            error=f'request<{request.__class__}> is not subclass of serde.RequestModel')
+
+    if op_input.headers is None:
+        op_input.headers = CaseInsensitiveDict()
+
+    if op_input.parameters is None:
+        op_input.parameters = {}
+
+    if hasattr(request, 'headers'):
+        headers = cast(MutableMapping[str, str], request.headers)
+        if len(headers) > 0:
+            for k, v in headers.items():
+                op_input.headers[k] = v
+
+    if hasattr(request, 'parameters'):
+        parameters = cast(Mapping[str, str], request.parameters)
+        if len(parameters) > 0:
+            for k, v in parameters.items():
+                op_input.parameters[k] = v
+
+    if hasattr(request, 'payload'):
+        op_input.body = request.payload
+
+
+    attributes = getattr(request, '_attribute_map')
+    for attr, attr_desc in attributes.items():
+        attr_value = getattr(request, attr)
+
+        if attr_value is None:
+            if attr_desc.get('required', False) is True:
+                raise exceptions.ParamRequiredError(field=attr)
+            continue
+
+        attr_pos = cast(str, attr_desc.get('position', ''))
+        attr_type = cast(str, attr_desc.get('type', ''))
+        attr_name = cast(str, attr_desc.get('rename', attr))
+        if attr_pos == 'query':
+            op_input.parameters.update(
+                {attr_name: _serialize_to_str(attr_value, attr_type)})
+        elif attr_pos == 'header':
+            if 'dict' in attr_type and isinstance(attr_value, dict):
+                op_input.headers.update(
+                    {f'{attr_name}{k}': v for k,v in attr_value.items()})
+            else:
+                op_input.headers.update(
+                    {attr_name: _serialize_to_str(attr_value, attr_type)})
+        elif attr_pos == 'body':
+            if 'xml' in attr_type:
+                # input_json = json.dumps(asdict(attr_value))
+                data = model_to_dict(attr_value)
+                op_input.body = json.dumps(data, indent=2, default=str)
+
+                # op_input.body = serialize_xml(
+                #     attr_value, attr_name if len(attr_name) > 0 else None)
+            else:
+                op_input.body = attr_value
+        else:
+            # ignore
+            pass
+
+    # custom serializer
+    custom_serializer = custom_serializer or []
+    for serializer in custom_serializer:
+        serializer(request, op_input)
+
+    return op_input

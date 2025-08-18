@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any, MutableMapping, List
 from .. import serde
 from ..types import BodyType, StreamBody
 from .bucket_basic import Owner
-
+from dataclasses import dataclass
 
 class PutObjectRequest(serde.RequestModel):
     """The request for the PutObject operation."""
@@ -2460,6 +2460,7 @@ class GetSymlinkResult(serde.ResultModel):
         self.etag = etag
         self.metadata = metadata
 
+@dataclass
 class Tag(serde.Model):
     """The inforamtion about the tag."""
 
@@ -2486,6 +2487,7 @@ class Tag(serde.Model):
         "name": "Tag"
     }
 
+@dataclass
 class TagSet(serde.Model):
     """The collection of tags."""
 
