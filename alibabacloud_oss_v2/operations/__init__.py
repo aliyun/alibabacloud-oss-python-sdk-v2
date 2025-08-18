@@ -30,3 +30,4 @@ from .bucket_tags import *
 from .bucket_meta_query import *
 from .bucket_https_config import *
 from .cloud_box import *
+from .vector_bucket import *

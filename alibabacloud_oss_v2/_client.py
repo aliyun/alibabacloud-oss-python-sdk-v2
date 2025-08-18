@@ -137,6 +137,354 @@ class _InnerOptions:
         self.user_agent = user_agent
 
 
+class _VectorClientImplMixIn:
+    """Vector Client implement"""
+
+    def resolve_config(self, config: Config) ->Tuple[_Options, _InnerOptions]:
+        """convert config into client's options"""
+
+        options = _default_options(config)
+
+        _resolve_vectors_endpoint(config, options)
+        _resolve_retryer(config, options)
+        _resolve_signer(config, options)
+        _resolve_address_style(config, options)
+        _resolve_feature_flags(config, options)
+        _resolve_cloud_box(config, options)
+        self._resolve_httpclient(config, options) # pylint: disable=no-member
+
+        inner = _InnerOptions()
+        #UserAgent
+        inner.user_agent = _build_vector_user_agent(config)
+
+        return options, inner
+
+    def resolve_kwargs(self, options: _Options, **kwargs):
+        """client's configuration from user by key/value args"""
+
+        if len(kwargs) == 0:
+            return
+
+        options.product = kwargs.get("product", options.product)
+        options.region = kwargs.get("region", options.region)
+        options.endpoint = kwargs.get("endpoint", options.endpoint)
+        options.retry_max_attempts = kwargs.get("retry_max_attempts", options.retry_max_attempts)
+        options.retryer = kwargs.get("retryer", options.retryer)
+        options.signer = kwargs.get("signer", options.signer)
+        options.credentials_provider = kwargs.get("credentials_provider", options.credentials_provider)
+        options.http_client = kwargs.get("http_client", options.http_client)
+        options.address_style = kwargs.get("address_style", options.address_style)
+        options.readwrite_timeout = kwargs.get("readwrite_timeout", options.readwrite_timeout)
+        options.auth_method = kwargs.get("auth_method", None)
+        options.additional_headers = kwargs.get("additional_headers", options.additional_headers)
+
+
+    def resolve_operation_kwargs(self, options: _Options, **kwargs):
+        """operation's configuration from user by key/value args"""
+
+        if len(kwargs) == 0:
+            return
+
+        options.retry_max_attempts = kwargs.get("retry_max_attempts", options.retry_max_attempts)
+        options.retryer = kwargs.get("retryer", options.retryer)
+        options.http_client = kwargs.get("http_client", options.http_client)
+        options.readwrite_timeout = kwargs.get("readwrite_timeout", options.readwrite_timeout)
+        options.auth_method = kwargs.get("auth_method", options.auth_method)
+        options.operation_timeout = kwargs.get("operation_timeout", None)
+
+    def verify_operation(self, op_input: OperationInput, options: _Options) -> None:
+        """verify input and options"""
+
+        if not options.endpoint:
+            raise exceptions.ParamInvalidError(field="endpoint")
+
+        if (op_input.bucket is not None and
+                not validation.is_valid_bucket_name(op_input.bucket)):
+            raise exceptions.BucketNameInvalidError(
+                name=utils.safety_str(op_input.bucket))
+
+        if (op_input.key is not None and
+                not validation.is_valid_object_name(op_input.key)):
+            raise exceptions.ObjectNameInvalidError()
+
+    def apply_operation(self, options: _Options, op_input: OperationInput) -> None:
+        """apply operation"""
+        self._apply_operation_options(options) # pylint: disable=no-member
+        _apply_operation_metadata(op_input, options)
+
+
+    def build_request_context(self, op_input: OperationInput, options: _Options, inner: _InnerOptions
+                              ) -> SigningContext:
+        """build request context
+        """
+        # host & path
+        url = _build_url(op_input, options)
+
+        # queries
+        if op_input.parameters is not None:
+            query = urlencode(op_input.parameters, quote_via=quote)
+            if len(query) > 0:
+                url = url + "?" + query
+
+        # build http request
+        request = HttpRequest(method=op_input.method, url=url)
+
+        # headers
+        request.headers.update(op_input.headers or {})
+
+        request.headers.update({'User-Agent': inner.user_agent})
+
+        # body
+        body = op_input.body or b''
+
+        # body tracker
+        if op_input.op_metadata is not None:
+            tracker = op_input.op_metadata.get("opm-request-body-tracker", None)
+            if tracker is not None:
+                writers = []
+                for t in tracker:
+                    if hasattr(t, 'write'):
+                        writers.append(t)
+                if len(writers) > 0:
+                    body = io_utils.TeeIterator.from_source(body, writers)
+
+        request.body = body
+
+        # signing context
+        context = SigningContext(
+            product=options.product,
+            region=options.region,
+            bucket=op_input.bucket,
+            key=op_input.key,
+            request=request,
+        )
+
+        if utils.safety_str(options.auth_method) == 'query':
+            context.auth_method_query = True
+
+        oss_date = request.headers.get('x-oss-date', None)
+        if oss_date is not None:
+            context.signing_time = serde.deserialize_httptime(oss_date)
+        if (expiration_time := op_input.op_metadata.get('expiration_time', None)) is not None:
+            context.expiration_time = expiration_time
+
+        context.sub_resource = op_input.op_metadata.get("sub-resource", [])
+
+        return context
+
+    def retry_max_attempts(self, options: _Options) -> int:
+        """retry max attempts"""
+        if options.retry_max_attempts is not None:
+            attempts = int(options.retry_max_attempts)
+        elif options.retryer is not None:
+            attempts = options.retryer.max_attempts()
+        else:
+            attempts = defaults.DEFAULT_MAX_ATTEMPTS
+
+        return max(1, attempts)
+
+    def has_feature(self, flag: int) -> bool:
+        """has feature"""
+        return (self._options.feature_flags & flag) > 0 # pylint: disable=no-member
+
+    def get_retry_attempts(self) -> bool:
+        """get retry attempts"""
+        return self.retry_max_attempts(self._options) # pylint: disable=no-member
+
+
+class _SyncVectorClientImpl(_VectorClientImplMixIn):
+    """Sync API Vector Client for common API."""
+
+    def __init__(self, config: Config, **kwargs) -> None:
+        options, inner = self.resolve_config(config)
+        self.resolve_kwargs(options, **kwargs)
+
+        self._config = config
+        self._options = options
+        self._inner = inner
+
+    def invoke_operation(self, op_input: OperationInput, **kwargs) -> OperationOutput:
+        """Common class interface invoice operation
+
+        Args:
+            op_input (OperationInput): _description_
+
+        Raises:
+            exceptions.OperationError: _description_
+
+        Returns:
+            OperationOutput: _description_
+        """
+
+        options = copy.copy(self._options)
+        self.resolve_operation_kwargs(options, **kwargs)
+        self.apply_operation(options, op_input)
+
+        try:
+            self.verify_operation(op_input, options)
+            output = self._sent_request(op_input, options)
+        except Exception as err:
+            raise exceptions.OperationError(
+                name=op_input.op_name,
+                error=err,
+            )
+
+        return output
+
+    def _resolve_httpclient(self, config: Config, options: _Options) -> None:
+        """httpclient"""
+        if options.http_client:
+            return
+
+        kwargs: Dict[str, Any] = {}
+
+        if bool(config.insecure_skip_verify):
+            kwargs["insecure_skip_verify"] = True
+
+        if bool(config.enabled_redirect):
+            kwargs["enabled_redirect"] = True
+
+        if config.connect_timeout:
+            kwargs["connect_timeout"] = config.connect_timeout
+
+        if config.readwrite_timeout:
+            kwargs["readwrite_timeout"] = config.readwrite_timeout
+
+        if config.proxy_host:
+            kwargs["proxy_host"] = config.proxy_host
+
+        options.http_client = transport.RequestsHttpClient(**kwargs)
+
+
+    def _apply_operation_options(self, options: _Options) -> None:
+        # response handler
+        handlers = []
+
+        def service_error_response_handler(response: HttpResponse) -> None:
+            """ check service error """
+            if response.status_code // 100 == 2:
+                return
+
+            if not response.is_stream_consumed:
+                _ = response.read()
+
+            raise _to_service_error(response)
+
+        # insert service error responsed handler first
+        handlers.append(service_error_response_handler)
+
+        handlers.extend(options.response_handlers)
+
+        options.response_handlers = handlers
+
+    def _sent_request(self, op_input: OperationInput, options: _Options) -> OperationOutput:
+        context = self.build_request_context(op_input, options, self._inner)
+        response = self._sent_http_request(context, options)
+        output = OperationOutput(
+            status=response.reason,
+            status_code=response.status_code,
+            headers=response.headers,
+            op_input=op_input,
+            http_response=response
+        )
+
+        # save other info by Metadata filed
+        # output.op_metadata
+        if context.auth_method_query:
+            output.op_metadata['expiration_time'] = context.expiration_time
+
+        # update clock offset
+
+        return output
+
+    def _sent_http_request(self, context: SigningContext, options: _Options) -> HttpResponse:
+        request = context.request
+        retryer = options.retryer
+        max_attempts = self.retry_max_attempts(options)
+
+        # operation timeout
+        dealline = None
+        if isinstance(options.operation_timeout, (int, float)):
+            dealline = time.time() +  options.operation_timeout
+
+        # Mark body
+        marked_body = _MarkedBody(request.body)
+        marked_body.mark()
+
+        reset_time = context.signing_time is None
+        error: Optional[Exception] = None
+        response: HttpResponse = None
+        for tries in range(max_attempts):
+            if tries > 0:
+                try:
+                    marked_body.reset()
+                except:  # pylint: disable=bare-except
+                    # if meets reset error, just ignores, and retures last error
+                    break
+
+                if reset_time:
+                    context.signing_time = None
+
+                dealy = retryer.retry_delay(tries, error)
+                time.sleep(dealy)
+
+                # operation timeout
+                if dealline is not None and (time.time() > dealline):
+                    break
+
+            try:
+                error = None
+                response = self._sent_http_request_once(context, options)
+                break
+            except Exception as e:
+                error = e
+
+            # operation timeout
+            if dealline is not None and (time.time() > dealline):
+                break
+
+            if marked_body.is_seekable() is False:
+                break
+
+            if not retryer.is_error_retryable(error):
+                break
+
+        if error is not None:
+            raise error
+
+        return response
+
+    def _sent_http_request_once(self, context: SigningContext, options: _Options) -> HttpResponse:
+        # sign request
+        if not isinstance(options.credentials_provider, AnonymousCredentialsProvider):
+            try:
+                cred = options.credentials_provider.get_credentials()
+            except Exception as e:
+                raise exceptions.CredentialsFetchError(error=e)
+
+            if cred is None or not cred.has_keys():
+                raise exceptions.CredentialsEmptyError()
+
+            # update credentials
+            context.credentials = cred
+
+            options.signer.sign(context)
+
+        # send
+        send_kwargs = {}
+        if options.response_stream is not None:
+            send_kwargs['stream'] = options.response_stream
+        if options.readwrite_timeout is not None:
+            send_kwargs['readwrite_timeout'] = options.readwrite_timeout
+
+        response = options.http_client.send(context.request, **send_kwargs)
+
+        # response handler
+        for h in options.response_handlers:
+            h(response)
+
+        return response
+
 
 class _ClientImplMixIn:
     """Client implement"""
@@ -524,6 +872,23 @@ def _resolve_endpoint(config: Config, options: _Options) -> None:
     options.endpoint = urlparse(endpoint)
 
 
+def _resolve_vectors_endpoint(config: Config, options: _Options) -> None:
+    """vectors endpoint"""
+    disable_ssl = utils.safety_bool(config.disable_ssl)
+    region = utils.safety_str(config.region)
+
+    if validation.is_valid_region(region):
+        if bool(config.use_internal_endpoint):
+            etype = "internal"
+        else:
+            etype = "default"
+
+        endpoint = endpoints.vectors_from_region(region, disable_ssl, etype)
+
+        if endpoint != "":
+            options.endpoint = urlparse(endpoint)
+
+
 def _resolve_retryer(_: Config, options: _Options) -> None:
     """retryer"""
     if options.retryer:
@@ -682,3 +1047,9 @@ def _build_user_agent(config: Config) -> str:
         return f'{utils.get_default_user_agent()}/{config.user_agent}'
 
     return utils.get_default_user_agent()
+
+def _build_vector_user_agent(config: Config) -> str:
+    if config.user_agent:
+        return f'{utils.get_vector_user_agent()}/{config.user_agent}'
+
+    return utils.get_vector_user_agent()

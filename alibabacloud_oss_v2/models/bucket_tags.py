@@ -2,8 +2,9 @@ import datetime
 from typing import Optional, List, Any, Union
 from .. import serde
 from .object_basic import TagSet, Tag
+from dataclasses import dataclass
 
-
+@dataclass
 class Tagging(serde.Model):
     """
     The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
@@ -34,6 +35,7 @@ class Tagging(serde.Model):
         self.tag_set = tag_set
 
 
+@dataclass
 class PutBucketTagsRequest(serde.RequestModel):
     """
     The request for the PutBucketTags operation.
