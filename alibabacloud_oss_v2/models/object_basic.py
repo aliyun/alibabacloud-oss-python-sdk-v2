@@ -1224,33 +1224,62 @@ class GetObjectMetaResult(serde.ResultModel):
         self.hash_crc64 = hash_crc64
         self.transition_time = transition_time
 
+class JobParameters(serde.Model):
+    """
+    The container that stores the restoration priority configuration. This configuration takes effect only when the request is sent to restore Cold Archive objects. If you do not specify the JobParameters parameter, the default restoration priority Standard is used.
+    """
 
-class RestoreRequest(serde.Model):
-    """The configuration information about the RestoreObject request."""
+    _attribute_map = {
+        'tier': {'tag': 'xml', 'rename': 'Tier', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'JobParameters'
+    }
 
     def __init__(
         self,
-        days: Optional[int] = None,
         tier: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
-        Args:
-            days (int, optional): The duration within which the restored object remains in the restored state.
-            tier (str, optional): The restoration priority of Cold Archive or Deep Cold Archive objects.
-                Valid values:Expedited,Standard,Bulk
+        tier (str, optional): The restoration priority. Valid values:*   Expedited: The object is restored within 1 hour.*   Standard: The object is restored within 2 to 5 hours.*   Bulk: The object is restored within 5 to 12 hours.
+        """
+        super().__init__(**kwargs)
+        self.tier = tier
+
+
+class RestoreRequest(serde.Model):
+    """The configuration information about the RestoreObject request."""
+
+
+    _attribute_map = {
+        'days': {'tag': 'xml', 'rename': 'Days', 'type': 'int'},
+        'job_parameters': {'tag': 'xml', 'rename': 'JobParameters', 'type': 'JobParameters'},
+    }
+
+    _xml_map = {
+        'name': 'RestoreRequest'
+    }
+
+    _dependency_map = {
+        'JobParameters': {'new': lambda: JobParameters()},
+    }
+
+    def __init__(
+        self,
+        days: Optional[int] = None,
+        job_parameters: Optional[JobParameters] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        days (int, optional): The duration in which the object can remain in the restored state. Unit: days. Valid values: 1 to 7.
+        job_parameters (JobParameters, optional): The container that stores the restoration priority coniguration. This configuration takes effect only when the request is sent to restore Cold Archive objects. If you do not specify the JobParameters parameter, the default restoration priority Standard is used.
         """
         super().__init__(**kwargs)
         self.days = days
-        self.tier = tier
+        self.job_parameters = job_parameters
 
-    _attribute_map = {
-        "days": {"tag": "xml", "rename": "Days"},
-        "tier": {"tag": "xml", "rename": "JobParameters.Tier"},
-    }
-    _xml_map = {
-        "name": "RestoreRequest"
-    }
 
 
 class RestoreObjectRequest(serde.RequestModel):
