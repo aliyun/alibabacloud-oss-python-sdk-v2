@@ -1,14 +1,15 @@
 # pylint: disable=line-too-long
 """Client used to interact with **Alibaba Cloud Object Storage Service (OSS)**."""
 import copy
-from typing import Optional
+from ._client import _SyncClientImpl
 from .config import Config
 from .types import OperationInput, OperationOutput
-from ._client import _SyncClientImpl, _SyncVectorClientImpl
-from .defaults import FF_ENABLE_CRC64_CHECK_DOWNLOAD
 from . import models
 from . import operations
-
+from . import utils
+from . import validation
+from . import endpoints
+from urllib.parse import urlparse
 
 class VectorClient:
     """Client
@@ -20,10 +21,43 @@ class VectorClient:
         Args:
             config (Config): _description_
         """
-        self._client = _SyncVectorClientImpl(config, **kwargs)
+
+        _config = copy.copy(config)
+        self._resolve_vectors_endpoint(_config)
+        self._build_vector_user_agent(_config)
+        self._client = _SyncClientImpl(_config, **kwargs)
+        # TODO
+        # self._client._options.signer = SignerVectorsV4()
+
 
     def __repr__(self) -> str:
         return "<OssVectorClient>"
+
+    def _resolve_vectors_endpoint(config: Config) -> None:
+        """vectors endpoint"""
+        disable_ssl = utils.safety_bool(config.disable_ssl)
+        endpoint = utils.safety_str(config.endpoint)
+        region = utils.safety_str(config.region)
+        if len(endpoint) > 0:
+            endpoint = endpoints.add_scheme(endpoint, disable_ssl)
+        elif validation.is_valid_region(region):
+            if bool(config.use_internal_endpoint):
+                etype = "internal"
+            else:
+                etype = "default"
+
+            endpoint = endpoints.from_region(region, disable_ssl, etype)
+
+        if endpoint == "":
+            return
+
+        config.endpoint = urlparse(endpoint)
+
+    def _build_vector_user_agent(config: Config) -> str:
+        if config.user_agent:
+            return f'{utils.get_vector_user_agent()}/{config.user_agent}'
+
+        return utils.get_vector_user_agent()
 
     def invoke_operation(self, op_input: OperationInput, **kwargs
                          ) -> OperationOutput:
