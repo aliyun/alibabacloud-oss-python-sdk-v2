@@ -1,18 +1,18 @@
 # pylint: disable=line-too-long
-
+from .._client import _SyncClientImpl
 from ..types import OperationInput, CaseInsensitiveDict
 from .. import serde
 from .. import serde_utils
 from .. import models
-from .._client import _SyncVectorClientImpl
 
 
-def put_vector_bucket(client: _SyncVectorClientImpl, request: models.PutBucketRequest, **kwargs) -> models.PutBucketResult:
+
+def put_vector_bucket(client: _SyncClientImpl, request: models.PutBucketRequest, **kwargs) -> models.PutBucketResult:
     """
     put bucket synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutBucketRequest): The request for the PutBucket operation.
 
     Returns:
@@ -44,12 +44,12 @@ def put_vector_bucket(client: _SyncVectorClientImpl, request: models.PutBucketRe
         ],
     )
 
-def get_vector_bucket(client: _SyncVectorClientImpl, request: models.GetBucketInfoRequest, **kwargs) -> models.GetBucketInfoResult:
+def get_vector_bucket(client: _SyncClientImpl, request: models.GetBucketInfoRequest, **kwargs) -> models.GetBucketInfoResult:
     """
     GetBucketInfo Queries information about a bucket.
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetBucketInfoRequest): The request for the GetBucketInfo operation.
 
     Returns:
@@ -82,12 +82,12 @@ def get_vector_bucket(client: _SyncVectorClientImpl, request: models.GetBucketIn
     )
 
 
-def delete_vector_bucket(client: _SyncVectorClientImpl, request: models.DeleteBucketRequest, **kwargs) -> models.DeleteBucketResult:
+def delete_vector_bucket(client: _SyncClientImpl, request: models.DeleteBucketRequest, **kwargs) -> models.DeleteBucketResult:
     """
     delete bucket synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (DeleteBucketRequest): The request for the DeleteBucket operation.
 
     Returns:
@@ -120,12 +120,12 @@ def delete_vector_bucket(client: _SyncVectorClientImpl, request: models.DeleteBu
     )
 
 
-def list_vector_buckets(client: _SyncVectorClientImpl, request: models.ListBucketsRequest, **kwargs) -> models.ListBucketsResult:
+def list_vector_buckets(client: _SyncClientImpl, request: models.ListBucketsRequest, **kwargs) -> models.ListBucketsResult:
     """
     list buckets synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (ListBucketsRequest): The request for the ListBuckets operation.
 
     Returns:
@@ -158,12 +158,12 @@ def list_vector_buckets(client: _SyncVectorClientImpl, request: models.ListBucke
 
 
 
-def put_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.PutBucketPolicyRequest, **kwargs) -> models.PutBucketPolicyResult:
+def put_bucket_policy_vector(client: _SyncClientImpl, request: models.PutBucketPolicyRequest, **kwargs) -> models.PutBucketPolicyResult:
     """
     put_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutBucketPolicyRequest): The request for the PutBucketPolicy operation.
 
     Returns:
@@ -196,12 +196,12 @@ def put_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.PutB
         ],
     )
 
-def get_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.GetBucketPolicyRequest, **kwargs) -> models.GetBucketPolicyResult:
+def get_bucket_policy_vector(client: _SyncClientImpl, request: models.GetBucketPolicyRequest, **kwargs) -> models.GetBucketPolicyResult:
     """
     get_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetBucketPolicyRequest): The request for the GetBucketPolicy operation.
 
     Returns:
@@ -239,12 +239,12 @@ def get_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.GetB
         ],
     )
 
-def delete_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.DeleteBucketPolicyRequest, **kwargs) -> models.DeleteBucketPolicyResult:
+def delete_bucket_policy_vector(client: _SyncClientImpl, request: models.DeleteBucketPolicyRequest, **kwargs) -> models.DeleteBucketPolicyResult:
     """
     delete_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (DeleteBucketPolicyRequest): The request for the DeleteBucketPolicy operation.
 
     Returns:
@@ -284,12 +284,12 @@ def delete_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.D
 
 
 
-def put_public_access_block_vector(client: _SyncVectorClientImpl, request: models.PutPublicAccessBlockRequest, **kwargs) -> models.PutPublicAccessBlockResult:
+def put_public_access_block_vector(client: _SyncClientImpl, request: models.PutPublicAccessBlockRequest, **kwargs) -> models.PutPublicAccessBlockResult:
     """
     put_public_access_block synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutPublicAccessBlockRequest): The request for the PutPublicAccessBlock operation.
 
     Returns:
@@ -324,12 +324,12 @@ def put_public_access_block_vector(client: _SyncVectorClientImpl, request: model
         ],
     )
 
-def get_public_access_block_vector(client: _SyncVectorClientImpl, request: models.GetPublicAccessBlockRequest, **kwargs) -> models.GetPublicAccessBlockResult:
+def get_public_access_block_vector(client: _SyncClientImpl, request: models.GetPublicAccessBlockRequest, **kwargs) -> models.GetPublicAccessBlockResult:
     """
     get_public_access_block synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetPublicAccessBlockRequest): The request for the GetPublicAccessBlock operation.
 
     Returns:
@@ -365,12 +365,12 @@ def get_public_access_block_vector(client: _SyncVectorClientImpl, request: model
     )
 
 
-def delete_public_access_block_vector(client: _SyncVectorClientImpl, request: models.DeletePublicAccessBlockRequest, **kwargs) -> models.DeletePublicAccessBlockResult:
+def delete_public_access_block_vector(client: _SyncClientImpl, request: models.DeletePublicAccessBlockRequest, **kwargs) -> models.DeletePublicAccessBlockResult:
     """
     delete_public_access_block synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (DeletePublicAccessBlockRequest): The request for the DeletePublicAccessBlock operation.
 
     Returns:
@@ -406,12 +406,12 @@ def delete_public_access_block_vector(client: _SyncVectorClientImpl, request: mo
     )
 
 
-def put_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.PutBucketTagsRequest, **kwargs) -> models.PutBucketTagsResult:
+def put_bucket_tags_vector(client: _SyncClientImpl, request: models.PutBucketTagsRequest, **kwargs) -> models.PutBucketTagsResult:
     """
     put_bucket_tags synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutBucketTagsRequest): The request for the PutBucketTags operation.
 
     Returns:
@@ -447,12 +447,12 @@ def put_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.PutBuc
         ],
     )
 
-def get_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.GetBucketTagsRequest, **kwargs) -> models.GetBucketTagsResult:
+def get_bucket_tags_vector(client: _SyncClientImpl, request: models.GetBucketTagsRequest, **kwargs) -> models.GetBucketTagsResult:
     """
     get_bucket_tags synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetBucketTagsRequest): The request for the GetBucketTags operation.
 
     Returns:
@@ -488,12 +488,12 @@ def get_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.GetBuc
         ],
     )
 
-def delete_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.DeleteBucketTagsRequest, **kwargs) -> models.DeleteBucketTagsResult:
+def delete_bucket_tags_vector(client: _SyncClientImpl, request: models.DeleteBucketTagsRequest, **kwargs) -> models.DeleteBucketTagsResult:
     """
     delete_bucket_tags synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (DeleteBucketTagsRequest): The request for the DeleteBucketTags operation.
 
     Returns:
@@ -530,12 +530,12 @@ def delete_bucket_tags_vector(client: _SyncVectorClientImpl, request: models.Del
     )
 
 
-def get_bucket_resource_group_vector(client: _SyncVectorClientImpl, request: models.GetBucketResourceGroupRequest, **kwargs) -> models.GetBucketResourceGroupResult:
+def get_bucket_resource_group_vector(client: _SyncClientImpl, request: models.GetBucketResourceGroupRequest, **kwargs) -> models.GetBucketResourceGroupResult:
     """
     get_bucket_resource_group synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetBucketResourceGroupRequest): The request for the GetBucketResourceGroup operation.
 
     Returns:
@@ -571,12 +571,12 @@ def get_bucket_resource_group_vector(client: _SyncVectorClientImpl, request: mod
         ],
     )
 
-def put_bucket_resource_group_vector(client: _SyncVectorClientImpl, request: models.PutBucketResourceGroupRequest, **kwargs) -> models.PutBucketResourceGroupResult:
+def put_bucket_resource_group_vector(client: _SyncClientImpl, request: models.PutBucketResourceGroupRequest, **kwargs) -> models.PutBucketResourceGroupResult:
     """
     put_bucket_resource_group synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutBucketResourceGroupRequest): The request for the PutBucketResourceGroup operation.
 
     Returns:
@@ -613,12 +613,12 @@ def put_bucket_resource_group_vector(client: _SyncVectorClientImpl, request: mod
     )
 
 
-def put_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.PutBucketPolicyRequest, **kwargs) -> models.PutBucketPolicyResult:
+def put_bucket_policy_vector(client: _SyncClientImpl, request: models.PutBucketPolicyRequest, **kwargs) -> models.PutBucketPolicyResult:
     """
     put_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (PutBucketPolicyRequest): The request for the PutBucketPolicy operation.
 
     Returns:
@@ -651,12 +651,12 @@ def put_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.PutB
         ],
     )
 
-def get_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.GetBucketPolicyRequest, **kwargs) -> models.GetBucketPolicyResult:
+def get_bucket_policy_vector(client: _SyncClientImpl, request: models.GetBucketPolicyRequest, **kwargs) -> models.GetBucketPolicyResult:
     """
     get_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (GetBucketPolicyRequest): The request for the GetBucketPolicy operation.
 
     Returns:
@@ -694,12 +694,12 @@ def get_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.GetB
         ],
     )
 
-def delete_bucket_policy_vector(client: _SyncVectorClientImpl, request: models.DeleteBucketPolicyRequest, **kwargs) -> models.DeleteBucketPolicyResult:
+def delete_bucket_policy_vector(client: _SyncClientImpl, request: models.DeleteBucketPolicyRequest, **kwargs) -> models.DeleteBucketPolicyResult:
     """
     delete_bucket_policy synchronously
 
     Args:
-        client (_SyncVectorClientImpl): A agent that sends the request.
+        client (_SyncClientImpl): A agent that sends the request.
         request (DeleteBucketPolicyRequest): The request for the DeleteBucketPolicy operation.
 
     Returns:
