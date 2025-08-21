@@ -9,7 +9,6 @@ import xml.etree.ElementTree as ET
 from . import exceptions
 from .types import OperationInput, OperationOutput, CaseInsensitiveDict
 
-from dataclasses import dataclass, asdict
 import json
 
 _model_allow_attribute_map = ["headers", "parameters", "payload"]
@@ -678,8 +677,8 @@ def model_to_dict(obj):
             result[rename] = value
     return result
 
-def serialize_inputs_json(request: Model, op_input: OperationInput,
-                    custom_serializer: Optional[List[Any]] = None) -> OperationInput:
+def serialize_input_json(request: Model, op_input: OperationInput,
+                         custom_serializer: Optional[List[Any]] = None) -> OperationInput:
     """Serialize the model request to input parameter
     """
 
@@ -733,12 +732,8 @@ def serialize_inputs_json(request: Model, op_input: OperationInput,
                     {attr_name: _serialize_to_str(attr_value, attr_type)})
         elif attr_pos == 'body':
             if 'xml' in attr_type:
-                # input_json = json.dumps(asdict(attr_value))
-                data = model_to_dict(attr_value)
-                op_input.body = json.dumps(data, indent=2, default=str)
-
-                # op_input.body = serialize_xml(
-                #     attr_value, attr_name if len(attr_name) > 0 else None)
+                op_input.body = serialize_json(
+                    attr_value, attr_name if len(attr_name) > 0 else None)
             else:
                 op_input.body = attr_value
         else:
@@ -751,3 +746,247 @@ def serialize_inputs_json(request: Model, op_input: OperationInput,
         serializer(request, op_input)
 
     return op_input
+
+
+def _serialize_json_any(tag: str, value: Any, atype: str) -> Any:
+    if isinstance(value, Model):
+        model_result = _serialize_json_model(value)
+        model_name = list(model_result.keys())[0]
+        return model_result[model_name]
+
+    if isinstance(value, datetime.datetime):
+        atypes = atype.split(',')
+        if 'httptime' in atypes:
+            text_value = serialize_httptime(value)
+        elif 'unixtime' in atypes:
+            text_value = serialize_unixtime(value)
+        elif 'ios8601date' in atypes:
+            text_value = serialize_iso_date(value)
+        else:
+            text_value = serialize_isotime(value)
+        return {tag: text_value}
+
+    if isinstance(value, Enum):
+        return {tag: str(value.value)}
+
+    if isinstance(value, bool):
+        return {tag: str(value).lower()}
+
+    # default is basic type
+    if isinstance(value, (str, int, float)):
+        return {tag: str(value)}
+
+    raise exceptions.SerializationError(
+        error=f'Unsupport type {type(value)}')
+
+
+def _serialize_json_model(obj, root: Optional[str] = None) -> dict:
+    """serialize model to json dict
+    """
+    if root is not None and len(root) > 0:
+        name = root
+    else:
+        name = obj.__class__.__name__
+        xml_map = getattr(obj, '_xml_map', None)
+        if xml_map is not None:
+            name = xml_map.get('name', name)
+
+    result = {name: {}}
+
+    attributes = getattr(obj, '_attribute_map')
+    for attr, attr_desc in attributes.items():
+        if attr_desc.get('tag', '') != 'xml':
+            continue
+        attr_value = getattr(obj, attr)
+        attr_key = attr_desc.get('rename', attr)
+        attr_type = attr_desc.get('type', '')
+        if attr_value is not None:
+            if isinstance(attr_value, Model):
+                model = cast(Model, attr_value)
+
+                nested_result = _serialize_json_model(model)
+                result[name].update(nested_result)
+            elif isinstance(attr_value, list):
+                result[name][attr_key] = [
+                    _serialize_json_any(attr_key, a, attr_type)
+                    for a in attr_value
+                ]
+
+                if result[name][attr_key] and isinstance(result[name][attr_key][0], dict):
+                    flattened = {}
+                    for item in result[name][attr_key]:
+                        if isinstance(item, dict):
+                            flattened.update(item)
+                    result[name][attr_key] = flattened
+            else:
+                serialized = _serialize_json_any(attr_key, attr_value, attr_type)
+                if isinstance(serialized, dict):
+                    result[name].update(serialized)
+                else:
+                    result[name][attr_key] = serialized
+    return result
+
+
+def serialize_json(obj, root: Optional[str] = None) -> bytes:
+    """serialize model to json string
+    """
+    result_dict = _serialize_json_model(obj, root)
+    json_str = json.dumps(result_dict, ensure_ascii=False)
+    return json_str.encode('utf-8')
+
+
+
+def deserialize_output_jsonbody(result: Model, op_output: OperationOutput) -> Model:
+    """deserialize output jsonbody
+    """
+    json_data = op_output.http_response.content
+
+    if json_data is None or len(json_data) == 0:
+        return result
+
+    # parser json body
+    attributes = cast(Dict, getattr(result, '_attribute_map'))
+    json_fields = []
+    json_roots = []
+    for attr, attr_desc in attributes.items():
+        if attr_desc.get('tag', '') == 'xml':
+            json_fields.append(attr)
+
+        if (attr_desc.get('tag', '') == 'output' and
+            attr_desc.get('position', '') == 'body' and
+                'xml' in attr_desc.get('type', '')):
+            json_roots.append(attr)
+
+    if len(json_fields) > 0:
+        json_map = cast(Dict, getattr(result, '_xml_map', {}))
+        deserialize_json(json_data, result, expect_key=json_map.get('name', None))
+
+    elif len(json_roots) > 0:
+        attr = json_roots[0]
+        attr_desc = attributes.get(attr)
+        attr_types = cast(str, attr_desc.get('type')).split(',')
+        obj = result._Model__create_depend_object(
+            attr_types[0])
+        if obj is None:
+            raise exceptions.DeserializationError(
+                error=f'Can not create object with {attr_types} type')
+        expect_key = attr_desc.get('rename', None)
+        deserialize_json(json_data, obj, expect_key=expect_key)
+        setattr(result, attr, obj)
+
+    return result
+
+def _deserialize_json_model(data_dict: dict, obj: Any) -> None:
+    """Deserialize json model
+
+    Recursively deserialize JSON data dictionary into model object based on
+    attribute mapping definitions.
+
+    Args:
+        data_dict (dict): The JSON data dictionary to deserialize
+        obj (Any): The target model object to populate
+
+    Raises:
+        exceptions.DeserializationError: If object creation fails
+    """
+    if not isinstance(data_dict, dict):
+        return
+
+    attributes = getattr(obj, '_attribute_map', {})
+
+    for attr, attr_desc in attributes.items():
+        if attr_desc.get('tag', '') != 'xml':
+            continue
+
+        attr_key = attr_desc.get('rename', attr)
+        attr_types = str(attr_desc.get('type', 'str')).split(',')
+
+        if attr_key not in data_dict:
+            continue
+
+        raw_value = data_dict[attr_key]
+
+        # Handle array type
+        if attr_types[0].startswith('[') and attr_types[0].endswith(']'):
+            element_type = attr_types[0][1:-1]
+
+            if not isinstance(raw_value, list):
+                continue
+
+            value_list = []
+            for item_data in raw_value:
+                if element_type.islower():
+                    item_value = _deserialize_to_any(
+                        value=str(item_data) if not isinstance(item_data, (str, type(None))) else item_data,
+                        atype=element_type
+                    )
+                    value_list.append(item_value)
+                else:
+                    item_obj = obj._Model__create_depend_object(element_type)
+                    if item_obj is None:
+                        raise exceptions.DeserializationError(
+                            error=f'Can not create object with {element_type} type'
+                        )
+                    if isinstance(item_data, dict):
+                        _deserialize_json_model(item_data, item_obj)
+                    value_list.append(item_obj)
+
+            setattr(obj, attr, value_list)
+        else:
+            attr_type = attr_types[0]
+
+            if not attr_type.islower():
+                nested_obj = obj._Model__create_depend_object(attr_type)
+                if nested_obj is None:
+                    raise exceptions.DeserializationError(
+                        error=f'Can not create object with {attr_type} type'
+                    )
+                if isinstance(raw_value, dict):
+                    _deserialize_json_model(raw_value, nested_obj)
+                setattr(obj, attr, nested_obj)
+            else:
+                value = _deserialize_to_any(
+                    value=str(raw_value) if not isinstance(raw_value, (str, type(None))) else raw_value,
+                    atype=attr_type
+                )
+                setattr(obj, attr, value)
+
+
+def deserialize_json(json_data: Any, obj: Any, expect_key: Optional[str] = None) -> None:
+    """Deserialize json data to the model request.
+
+    Args:
+        json_data (Any): JSON data to deserialize, can be string or bytes
+        obj (Any): The model object to populate with deserialized data
+        expect_key (Optional[str]): Expected root key name in JSON data
+
+    Raises:
+        exceptions.DeserializationError: If obj is not a Model instance,
+            if JSON parsing fails, or if root key doesn't match expect_key
+    """
+    if not isinstance(obj, Model):
+        return
+
+    # Parse JSON data
+    try:
+        if isinstance(json_data, bytes):
+            data_dict = json.loads(json_data.decode('utf-8'))
+        elif isinstance(json_data, str):
+            data_dict = json.loads(json_data)
+        elif isinstance(json_data, dict):
+            data_dict = json_data
+        else:
+            raise exceptions.DeserializationError(
+                error=f'Unsupported json_data type: {type(json_data)}')
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise exceptions.DeserializationError(
+            error=f'Failed to parse JSON data: {str(e)}') from e
+
+    # Check expected root key if specified
+    if expect_key is not None and len(expect_key) > 0:
+        if expect_key not in data_dict:
+            raise exceptions.DeserializationError(
+                error=f'Expect root key is {expect_key}, but not found in JSON data')
+        data_dict = data_dict[expect_key]
+
+    _deserialize_json_model(data_dict, obj)

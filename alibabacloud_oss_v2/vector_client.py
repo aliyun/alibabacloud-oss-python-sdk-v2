@@ -4,12 +4,11 @@ import copy
 from ._client import _SyncClientImpl
 from .config import Config
 from .types import OperationInput, OperationOutput
-from . import models
-from . import operations
+from . import models, vector_models
+from . import vectors_operation
 from . import utils
 from . import validation
 from . import endpoints
-from urllib.parse import urlparse
 
 class VectorClient:
     """Client
@@ -33,7 +32,7 @@ class VectorClient:
     def __repr__(self) -> str:
         return "<OssVectorClient>"
 
-    def _resolve_vectors_endpoint(config: Config) -> None:
+    def _resolve_vectors_endpoint(self, config: Config) -> None:
         """vectors endpoint"""
         disable_ssl = utils.safety_bool(config.disable_ssl)
         endpoint = utils.safety_str(config.endpoint)
@@ -51,9 +50,9 @@ class VectorClient:
         if endpoint == "":
             return
 
-        config.endpoint = urlparse(endpoint)
+        config.endpoint = endpoint
 
-    def _build_vector_user_agent(config: Config) -> str:
+    def _build_vector_user_agent(self, config: Config) -> str:
         if config.user_agent:
             return f'{utils.get_vector_user_agent()}/{config.user_agent}'
 
@@ -72,61 +71,61 @@ class VectorClient:
         return self._client.invoke_operation(op_input, **kwargs)
 
     # bucket
-    def put_vector_bucket(self, request: models.PutBucketRequest, **kwargs
-                   ) -> models.PutBucketResult:
+    def put_vector_bucket(self, request: vector_models.PutVectorBucketRequest, **kwargs
+                   ) -> vector_models.PutVectorBucketResult:
         """
         Creates a bucket.
 
         Args:
-            request (PutBucketRequest): Request parameters for PutBucket operation.
+            request (PutVectorBucketRequest): Request parameters for PutVectorBucket operation.
 
         Returns:
-            PutBucketResult: Response result for PutBucket operation.
+            PutVectorBucketResult: Response result for PutBucket operation.
         """
 
-        return operations.put_vector_bucket(self._client, request, **kwargs)
+        return vectors_operation.put_vector_bucket(self._client, request, **kwargs)
 
-    def get_vector_bucket(self, request: models.GetBucketInfoRequest, **kwargs
-                        ) -> models.GetBucketInfoResult:
+    def get_vector_bucket(self, request: vector_models.GetVectorBucketRequest, **kwargs
+                        ) -> vector_models.GetVectorBucketResult:
         """
         GetBucketInfo Queries information about a bucket.
 
         Args:
-            request (GetBucketInfoRequest): Request parameters for GetBucketInfo operation.
+            request (GetVectorBucketRequest): Request parameters for GetVectorBucket operation.
 
         Returns:
-            GetBucketInfoResult: Response result for GetBucketInfo operation.
+            GetVectorBucketResult: Response result for GetVectorBucket operation.
         """
 
-        return operations.get_vector_bucket(self._client, request, **kwargs)
+        return vectors_operation.get_vector_bucket(self._client, request, **kwargs)
 
-    def delete_vector_bucket(self, request: models.DeleteBucketRequest, **kwargs
-                      ) -> models.DeleteBucketResult:
+    def delete_vector_bucket(self, request: vector_models.DeleteVectorBucketRequest, **kwargs
+                      ) -> vector_models.DeleteVectorBucketResult:
         """
         Deletes a bucket.
 
         Args:
-            request (DeleteBucketRequest): Request parameters for DeleteBucket operation.
+            request (DeleteVectorBucketRequest): Request parameters for DeleteVectorBucket operation.
 
         Returns:
-            DeleteBucketResult: Response result for DeleteBucket operation.
+            DeleteVectorBucketResult: Response result for DeleteVectorBucket operation.
         """
 
-        return operations.delete_vector_bucket(self._client, request, **kwargs)
+        return vectors_operation.delete_vector_bucket(self._client, request, **kwargs)
 
-    def list_vector_buckets(self, request: models.ListBucketsRequest, **kwargs
-                     ) -> models.ListBucketsResult:
+    def list_vector_buckets(self, request: vector_models.ListVectorBucketsRequest, **kwargs
+                     ) -> vector_models.ListVectorBucketsResult:
         """
         Lists all buckets that belong to your Alibaba Cloud account.
 
         Args:
-            request (ListBucketsRequest): Request parameters for ListBuckets operation.
+            request (ListVectorBucketsRequest): Request parameters for ListBuckets operation.
 
         Returns:
-            ListBucketsResult: Response result for ListBuckets operation.
+            ListVectorBucketsResult: Response result for ListVectorBuckets operation.
         """
 
-        return operations.list_vector_buckets(self._client, request, **kwargs)
+        return vectors_operation.list_vector_buckets(self._client, request, **kwargs)
 
     # bucket policy
     def put_bucket_policy(self, request: models.PutBucketPolicyRequest, **kwargs
@@ -140,7 +139,7 @@ class VectorClient:
         Returns:
             PutBucketPolicyResult: Response result for PutBucketPolicy operation.
         """
-        return operations.put_bucket_policy_vector(self._client, request, **kwargs)
+        return vectors_operation.put_bucket_policy(self._client, request, **kwargs)
 
     def get_bucket_policy(self, request: models.GetBucketPolicyRequest, **kwargs
                           ) -> models.GetBucketPolicyResult:
@@ -153,7 +152,7 @@ class VectorClient:
         Returns:
             GetBucketPolicyResult: Response result for GetBucketPolicy operation.
         """
-        return operations.get_bucket_policy_vector(self._client, request, **kwargs)
+        return vectors_operation.get_bucket_policy(self._client, request, **kwargs)
 
     def delete_bucket_policy(self, request: models.DeleteBucketPolicyRequest, **kwargs
                              ) -> models.DeleteBucketPolicyResult:
@@ -166,7 +165,7 @@ class VectorClient:
         Returns:
             DeleteBucketPolicyResult: Response result for DeleteBucketPolicy operation.
         """
-        return operations.delete_bucket_policy_vector(self._client, request, **kwargs)
+        return vectors_operation.delete_bucket_policy(self._client, request, **kwargs)
 
 
     # public access block
@@ -181,7 +180,7 @@ class VectorClient:
         Returns:
             PutPublicAccessBlockResult: Response result for PutPublicAccessBlock operation.
         """
-        return operations.put_public_access_block_vector(self._client, request, **kwargs)
+        return vectors_operation.put_public_access_block(self._client, request, **kwargs)
 
 
     def get_public_access_block(self, request: models.GetPublicAccessBlockRequest, **kwargs
@@ -195,7 +194,7 @@ class VectorClient:
         Returns:
             GetPublicAccessBlockResult: Response result for GetPublicAccessBlock operation.
         """
-        return operations.get_public_access_block_vector(self._client, request, **kwargs)
+        return vectors_operation.get_public_access_block(self._client, request, **kwargs)
 
     def delete_public_access_block(self, request: models.DeletePublicAccessBlockRequest, **kwargs
                                    ) -> models.DeletePublicAccessBlockResult:
@@ -208,11 +207,11 @@ class VectorClient:
         Returns:
             DeletePublicAccessBlockResult: Response result for DeletePublicAccessBlock operation.
         """
-        return operations.delete_public_access_block_vector(self._client, request, **kwargs)
+        return vectors_operation.delete_public_access_block(self._client, request, **kwargs)
 
     # bucket tags
-    def put_bucket_tags(self, request: models.PutBucketTagsRequest, **kwargs
-                        ) -> models.PutBucketTagsResult:
+    def put_bucket_tags(self, request: vector_models.PutBucketTagsRequest, **kwargs
+                        ) -> vector_models.PutBucketTagsResult:
         """
         Adds tags to or modifies the existing tags of a bucket.
 
@@ -222,11 +221,11 @@ class VectorClient:
         Returns:
             PutBucketTagsResult: Response result for PutBucketTags operation.
         """
-        return operations.put_bucket_tags_vector(self._client, request, **kwargs)
+        return vectors_operation.put_bucket_tags(self._client, request, **kwargs)
 
 
-    def get_bucket_tags(self, request: models.GetBucketTagsRequest, **kwargs
-                        ) -> models.GetBucketTagsResult:
+    def get_bucket_tags(self, request: vector_models.GetBucketTagsRequest, **kwargs
+                        ) -> vector_models.GetBucketTagsResult:
         """
         Queries the tags of a bucket.
 
@@ -236,11 +235,11 @@ class VectorClient:
         Returns:
             GetBucketTagsResult: Response result for GetBucketTags operation.
         """
-        return operations.get_bucket_tags_vector(self._client, request, **kwargs)
+        return vectors_operation.get_bucket_tags(self._client, request, **kwargs)
 
 
-    def delete_bucket_tags(self, request: models.DeleteBucketTagsRequest, **kwargs
-                           ) -> models.DeleteBucketTagsResult:
+    def delete_bucket_tags(self, request: vector_models.DeleteBucketTagsRequest, **kwargs
+                           ) -> vector_models.DeleteBucketTagsResult:
         """
         Deletes tags configured for a bucket.
 
@@ -250,24 +249,10 @@ class VectorClient:
         Returns:
             DeleteBucketTagsResult: Response result for DeleteBucketTags operation.
         """
-        return operations.delete_bucket_tags_vector(self._client, request, **kwargs)
+        return vectors_operation.delete_bucket_tags(self._client, request, **kwargs)
 
 
     # bucket resource group
-    def get_bucket_resource_group(self, request: models.GetBucketResourceGroupRequest, **kwargs
-                                  ) -> models.GetBucketResourceGroupResult:
-        """
-        Queries the ID of the resource group to which a bucket belongs.
-
-        Args:
-            request (GetBucketResourceGroupRequest): Request parameters for GetBucketResourceGroup operation.
-
-        Returns:
-            GetBucketResourceGroupResult: Response result for GetBucketResourceGroup operation.
-        """
-        return operations.get_bucket_resource_group_vector(self._client, request, **kwargs)
-
-
     def put_bucket_resource_group(self, request: models.PutBucketResourceGroupRequest, **kwargs
                                   ) -> models.PutBucketResourceGroupResult:
         """
@@ -279,4 +264,128 @@ class VectorClient:
         Returns:
             PutBucketResourceGroupResult: Response result for PutBucketResourceGroup operation.
         """
-        return operations.put_bucket_resource_group_vector(self._client, request, **kwargs)
+        return vectors_operation.put_bucket_resource_group(self._client, request, **kwargs)
+
+    def get_bucket_resource_group(self, request: models.GetBucketResourceGroupRequest, **kwargs
+                                  ) -> models.GetBucketResourceGroupResult:
+        """
+        Queries the ID of the resource group to which a bucket belongs.
+
+        Args:
+            request (GetBucketResourceGroupRequest): Request parameters for GetBucketResourceGroup operation.
+
+        Returns:
+            GetBucketResourceGroupResult: Response result for GetBucketResourceGroup operation.
+        """
+        return vectors_operation.get_bucket_resource_group(self._client, request, **kwargs)
+
+    
+    # vector index
+    def put_vector_index(self, request: vector_models.PutVectorIndexRequest, **kwargs) -> vector_models.PutVectorIndexResult:
+        """
+        Create or update a vector index.
+
+        Args:
+            request (PutVectorIndexRequest): The request for the PutVectorIndex operation.
+
+        Returns:
+            PutVectorIndexResult: The result for the PutVectorIndex operation.
+        """
+        return vectors_operation.put_vector_index(client=self._client, request=request, **kwargs)
+
+    def get_vector_index(self, request: vector_models.GetVectorIndexRequest, **kwargs) -> vector_models.GetVectorIndexResult:
+        """
+        Get information about a specific vector index.
+
+        Args:
+            request (GetVectorIndexRequest): The request for the GetVectorIndex operation.
+
+        Returns:
+            GetVectorIndexResult: The result for the GetVectorIndex operation.
+        """
+        return vectors_operation.get_vector_index(client=self._client, request=request, **kwargs)
+
+    def list_vector_index(self, request: vector_models.ListVectorsIndexRequest, **kwargs) -> vector_models.ListVectorsIndexResult:
+        """
+        List vector indexes in a bucket.
+
+        Args:
+            request (ListVectorsIndexRequest): The request for the ListVectorIndex operation.
+
+        Returns:
+            ListVectorsIndexResult: The result for the ListVectorIndex operation.
+        """
+        return vectors_operation.list_vector_index(client=self._client, request=request, **kwargs)
+
+    def delete_vector_index(self, request: vector_models.DeleteVectorIndexRequest, **kwargs) -> vector_models.DeleteVectorIndexResult:
+        """
+        Delete a vector index.
+
+        Args:
+            request (DeleteVectorIndexRequest): The request for the DeleteVectorIndex operation.
+
+        Returns:
+            DeleteVectorIndexResult: The result for the DeleteVectorIndex operation.
+        """
+        return vectors_operation.delete_vector_index(client=self._client, request=request, **kwargs)
+
+    # vector basic
+    def put_vectors(self, request: vector_models.PutVectorsRequest, **kwargs) -> vector_models.PutVectorsResult:
+        """
+        Put vectors into an index.
+
+        Args:
+            request (PutVectorsRequest): The request for the PutVectors operation.
+
+        Returns:
+            PutVectorsResult: The result for the PutVectors operation.
+        """
+        return vectors_operation.put_vectors(client=self._client, request=request, **kwargs)
+
+    def get_vectors(self, request: vector_models.GetVectorsRequest, **kwargs) -> vector_models.GetVectorsResult:
+        """
+        Get vectors from an index.
+
+        Args:
+            request (GetVectorsRequest): The request for the GetVectors operation.
+
+        Returns:
+            GetVectorsResult: The result for the GetVectors operation.
+        """
+        return vectors_operation.get_vectors(client=self._client, request=request, **kwargs)
+
+    def list_vectors(self, request: vector_models.ListVectorsRequest, **kwargs) -> vector_models.ListVectorsResult:
+        """
+        List vectors in an index.
+
+        Args:
+            request (ListVectorsRequest): The request for the ListVectors operation.
+
+        Returns:
+            ListVectorsResult: The result for the ListVectors operation.
+        """
+        return vectors_operation.list_vectors(client=self._client, request=request, **kwargs)
+
+    def delete_vectors(self, request: vector_models.DeleteVectorsRequest, **kwargs) -> vector_models.DeleteVectorsResult:
+        """
+        Delete vectors from an index.
+
+        Args:
+            request (DeleteVectorsRequest): The request for the DeleteVectors operation.
+
+        Returns:
+            DeleteVectorsResult: The result for the DeleteVectors operation.
+        """
+        return vectors_operation.delete_vectors(client=self._client, request=request, **kwargs)
+
+    def query_vectors(self, request: vector_models.QueryVectorsRequest, **kwargs) -> vector_models.QueryVectorsResult:
+        """
+        Query vectors in an index.
+
+        Args:
+            request (QueryVectorsRequest): The request for the QueryVectors operation.
+
+        Returns:
+            QueryVectorsResult: The result for the QueryVectors operation.
+        """
+        return vectors_operation.query_vectors(client=self._client, request=request, **kwargs)

@@ -2460,7 +2460,6 @@ class GetSymlinkResult(serde.ResultModel):
         self.etag = etag
         self.metadata = metadata
 
-@dataclass
 class Tag(serde.Model):
     """The inforamtion about the tag."""
 
@@ -2487,7 +2486,6 @@ class Tag(serde.Model):
         "name": "Tag"
     }
 
-@dataclass
 class TagSet(serde.Model):
     """The collection of tags."""
 
