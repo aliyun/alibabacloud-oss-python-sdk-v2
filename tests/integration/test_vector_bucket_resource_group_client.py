@@ -1,35 +1,29 @@
 # pylint: skip-file
 
-from typing import cast
 import alibabacloud_oss_v2.models as oss
-import alibabacloud_oss_v2.vector_models as vector_oss
 from . import TestIntegration, random_bucket_name
 
 
-class TestBucketTags(TestIntegration):
+class TestVectorBucketResourceGroup(TestIntegration):
 
-    def test_bucket_tags(self):
+    def test_vector_bucket_resource_group(self):
         # create bucket
         bucket_name = random_bucket_name()
         result = self.vector_client.put_vector_bucket(oss.PutBucketRequest(
             bucket=bucket_name,
             acl='private',
-            # resource_group_id='askebtihgiu1h351345',
-            bucket_tagging='k1=v1&k2=v2',
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # put bucket tags
-        result = self.vector_client.put_bucket_tags(vector_oss.PutBucketTagsRequest(
+        # put bucket resource group
+        resource_group_id = 'rg-acfmy7mo47b3ad5****'
+        result = self.vector_client.put_bucket_resource_group(oss.PutBucketResourceGroupRequest(
             bucket=bucket_name,
-            tagging=vector_oss.Tagging(
-                {
-                    'test_key': 'test_value',
-                    'test_key2': 'test_value2',
-                },
+            bucket_resource_group_configuration=oss.BucketResourceGroupConfiguration(
+                resource_group_id=resource_group_id,
             ),
         ))
         self.assertEqual(200, result.status_code)
@@ -37,24 +31,20 @@ class TestBucketTags(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # get bucket tags
-        result = self.vector_client.get_bucket_tags(oss.GetBucketTagsRequest(
+        # get bucket resource group
+        result = self.vector_client.get_bucket_resource_group(oss.GetBucketResourceGroupRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-        self.assertEqual('test_key', result.tagging.tag_set.tags[0].key)
-        self.assertEqual('test_value', result.tagging.tag_set.tags[0].value)
-        self.assertEqual('test_key2', result.tagging.tag_set.tags[1].key)
-        self.assertEqual('test_value2', result.tagging.tag_set.tags[1].value)
+        self.assertEqual(resource_group_id, result.resource_group_configuration.resource_group_id)
 
-        # delete bucket tags
-        result = self.vector_client.delete_bucket_tags(oss.DeleteBucketTagsRequest(
+        # delete bucket (cleanup)
+        result = self.vector_client.delete_vector_bucket(oss.DeleteBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(204, result.status_code)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-

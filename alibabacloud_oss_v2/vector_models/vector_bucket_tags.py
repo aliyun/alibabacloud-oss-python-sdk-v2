@@ -1,37 +1,37 @@
-import datetime
-from typing import Optional, List, Any, Union
-from .. import serde
-from .object_basic import TagSet, Tag
-from dataclasses import dataclass
+
+from typing import Optional, List, Any, Union, Dict, MutableMapping
+from alibabacloud_oss_v2 import serde
+
 
 class Tagging(serde.Model):
     """
     The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
     """
 
-    _attribute_map = { 
-        'tag_set': {'tag': 'xml', 'rename': 'TagSet', 'type': 'TagSet'},
+    _attribute_map = {
+        "tags": {"tag": "xml", "type": "dict,usermeta"},
+
     }
 
     _xml_map = {
         'name': 'Tagging'
     }
 
-    _dependency_map = { 
-        'TagSet': {'new': lambda: TagSet()},
-    }
-
     def __init__(
         self,
-        tag_set: Optional[TagSet] = None,
+        tags: Optional[MutableMapping] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            tag_set (TagSet, optional): The container that stores the returned tags of the bucket.
+            key (str, optional): The key of the tag.
+            value (str, optional): The value of the tag.
         """
         super().__init__(**kwargs)
-        self.tag_set = tag_set
+        self.tags = tags
+
+
+
 
 
 class PutBucketTagsRequest(serde.RequestModel):
@@ -41,7 +41,7 @@ class PutBucketTagsRequest(serde.RequestModel):
 
     _attribute_map = { 
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
-        'tagging': {'tag': 'input', 'position': 'body', 'rename': 'Tagging', 'type': 'xml'},
+        'tagging': {'tag': 'input', 'position': 'body', 'rename': 'Tagging', 'type': 'Tagging,xml'},
     }
 
     def __init__(
@@ -53,7 +53,7 @@ class PutBucketTagsRequest(serde.RequestModel):
         """
         Args:
             bucket (str, required): The name of the bucket.
-            tagging (Tagging, optional): The request body schema.
+            tagging (dict, optional): The request body schema.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -74,6 +74,7 @@ class GetBucketTagsRequest(serde.RequestModel):
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
     }
 
+
     def __init__(
         self,
         bucket: str = None,
@@ -92,22 +93,23 @@ class GetBucketTagsResult(serde.ResultModel):
     The request for the GetBucketTags operation.
     """
 
-    _attribute_map = { 
+    _attribute_map = {
         'tagging': {'tag': 'output', 'position': 'body', 'rename': 'Tagging', 'type': 'Tagging,xml'},
     }
-
-    _dependency_map = { 
+    _dependency_map = {
         'Tagging': {'new': lambda: Tagging()},
     }
+
 
     def __init__(
         self,
         tagging: Optional[Tagging] = None,
+        # tagging: Optional[MutableMapping] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            tagging (Tagging, optional): The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
+            tagging (VectorTagging, optional): The container that stores the returned tags of the bucket. If no tags are configured for the bucket, an XML message body is returned in which the Tagging element is empty.
         """
         super().__init__(**kwargs)
         self.tagging = tagging

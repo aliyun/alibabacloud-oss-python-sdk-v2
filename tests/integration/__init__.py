@@ -41,6 +41,7 @@ class TestIntegration(unittest.TestCase):
         cls.client = get_default_client()
         cls.invalid_client = get_invalid_ak_client()
         cls.signv1_client = get_signv1_client()
+        cls.vector_client = get_vector_client()
         cls.bucket_name = random_bucket_name()
         cls.client.put_bucket(oss.models.PutBucketRequest(bucket=cls.bucket_name))
 
@@ -95,6 +96,13 @@ def get_client(region:str, endpoint:str) -> oss.Client:
     cfg.region = region
     cfg.endpoint = endpoint
     return oss.Client(cfg)
+
+def get_vector_client() -> oss.VectorClient:
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+    cfg.region = REGION
+    cfg.endpoint = ENDPOINT
+    return oss.VectorClient(cfg)
 
 def get_client_use_ststoken(region:str, endpoint:str) -> oss.Client:
     result = sts_assume_role(ACCESS_ID, ACCESS_KEY, RAM_ROLE_ARN)
