@@ -1,7 +1,6 @@
 
 from typing import Optional, List, Any, Union, Dict, MutableMapping
-from alibabacloud_oss_v2 import serde
-
+from ... import serde
 
 class Tagging(serde.Model):
     """

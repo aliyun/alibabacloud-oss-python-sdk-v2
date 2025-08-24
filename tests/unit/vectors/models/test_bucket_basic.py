@@ -2,37 +2,29 @@
 import datetime
 import unittest
 from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2.vector_models import vector_bucket_basic as vector_models
+from alibabacloud_oss_v2.vectors.models import bucket_basic as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
-from .. import MockHttpResponse
+from ... import MockHttpResponse
 
 
 class TestPutVectorBucket(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.PutVectorBucketRequest(
+        request = model.PutVectorBucketRequest(
         )
         self.assertIsNone(request.bucket)
-        self.assertIsNone(request.create_bucket_configuration)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.PutVectorBucketRequest(
+        request = model.PutVectorBucketRequest(
             bucket='bucketexampletest',
-            create_bucket_configuration=vector_models.CreateBucketConfiguration(
-                storage_class='Standard',
-            ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('Standard', request.create_bucket_configuration.storage_class)
 
     def test_serialize_request(self):
-        request = vector_models.PutVectorBucketRequest(
+        request = model.PutVectorBucketRequest(
             bucket='bucketexampletest',
-            create_bucket_configuration=vector_models.CreateBucketConfiguration(
-                storage_class='Standard',
-            ),
         )
 
         op_input = serde.serialize_input_json(request, OperationInput(
@@ -45,12 +37,12 @@ class TestPutVectorBucket(unittest.TestCase):
         self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = vector_models.PutVectorBucketResult()
+        result = model.PutVectorBucketResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_models.PutVectorBucketResult()
+        result = model.PutVectorBucketResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -78,7 +70,7 @@ class TestPutVectorBucket(unittest.TestCase):
 
 class TestGetVectorBucket(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.GetVectorBucketRequest(
+        request = model.GetVectorBucketRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
@@ -86,13 +78,13 @@ class TestGetVectorBucket(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.GetVectorBucketRequest(
+        request = model.GetVectorBucketRequest(
             bucket='bucketexampletest',
         )
         self.assertEqual('bucketexampletest', request.bucket)
 
     def test_serialize_request(self):
-        request = vector_models.GetVectorBucketRequest(
+        request = model.GetVectorBucketRequest(
             bucket='bucketexampletest',
         )
 
@@ -106,12 +98,12 @@ class TestGetVectorBucket(unittest.TestCase):
         self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = vector_models.GetVectorBucketResult()
+        result = model.GetVectorBucketResult()
         self.assertIsNone(result.bucket_info)
         self.assertIsInstance(result, serde.Model)
 
-        result = vector_models.GetVectorBucketResult(
-            bucket_info=vector_models.BucketInfo(
+        result = model.GetVectorBucketResult(
+            bucket_info=model.BucketInfo(
                 name='test-bucket',
                 location='oss-cn-hangzhou',
                 creation_date='2023-01-01T00:00:00.000Z',
@@ -134,7 +126,7 @@ class TestGetVectorBucket(unittest.TestCase):
           }
         }'''
 
-        result = vector_models.GetVectorBucketResult()
+        result = model.GetVectorBucketResult()
         op_output = OperationOutput(
             status='OK',
             status_code=200,
@@ -153,7 +145,7 @@ class TestGetVectorBucket(unittest.TestCase):
 
 class TestDeleteVectorBucket(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.DeleteVectorBucketRequest(
+        request = model.DeleteVectorBucketRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
@@ -161,13 +153,13 @@ class TestDeleteVectorBucket(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.DeleteVectorBucketRequest(
+        request = model.DeleteVectorBucketRequest(
             bucket='bucketexampletest',
         )
         self.assertEqual('bucketexampletest', request.bucket)
 
     def test_serialize_request(self):
-        request = vector_models.DeleteVectorBucketRequest(
+        request = model.DeleteVectorBucketRequest(
             bucket='bucketexampletest',
         )
 
@@ -181,12 +173,12 @@ class TestDeleteVectorBucket(unittest.TestCase):
         self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = vector_models.DeleteVectorBucketResult()
+        result = model.DeleteVectorBucketResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_models.DeleteVectorBucketResult()
+        result = model.DeleteVectorBucketResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -210,7 +202,7 @@ class TestDeleteVectorBucket(unittest.TestCase):
 
 class TestListVectorBuckets(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.ListVectorBucketsRequest(
+        request = model.ListVectorBucketsRequest(
         )
         self.assertIsNone(request.prefix)
         self.assertIsNone(request.marker)
@@ -220,7 +212,7 @@ class TestListVectorBuckets(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.ListVectorBucketsRequest(
+        request = model.ListVectorBucketsRequest(
             prefix='test',
             marker='marker1',
             max_keys=100,
@@ -230,7 +222,7 @@ class TestListVectorBuckets(unittest.TestCase):
         self.assertEqual(100, request.max_keys)
 
     def test_serialize_request(self):
-        request = vector_models.ListVectorBucketsRequest(
+        request = model.ListVectorBucketsRequest(
             prefix='test',
             marker='marker1',
             max_keys=100,
@@ -244,7 +236,7 @@ class TestListVectorBuckets(unittest.TestCase):
         self.assertEqual('GET', op_input.method)
 
     def test_constructor_result(self):
-        result = vector_models.ListVectorBucketsResult()
+        result = model.ListVectorBucketsResult()
         self.assertIsNone(result.buckets)
         self.assertIsNone(result.prefix)
         self.assertIsNone(result.marker)
@@ -253,13 +245,13 @@ class TestListVectorBuckets(unittest.TestCase):
         self.assertIsNone(result.next_marker)
         self.assertIsInstance(result, serde.Model)
 
-        result = vector_models.ListVectorBucketsResult(
+        result = model.ListVectorBucketsResult(
             prefix='test',
             marker='marker1',
             max_keys=100,
             is_truncated=False,
             next_marker='',
-            buckets=[vector_models.BucketProperties(
+            buckets=[model.BucketProperties(
                 name='bucket1',
                 location='oss-cn-hangzhou',
                 creation_date=datetime.datetime.fromtimestamp(1702733657),
@@ -304,7 +296,7 @@ class TestListVectorBuckets(unittest.TestCase):
         }
         '''
 
-        result = vector_models.ListVectorBucketsResult()
+        result = model.ListVectorBucketsResult()
         op_output = OperationOutput(
             status='OK',
             status_code=200,

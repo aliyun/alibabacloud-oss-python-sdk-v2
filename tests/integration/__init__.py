@@ -12,6 +12,7 @@ import unittest
 from urllib.parse import quote
 import requests
 import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 
 ACCESS_ID = os.getenv("OSS_TEST_ACCESS_KEY_ID")
@@ -41,7 +42,6 @@ class TestIntegration(unittest.TestCase):
         cls.client = get_default_client()
         cls.invalid_client = get_invalid_ak_client()
         cls.signv1_client = get_signv1_client()
-        cls.vector_client = get_vector_client()
         cls.bucket_name = random_bucket_name()
         cls.client.put_bucket(oss.models.PutBucketRequest(bucket=cls.bucket_name))
 
@@ -97,12 +97,13 @@ def get_client(region:str, endpoint:str) -> oss.Client:
     cfg.endpoint = endpoint
     return oss.Client(cfg)
 
-def get_vector_client() -> oss.VectorClient:
+def get_vectors_client() -> oss_vectors.Client:
     cfg = oss.config.load_default()
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
     cfg.endpoint = ENDPOINT
-    return oss.VectorClient(cfg)
+    cfg.user_id = USER_ID
+    return oss_vectors.Client(cfg)
 
 def get_client_use_ststoken(region:str, endpoint:str) -> oss.Client:
     result = sts_assume_role(ACCESS_ID, ACCESS_KEY, RAM_ROLE_ARN)
@@ -236,3 +237,16 @@ def sts_assume_role(access_key_id:str, access_key_secret:str, role_arn:str) -> d
 
     return json.loads(response.content)
     
+
+class TestIntegrationVectors(TestIntegration):
+    
+    @classmethod
+    def setUpClass(cls):
+        TestIntegration.setUpClass()
+        cls.vector_client = get_vectors_client()
+
+    @classmethod
+    def tearDownClass(cls):
+        TestIntegration.tearDownClass()
+
+

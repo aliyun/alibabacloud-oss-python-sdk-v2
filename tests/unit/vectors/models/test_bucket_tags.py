@@ -2,14 +2,14 @@
 
 import unittest
 from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2.vector_models import vector_bucket_tags as vector_model
+from alibabacloud_oss_v2.vectors.models import bucket_tags as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
-from .. import MockHttpResponse
+from ... import MockHttpResponse
 
 
 class TestPutVectorBucketTags(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_model.PutBucketTagsRequest(
+        request = model.PutBucketTagsRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.tagging)
@@ -18,24 +18,24 @@ class TestPutVectorBucketTags(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_model.PutBucketTagsRequest(
+        request = model.PutBucketTagsRequest(
             bucket='bucketexampletest',
-            tagging=[vector_model.Tagging(
+            tagging=[model.Tagging(
                         key='test_key',
                         value='test_value',
-                    ), vector_model.Tagging(
+                    ), model.Tagging(
                         key='test_key',
                         value='test_value',
                     )],
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('test_key', request.tagging[0].key)
+        self.assertEqual('test_key', request.tagging[0])
         self.assertEqual('test_value', request.tagging[0].value)
         self.assertEqual('test_key', request.tagging[1].key)
         self.assertEqual('test_value', request.tagging[1].value)
 
     def test_serialize_request(self):
-        request = vector_model.PutBucketTagsRequest(
+        request = model.PutBucketTagsRequest(
             bucket='bucketexampletest',
             tagging={
                 'test_key': 'test_value',
@@ -55,12 +55,12 @@ class TestPutVectorBucketTags(unittest.TestCase):
         self.assertEqual(json_str, op_input.body.decode())
 
     def test_constructor_result(self):
-        result = vector_model.PutBucketTagsResult()
+        result = model.PutBucketTagsResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_model.PutBucketTagsResult()
+        result = model.PutBucketTagsResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -88,7 +88,7 @@ class TestPutVectorBucketTags(unittest.TestCase):
 
 class TestGetVectorBucketTags(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_model.GetBucketTagsRequest(
+        request = model.GetBucketTagsRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
@@ -96,13 +96,13 @@ class TestGetVectorBucketTags(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_model.GetBucketTagsRequest(
+        request = model.GetBucketTagsRequest(
             bucket='bucketexampletest',
         )
         self.assertEqual('bucketexampletest', request.bucket)
 
     def test_serialize_request(self):
-        request = vector_model.GetBucketTagsRequest(
+        request = model.GetBucketTagsRequest(
             bucket='bucketexampletest',
         )
 
@@ -116,15 +116,15 @@ class TestGetVectorBucketTags(unittest.TestCase):
         self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = vector_model.GetBucketTagsResult()
+        result = model.GetBucketTagsResult()
         self.assertIsNone(result.tagging)
         self.assertIsInstance(result, serde.Model)
 
-        result = vector_model.GetBucketTagsResult(
-            tagging=[vector_model.Tagging(
+        result = model.GetBucketTagsResult(
+            tagging=[model.Tagging(
                         key='test_key',
                         value='test_value',
-                    ), vector_model.Tagging(
+                    ), model.Tagging(
                         key='test_key',
                         value='test_value',
                     )],
@@ -141,7 +141,7 @@ class TestGetVectorBucketTags(unittest.TestCase):
         "Tagging": {
           }
         }'''
-        result = vector_model.GetBucketTagsResult()
+        result = model.GetBucketTagsResult()
         serde.deserialize_json(json_data=json_data, obj=result)
 
 
@@ -192,7 +192,7 @@ class TestGetVectorBucketTags(unittest.TestCase):
 
 class TestDeleteVectorBucketTags(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_model.DeleteBucketTagsRequest(
+        request = model.DeleteBucketTagsRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
@@ -200,13 +200,13 @@ class TestDeleteVectorBucketTags(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_model.DeleteBucketTagsRequest(
+        request = model.DeleteBucketTagsRequest(
             bucket='bucketexampletest',
         )
         self.assertEqual('bucketexampletest', request.bucket)
 
     def test_serialize_request(self):
-        request = vector_model.DeleteBucketTagsRequest(
+        request = model.DeleteBucketTagsRequest(
             bucket='bucketexampletest',
         )
 
@@ -220,12 +220,12 @@ class TestDeleteVectorBucketTags(unittest.TestCase):
         self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = vector_model.DeleteBucketTagsResult()
+        result = model.DeleteBucketTagsResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_model.DeleteBucketTagsResult()
+        result = model.DeleteBucketTagsResult()
         serde.deserialize_output(
             result,
             OperationOutput(

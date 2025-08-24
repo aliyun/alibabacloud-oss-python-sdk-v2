@@ -6,50 +6,60 @@ import alibabacloud_oss_v2.vectors as oss_vectors
 from . import TestIntegrationVectors, random_bucket_name
 
 
-class TestBucketTags(TestIntegrationVectors):
+class TestVectorBucketBasic(TestIntegrationVectors):
 
-    def test_bucket_tags(self):
+    def test_vector_bucket_policy(self):
         # create bucket
         bucket_name = random_bucket_name()
         result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(
             bucket=bucket_name,
-            bucket_tagging='k1=v1&k2=v2',
+            acl='private',
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # put bucket tags
-        result = self.vector_client.put_bucket_tags(oss_vectors.models.PutBucketTagsRequest(
+        policy_text = ''
+        policy_text += '{'
+        policy_text += '"Version":"1",'
+        policy_text += '"Statement":[{'
+        policy_text += '"Action":["oss:PutObject"],'
+        policy_text += '"Effect":"Allow",'
+        policy_text += f'"Resource": ["acs:oss:*:*:{bucket_name}","acs:oss:*:*:{bucket_name}/*"]'
+        policy_text += '}]}'
+
+        # put bucket policy
+        result = self.vector_client.put_bucket_policy(oss_vectors.models.PutBucketPolicyRequest(
             bucket=bucket_name,
-            tagging=oss_vectors.models.Tagging(
-                {
-                    'test_key': 'test_value',
-                    'test_key2': 'test_value2',
-                },
-            ),
+            body=policy_text,
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # get bucket tags
-        result = self.vector_client.get_bucket_tags(oss_vectors.models.GetBucketTagsRequest(
+        # get bucket policy
+        result = self.vector_client.get_bucket_policy(oss_vectors.models.GetBucketPolicyRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-        self.assertEqual('test_key', result.tagging.tags[0].key)
-        self.assertEqual('test_value', result.tagging.tags[0].value)
-        self.assertEqual('test_key2', result.tagging.tags[1].key)
-        self.assertEqual('test_value2', result.tagging.tags[1].value)
+        self.assertEqual(policy_text, result.body)
 
-        # delete bucket tags
-        result = self.vector_client.delete_bucket_tags(oss_vectors.models.DeleteBucketTagsRequest(
+        # delete bucket policy
+        result = self.vector_client.delete_bucket_policy(oss_vectors.models.DeleteBucketPolicyRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # delete bucket (cleanup)
+        result = self.vector_client.delete_vector_bucket(oss_vectors.models.DeleteVectorBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(204, result.status_code)

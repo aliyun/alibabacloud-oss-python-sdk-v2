@@ -1,13 +1,12 @@
 # pylint: disable=line-too-long
-from alibabacloud_oss_v2._client import _SyncClientImpl
-from alibabacloud_oss_v2.types import OperationInput, CaseInsensitiveDict
-from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import serde_utils
-from alibabacloud_oss_v2 import vector_models
+from ..._client import _SyncClientImpl
+from ...types import OperationInput, CaseInsensitiveDict
+from ... import serde
+from ... import serde_utils
+from .. import models
 
 
-
-def put_vector_bucket(client: _SyncClientImpl, request: vector_models.PutVectorBucketRequest, **kwargs) -> vector_models.PutVectorBucketResult:
+def put_vector_bucket(client: _SyncClientImpl, request: models.PutVectorBucketRequest, **kwargs) -> models.PutVectorBucketResult:
     """
     put bucket synchronously
 
@@ -37,14 +36,14 @@ def put_vector_bucket(client: _SyncClientImpl, request: vector_models.PutVectorB
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.PutVectorBucketResult(),
+        result=models.PutVectorBucketResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_discardbody
         ],
     )
 
-def get_vector_bucket(client: _SyncClientImpl, request: vector_models.GetVectorBucketRequest, **kwargs) -> vector_models.GetVectorBucketResult:
+def get_vector_bucket(client: _SyncClientImpl, request: models.GetVectorBucketRequest, **kwargs) -> models.GetVectorBucketResult:
     """
     GetBucketInfo Queries information about a bucket.
 
@@ -74,7 +73,7 @@ def get_vector_bucket(client: _SyncClientImpl, request: vector_models.GetVectorB
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.GetVectorBucketResult(),
+        result=models.GetVectorBucketResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -82,7 +81,7 @@ def get_vector_bucket(client: _SyncClientImpl, request: vector_models.GetVectorB
     )
 
 
-def delete_vector_bucket(client: _SyncClientImpl, request: vector_models.DeleteVectorBucketRequest, **kwargs) -> vector_models.DeleteVectorBucketResult:
+def delete_vector_bucket(client: _SyncClientImpl, request: models.DeleteVectorBucketRequest, **kwargs) -> models.DeleteVectorBucketResult:
     """
     delete bucket synchronously
 
@@ -112,7 +111,7 @@ def delete_vector_bucket(client: _SyncClientImpl, request: vector_models.DeleteV
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.DeleteVectorBucketResult(),
+        result=models.DeleteVectorBucketResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_discardbody
@@ -120,7 +119,7 @@ def delete_vector_bucket(client: _SyncClientImpl, request: vector_models.DeleteV
     )
 
 
-def list_vector_buckets(client: _SyncClientImpl, request: vector_models.ListVectorBucketsRequest, **kwargs) -> vector_models.ListVectorBucketsResult:
+def list_vector_buckets(client: _SyncClientImpl, request: models.ListVectorBucketsRequest, **kwargs) -> models.ListVectorBucketsResult:
     """
     list buckets synchronously
 
@@ -149,7 +148,7 @@ def list_vector_buckets(client: _SyncClientImpl, request: vector_models.ListVect
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.ListVectorBucketsResult(),
+        result=models.ListVectorBucketsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody,

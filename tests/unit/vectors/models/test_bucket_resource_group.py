@@ -2,9 +2,9 @@
 
 import unittest
 from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2.models import bucket_resource_group as model
+from alibabacloud_oss_v2.vectors.models import bucket_resource_group as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
-from .. import MockHttpResponse
+from ... import MockHttpResponse
 
 
 class TestPutVectorBucketResourceGroup(unittest.TestCase):

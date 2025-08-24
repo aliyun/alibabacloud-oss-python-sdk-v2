@@ -2,14 +2,14 @@
 
 import unittest
 from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import vector_models as vector_models
+from alibabacloud_oss_v2.vectors.models import index_basic as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
-from .. import MockHttpResponse
+from ... import MockHttpResponse
 
 
 class TestPutVectorIndex(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.PutVectorIndexRequest(
+        request = model.PutVectorIndexRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.name)
@@ -23,13 +23,13 @@ class TestPutVectorIndex(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.PutVectorIndexRequest(
+        request = model.PutVectorIndexRequest(
             bucket='test-bucket',
             name='test-index',
             dimension=128,
             distance_metric='L2',
             index_type='FLAT',
-            quantization_config=vector_models.QuantizationConfig(
+            quantization_config=model.QuantizationConfig(
                 enable_quantization=False,
             ),
             description='test description',
@@ -43,13 +43,13 @@ class TestPutVectorIndex(unittest.TestCase):
         self.assertEqual('test description', request.description)
 
     def test_serialize_request(self):
-        request = vector_models.PutVectorIndexRequest(
+        request = model.PutVectorIndexRequest(
             bucket='test-bucket',
             name='test-index',
             dimension=128,
             distance_metric='L2',
             index_type='FLAT',
-            quantization_config=vector_models.QuantizationConfig(
+            quantization_config=model.QuantizationConfig(
                 enable_quantization=False,
             ),
             description='test description',
@@ -68,12 +68,12 @@ class TestPutVectorIndex(unittest.TestCase):
         self.assertEqual(json_str, op_input.body.decode())
 
     def test_constructor_result(self):
-        result = vector_models.PutVectorIndexResult()
+        result = model.PutVectorIndexResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_models.PutVectorIndexResult()
+        result = model.PutVectorIndexResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -101,7 +101,7 @@ class TestPutVectorIndex(unittest.TestCase):
 
 class TestGetVectorIndex(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.GetVectorIndexRequest(
+        request = model.GetVectorIndexRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.name)
@@ -110,7 +110,7 @@ class TestGetVectorIndex(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.GetVectorIndexRequest(
+        request = model.GetVectorIndexRequest(
             bucket='test-bucket',
             name='test-index',
         )
@@ -118,7 +118,7 @@ class TestGetVectorIndex(unittest.TestCase):
         self.assertEqual('test-index', request.name)
 
     def test_serialize_request(self):
-        request = vector_models.GetVectorIndexRequest(
+        request = model.GetVectorIndexRequest(
             bucket='test-bucket',
             name='test-index',
         )
@@ -137,17 +137,17 @@ class TestGetVectorIndex(unittest.TestCase):
         self.assertEqual('test-index', op_input.parameters.get('name'))
 
     def test_constructor_result(self):
-        result = vector_models.GetVectorIndexResult()
+        result = model.GetVectorIndexResult()
         self.assertIsNone(result.index)
         self.assertIsInstance(result, serde.Model)
 
-        result = vector_models.GetVectorIndexResult(
-            index=vector_models.Index(
+        result = model.GetVectorIndexResult(
+            index=model.Index(
                 name='test-index',
                 dimension=128,
                 distance_metric='L2',
                 index_type='FLAT',
-                quantization_config=vector_models.QuantizationConfig(
+                quantization_config=model.QuantizationConfig(
                     enable_quantization=False,
                 ),
                 description='test description',
@@ -184,7 +184,7 @@ class TestGetVectorIndex(unittest.TestCase):
             }
         '''
 
-        result = vector_models.GetVectorIndexResult()
+        result = model.GetVectorIndexResult()
         op_output = OperationOutput(
             status='OK',
             status_code=200,
@@ -207,7 +207,7 @@ class TestGetVectorIndex(unittest.TestCase):
 
 class TestListVectorIndex(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.ListVectorsIndexRequest(
+        request = model.ListVectorsIndexRequest(
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.max_results)
@@ -218,7 +218,7 @@ class TestListVectorIndex(unittest.TestCase):
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.ListVectorsIndexRequest(
+        request = model.ListVectorsIndexRequest(
             bucket='test-bucket',
             max_results=100,
             next_token='next-token',
@@ -230,7 +230,7 @@ class TestListVectorIndex(unittest.TestCase):
         self.assertEqual('test', request.prefix)
 
     def test_serialize_request(self):
-        request = vector_models.ListVectorsIndexRequest(
+        request = model.ListVectorsIndexRequest(
             bucket='test-bucket',
             max_results=100,
             next_token='next-token',
@@ -255,21 +255,21 @@ class TestListVectorIndex(unittest.TestCase):
         self.assertEqual('test', op_input.parameters.get('prefix'))
 
     def test_constructor_result(self):
-        result = vector_models.ListVectorsIndexResult()
+        result = model.ListVectorsIndexResult()
         self.assertIsNone(result.indexes)
         self.assertIsNone(result.max_results)
         self.assertIsNone(result.next_token)
         self.assertIsInstance(result, serde.Model)
 
-        result = vector_models.ListVectorsIndexResult(
+        result = model.ListVectorsIndexResult(
             indexes=[
-                vector_models.Index(
+                model.Index(
                     name='test-index-1',
                     dimension=128,
                     distance_metric='L2',
                     index_type='FLAT',
                 ),
-                vector_models.Index(
+                model.Index(
                     name='test-index-2',
                     dimension=256,
                     distance_metric='IP',
@@ -325,7 +325,7 @@ class TestListVectorIndex(unittest.TestCase):
             }
         '''
 
-        result = vector_models.ListVectorsIndexResult()
+        result = model.ListVectorsIndexResult()
         op_output = OperationOutput(
             status='OK',
             status_code=200,
@@ -351,26 +351,26 @@ class TestListVectorIndex(unittest.TestCase):
 
 class TestDeleteVectorIndex(unittest.TestCase):
     def test_constructor_request(self):
-        request = vector_models.DeleteVectorIndexRequest(
+        request = model.DeleteVectorIndexRequest(
         )
         self.assertIsNone(request.bucket)
-        self.assertIsNone(request.name)
+        self.assertIsNone(request.index_name)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = vector_models.DeleteVectorIndexRequest(
+        request = model.DeleteVectorIndexRequest(
             bucket='test-bucket',
-            name='test-index',
+            index_name='test-index',
         )
         self.assertEqual('test-bucket', request.bucket)
-        self.assertEqual('test-index', request.name)
+        self.assertEqual('test-index', request.index_name)
 
     def test_serialize_request(self):
-        request = vector_models.DeleteVectorIndexRequest(
+        request = model.DeleteVectorIndexRequest(
             bucket='test-bucket',
-            name='test-index',
+            index_name='test-index',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -378,7 +378,7 @@ class TestDeleteVectorIndex(unittest.TestCase):
             method='DELETE',
             bucket=request.bucket,
             parameters={
-                'name': request.name,
+                'name': request.index_name,
             }
         ))
         self.assertEqual('DeleteVectorIndex', op_input.op_name)
@@ -387,12 +387,12 @@ class TestDeleteVectorIndex(unittest.TestCase):
         self.assertEqual('test-index', op_input.parameters.get('name'))
 
     def test_constructor_result(self):
-        result = vector_models.DeleteVectorIndexResult()
+        result = model.DeleteVectorIndexResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         json_data = None
-        result = vector_models.DeleteVectorIndexResult()
+        result = model.DeleteVectorIndexResult()
         serde.deserialize_output(
             result,
             OperationOutput(

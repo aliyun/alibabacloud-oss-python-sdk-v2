@@ -44,7 +44,6 @@ from .models.cloud_box import *
 
 from .config import Config
 from .client import Client
-from .vector_client import VectorClient
 
 # If the Crypto(pycryptodome) module was not imported, the encryption feature is not supported.
 try:

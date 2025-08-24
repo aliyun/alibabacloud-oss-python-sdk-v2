@@ -1,12 +1,11 @@
 # pylint: disable=line-too-long
-from alibabacloud_oss_v2._client import _SyncClientImpl
-from alibabacloud_oss_v2.types import OperationInput, CaseInsensitiveDict
-from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import serde_utils
-from alibabacloud_oss_v2 import vector_models
+from ..._client import _SyncClientImpl
+from ...types import OperationInput, CaseInsensitiveDict
+from ... import serde
+from ... import serde_utils
+from .. import models
 
-
-def put_vectors(client: _SyncClientImpl, request: vector_models.PutVectorsRequest, **kwargs) -> vector_models.PutVectorsResult:
+def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kwargs) -> models.PutVectorsResult:
     """
     put_vectors synchronously
 
@@ -30,7 +29,6 @@ def put_vectors(client: _SyncClientImpl, request: vector_models.PutVectorsReques
                 'PutVectors': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['PutVectors']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -40,7 +38,7 @@ def put_vectors(client: _SyncClientImpl, request: vector_models.PutVectorsReques
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.PutVectorsResult(),
+        result=models.PutVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -48,7 +46,7 @@ def put_vectors(client: _SyncClientImpl, request: vector_models.PutVectorsReques
     )
 
 
-def get_vectors(client: _SyncClientImpl, request: vector_models.GetVectorsRequest, **kwargs) -> vector_models.GetVectorsResult:
+def get_vectors(client: _SyncClientImpl, request: models.GetVectorsRequest, **kwargs) -> models.GetVectorsResult:
     """
     get_vectors synchronously
 
@@ -72,7 +70,6 @@ def get_vectors(client: _SyncClientImpl, request: vector_models.GetVectorsReques
                 'GetVectors': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['GetVectors']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -82,7 +79,7 @@ def get_vectors(client: _SyncClientImpl, request: vector_models.GetVectorsReques
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.GetVectorsResult(),
+        result=models.GetVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -90,7 +87,7 @@ def get_vectors(client: _SyncClientImpl, request: vector_models.GetVectorsReques
     )
 
 
-def list_vectors(client: _SyncClientImpl, request: vector_models.ListVectorsRequest, **kwargs) -> vector_models.ListVectorsResult:
+def list_vectors(client: _SyncClientImpl, request: models.ListVectorsRequest, **kwargs) -> models.ListVectorsResult:
     """
     list_vectors synchronously
 
@@ -116,7 +113,6 @@ def list_vectors(client: _SyncClientImpl, request: vector_models.ListVectorsRequ
                 'nextToken': request.next_token,
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['ListVectors']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -126,7 +122,7 @@ def list_vectors(client: _SyncClientImpl, request: vector_models.ListVectorsRequ
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.ListVectorsResult(),
+        result=models.ListVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -134,7 +130,7 @@ def list_vectors(client: _SyncClientImpl, request: vector_models.ListVectorsRequ
     )
 
 
-def delete_vectors(client: _SyncClientImpl, request: vector_models.DeleteVectorsRequest, **kwargs) -> vector_models.DeleteVectorsResult:
+def delete_vectors(client: _SyncClientImpl, request: models.DeleteVectorsRequest, **kwargs) -> models.DeleteVectorsResult:
     """
     delete_vectors synchronously
 
@@ -158,7 +154,6 @@ def delete_vectors(client: _SyncClientImpl, request: vector_models.DeleteVectors
                 'DeleteVectors': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['DeleteVectors']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -168,7 +163,7 @@ def delete_vectors(client: _SyncClientImpl, request: vector_models.DeleteVectors
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.DeleteVectorsResult(),
+        result=models.DeleteVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -176,7 +171,7 @@ def delete_vectors(client: _SyncClientImpl, request: vector_models.DeleteVectors
     )
 
 
-def query_vectors(client: _SyncClientImpl, request: vector_models.QueryVectorsRequest, **kwargs) -> vector_models.QueryVectorsResult:
+def query_vectors(client: _SyncClientImpl, request: models.QueryVectorsRequest, **kwargs) -> models.QueryVectorsResult:
     """
     query_vectors synchronously
 
@@ -200,7 +195,6 @@ def query_vectors(client: _SyncClientImpl, request: vector_models.QueryVectorsRe
                 'QueryVectors': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['QueryVectors']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -210,7 +204,7 @@ def query_vectors(client: _SyncClientImpl, request: vector_models.QueryVectorsRe
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.QueryVectorsResult(),
+        result=models.QueryVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody

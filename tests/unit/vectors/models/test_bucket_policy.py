@@ -2,51 +2,67 @@
 
 import unittest
 from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2.models import public_access_block as model
+from alibabacloud_oss_v2.vectors.models import bucket_policy as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict, HttpResponse
-from .. import MockHttpResponse
+from ... import MockHttpResponse
 
-class TestPutPublicAccessBlock(unittest.TestCase):
+class TestPutVectorBucketPolicy(unittest.TestCase):
     def test_constructor_request(self):
-        request = model.PutPublicAccessBlockRequest(
+        request = model.PutBucketPolicyRequest(
         )
-        self.assertIsNone(request.public_access_block_configuration)
+        self.assertIsNone(request.bucket)
+        self.assertIsNone(request.body)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
-        request = model.PutPublicAccessBlockRequest(
-            public_access_block_configuration=model.PublicAccessBlockConfiguration(
-                block_public_access=True,
-            ),
+        json_data = r'''
+        {
+           "Version":"1",
+           "Statement":[
+               {
+                 "Action":[
+                   "ossvector:PutVectors",
+                   "ossvector:GetVectors"
+                ],
+                "Effect":"Deny",
+                "Principal":["1234567890"],
+                "Resource":["acs:ossvector:cn-hangzhou:1234567890:*"]
+               }
+            ]
+         }
+        '''
+
+        request = model.PutBucketPolicyRequest(
+            bucket='bucketexampletest',
+            body=json_data,
         )
-        self.assertEqual(True, request.public_access_block_configuration.block_public_access)
+        self.assertEqual('bucketexampletest', request.bucket)
+        self.assertEqual(json_data, request.body)
 
     def test_serialize_request(self):
-        request = model.PutPublicAccessBlockRequest(
-            public_access_block_configuration=model.PublicAccessBlockConfiguration(
-                block_public_access=True,
-            ),
+        request = model.PutBucketPolicyRequest(
+            bucket='bucketexampletest',
+            body='xml_data',
         )
 
-        json_str = '{"PublicAccessBlockConfiguration": {"BlockPublicAccess": "true"}}'
-
-        op_input = serde.serialize_input_json(request, OperationInput(
-            op_name='PutPublicAccessBlock',
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucketPolicy',
             method='PUT',
+            bucket=request.bucket,
         ))
-        self.assertEqual('PutPublicAccessBlock', op_input.op_name)
+        self.assertEqual('PutBucketPolicy', op_input.op_name)
         self.assertEqual('PUT', op_input.method)
-        self.assertEqual(json_str, op_input.body.decode())
+        self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = model.PutPublicAccessBlockResult()
+        result = model.PutBucketPolicyResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         xml_data = None
-        result = model.PutPublicAccessBlockResult()
+        result = model.PutBucketPolicyResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -72,90 +88,132 @@ class TestPutPublicAccessBlock(unittest.TestCase):
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
 
 
-class TestGetPublicAccessBlock(unittest.TestCase):
+class TestGetVectorBucketPolicy(unittest.TestCase):
     def test_constructor_request(self):
-        request = model.GetPublicAccessBlockRequest(
+        request = model.GetBucketPolicyRequest(
         )
+        self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
+        request = model.GetBucketPolicyRequest(
+            bucket='bucketexampletest',
+        )
+        self.assertEqual('bucketexampletest', request.bucket)
 
     def test_serialize_request(self):
-        request = model.GetPublicAccessBlockRequest(
+        request = model.GetBucketPolicyRequest(
+            bucket='bucketexampletest',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
-            op_name='GetPublicAccessBlock',
+            op_name='GetBucketPolicy',
             method='GET',
+            bucket=request.bucket,
         ))
-        self.assertEqual('GetPublicAccessBlock', op_input.op_name)
+        self.assertEqual('GetBucketPolicy', op_input.op_name)
         self.assertEqual('GET', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = model.GetPublicAccessBlockResult()
-        self.assertIsNone(result.public_access_block_configuration)
+        result = model.GetBucketPolicyResult()
+        self.assertIsNone(result.body)
         self.assertIsInstance(result, serde.Model)
 
-        result = model.GetPublicAccessBlockResult(
-            public_access_block_configuration=model.PublicAccessBlockConfiguration(
-                block_public_access=True,
-            ),
+        json_data = r'''
+                {
+                   "Version":"1",
+                   "Statement":[
+                       {
+                         "Action":[
+                           "ossvector:PutVectors",
+                           "ossvector:GetVectors"
+                        ],
+                        "Effect":"Deny",
+                        "Principal":["1234567890"],
+                        "Resource":["acs:ossvector:cn-hangzhou:1234567890:*"]
+                       }
+                    ]
+                 }
+                '''
+
+        result = model.GetBucketPolicyResult(
+            body=json_data,
         )
-        self.assertEqual(True, result.public_access_block_configuration.block_public_access)
+        self.assertEqual(json_data, result.body)
 
     def test_deserialize_result(self):
+
         json_data = r'''
-            {
-              "PublicAccessBlockConfiguration": {
-                "BlockPublicAccess": "true"
-              }
-            }
+        {
+           "Version":"1",
+           "Statement":[
+               {
+                 "Action":[
+                   "ossvector:PutVectors",
+                   "ossvector:GetVectors"
+                ],
+                "Effect":"Deny",
+                "Principal":["1234567890"],
+                "Resource":["acs:ossvector:cn-hangzhou:1234567890:*"]
+               }
+            ]
+         }
         '''
 
-        result = model.GetPublicAccessBlockResult()
+        result = model.GetBucketPolicyResult(
+            body=json_data,
+        )
         op_output = OperationOutput(
             status='OK',
             status_code=200,
-            http_response=MockHttpResponse(
-                body=json_data,
-            )
+            http_response=MockHttpResponse()
         )
-        deserializer = [serde.deserialize_output_jsonbody]
+        deserializer = []
         serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
         self.assertEqual('OK', result.status)
-        self.assertEqual(True, result.public_access_block_configuration.block_public_access)
+        self.assertEqual(json_data, result.body)
 
 
-class TestDeletePublicAccessBlock(unittest.TestCase):
+class TestDeleteVectorBucketPolicy(unittest.TestCase):
     def test_constructor_request(self):
-        request = model.DeletePublicAccessBlockRequest(
+        request = model.DeleteBucketPolicyRequest(
         )
+        self.assertIsNone(request.bucket)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
         self.assertIsInstance(request, serde.RequestModel)
 
+        request = model.DeleteBucketPolicyRequest(
+            bucket='bucketexampletest',
+        )
+        self.assertEqual('bucketexampletest', request.bucket)
+
 
     def test_serialize_request(self):
-        request = model.DeletePublicAccessBlockRequest(
+        request = model.DeleteBucketPolicyRequest(
+            bucket='bucketexampletest',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
-            op_name='DeletePublicAccessBlock',
+            op_name='DeleteBucketPolicy',
             method='DELETE',
+            bucket=request.bucket,
         ))
-        self.assertEqual('DeletePublicAccessBlock', op_input.op_name)
+        self.assertEqual('DeleteBucketPolicy', op_input.op_name)
         self.assertEqual('DELETE', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
 
     def test_constructor_result(self):
-        result = model.DeletePublicAccessBlockResult()
+        result = model.DeleteBucketPolicyResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
         xml_data = None
-        result = model.DeletePublicAccessBlockResult()
+        result = model.DeleteBucketPolicyResult()
         serde.deserialize_output(
             result,
             OperationOutput(
@@ -179,3 +237,5 @@ class TestDeletePublicAccessBlock(unittest.TestCase):
         self.assertEqual('123', result.request_id)
         self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
+
+

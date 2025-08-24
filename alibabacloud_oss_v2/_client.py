@@ -5,6 +5,7 @@ import re
 from typing import Any, Optional, Dict, Iterable, List, Union, cast, Tuple, Iterator
 from urllib.parse import urlparse, ParseResult, urlencode, quote
 from xml.etree import ElementTree as ET
+import json
 from . import retry
 from . import transport
 from . import exceptions
@@ -367,7 +368,10 @@ class _SyncClientImpl(_ClientImplMixIn):
             if not response.is_stream_consumed:
                 _ = response.read()
 
-            raise _to_service_error(response)
+            if response.headers.get('Content-Type', '') == 'application/json':
+                raise _to_service_error_json(response)
+            else:
+                raise _to_service_error(response)
 
         # insert service error responsed handler first
         handlers.append(service_error_response_handler)
@@ -661,6 +665,61 @@ def _to_service_error(response: HttpResponse) -> exceptions.ServiceError:
                 message = m.group(1)
         if len(message) == 0:
             message = f'Failed to parse xml from response body due to: {str(e)}. With part response body {err_body[:256]}.'
+    except Exception as e:
+        message = f'The body of the response was not readable, due to : {str(e)}.'
+
+    return exceptions.ServiceError(
+        status_code=response.status_code,
+        code=code,
+        message=message,
+        request_id=request_id or response.headers.get('x-oss-request-id', ''),
+        ec=ec or response.headers.get('x-oss-ec', ''),
+        timestamp=timestamp,
+        request_target=f'{response.request.method} {response.request.url}',
+        snapshot=content,
+        headers=response.headers,
+        error_fileds=error_fileds
+    )
+
+def _to_service_error_json(response: HttpResponse) -> exceptions.ServiceError:
+    timestamp = serde.deserialize_httptime(response.headers.get('Date'))
+    content = response.content or b''
+    response.close()
+
+    error_fileds = {}
+    code = 'BadErrorResponse'
+    message = ''
+    ec = ''
+    request_id = ''
+    err_body = b''
+    try:
+        err_body = content
+        if len(err_body) == 0:
+            err_body = base64.b64decode(
+                response.headers.get('x-oss-err', ''))
+        root = json.loads(err_body)
+        errElem = root.get('Error', None)
+        if errElem is not None:
+            for k, v in errElem.items():
+                if isinstance(v, str):
+                    error_fileds[k] = v
+            message = error_fileds.get('Message', '')
+            code = error_fileds.get('Code', '')
+            ec = error_fileds.get('EC', '')
+            request_id = error_fileds.get('RequestId', '')
+        else:
+            message = f'Expect root node Error, but get {root.keys()}.'
+    except json.JSONDecodeError as e:
+        errstr = err_body.decode()
+        if '"Error":' in errstr:
+            m = re.search('"Code":(.*),', errstr)
+            if m:
+                code = m.group(1).strip(' "')
+            m = re.search('<Message>(.*)</Message>', errstr)
+            if m:
+                message = m.group(1).strip(' "')
+        if len(message) == 0:
+            message = f'Failed to parse json from response body due to: {str(e)}. With part response body {err_body[:256]}.'
     except Exception as e:
         message = f'The body of the response was not readable, due to : {str(e)}.'
 

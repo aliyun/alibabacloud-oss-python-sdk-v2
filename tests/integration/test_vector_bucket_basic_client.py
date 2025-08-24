@@ -1,17 +1,17 @@
 # pylint: skip-file
 
 from typing import cast
-import alibabacloud_oss_v2.models as oss
-import alibabacloud_oss_v2.vector_models as vector_oss
-from . import TestIntegration, random_bucket_name
+import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.vectors as oss_vectors
+from . import TestIntegrationVectors, random_bucket_name
 
 
-class TestVectorBucketBasic(TestIntegration):
+class TestVectorBucketBasic(TestIntegrationVectors):
 
     def test_vector_bucket_basic(self):
         # create bucket
         bucket_name = random_bucket_name()
-        result = self.vector_client.put_vector_bucket(oss.PutBucketRequest(
+        result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(
             bucket=bucket_name,
             acl='private',
         ))
@@ -21,7 +21,7 @@ class TestVectorBucketBasic(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket info
-        result = self.vector_client.get_vector_bucket(oss.GetBucketInfoRequest(
+        result = self.vector_client.get_vector_bucket(oss_vectors.models.GetVectorBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(200, result.status_code)
@@ -33,7 +33,7 @@ class TestVectorBucketBasic(TestIntegration):
         self.assertIsNotNone(result.bucket_info.creation_date)
 
         # list buckets
-        result = self.vector_client.list_vector_buckets(oss.ListBucketsRequest(
+        result = self.vector_client.list_vector_buckets(oss_vectors.models.ListVectorBucketsRequest(
             prefix=bucket_name,
         ))
         self.assertEqual(200, result.status_code)
@@ -50,7 +50,7 @@ class TestVectorBucketBasic(TestIntegration):
         self.assertTrue(found)
 
         # delete bucket
-        result = self.vector_client.delete_vector_bucket(oss.DeleteBucketRequest(
+        result = self.vector_client.delete_vector_bucket(oss_vectors.models.DeleteVectorBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(204, result.status_code)

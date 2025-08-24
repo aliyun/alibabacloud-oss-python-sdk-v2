@@ -1,6 +1,6 @@
 import datetime
-from typing import Optional, List, Any
-from alibabacloud_oss_v2 import serde
+from typing import Optional, List, Any, Dict
+from ... import serde
 
 
 class VectorMetadata(serde.Model):
@@ -141,11 +141,10 @@ class PutVectorIndexRequest(serde.RequestModel):
         'dimension': {'tag': 'input', 'position': 'body', 'rename': 'dimension', 'type': 'int'},
         'distance_metric': {'tag': 'input', 'position': 'body', 'rename': 'distanceMetric', 'type': 'str'},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
-        'metadata': {'tag': 'input', 'position': 'body', 'rename': 'metadata', 'type': 'VectorMetadata'},
+        'metadata': {'tag': 'input', 'position': 'body', 'rename': 'metadata', 'type': 'dict'},
     }
 
     _dependency_map = {
-        'Metadata': {'new': lambda: VectorMetadata()},
     }
 
     def __init__(
@@ -155,7 +154,7 @@ class PutVectorIndexRequest(serde.RequestModel):
         dimension: Optional[int] = None,
         distance_metric: Optional[str] = None,
         index_name: Optional[str] = None,
-        metadata: Optional[VectorMetadata] = None,
+        metadata: Optional[Dict] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -167,7 +166,7 @@ class PutVectorIndexRequest(serde.RequestModel):
                 Euclidean distance: Euclidean distance
                 Cosine: cosine distance
             index_name (str, optional): The name of the index.
-            metadata (VectorMetadata, optional): The metadata configuration.
+            metadata (Dict, optional): The metadata configuration.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

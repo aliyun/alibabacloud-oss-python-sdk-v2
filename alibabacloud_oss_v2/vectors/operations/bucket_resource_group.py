@@ -1,9 +1,9 @@
 # pylint: disable=line-too-long
-from alibabacloud_oss_v2._client import _SyncClientImpl
-from alibabacloud_oss_v2.types import OperationInput, CaseInsensitiveDict
-from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import serde_utils
-from alibabacloud_oss_v2 import models
+from ..._client import _SyncClientImpl
+from ...types import OperationInput, CaseInsensitiveDict
+from ... import serde
+from ... import serde_utils
+from .. import models
 
 
 def put_bucket_resource_group(client: _SyncClientImpl, request: models.PutBucketResourceGroupRequest, **kwargs) -> models.PutBucketResourceGroupResult:

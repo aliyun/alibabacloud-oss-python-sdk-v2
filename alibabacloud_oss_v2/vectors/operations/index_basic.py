@@ -1,12 +1,12 @@
 # pylint: disable=line-too-long
-from alibabacloud_oss_v2._client import _SyncClientImpl
-from alibabacloud_oss_v2.types import OperationInput, CaseInsensitiveDict
-from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import serde_utils
-from alibabacloud_oss_v2 import vector_models
+from ..._client import _SyncClientImpl
+from ...types import OperationInput, CaseInsensitiveDict
+from ... import serde
+from ... import serde_utils
+from .. import models
+from ._serde import serialize_input_vector_json_model
 
-
-def put_vector_index(client: _SyncClientImpl, request: vector_models.PutVectorIndexRequest, **kwargs) -> vector_models.PutVectorIndexResult:
+def put_vector_index(client: _SyncClientImpl, request: models.PutVectorIndexRequest, **kwargs) -> models.PutVectorIndexResult:
     """
     put_vector_index synchronously
 
@@ -18,11 +18,11 @@ def put_vector_index(client: _SyncClientImpl, request: vector_models.PutVectorIn
         PutVectorIndexResult: The result for the PutVectorIndex operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='PutVectorIndex',
-            method='PUT',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -30,7 +30,6 @@ def put_vector_index(client: _SyncClientImpl, request: vector_models.PutVectorIn
                 'PutVectorIndex': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['PutVectorIndex']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -40,7 +39,7 @@ def put_vector_index(client: _SyncClientImpl, request: vector_models.PutVectorIn
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.PutVectorIndexResult(),
+        result=models.PutVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -48,7 +47,7 @@ def put_vector_index(client: _SyncClientImpl, request: vector_models.PutVectorIn
     )
 
 
-def get_vector_index(client: _SyncClientImpl, request: vector_models.GetVectorIndexRequest, **kwargs) -> vector_models.GetVectorIndexResult:
+def get_vector_index(client: _SyncClientImpl, request: models.GetVectorIndexRequest, **kwargs) -> models.GetVectorIndexResult:
     """
     get_vector_index synchronously
 
@@ -60,7 +59,7 @@ def get_vector_index(client: _SyncClientImpl, request: vector_models.GetVectorIn
         GetVectorIndexResult: The result for the GetVectorIndex operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='GetVectorIndex',
@@ -72,7 +71,6 @@ def get_vector_index(client: _SyncClientImpl, request: vector_models.GetVectorIn
                 'GetVectorIndex': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['GetVectorIndex']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -82,7 +80,7 @@ def get_vector_index(client: _SyncClientImpl, request: vector_models.GetVectorIn
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.GetVectorIndexResult(),
+        result=models.GetVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -90,7 +88,7 @@ def get_vector_index(client: _SyncClientImpl, request: vector_models.GetVectorIn
     )
 
 
-def list_vector_index(client: _SyncClientImpl, request: vector_models.ListVectorsIndexRequest, **kwargs) -> vector_models.ListVectorsIndexResult:
+def list_vector_index(client: _SyncClientImpl, request: models.ListVectorsIndexRequest, **kwargs) -> models.ListVectorsIndexResult:
     """
     list_vector_index synchronously
 
@@ -102,7 +100,7 @@ def list_vector_index(client: _SyncClientImpl, request: vector_models.ListVector
         ListVectorsIndexResult: The result for the ListVectorIndex operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='ListVectorIndex',
@@ -117,7 +115,6 @@ def list_vector_index(client: _SyncClientImpl, request: vector_models.ListVector
                 'prefix': request.prefix,
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['ListVectorIndexes']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -127,7 +124,7 @@ def list_vector_index(client: _SyncClientImpl, request: vector_models.ListVector
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.ListVectorsIndexResult(),
+        result=models.ListVectorsIndexResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody
@@ -135,7 +132,7 @@ def list_vector_index(client: _SyncClientImpl, request: vector_models.ListVector
     )
 
 
-def delete_vector_index(client: _SyncClientImpl, request: vector_models.DeleteVectorIndexRequest, **kwargs) -> vector_models.DeleteVectorIndexResult:
+def delete_vector_index(client: _SyncClientImpl, request: models.DeleteVectorIndexRequest, **kwargs) -> models.DeleteVectorIndexResult:
     """
     delete_vector_index synchronously
 
@@ -147,7 +144,7 @@ def delete_vector_index(client: _SyncClientImpl, request: vector_models.DeleteVe
         DeleteVectorIndexResult: The result for the DeleteVectorIndex operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='DeleteVectorIndex',
@@ -159,7 +156,6 @@ def delete_vector_index(client: _SyncClientImpl, request: vector_models.DeleteVe
                 'DeleteVectorIndex': '',
             },
             bucket=request.bucket,
-            op_metadata={'sub-resource': ['DeleteVectorIndex']},
         ),
         custom_serializer=[
             serde_utils.add_content_md5
@@ -169,7 +165,7 @@ def delete_vector_index(client: _SyncClientImpl, request: vector_models.DeleteVe
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=vector_models.DeleteVectorIndexResult(),
+        result=models.DeleteVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
             serde.deserialize_output_jsonbody

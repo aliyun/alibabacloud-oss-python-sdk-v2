@@ -1,13 +1,11 @@
 # pylint: disable=line-too-long
-from alibabacloud_oss_v2._client import _SyncClientImpl
-from alibabacloud_oss_v2.types import OperationInput, CaseInsensitiveDict
-from alibabacloud_oss_v2 import serde
-from alibabacloud_oss_v2 import serde_utils
-from alibabacloud_oss_v2 import models
-from alibabacloud_oss_v2 import vector_models
+from ..._client import _SyncClientImpl
+from ...types import OperationInput, CaseInsensitiveDict
+from ... import serde
+from ... import serde_utils
+from .. import models
 
-
-def put_bucket_tags(client: _SyncClientImpl, request: vector_models.PutBucketTagsRequest, **kwargs) -> vector_models.PutBucketTagsResult:
+def put_bucket_tags(client: _SyncClientImpl, request: models.PutBucketTagsRequest, **kwargs) -> models.PutBucketTagsResult:
     """
     put_bucket_tags synchronously
 
@@ -48,7 +46,7 @@ def put_bucket_tags(client: _SyncClientImpl, request: vector_models.PutBucketTag
         ],
     )
 
-def get_bucket_tags(client: _SyncClientImpl, request: vector_models.GetBucketTagsRequest, **kwargs) -> vector_models.GetBucketTagsResult:
+def get_bucket_tags(client: _SyncClientImpl, request: models.GetBucketTagsRequest, **kwargs) -> models.GetBucketTagsResult:
     """
     get_bucket_tags synchronously
 
@@ -89,7 +87,7 @@ def get_bucket_tags(client: _SyncClientImpl, request: vector_models.GetBucketTag
         ],
     )
 
-def delete_bucket_tags(client: _SyncClientImpl, request: vector_models.DeleteBucketTagsRequest, **kwargs) -> vector_models.DeleteBucketTagsResult:
+def delete_bucket_tags(client: _SyncClientImpl, request: models.DeleteBucketTagsRequest, **kwargs) -> models.DeleteBucketTagsResult:
     """
     delete_bucket_tags synchronously
 

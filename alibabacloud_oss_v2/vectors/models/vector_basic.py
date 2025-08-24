@@ -1,6 +1,5 @@
 from typing import Optional, List, Any, Dict
-from alibabacloud_oss_v2 import serde
-
+from ... import serde
 
 class VectorData(serde.Model):
     """

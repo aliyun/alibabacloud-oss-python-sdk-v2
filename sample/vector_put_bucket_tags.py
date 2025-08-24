@@ -21,7 +21,7 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss.VectorClient(cfg)
+    vector_client = oss.VectorsClient(cfg)
 
     result = vector_client.put_bucket_tags(oss.PutBucketTagsRequest(
             bucket=args.bucket,
