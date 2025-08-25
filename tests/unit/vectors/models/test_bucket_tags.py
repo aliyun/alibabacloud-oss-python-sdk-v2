@@ -117,7 +117,7 @@ class TestGetVectorBucketTags(unittest.TestCase):
             bucket='bucketexampletest',
         )
 
-        op_input = serde.serialize_input(request, OperationInput(
+        op_input = serde.serialize_input_json(request, OperationInput(
             op_name='GetBucketTags',
             method='GET',
             bucket=request.bucket,
@@ -211,7 +211,7 @@ class TestDeleteVectorBucketTags(unittest.TestCase):
             bucket='bucketexampletest',
         )
 
-        op_input = serde.serialize_input(request, OperationInput(
+        op_input = serde.serialize_input_json(request, OperationInput(
             op_name='DeleteBucketTags',
             method='DELETE',
             bucket=request.bucket,
