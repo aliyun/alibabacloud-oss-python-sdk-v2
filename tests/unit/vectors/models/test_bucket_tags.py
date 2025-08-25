@@ -20,29 +20,40 @@ class TestPutVectorBucketTags(unittest.TestCase):
 
         request = model.PutBucketTagsRequest(
             bucket='bucketexampletest',
-            tagging=[model.Tagging(
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
                         key='test_key',
                         value='test_value',
-                    ), model.Tagging(
+                    ), model.Tag(
                         key='test_key',
                         value='test_value',
                     )],
+                ),
+            ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual('test_key', request.tagging[0])
-        self.assertEqual('test_value', request.tagging[0].value)
-        self.assertEqual('test_key', request.tagging[1].key)
-        self.assertEqual('test_value', request.tagging[1].value)
+        self.assertEqual('test_key', request.tagging.tag_set.tags[0].key)
+        self.assertEqual('test_value', request.tagging.tag_set.tags[0].value)
+        self.assertEqual('test_key', request.tagging.tag_set.tags[1].key)
+        self.assertEqual('test_value', request.tagging.tag_set.tags[1].value)
 
     def test_serialize_request(self):
         request = model.PutBucketTagsRequest(
             bucket='bucketexampletest',
-            tagging={
-                'test_key': 'test_value',
-                'test_key2': 'test_value2',
-            },
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='Key1',
+                        value='value1',
+                    ), model.Tag(
+                        key='Key2',
+                        value='value2',
+                    )],
+                ),
+            ),
         )
-        json_str = '{"Tagging": {"TagSet": {"Tag": {"Key": "test_key2", "Value": "test_value2"}}}}'
+        json_str = '{"Tagging": {"TagSet": {"Tag": [{"Key": "Key1", "Value": "value1"}, {"Key": "Key2", "Value": "value2"}]}}}'
 
         op_input = serde.serialize_input_json(request, OperationInput(
             op_name='PutBucketTags',
@@ -121,18 +132,22 @@ class TestGetVectorBucketTags(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.GetBucketTagsResult(
-            tagging=[model.Tagging(
-                        key='test_key',
+            tagging=model.Tagging(
+                tag_set=model.TagSet(
+                    tags=[model.Tag(
+                        key='testa',
                         value='test_value',
-                    ), model.Tagging(
-                        key='test_key',
-                        value='test_value',
+                    ), model.Tag(
+                        key='testb',
+                        value='test2_value',
                     )],
+                ),
+            ),
         )
-        self.assertEqual('testa', result.tagging[0].key)
-        self.assertEqual('test_value', result.tagging[0].value)
-        self.assertEqual('testb', result.tagging[1].key)
-        self.assertEqual('test2_value', result.tagging[1].value)
+        self.assertEqual('testa', result.tagging.tag_set.tags[0].key)
+        self.assertEqual('test_value', result.tagging.tag_set.tags[0].value)
+        self.assertEqual('testb', result.tagging.tag_set.tags[1].key)
+        self.assertEqual('test2_value', result.tagging.tag_set.tags[1].value)
 
     def test_deserialize_result(self):
 
@@ -144,32 +159,16 @@ class TestGetVectorBucketTags(unittest.TestCase):
         result = model.GetBucketTagsResult()
         serde.deserialize_json(json_data=json_data, obj=result)
 
-
-        # json_data = r'''
-        # {
-        #   "Tagging": {
-        #     "TagSet": {
-        #       "Tag": [
-        #         {
-        #           "Key": "test_key1",
-        #           "Value": "test_value1"
-        #         },
-        #         {
-        #           "Key": "test_key2",
-        #           "Value": "test_value2"
-        #         }
-        #       ]
-        #     }
-        #   }
-        # }
-        # '''
-
         json_data = r'''
         {
-          "Tagging": {
-            "Key1": "value1",
-            "key2": "value2"
-          }
+            "Tagging" : {
+                "TagSet": {
+                    "Tag" : [
+                        {"key": "Key1", "value": "value1"},
+                        {"key": "Key2", "value": "value2"}
+                    ]
+                }
+            }
         }
         '''
 
@@ -184,10 +183,12 @@ class TestGetVectorBucketTags(unittest.TestCase):
         deserializer = [serde.deserialize_output_jsonbody]
         serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
         self.assertEqual('OK', result.status)
-        self.assertEqual('test_key1', result.tagging[0].key)
-        self.assertEqual('test_value1', result.tagging.tags[0].value)
-        self.assertEqual('test_key2', result.tagging.tags[1].key)
-        self.assertEqual('test_value2', result.tagging.tags[1].value)
+        self.assertEqual('Key1', result.tagging.tag_set.tags[0].key)
+        self.assertEqual('value1', result.tagging.tag_set.tags[0].value)
+        self.assertEqual('Key2', result.tagging.tag_set.tags[1].key)
+        self.assertEqual('value2', result.tagging.tag_set.tags[1].value)
+
+
 
 
 class TestDeleteVectorBucketTags(unittest.TestCase):

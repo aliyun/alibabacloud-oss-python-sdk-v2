@@ -783,47 +783,37 @@ def _serialize_json_any(tag: str, value: Any, atype: str) -> Any:
 def _serialize_json_model(obj, root: Optional[str] = None) -> dict:
     """serialize model to json dict
     """
-    if root is not None and len(root) > 0:
-        name = root
-    else:
-        name = obj.__class__.__name__
-        xml_map = getattr(obj, '_xml_map', None)
-        if xml_map is not None:
-            name = xml_map.get('name', name)
-
-    result = {name: {}}
+    result = {}
 
     attributes = getattr(obj, '_attribute_map')
     for attr, attr_desc in attributes.items():
         if attr_desc.get('tag', '') != 'xml':
             continue
+
         attr_value = getattr(obj, attr)
         attr_key = attr_desc.get('rename', attr)
-        attr_type = attr_desc.get('type', '')
+
         if attr_value is not None:
             if isinstance(attr_value, Model):
-                model = cast(Model, attr_value)
+                nested_result = _serialize_json_model(attr_value)
+                result[attr_key] = nested_result
 
-                nested_result = _serialize_json_model(model)
-                result[name].update(nested_result)
             elif isinstance(attr_value, list):
-                result[name][attr_key] = [
-                    _serialize_json_any(attr_key, a, attr_type)
-                    for a in attr_value
-                ]
+                serialized_list = []
+                for item in attr_value:
+                    if isinstance(item, Model):
+                        item_result = _serialize_json_model(item)
+                        serialized_list.append(item_result)
+                    else:
+                        serialized_list.append(item)
+                result[attr_key] = serialized_list
 
-                if result[name][attr_key] and isinstance(result[name][attr_key][0], dict):
-                    flattened = {}
-                    for item in result[name][attr_key]:
-                        if isinstance(item, dict):
-                            flattened.update(item)
-                    result[name][attr_key] = flattened
             else:
-                serialized = _serialize_json_any(attr_key, attr_value, attr_type)
-                if isinstance(serialized, dict):
-                    result[name].update(serialized)
-                else:
-                    result[name][attr_key] = serialized
+                result[attr_key] = attr_value
+
+    if root is not None and len(root) > 0:
+        return {root: result}
+
     return result
 
 
@@ -901,17 +891,25 @@ def _deserialize_json_model(data_dict: dict, obj: Any) -> None:
         attr_key = attr_desc.get('rename', attr)
         attr_types = str(attr_desc.get('type', 'str')).split(',')
 
-        if attr_key not in data_dict:
-            continue
+        raw_value = None
 
-        raw_value = data_dict[attr_key]
+        if attr_key in data_dict:
+            raw_value = data_dict[attr_key]
+        else:
+            for key in data_dict.keys():
+                if key.lower() == attr_key.lower():
+                    raw_value = data_dict[key]
+                    break
+
+        if raw_value is None:
+            continue
 
         # Handle array type
         if attr_types[0].startswith('[') and attr_types[0].endswith(']'):
             element_type = attr_types[0][1:-1]
 
             if not isinstance(raw_value, list):
-                continue
+                raw_value = [raw_value]
 
             value_list = []
             for item_data in raw_value:
