@@ -1,13 +1,12 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors.models as vector_model
 import alibabacloud_oss_v2.vectors as oss_vector
 
 parser = argparse.ArgumentParser(description="vector put bucket tags sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
-
+parser.add_argument('--uid', help='The user id.', required=True)
 
 def main():
 
@@ -20,19 +19,20 @@ def main():
     cfg = oss.config.load_default()
     cfg.credentials_provider = credentials_provider
     cfg.region = args.region
+    cfg.user_id = args.uid
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
     vector_client = oss_vector.Client(cfg)
 
-    result = vector_client.put_bucket_tags(vector_model.PutBucketTagsRequest(
+    result = vector_client.put_bucket_tags(oss_vector.models.PutBucketTagsRequest(
             bucket=args.bucket,
-            tagging=vector_model.Tagging(
-                tag_set=vector_model.TagSet(
-                    tags=[vector_model.Tag(
+            tagging=oss_vector.models.Tagging(
+                tag_set=oss_vector.models.TagSet(
+                    tags=[oss_vector.models.Tag(
                         key='test_key',
                         value='test_value',
-                    ), vector_model.Tag(
+                    ), oss_vector.models.Tag(
                         key='test_key2',
                         value='test_value2',
                     )],
