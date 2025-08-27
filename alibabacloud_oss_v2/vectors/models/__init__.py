@@ -7,3 +7,4 @@ from .bucket_resource_group import *
 from .bucket_tags import *
 from .index_basic import *
 from .vector_basic import *
+from .bucket_logging import *

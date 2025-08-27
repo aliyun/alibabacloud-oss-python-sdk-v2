@@ -5,6 +5,7 @@ from ... import serde
 from ... import serde_utils
 from .. import models
 from ._serde import serialize_input_vector_json_model
+from ._serde import deserialize_output_vector_json_model
 
 def put_vector_index(client: _SyncClientImpl, request: models.PutVectorIndexRequest, **kwargs) -> models.PutVectorIndexResult:
     """
@@ -27,7 +28,7 @@ def put_vector_index(client: _SyncClientImpl, request: models.PutVectorIndexRequ
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'PutVectorIndex': '',
+                'putVectorIndex': '',
             },
             bucket=request.bucket,
         ),
@@ -42,7 +43,7 @@ def put_vector_index(client: _SyncClientImpl, request: models.PutVectorIndexRequ
         result=models.PutVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -68,7 +69,7 @@ def get_vector_index(client: _SyncClientImpl, request: models.GetVectorIndexRequ
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'GetVectorIndex': '',
+                'getVectorIndex': '',
             },
             bucket=request.bucket,
         ),
@@ -83,7 +84,7 @@ def get_vector_index(client: _SyncClientImpl, request: models.GetVectorIndexRequ
         result=models.GetVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -109,10 +110,7 @@ def list_vector_index(client: _SyncClientImpl, request: models.ListVectorsIndexR
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'ListVectorIndexes': '',
-                'maxResults': request.max_results,
-                'nextToken': request.next_token,
-                'prefix': request.prefix,
+                'listVectorIndexes': '',
             },
             bucket=request.bucket,
         ),
@@ -127,7 +125,7 @@ def list_vector_index(client: _SyncClientImpl, request: models.ListVectorsIndexR
         result=models.ListVectorsIndexResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -153,7 +151,7 @@ def delete_vector_index(client: _SyncClientImpl, request: models.DeleteVectorInd
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'DeleteVectorIndex': '',
+                'deleteVectorIndex': '',
             },
             bucket=request.bucket,
         ),
@@ -168,6 +166,6 @@ def delete_vector_index(client: _SyncClientImpl, request: models.DeleteVectorInd
         result=models.DeleteVectorIndexResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )

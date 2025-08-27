@@ -3,7 +3,7 @@
 from typing import cast
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from . import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_bucket_name
 
 
 class TestVectorBucketBasic(TestIntegrationVectors):

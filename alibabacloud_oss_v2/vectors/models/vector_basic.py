@@ -1,97 +1,6 @@
 from typing import Optional, List, Any, Dict
 from ... import serde
 
-class VectorData(serde.Model):
-    """
-    The container that stores vector data.
-    """
-
-    _attribute_map = {
-        'float32': {'tag': 'xml', 'rename': 'float32', 'type': '[float]'},
-    }
-
-    def __init__(
-            self,
-            float32: Optional[List[float]] = None,
-            **kwargs: Any
-    ) -> None:
-        """
-        Args:
-            float32 (List[float], optional): The float32 vector data.
-        """
-        super().__init__(**kwargs)
-        self.float32 = float32
-
-
-class Vector(serde.Model):
-    """
-    The container that stores vector information.
-    """
-
-    _attribute_map = {
-        'data': {'tag': 'xml', 'rename': 'data', 'type': 'VectorData'},
-        'key': {'tag': 'xml', 'rename': 'key', 'type': 'str'},
-        'metadata': {'tag': 'xml', 'rename': 'metadata', 'type': 'dict'},
-    }
-
-    def __init__(
-            self,
-            data: Optional[VectorData] = None,
-            key: Optional[str] = None,
-            metadata: Optional[Dict[str, Any]] = None,
-            **kwargs: Any
-    ) -> None:
-        """
-        Args:
-            data (VectorData, optional): The vector data.
-            key (str, optional): The vector key.
-            metadata (Dict[str, Any], optional): The metadata as key-value pairs.
-        """
-        super().__init__(**kwargs)
-        self.data = data
-        self.key = key
-        self.metadata = metadata
-
-
-class QueryVector(serde.Model):
-    """
-    The container that stores query result vector information.
-    """
-
-    _attribute_map = {
-        'data': {'tag': 'xml', 'rename': 'data', 'type': 'VectorData'},
-        'distance': {'tag': 'xml', 'rename': 'distance', 'type': 'float'},
-        'key': {'tag': 'xml', 'rename': 'key', 'type': 'str'},
-        'metadata': {'tag': 'xml', 'rename': 'metadata', 'type': 'dict'},
-    }
-
-    _dependency_map = {
-        'VectorData': {'new': lambda: VectorData()},
-    }
-
-    def __init__(
-        self,
-        data: Optional[VectorData] = None,
-        distance: Optional[float] = None,
-        key: Optional[str] = None,
-        metadata: Optional[Dict[str, Any]] = None,
-        **kwargs: Any
-    ) -> None:
-        """
-        Args:
-            data (VectorData, optional): The vector data.
-            distance (float, optional): The distance value.
-            key (str, optional): The vector key.
-            metadata (Dict[str, Any], optional): The metadata as key-value pairs.
-        """
-        super().__init__(**kwargs)
-        self.data = data
-        self.distance = distance
-        self.key = key
-        self.metadata = metadata
-
-
-
 class PutVectorsRequest(serde.RequestModel):
     """
     The request for the PutVectors operation.
@@ -100,26 +9,21 @@ class PutVectorsRequest(serde.RequestModel):
     _attribute_map = {
         'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
-        'vectors': {'tag': 'input', 'position': 'body', 'rename': 'vectors', 'type': '[Vector,json]'},
-    }
-
-    _dependency_map = {
-        'Vector': {'new': lambda: Vector()},
-        'VectorData': {'new': lambda: VectorData()},
+        'vectors': {'tag': 'input', 'position': 'body', 'rename': 'vectors', 'type': '[dict]'},
     }
 
     def __init__(
             self,
             bucket: Optional[str] = None,
             index_name: Optional[str] = None,
-            vectors: Optional[List[Vector]] = None,
+            vectors: Optional[List[Dict]] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
             bucket (str, optional): The name of the bucket.
             index_name (str, optional): The name of the index.
-            vectors (List[Vector], optional): The list of vectors to put.
+            vectors (List[Dict], optional): The list of vectors to put.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -132,7 +36,6 @@ class PutVectorsResult(serde.ResultModel):
     The result for the PutVectors operation.
     """
 
-    # Empty result class as no specific fields are defined in the structure
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)
 
@@ -182,22 +85,17 @@ class GetVectorsResult(serde.ResultModel):
     """
 
     _attribute_map = {
-        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[Vector,json]'},
-    }
-
-    _dependency_map = {
-        'Vector': {'new': lambda: Vector()},
-        'VectorData': {'new': lambda: VectorData()},
+        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[dict]'},
     }
 
     def __init__(
         self,
-        vectors: Optional[List[Vector]] = None,
+        vectors: Optional[List[Dict]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            vectors (List[Vector], optional): The list of vectors retrieved.
+            vectors (List[Dict], optional): The list of vectors retrieved.
         """
         super().__init__(**kwargs)
         self.vectors = vectors
@@ -261,24 +159,19 @@ class ListVectorsResult(serde.ResultModel):
 
     _attribute_map = {
         'next_token': {'tag': 'output', 'position': 'body', 'rename': 'nextToken', 'type': 'str'},
-        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[Vector,json]'},
-    }
-
-    _dependency_map = {
-        'Vector': {'new': lambda: Vector()},
-        'VectorData': {'new': lambda: VectorData()},
+        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[dict]'},
     }
 
     def __init__(
         self,
         next_token: Optional[str] = None,
-        vectors: Optional[List[Vector]] = None,
+        vectors: Optional[List[Dict]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             next_token (str, optional): The token for the next page of vectors.
-            vectors (List[Vector], optional): The list of vectors retrieved.
+            vectors (List[Dict], optional): The list of vectors retrieved.
         """
         super().__init__(**kwargs)
         self.next_token = next_token
@@ -332,22 +225,18 @@ class QueryVectorsRequest(serde.RequestModel):
         'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
         'filter': {'tag': 'input', 'position': 'body', 'rename': 'filter', 'type': 'dict'},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
-        'query_vector': {'tag': 'input', 'position': 'body', 'rename': 'queryVector', 'type': 'VectorData,json'},
+        'query_vector': {'tag': 'input', 'position': 'body', 'rename': 'queryVector', 'type': 'dict'},
         'return_distance': {'tag': 'input', 'position': 'body', 'rename': 'returnDistance', 'type': 'bool'},
         'return_metadata': {'tag': 'input', 'position': 'body', 'rename': 'returnMetadata', 'type': 'bool'},
         'top_k': {'tag': 'input', 'position': 'body', 'rename': 'topK', 'type': 'int'},
     }
 
-    _dependency_map = {
-        'VectorData': {'new': lambda: VectorData()},
-    }
-
     def __init__(
         self,
         bucket: Optional[str] = None,
-        filter: Optional[Dict[str, Any]] = None,
+        filter: Optional[Dict] = None,
         index_name: Optional[str] = None,
-        query_vector: Optional[VectorData] = None,
+        query_vector: Optional[Dict] = None,
         return_distance: Optional[bool] = None,
         return_metadata: Optional[bool] = None,
         top_k: Optional[int] = None,
@@ -356,9 +245,9 @@ class QueryVectorsRequest(serde.RequestModel):
         """
         Args:
             bucket (str, optional): The name of the bucket.
-            filter (Dict[str, Any], optional): The filter conditions for querying vectors.
+            filter (Dict, optional): The filter conditions for querying vectors.
             index_name (str, optional): The name of the index.
-            query_vector (VectorData, optional): The query vector data.
+            query_vector (Dict, optional): The query vector data.
             return_distance (bool, optional): Whether to return distance values.
             return_metadata (bool, optional): Whether to return vector metadata.
             top_k (int, optional): The number of nearest neighbors to return.
@@ -379,22 +268,17 @@ class QueryVectorsResult(serde.ResultModel):
     """
 
     _attribute_map = {
-        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[QueryVector,json]'},
-    }
-
-    _dependency_map = {
-        'QueryVector': {'new': lambda: QueryVector()},
-        'VectorData': {'new': lambda: VectorData()},
+        'vectors': {'tag': 'output', 'position': 'body', 'rename': 'vectors', 'type': '[dict]'},
     }
 
     def __init__(
         self,
-        vectors: Optional[List[QueryVector]] = None,
+        vectors: Optional[List[Dict]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            vectors (List[QueryVector], optional): The list of query result vectors.
+            vectors (List[Dict], optional): The list of query result vectors.
         """
         super().__init__(**kwargs)
         self.vectors = vectors

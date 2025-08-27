@@ -28,7 +28,7 @@ class Client:
         self._resolve_vectors_endpoint(_config)
         self._build_vectors_user_agent(_config)
         self._client = _SyncClientImpl(_config, **kwargs)
-        self._client._options.signer = VectorsSignerV4(uid=config.user_id)
+        self._client._options.signer = VectorsSignerV4(user_id=config.user_id)
 
     def __repr__(self) -> str:
         return "<OssVectorsClient>"
@@ -347,3 +347,43 @@ class Client:
             QueryVectorsResult: The result for the QueryVectors operation.
         """
         return operations.query_vectors(self._client, request, **kwargs)
+
+    # bucket logging
+    def put_bucket_logging(self, request: models.PutBucketLoggingRequest, **kwargs
+                           ) -> models.PutBucketLoggingResult:
+        """
+        Enables logging for a bucket.
+
+        Args:
+            request (PutBucketLoggingRequest): Request parameters for PutBucketLogging operation.
+
+        Returns:
+            PutBucketLoggingResult: Response result for PutBucketLogging operation.
+        """
+        return operations.put_bucket_logging(self._client, request, **kwargs)
+
+    def get_bucket_logging(self, request: models.GetBucketLoggingRequest, **kwargs
+                           ) -> models.GetBucketLoggingResult:
+        """
+        Queries the logging configurations of a bucket.
+
+        Args:
+            request (GetBucketLoggingRequest): Request parameters for GetBucketLogging operation.
+
+        Returns:
+            GetBucketLoggingResult: Response result for GetBucketLogging operation.
+        """
+        return operations.get_bucket_logging(self._client, request, **kwargs)
+
+    def delete_bucket_logging(self, request: models.DeleteBucketLoggingRequest, **kwargs
+                              ) -> models.DeleteBucketLoggingResult:
+        """
+        Disables logging for a bucket.
+
+        Args:
+            request (DeleteBucketLoggingRequest): Request parameters for DeleteBucketLogging operation.
+
+        Returns:
+            DeleteBucketLoggingResult: Response result for DeleteBucketLogging operation.
+        """
+        return operations.delete_bucket_logging(self._client, request, **kwargs)
