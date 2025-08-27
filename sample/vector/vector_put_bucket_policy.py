@@ -1,12 +1,12 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors.models as vector_model
 import alibabacloud_oss_v2.vectors as oss_vector
 
 parser = argparse.ArgumentParser(description="vector put bucket policy sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
+parser.add_argument('--uid', help='The user id.', required=True)
 
 def main():
     args = parser.parse_args()
@@ -18,6 +18,7 @@ def main():
     cfg = oss.config.load_default()
     cfg.credentials_provider = credentials_provider
     cfg.region = args.region
+    cfg.user_id = args.uid
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
@@ -41,7 +42,7 @@ def main():
          }
     '''
 
-    result = vector_client.put_bucket_policy(vector_model.PutBucketPolicyRequest(
+    result = vector_client.put_bucket_policy(oss_vector.models.PutBucketPolicyRequest(
         bucket=args.bucket,
         body=policy_content
     ))
