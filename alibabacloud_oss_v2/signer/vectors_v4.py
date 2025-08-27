@@ -238,7 +238,7 @@ class VectorsSignerV4(Signer):
         request = signing_ctx.request
 
         # canonical uri
-        uri = f'/acs:ossvector:{signing_ctx.region}:{self._uid}:'
+        uri = f'/acs:ossvector:{signing_ctx.region}:{self._user_id}:'
         if signing_ctx.bucket is not None:
             uri = uri + signing_ctx.bucket + '/'
         if signing_ctx.key is not None:

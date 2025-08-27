@@ -62,6 +62,7 @@ class LoggingEnabled(serde.Model):
     _attribute_map = { 
         'target_bucket': {'tag': 'xml', 'rename': 'TargetBucket', 'type': 'str'},
         'target_prefix': {'tag': 'xml', 'rename': 'TargetPrefix', 'type': 'str'},
+        'logging_role': {'tag': 'xml', 'rename': 'LoggingRole', 'type': 'str'},
     }
 
     _xml_map = {
@@ -72,16 +73,19 @@ class LoggingEnabled(serde.Model):
         self,
         target_bucket: Optional[str] = None,
         target_prefix: Optional[str] = None,
+        logging_role: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             target_bucket (str, optional): The bucket that stores access logs.
             target_prefix (str, optional): The prefix of the log objects. This parameter can be left empty.
+            logging_role (str, optional): The role used for logging operations.
         """
         super().__init__(**kwargs)
         self.target_bucket = target_bucket
         self.target_prefix = target_prefix
+        self.logging_role = logging_role
 
 
 class UserDefinedLogFieldsConfiguration(serde.Model):

@@ -3,56 +3,56 @@
 from typing import cast
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from . import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_bucket_name
 
 
-class TestBucketTags(TestIntegrationVectors):
+class TestVectorBucketBasic(TestIntegrationVectors):
 
-    def test_bucket_tags(self):
+    def test_vector_bucket_basic(self):
         # create bucket
         bucket_name = random_bucket_name()
         result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(
             bucket=bucket_name,
-            bucket_tagging='k1=v1&k2=v2',
+            acl='private',
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # put bucket tags
-        result = self.vector_client.put_bucket_tags(oss_vectors.models.PutBucketTagsRequest(
-            bucket=bucket_name,
-            tagging=oss_vectors.models.Tagging(
-                {
-                    'test_key': 'test_value',
-                    'test_key2': 'test_value2',
-                },
-            ),
-        ))
-        self.assertEqual(200, result.status_code)
-        self.assertEqual('OK', result.status)
-        self.assertEqual(24, len(result.request_id))
-        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-
-        # get bucket tags
-        result = self.vector_client.get_bucket_tags(oss_vectors.models.GetBucketTagsRequest(
+        # get bucket info
+        result = self.vector_client.get_vector_bucket(oss_vectors.models.GetVectorBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-        self.assertEqual('test_key', result.tagging.tags[0].key)
-        self.assertEqual('test_value', result.tagging.tags[0].value)
-        self.assertEqual('test_key2', result.tagging.tags[1].key)
-        self.assertEqual('test_value2', result.tagging.tags[1].value)
+        self.assertEqual(bucket_name, result.bucket_info.name)
+        self.assertIsNotNone(result.bucket_info.location)
+        self.assertIsNotNone(result.bucket_info.creation_date)
 
-        # delete bucket tags
-        result = self.vector_client.delete_bucket_tags(oss_vectors.models.DeleteBucketTagsRequest(
+        # list buckets
+        result = self.vector_client.list_vector_buckets(oss_vectors.models.ListVectorBucketsRequest(
+            prefix=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        self.assertIsNotNone(result.buckets)
+        self.assertGreater(len(result.buckets), 0)
+        found = False
+        for bucket in result.buckets:
+            if bucket.name == bucket_name:
+                found = True
+                break
+        self.assertTrue(found)
+
+        # delete bucket
+        result = self.vector_client.delete_vector_bucket(oss_vectors.models.DeleteVectorBucketRequest(
             bucket=bucket_name,
         ))
         self.assertEqual(204, result.status_code)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
-

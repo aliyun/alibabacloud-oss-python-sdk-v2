@@ -2,7 +2,7 @@
 
 import alibabacloud_oss_v2.models as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from . import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_bucket_name
 
 
 class TestVectorBucketResourceGroup(TestIntegrationVectors):

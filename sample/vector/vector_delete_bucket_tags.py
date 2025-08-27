@@ -1,14 +1,14 @@
 import argparse
 import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.vectors.models as vector_model
+import alibabacloud_oss_v2.vectors as oss_vector
 
-parser = argparse.ArgumentParser(description="vector put bucket tags sample")
+parser = argparse.ArgumentParser(description="vector delete bucket tags sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 
-
 def main():
-
     args = parser.parse_args()
 
     # Loading credentials values from the environment variables
@@ -21,27 +21,15 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss.VectorsClient(cfg)
+    vector_client = oss_vector.Client(cfg)
 
-    result = vector_client.put_bucket_tags(oss.PutBucketTagsRequest(
-            bucket=args.bucket,
-            tagging=oss.Tagging(
-                tag_set=oss.TagSet(
-                    tags=[oss.Tag(
-                        key='test_key',
-                        value='test_value',
-                    ), oss.Tag(
-                        key='test_key2',
-                        value='test_value2',
-                    )],
-                ),
-            ),
+    result = vector_client.delete_bucket_tags(vector_model.DeleteBucketTagsRequest(
+        bucket=args.bucket,
     ))
 
     print(f'status code: {result.status_code},'
-            f' request id: {result.request_id},'
+          f' request id: {result.request_id},'
     )
-
 
 if __name__ == "__main__":
     main()

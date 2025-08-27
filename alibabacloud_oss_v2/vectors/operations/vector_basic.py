@@ -4,6 +4,8 @@ from ...types import OperationInput, CaseInsensitiveDict
 from ... import serde
 from ... import serde_utils
 from .. import models
+from ._serde import serialize_input_vector_json_model
+from ._serde import deserialize_output_vector_json_model
 
 def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kwargs) -> models.PutVectorsResult:
     """
@@ -17,7 +19,7 @@ def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kw
         PutVectorsResult: The result for the PutVectors operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='PutVectors',
@@ -26,7 +28,7 @@ def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kw
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'PutVectors': '',
+                'putVectors': '',
             },
             bucket=request.bucket,
         ),
@@ -41,7 +43,7 @@ def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kw
         result=models.PutVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -58,7 +60,7 @@ def get_vectors(client: _SyncClientImpl, request: models.GetVectorsRequest, **kw
         GetVectorsResult: The result for the GetVectors operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='GetVectors',
@@ -67,7 +69,7 @@ def get_vectors(client: _SyncClientImpl, request: models.GetVectorsRequest, **kw
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'GetVectors': '',
+                'getVectors': '',
             },
             bucket=request.bucket,
         ),
@@ -82,7 +84,7 @@ def get_vectors(client: _SyncClientImpl, request: models.GetVectorsRequest, **kw
         result=models.GetVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -99,7 +101,7 @@ def list_vectors(client: _SyncClientImpl, request: models.ListVectorsRequest, **
         ListVectorsResult: The result for the ListVectors operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='ListVectors',
@@ -108,9 +110,7 @@ def list_vectors(client: _SyncClientImpl, request: models.ListVectorsRequest, **
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'ListVectors': '',
-                'maxResults': request.max_results,
-                'nextToken': request.next_token,
+                'listVectors': '',
             },
             bucket=request.bucket,
         ),
@@ -125,7 +125,7 @@ def list_vectors(client: _SyncClientImpl, request: models.ListVectorsRequest, **
         result=models.ListVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -142,7 +142,7 @@ def delete_vectors(client: _SyncClientImpl, request: models.DeleteVectorsRequest
         DeleteVectorsResult: The result for the DeleteVectors operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='DeleteVectors',
@@ -151,7 +151,7 @@ def delete_vectors(client: _SyncClientImpl, request: models.DeleteVectorsRequest
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'DeleteVectors': '',
+                'deleteVectors': '',
             },
             bucket=request.bucket,
         ),
@@ -166,7 +166,7 @@ def delete_vectors(client: _SyncClientImpl, request: models.DeleteVectorsRequest
         result=models.DeleteVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
 
@@ -183,7 +183,7 @@ def query_vectors(client: _SyncClientImpl, request: models.QueryVectorsRequest, 
         QueryVectorsResult: The result for the QueryVectors operation.
     """
 
-    op_input = serde.serialize_input_json(
+    op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
             op_name='QueryVectors',
@@ -192,7 +192,7 @@ def query_vectors(client: _SyncClientImpl, request: models.QueryVectorsRequest, 
                 'Content-Type': 'application/json',
             }),
             parameters={
-                'QueryVectors': '',
+                'queryVectors': '',
             },
             bucket=request.bucket,
         ),
@@ -207,6 +207,6 @@ def query_vectors(client: _SyncClientImpl, request: models.QueryVectorsRequest, 
         result=models.QueryVectorsResult(),
         op_output=op_output,
         custom_deserializer=[
-            serde.deserialize_output_jsonbody
+            deserialize_output_vector_json_model
         ],
     )
