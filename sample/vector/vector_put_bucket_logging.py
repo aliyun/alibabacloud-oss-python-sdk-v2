@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector put bucket logging sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -22,11 +22,11 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
-    result = vector_client.put_bucket_logging(oss_vector.models.PutBucketLoggingRequest(
+    result = vector_client.put_bucket_logging(oss_vectors.models.PutBucketLoggingRequest(
         bucket=args.bucket,
-        logging_enabled=oss_vector.models.LoggingEnabled(
+        logging_enabled=oss_vectors.models.LoggingEnabled(
             target_bucket='target-bucket-name',
             target_prefix='log-prefix',
         ),

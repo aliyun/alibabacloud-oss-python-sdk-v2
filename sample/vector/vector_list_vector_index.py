@@ -1,14 +1,16 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
-parser = argparse.ArgumentParser(description="vector list vector index sample")
+parser = argparse.ArgumentParser(description="list vector indexes sample")
+
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
-parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 parser.add_argument('--uid', help='The user id.', required=True)
+parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 
 def main():
+
     args = parser.parse_args()
 
     # Loading credentials values from the environment variables
@@ -22,21 +24,18 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    client = oss_vectors.Client(cfg)
 
-    result = vector_client.list_vector_index(oss_vector.models.ListVectorsIndexRequest(
-        bucket=args.bucket,
-    ))
+    # Create the Paginator for the ListVectorIndex operation
+    paginator = client.list_vector_index_paginator()
 
-    print(f'status code: {result.status_code},'
-          f' request id: {result.request_id},'
-          )
-
-    if result.indexes:
-        for index in result.indexes:
-            print(f'index name: {index}')
-
-
+    # Iterate through the vector index pages
+    for page in paginator.iter_page(oss_vectors.models.ListVectorsIndexRequest(
+        bucket=args.bucket
+        )
+    ):
+        for o in page.indexes:
+            print(f'Index: {o.get("indexName")}, {o.get("dataType")}, {o.get("dimension")}, {o.get("status")}')
 
 if __name__ == "__main__":
     main()

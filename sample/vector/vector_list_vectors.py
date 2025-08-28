@@ -1,15 +1,17 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
-parser = argparse.ArgumentParser(description="vector list vectors sample")
+parser = argparse.ArgumentParser(description="list vectors sample")
+
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
-parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
-parser.add_argument('--index_name', help='The name of the vector index.', required=True)
 parser.add_argument('--uid', help='The user id.', required=True)
+parser.add_argument('--bucket', help='The name of the bucket.', required=True)
+parser.add_argument('--iindex_name', help='The name of the vector index.', required=True)
 
 def main():
+
     args = parser.parse_args()
 
     # Loading credentials values from the environment variables
@@ -23,21 +25,21 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    client = oss_vectors.Client(cfg)
 
-    result = vector_client.list_vectors(oss_vector.models.ListVectorsRequest(
+    # Create the Paginator for the ListVectors operation
+    paginator = client.list_vectors_paginator()
+
+    # Create request with bucket and index name
+    request = oss_vectors.models.ListVectorsRequest(
         bucket=args.bucket,
-        index_name=args.index_name,
-    ))
+        index_name=args.index_name
+    )
 
-    print(f'status code: {result.status_code},'
-          f' request id: {result.request_id},'
-          )
-
-    if result.vectors:
-        for vector in result.vectors:
-            print(f'vector id: {vector}')
-
+    # Iterate through the vectors pages
+    for page in paginator.iter_page(request):
+        for o in page.vectors:
+            print(f'Vector Key: {o.get("key")}')
 
 if __name__ == "__main__":
     main()

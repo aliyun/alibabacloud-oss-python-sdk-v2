@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector put bucket tags sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -23,16 +23,16 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
-    result = vector_client.put_bucket_tags(oss_vector.models.PutBucketTagsRequest(
+    result = vector_client.put_bucket_tags(oss_vectors.models.PutBucketTagsRequest(
             bucket=args.bucket,
-            tagging=oss_vector.models.Tagging(
-                tag_set=oss_vector.models.TagSet(
-                    tags=[oss_vector.models.Tag(
+            tagging=oss_vectors.models.Tagging(
+                tag_set=oss_vectors.models.TagSet(
+                    tags=[oss_vectors.models.Tag(
                         key='test_key',
                         value='test_value',
-                    ), oss_vector.models.Tag(
+                    ), oss_vectors.models.Tag(
                         key='test_key2',
                         value='test_value2',
                     )],
