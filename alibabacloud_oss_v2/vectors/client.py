@@ -11,6 +11,11 @@ from .. import endpoints
 
 from . import models
 from . import operations
+from .paginator import (
+    ListVectorBucketsPaginator,
+    ListVectorIndexPaginator,
+    ListVectorsPaginator
+)
 
 
 class Client:
@@ -387,3 +392,28 @@ class Client:
             DeleteBucketLoggingResult: Response result for DeleteBucketLogging operation.
         """
         return operations.delete_bucket_logging(self._client, request, **kwargs)
+
+    # paginator
+    def list_vector_buckets_paginator(self, **kwargs) -> ListVectorBucketsPaginator:
+        """Creates a paginator for ListVectorBuckets
+
+        Returns:
+            ListVectorBucketsPaginator: a paginator for ListVectorBuckets
+        """
+        return ListVectorBucketsPaginator(self, **kwargs)
+
+    def list_vector_index_paginator(self, **kwargs) -> ListVectorIndexPaginator:
+        """Creates a paginator for ListVectorIndex
+
+        Returns:
+            ListVectorIndexPaginator: a paginator for ListVectorIndex
+        """
+        return ListVectorIndexPaginator(self, **kwargs)
+
+    def list_vectors_paginator(self, **kwargs) -> ListVectorsPaginator:
+        """Creates a paginator for ListVectors
+
+        Returns:
+            ListVectorsPaginator: a paginator for ListVectors
+        """
+        return ListVectorsPaginator(self, **kwargs)

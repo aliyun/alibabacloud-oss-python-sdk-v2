@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector query vectors sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -23,7 +23,7 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
     query_filter = {
         "$and": [{
@@ -39,7 +39,7 @@ def main():
 
     query_vector = {"float32": [0.1, 0.2, 0.3]}
 
-    result = vector_client.query_vectors(oss_vector.models.QueryVectorsRequest(
+    result = vector_client.query_vectors(oss_vectors.models.QueryVectorsRequest(
         bucket=args.bucket,
         index_name=args.index_name,
         filter=query_filter,

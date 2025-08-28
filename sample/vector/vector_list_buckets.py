@@ -1,13 +1,15 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
-parser = argparse.ArgumentParser(description="vector list buckets sample")
+parser = argparse.ArgumentParser(description="list vector buckets sample")
+
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 parser.add_argument('--uid', help='The user id.', required=True)
 
 def main():
+
     args = parser.parse_args()
 
     # Loading credentials values from the environment variables
@@ -21,17 +23,17 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    client = oss_vectors.Client(cfg)
 
-    result = vector_client.list_vector_buckets(oss_vector.models.ListVectorBucketsRequest())
+    # Create the Paginator for the ListVectorBuckets operation
+    paginator = client.list_vector_buckets_paginator()
 
-    print(f'status code: {result.status_code},'
-          f' request id: {result.request_id},'
-    )
-
-    if result.buckets:
-        for bucket in result.buckets:
-            print(f'bucket: {bucket.name}, location: {bucket.location}, creation_date: {bucket.creation_date}')
+    # Iterate through the vector bucket pages
+    for page in paginator.iter_page(oss_vectors.models.ListVectorBucketsRequest(
+        )
+    ):
+        for o in page.buckets:
+            print(f'Bucket: {o.name}, {o.location}')
 
 if __name__ == "__main__":
     main()

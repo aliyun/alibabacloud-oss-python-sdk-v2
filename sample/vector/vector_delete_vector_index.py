@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector delete vector index sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -23,9 +23,9 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
-    result = vector_client.delete_vector_index(oss_vector.models.DeleteVectorIndexRequest(
+    result = vector_client.delete_vector_index(oss_vectors.models.DeleteVectorIndexRequest(
         bucket=args.bucket,
         index_name=args.index_name,
     ))

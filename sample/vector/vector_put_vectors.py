@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector put vectors sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -23,7 +23,7 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
     vectors = [
         {
@@ -38,7 +38,7 @@ def main():
         }
     ]
 
-    result = vector_client.put_vectors(oss_vector.models.PutVectorsRequest(
+    result = vector_client.put_vectors(oss_vectors.models.PutVectorsRequest(
         bucket=args.bucket,
         index_name=args.index_name,
         vectors=vectors,

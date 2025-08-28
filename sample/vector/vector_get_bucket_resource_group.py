@@ -1,6 +1,6 @@
 import argparse
 import alibabacloud_oss_v2 as oss
-import alibabacloud_oss_v2.vectors as oss_vector
+import alibabacloud_oss_v2.vectors as oss_vectors
 
 parser = argparse.ArgumentParser(description="vector get bucket resource group sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
@@ -22,9 +22,9 @@ def main():
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 
-    vector_client = oss_vector.Client(cfg)
+    vector_client = oss_vectors.Client(cfg)
 
-    result = vector_client.get_bucket_resource_group(oss_vector.models.GetBucketResourceGroupRequest(
+    result = vector_client.get_bucket_resource_group(oss_vectors.models.GetBucketResourceGroupRequest(
         bucket=args.bucket,
     ))
 
