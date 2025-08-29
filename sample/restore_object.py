@@ -32,7 +32,9 @@ def main():
             days=1,
             # The restoration priority of Cold Archive or Deep Cold Archive objects.
             # Valid values:Expedited,Standard,Bulk
-            tier="Standard",
+            job_parameters=oss.JobParameters(
+                tier="Standard"
+            )
         )
     ))
 
