@@ -1270,15 +1270,24 @@ class RestoreRequest(serde.Model):
         self,
         days: Optional[int] = None,
         job_parameters: Optional[JobParameters] = None,
+        tier: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         days (int, optional): The duration in which the object can remain in the restored state. Unit: days. Valid values: 1 to 7.
         job_parameters (JobParameters, optional): The container that stores the restoration priority coniguration. This configuration takes effect only when the request is sent to restore Cold Archive objects. If you do not specify the JobParameters parameter, the default restoration priority Standard is used.
+        tier (str, optional): The restoration priority of Cold Archive or Deep Cold Archive objects.
+                Valid values:Expedited,Standard,Bulk
+                Deprecated: This parameter is deprecated. Use job_parameters instead.
         """
         super().__init__(**kwargs)
         self.days = days
         self.job_parameters = job_parameters
+        self.tier = tier
+        if tier is not None:
+            import warnings
+            warnings.warn("The 'tier' parameter is deprecated. Use 'job_parameters' instead.", DeprecationWarning)
+            self.job_parameters = JobParameters(tier=tier)
 
 
 
