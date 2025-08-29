@@ -855,6 +855,100 @@ class TestObjectBasic(TestIntegration):
             self.assertIn('RestoreAlreadyInProgress', serr.code)
             self.assertIn('The restore operation is in progress.', serr.message)
 
+    def test_restore_object_tier(self):
+        length = 123
+        data = random_str(length)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            storage_class=oss.StorageClassType.COLDARCHIVE,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.restore_object(oss.RestoreObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            restore_request=oss.RestoreRequest(
+                days=1,
+                tier='Expedited',
+            ),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.RestoreObjectResult)
+        self.assertEqual(202, result.status_code)
+        self.assertEqual('Expedited', result.restore_priority)
+
+        try:
+            result = self.client.restore_object(oss.RestoreObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+                restore_request=oss.RestoreRequest(
+                    days=1,
+                    tier='Expedited',
+                ),
+            ))
+            self.fail("should not here")
+        except Exception as err:
+            self.assertIsInstance(err, oss.exceptions.OperationError)
+            err = cast(oss.exceptions.OperationError, err)
+            serr = err.unwrap()
+            self.assertIsInstance(serr, oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, serr)
+            self.assertIn('RestoreAlreadyInProgress', serr.code)
+            self.assertIn('The restore operation is in progress.', serr.message)
+
+    def test_restore_object_job_parameters(self):
+        length = 123
+        data = random_str(length)
+        key = OBJECTNAME_PREFIX + random_str(16)
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            storage_class=oss.StorageClassType.COLDARCHIVE,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.restore_object(oss.RestoreObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            restore_request=oss.RestoreRequest(
+                days=7,
+                job_parameters=oss.JobParameters(
+                    tier="Bulk"
+                )
+            ),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.RestoreObjectResult)
+        self.assertEqual(202, result.status_code)
+        self.assertEqual('Bulk', result.restore_priority)
+
+        try:
+            result = self.client.restore_object(oss.RestoreObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+                restore_request=oss.RestoreRequest(
+                    days=7,
+                    job_parameters=oss.JobParameters(
+                        tier="Bulk"
+                    )
+                ),
+            ))
+            self.fail("should not here")
+        except Exception as err:
+            self.assertIsInstance(err, oss.exceptions.OperationError)
+            err = cast(oss.exceptions.OperationError, err)
+            serr = err.unwrap()
+            self.assertIsInstance(serr, oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, serr)
+            self.assertIn('RestoreAlreadyInProgress', serr.code)
+            self.assertIn('The restore operation is in progress.', serr.message)
+
     def test_object_acl(self):
         length = 123
         data = random_str(length)
