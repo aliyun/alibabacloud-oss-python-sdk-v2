@@ -180,7 +180,8 @@ class _TeeIteratorIOLen(TeeIterator):
         seekable = is_seekable_io(data)
         self._start_offset = 0 if not seekable else data.seek(0, os.SEEK_CUR)
         self._seekable = seekable
-
+        self._check_type_done = False
+        self._do_cast = False
     def __len__(self):
         return self._total
 
@@ -198,7 +199,15 @@ class _TeeIteratorIOLen(TeeIterator):
         d = self._data.read(self._block_size)
 
         if d:
-            return d
+            if not self._check_type_done:
+                self._check_type_done = True
+                if isinstance(d, str):
+                    self._do_cast = True
+
+            if self._do_cast:
+                return d.encode()
+            else:
+                return d
 
         raise StopIteration
 
@@ -220,9 +229,10 @@ class _TeeIteratorIO(TeeIterator):
         self._start_offset = 0 if not seekable else data.seek(0, os.SEEK_CUR)
         self._total = utils.guess_content_length(data)
         self._seekable = seekable
-
         if self._total is not None:
             setattr(self, '__len__', lambda x: x._total)
+        self._check_type_done = False
+        self._do_cast = False
 
     def iter_bytes(self):
         """iter bytes
@@ -238,7 +248,15 @@ class _TeeIteratorIO(TeeIterator):
         d = self._data.read(self._block_size)
 
         if d:
-            return d
+            if not self._check_type_done:
+                self._check_type_done = True
+                if isinstance(d, str):
+                    self._do_cast = True
+
+            if self._do_cast:
+                return d.encode()
+            else:
+                return d
 
         raise StopIteration
 
