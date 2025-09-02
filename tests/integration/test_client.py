@@ -1,12 +1,23 @@
 # pylint: skip-file
 from typing import cast
 import os
-import time
+import io
 import tempfile
 import datetime
 import requests
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name, random_str, REGION, OBJECTNAME_PREFIX, get_client
+import alibabacloud_oss_v2.crc as osscrc
+from . import (
+    TestIntegration, 
+    random_bucket_name, 
+    random_str, 
+    REGION,
+    OBJECTNAME_PREFIX,
+    ENDPOINT,
+    ACCESS_ID,
+    ACCESS_KEY,
+    get_client
+)
 from urllib.parse import quote, unquote
 
 class TestBucketBasic(TestIntegration):
@@ -442,6 +453,198 @@ class TestBucketBasic(TestIntegration):
             self.assertEqual(404, serr.status_code)
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('NoSuchBucket', serr.code)
+
+
+    def test_put_object_with_defferent_body_type(self):
+        len = 300 * 1024 + 1234
+        data = random_str(len)
+
+        crc64 = osscrc.Crc64(0)
+        crc64.update(data.encode())
+        ccrc = str(crc64.sum64())
+
+        # str
+        key = 'test-key-defferent_body-str'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # bytes
+        key = 'test-key-defferent_body-bytes'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data.encode(),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # IO[str]
+        key = 'test-key-defferent_body-io-str'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=io.StringIO(data),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # IO[bytes]
+        key = 'test-key-defferent_body-io-bytes'
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=io.BytesIO(data.encode()),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+    def test_put_object_with_defferent_body_type_disable_crc(self):
+        len = 350 * 1024 + 1234
+        data = random_str(len)
+
+        crc64 = osscrc.Crc64(0)
+        crc64.update(data.encode())
+        ccrc = str(crc64.sum64())
+
+        cfg = oss.config.load_default()
+        cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+        cfg.region = REGION
+        cfg.endpoint = ENDPOINT
+        cfg.disable_upload_crc64_check = True
+        client = oss.Client(cfg)
+
+        # str
+        key = 'test-key-defferent_body-no-crc-str'
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # bytes
+        key = 'test-key-defferent_body-no-crc-bytes'
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data.encode(),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # IO[str]
+        key = 'test-key-defferent_body-io-no-crc-str'
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=io.StringIO(data),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
+
+        # IO[bytes]
+        key = 'test-key-defferent_body-io-no-crc-bytes'
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=io.BytesIO(data.encode()),
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.PutObjectResult)
+        self.assertEqual(200, result.status_code)
+
+        result = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(result)
+        self.assertIsInstance(result, oss.HeadObjectResult)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(len, result.content_length)
+        self.assertEqual(ccrc, result.hash_crc64)
 
 
 class TestRegion(TestIntegration):

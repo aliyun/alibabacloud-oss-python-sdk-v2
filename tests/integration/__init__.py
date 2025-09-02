@@ -12,7 +12,7 @@ import unittest
 from urllib.parse import quote
 import requests
 import alibabacloud_oss_v2 as oss
-
+import alibabacloud_oss_v2.aio as ossaio
 
 ACCESS_ID = os.getenv("OSS_TEST_ACCESS_KEY_ID")
 ACCESS_KEY = os.getenv("OSS_TEST_ACCESS_KEY_SECRET")
@@ -62,6 +62,7 @@ def get_default_client() -> oss.Client:
 
     return _defaultClient
 
+
 def get_invalid_ak_client() -> oss.Client:
     global _invalidAkClient
     if _invalidAkClient is not None:
@@ -108,6 +109,22 @@ def get_client_use_ststoken(region:str, endpoint:str) -> oss.Client:
     cfg.endpoint = endpoint
     return oss.Client(cfg)
 
+
+def get_async_client(region:str, endpoint:str) -> ossaio.AsyncClient:
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+    cfg.region = region
+    cfg.endpoint = endpoint
+    return ossaio.AsyncClient(cfg)
+
+def get_async_client(region:str, endpoint:str, provider:oss.credentials.CredentialsProvider = None) -> ossaio.AsyncClient:
+    cfg = oss.config.load_default()
+    if provider is None:
+        provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+    cfg.credentials_provider = provider
+    cfg.region = region
+    cfg.endpoint = endpoint
+    return ossaio.AsyncClient(cfg)
 
 def get_kms_id(region:str) ->str:
     return

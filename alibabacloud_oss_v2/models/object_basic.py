@@ -3,9 +3,9 @@
 # pylint: disable=super-init-not-called, too-many-lines, line-too-long, too-many-arguments
 # pylint: disable=too-many-locals
 import datetime
-from typing import Optional, Dict, Any, MutableMapping, List
+from typing import Optional, Dict, Any, MutableMapping, List, Union
 from .. import serde
-from ..types import BodyType, StreamBody
+from ..types import BodyType, StreamBody, AsyncStreamBody
 from .bucket_basic import Owner
 
 
@@ -526,7 +526,7 @@ class GetObjectResult(serde.ResultModel):
         restore: Optional[str] = None,
         process_status: Optional[str] = None,
         delete_marker: Optional[bool] = None,
-        body: Optional[StreamBody] = None,
+        body: Optional[Union[StreamBody, AsyncStreamBody]] = None,
         **kwargs: Any
     ) -> None:
         """
