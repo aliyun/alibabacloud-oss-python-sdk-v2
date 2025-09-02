@@ -13,6 +13,8 @@ from typing import (
     Mapping,
     Set,
     Dict,
+    AsyncIterator,
+    AsyncContextManager,
 )
 from requests.structures import CaseInsensitiveDict
 
@@ -450,3 +452,117 @@ class StreamBody(abc.ABC):
         :return: An iterator of bytes from the stream
         :rtype: Iterator[str]
         """
+
+
+class AsyncStreamBody(abc.ABC):
+    """Abstract base class for a AsyncStreamBody."""
+
+    @abc.abstractmethod
+    async def __aenter__(self):
+        """Return `self` upon entering the runtime context."""
+
+    @abc.abstractmethod
+    async def __aexit__(self, exc_type, exc_value, traceback):
+        """Raise any exception triggered within the runtime context."""
+
+    @property
+    @abc.abstractmethod
+    def is_closed(self) -> bool:
+        """Whether the stream has been closed yet.
+
+        :rtype: bool
+        :return: Whether the stream has been closed yet.
+        """
+
+    @property
+    @abc.abstractmethod
+    def is_stream_consumed(self) -> bool:
+        """Whether the stream has been consumed.
+
+        :rtype: bool
+        :return: Whether the stream has been consumed.
+        """
+
+    @property
+    @abc.abstractmethod
+    def content(self) -> bytes:
+        """Content of the stream, in bytes.
+
+        :rtype: bytes
+        :return: The stream's content in bytes.
+        """
+
+    @abc.abstractmethod
+    async def read(self) -> bytes:
+        """Read the stream's bytes.
+
+        :return: The read in bytes
+        :rtype: bytes
+        """
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        """close the stream"""
+
+    @abc.abstractmethod
+    async def iter_bytes(self, **kwargs: Any) -> AsyncIterator[bytes]:
+        """Iterates over the stream's bytes. Will decompress in the process.
+
+        :return: An iterator of bytes from the stream
+        :rtype: Iterator[str]
+        """
+
+class AsyncHttpResponse(_HttpResponseBase, AsyncContextManager["AsyncHttpResponse"]):
+    """Abstract base class for a HttpResponse, the response from an HTTP request."""
+
+    @abc.abstractmethod
+    async def read(self) -> bytes:
+        """Read the response's bytes.
+
+        :return: The read in bytes
+        :rtype: bytes
+        """
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        """close the response"""
+
+    @abc.abstractmethod
+    async def iter_bytes(self, **kwargs: Any) -> AsyncIterator[bytes]:
+        """Asynchronously iterates over the response's bytes. Will decompress in the process.
+
+        :return: An async iterator of bytes from the response
+        :rtype: AsyncIterator[bytes]
+        """
+        raise NotImplementedError()
+        yield  # pylint: disable=unreachable
+
+    def __repr__(self) -> str:
+        return f'<AsyncHttpResponse: {self.status_code} {self.reason}>'
+
+
+class AsyncHttpClient(abc.ABC):
+    """Abstract base class for Async HTTP client."""
+
+    @abc.abstractmethod
+    async def send(self, request: HttpRequest, **kwargs: Any) -> AsyncHttpResponse:
+        """Sends an HTTP request and returns an HTTP response.
+
+        An error is returned if caused by client policy (such as CheckRedirect), 
+        or failure to speak HTTP (such as a network connectivity problem). 
+        A non-2xx status code doesn't cause an error.
+
+        :type request: Any
+        :param request: the http request sent to server.
+
+        :rtype: httpResponse
+        :return: The response object.
+        """
+
+    @abc.abstractmethod
+    async def open(self) -> None:
+        """Assign new session if one does not already exist."""
+
+    @abc.abstractmethod
+    async def close(self) -> None:
+        """Close the session if it is not externally owned."""
