@@ -450,3 +450,11 @@ class StreamBody(abc.ABC):
         :return: An iterator of bytes from the stream
         :rtype: Iterator[str]
         """
+
+class EndpointProvider(abc.ABC):
+    """Abstract base class for a EndpointProvider."""
+
+    @abc.abstractmethod
+    def build_url(self, op_input: OperationInput) -> None:
+        """build the request url"""
+

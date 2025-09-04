@@ -7,10 +7,10 @@ from ..types import OperationInput, OperationOutput
 from ..signer.vectors_v4 import VectorsSignerV4
 from .. import utils
 from .. import validation
-from .. import endpoints
 
 from . import models
 from . import operations
+from . import endpoints
 from .paginator import (
     ListVectorBucketsPaginator,
     ListVectorIndexPaginator,
@@ -34,29 +34,29 @@ class Client:
         self._build_vectors_user_agent(_config)
         self._client = _SyncClientImpl(_config, **kwargs)
         self._client._options.signer = VectorsSignerV4(user_id=config.user_id)
+        self._client._options.endpoint_provider = endpoints.VectorsEndpointProvider(
+            account_id=config.user_id,
+            endpoint=self._client._options.endpoint
+        )
 
     def __repr__(self) -> str:
         return "<OssVectorsClient>"
 
     def _resolve_vectors_endpoint(self, config: Config) -> None:
         """vectors endpoint"""
-        disable_ssl = utils.safety_bool(config.disable_ssl)
-        endpoint = utils.safety_str(config.endpoint)
-        region = utils.safety_str(config.region)
-        if len(endpoint) > 0:
-            endpoint = endpoints.add_scheme(endpoint, disable_ssl)
-        elif validation.is_valid_region(region):
-            if bool(config.use_internal_endpoint):
-                etype = "internal"
-            else:
-                etype = "default"
-
-            endpoint = endpoints.vectors_from_region(region, disable_ssl, etype)
-
-        if endpoint == "":
+        if config.endpoint is not None:
             return
 
-        config.endpoint = endpoint
+        if not validation.is_valid_region(config.region):
+            return
+
+        if bool(config.use_internal_endpoint):
+            etype = "internal"
+        else:
+            etype = "default"
+
+        config.endpoint = endpoints.from_region(config.region, etype)
+
 
     def _build_vectors_user_agent(self, config: Config) -> str:
         if config.user_agent:

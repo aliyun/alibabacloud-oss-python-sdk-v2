@@ -37,20 +37,6 @@ def from_region(region:str, disable_ssl:bool, etype:str) -> str:
 
     return endpoint
 
-
-def vectors_from_region(region: str, disable_ssl: bool, etype: str) -> str:
-    """Generate vectors endpoint from region"""
-    scheme = "https"
-    if disable_ssl:
-        scheme = "http"
-
-    if etype == "internal":
-        endpoint = f"oss-{region}-internal.oss-vectors.aliyuncs.com"
-    else:
-        endpoint = f"oss-{region}.oss-vectors.aliyuncs.com"
-
-    return f"{scheme}://{endpoint}"
-
 def is_ip(hostname:str):
     """Check whether the host name is an IP address."""
     is_ipv6 = False

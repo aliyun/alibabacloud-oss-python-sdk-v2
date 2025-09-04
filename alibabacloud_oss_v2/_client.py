@@ -29,6 +29,7 @@ from .types import (
     BodyType,
     OperationInput,
     OperationOutput,
+    EndpointProvider,
 )
 
 
@@ -110,6 +111,7 @@ class _Options:
         feature_flags: Optional[int] = None,
         additional_headers: Optional[List[str]] = None,
         operation_timeout: Optional[Union[int, float]] = None,
+        endpoint_provider: Optional[EndpointProvider] = None,
     ) -> None:
         self.product = product
         self.region = region
@@ -127,7 +129,7 @@ class _Options:
         self.feature_flags = feature_flags or defaults.FF_DEFAULT
         self.additional_headers = additional_headers
         self.operation_timeout = operation_timeout
-
+        self.endpoint_provider = endpoint_provider
 
 class _InnerOptions:
     """client runtime's information."""
@@ -219,7 +221,10 @@ class _ClientImplMixIn:
         """build request context
         """
         # host & path
-        url = _build_url(op_input, options)
+        if options.endpoint_provider is not None:
+            url = options.endpoint_provider.build_url(op_input)
+        else:
+            url = _build_url(op_input, options)
 
         # queries
         if op_input.parameters is not None:
