@@ -27,7 +27,7 @@ class VectorsEndpointProvider(EndpointProvider):
         if op_input.bucket is None:
             host = self._endpoint.netloc
         else:
-            host = f'{self._account_id}-{op_input.bucket}.{self._endpoint.netloc}'
+            host = f'{op_input.bucket}-{self._account_id}.{self._endpoint.netloc}'
 
         if op_input.key is not None:
             paths.append(quote(op_input.key))
