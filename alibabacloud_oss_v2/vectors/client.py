@@ -33,9 +33,9 @@ class Client:
         self._resolve_vectors_endpoint(_config)
         self._build_vectors_user_agent(_config)
         self._client = _SyncClientImpl(_config, **kwargs)
-        self._client._options.signer = VectorsSignerV4(user_id=config.user_id)
+        self._client._options.signer = VectorsSignerV4(account_id=config.account_id)
         self._client._options.endpoint_provider = endpoints.VectorsEndpointProvider(
-            account_id=config.user_id,
+            account_id=config.account_id,
             endpoint=self._client._options.endpoint
         )
 

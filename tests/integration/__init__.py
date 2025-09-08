@@ -102,7 +102,7 @@ def get_vectors_client() -> oss_vectors.Client:
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
     cfg.endpoint = ENDPOINT
-    cfg.user_id = USER_ID
+    cfg.account_id = USER_ID
     return oss_vectors.Client(cfg)
 
 def get_client_use_ststoken(region:str, endpoint:str) -> oss.Client:
