@@ -634,8 +634,8 @@ class TestSignerV4(unittest.TestCase):
         Since the URI construction is internal, we test it by examining the string_to_sign
         which contains the canonical request.
         """
-        user_id = "123"
-        signer = VectorsSignerV4(user_id)
+        account_id = "123"
+        signer = VectorsSignerV4(account_id)
 
         # Test 1: Only region
         sign_ctx = SigningContext(
@@ -645,7 +645,7 @@ class TestSignerV4(unittest.TestCase):
             signing_time=datetime.datetime.fromtimestamp(1702743657, tz=datetime.timezone.utc)
         )
         signer.sign(sign_ctx)
-        expected_uri_1 = f'/acs:ossvector:cn-hangzhou:{user_id}:'
+        expected_uri_1 = f'/acs:ossvector:cn-hangzhou:{account_id}:'
 
         self.assertIn(expected_uri_1, sign_ctx.string_to_sign)
 
@@ -658,7 +658,7 @@ class TestSignerV4(unittest.TestCase):
             signing_time=datetime.datetime.fromtimestamp(1702743657, tz=datetime.timezone.utc)
         )
         signer.sign(sign_ctx)
-        expected_uri_2 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/'
+        expected_uri_2 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/'
         self.assertIn(expected_uri_2, sign_ctx.string_to_sign)
 
         # Test 3: Region, bucket, and simple key
@@ -671,7 +671,7 @@ class TestSignerV4(unittest.TestCase):
             signing_time=datetime.datetime.fromtimestamp(1702743657, tz=datetime.timezone.utc)
         )
         signer.sign(sign_ctx)
-        expected_uri_3 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/key'
+        expected_uri_3 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/key'
         self.assertIn(expected_uri_3, sign_ctx.string_to_sign)
 
         # Test 4: Region, bucket, and complex key that needs escaping
@@ -687,7 +687,7 @@ class TestSignerV4(unittest.TestCase):
         )
         signer.sign(sign_ctx)
         # The key should be URL-encoded in the final URI
-        expected_uri_4 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/{escaped_key}'
+        expected_uri_4 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/{escaped_key}'
         self.assertIn(expected_uri_4, sign_ctx.string_to_sign)
 
     def test_signer_vector_v4_build_bucket_arn(self) -> None:
@@ -696,8 +696,8 @@ class TestSignerV4(unittest.TestCase):
         _calc_canonical_request.
         Corresponds to TestSignerVectorV4BuildBucketArn in Go.
         """
-        user_id = "123"
-        signer = VectorsSignerV4(user_id)
+        account_id = "123"
+        signer = VectorsSignerV4(account_id)
 
         # Create a minimal, valid SigningContext for _calc_canonical_request
         # It doesn't need credentials or a full request for this specific test
@@ -718,7 +718,7 @@ class TestSignerV4(unittest.TestCase):
         sign_ctx.__dict__.update(base_sign_ctx.__dict__)  # Merge base context
         sign_ctx.region = 'cn-hangzhou'
         canonical_request_output = signer._calc_canonical_request(sign_ctx, set())
-        expected_uri_1 = f'/acs:ossvector:cn-hangzhou:{user_id}:'
+        expected_uri_1 = f'/acs:ossvector:cn-hangzhou:{account_id}:'
         # The canonical request format is METHOD\nURI\nQUERY\nHEADERS\nADDITIONAL_HEADERS\nPAYLOAD
         # So the URI should be the second line.
         lines = canonical_request_output.split('\n')
@@ -730,7 +730,7 @@ class TestSignerV4(unittest.TestCase):
         sign_ctx.region = 'cn-hangzhou'
         sign_ctx.bucket = 'bucket'
         canonical_request_output = signer._calc_canonical_request(sign_ctx, set())
-        expected_uri_2 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/'
+        expected_uri_2 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/'
         lines = canonical_request_output.split('\n')
         self.assertEqual(lines[1], quote(expected_uri_2), "URI mismatch for region-bucket case")
 
@@ -741,7 +741,7 @@ class TestSignerV4(unittest.TestCase):
         sign_ctx.bucket = 'bucket'
         sign_ctx.key = 'key'
         canonical_request_output = signer._calc_canonical_request(sign_ctx, set())
-        expected_uri_3 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/key'
+        expected_uri_3 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/key'
         lines = canonical_request_output.split('\n')
         self.assertEqual(lines[1], quote(expected_uri_3), "URI mismatch for region-bucket-key case")
 
@@ -755,7 +755,7 @@ class TestSignerV4(unittest.TestCase):
         sign_ctx.key = escaped_key
         canonical_request_output = signer._calc_canonical_request(sign_ctx, set())
         # The key should be URL-encoded in the final URI by the quote() function inside _calc_canonical_request
-        expected_uri_4 = f'/acs:ossvector:cn-hangzhou:{user_id}:bucket/{escaped_key}'
+        expected_uri_4 = f'/acs:ossvector:cn-hangzhou:{account_id}:bucket/{escaped_key}'
         lines = canonical_request_output.split('\n')
         self.assertEqual(lines[1], quote(expected_uri_4), "URI mismatch for region-bucket-complex-key case")
 

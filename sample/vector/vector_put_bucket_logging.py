@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser(description="vector put bucket logging sample")
 parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
-parser.add_argument('--uid', help='The user id.', required=True)
+parser.add_argument('--account_id', help='The account id.', required=True)
 
 def main():
     args = parser.parse_args()
@@ -18,7 +18,7 @@ def main():
     cfg = oss.config.load_default()
     cfg.credentials_provider = credentials_provider
     cfg.region = args.region
-    cfg.user_id = args.uid
+    cfg.account_id = args.account_id
     if args.endpoint is not None:
         cfg.endpoint = args.endpoint
 

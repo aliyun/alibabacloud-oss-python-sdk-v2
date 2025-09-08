@@ -15,8 +15,8 @@ class VectorsSignerV4(Signer):
     """Signer Vectors V4
     """
 
-    def __init__(self, user_id: str) -> None:
-        self._user_id = user_id
+    def __init__(self, account_id: str) -> None:
+        self._account_id = account_id
 
     def sign(self, signing_ctx: SigningContext) -> None:
         if signing_ctx is None:
@@ -30,9 +30,9 @@ class VectorsSignerV4(Signer):
             raise exceptions.ParamNullOrEmptyError(
                 field="SigningContext.request")
         
-        if self._user_id is None or self._user_id == '':
+        if self._account_id is None or self._account_id == '':
             raise exceptions.ParamNullOrEmptyError(
-                field="SignerVectorsV4.user_id")
+                field="SignerVectorsV4.account_id")
 
         if signing_ctx.auth_method_query:
             return self._auth_query(signing_ctx)
@@ -238,7 +238,7 @@ class VectorsSignerV4(Signer):
         request = signing_ctx.request
 
         # canonical uri
-        uri = f'/acs:ossvector:{signing_ctx.region}:{self._user_id}:'
+        uri = f'/acs:ossvector:{signing_ctx.region}:{self._account_id}:'
         if signing_ctx.bucket is not None:
             uri = uri + signing_ctx.bucket + '/'
         if signing_ctx.key is not None:
