@@ -242,7 +242,7 @@ class VectorsSignerV4(Signer):
         if signing_ctx.bucket is not None:
             uri += f'{self._account_id}:{signing_ctx.bucket}/'
         else:
-            uri += ':'
+            uri += ':/'
         if signing_ctx.key is not None:
             uri += f'{signing_ctx.key}'
         canonical_uri = quote(uri, safe='/')
