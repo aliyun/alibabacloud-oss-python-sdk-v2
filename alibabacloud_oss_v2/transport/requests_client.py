@@ -224,3 +224,4 @@ class RequestsHttpClient(HttpClient):
             raise error
 
         return resp
+
