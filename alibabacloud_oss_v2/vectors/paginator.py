@@ -89,7 +89,7 @@ class ListVectorIndexesPaginator:
             limit (int, optional): The maximum number of items in the response.
 
         Yields:
-            Iterator[models.ListVectorsIndexResult]: An iterator of ListVectorsIndexResult from the response
+            Iterator[models.ListVectorIndexesResult]: An iterator of ListVectorIndexes from the response
         """
         limit = kwargs.get('limit', self._limit)
         req = copy.copy(request)
@@ -109,7 +109,7 @@ class ListVectorIndexesPaginator:
             is_truncated = bool(next_token)
 
     def __repr__(self) -> str:
-        return "<ListVectorIndexPaginator>"
+        return "<ListVectorIndexesPaginator>"
 
 
 

@@ -7,6 +7,7 @@ parser.add_argument('--region', help='The region in which the bucket is located.
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 parser.add_argument('--account_id', help='The account id.', required=True)
+parser.add_argument('--target_bucket', help='The name of the target bucket.', required=True)
 
 def main():
     args = parser.parse_args()
@@ -28,7 +29,7 @@ def main():
         bucket=args.bucket,
         bucket_logging_status=oss_vectors.models.BucketLoggingStatus(
             logging_enabled=oss_vectors.models.LoggingEnabled(
-                target_bucket='oss-python-sdk-zxl-test',
+                target_bucket=args.target_bucket,
                 target_prefix='log-prefix',
                 logging_role='AliyunOSSLoggingDefaultRole'
             )

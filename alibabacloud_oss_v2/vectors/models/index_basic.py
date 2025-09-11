@@ -112,7 +112,7 @@ class GetVectorIndexResult(serde.ResultModel):
 # List
 class ListVectorIndexesRequest(serde.RequestModel):
     """
-    The request for the ListVectorsIndexes operation.
+    The request for the ListVectorIndexes operation.
     """
 
     _attribute_map = {
@@ -146,7 +146,7 @@ class ListVectorIndexesRequest(serde.RequestModel):
 
 class ListVectorIndexesResult(serde.ResultModel):
     """
-    The result for the ListVectorsIndexes operation.
+    The result for the ListVectorIndexes operation.
     """
 
     _attribute_map = {
