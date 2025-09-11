@@ -64,7 +64,7 @@ def get_vector_index(client: _SyncClientImpl, request: models.GetVectorIndexRequ
         request=request,
         op_input=OperationInput(
             op_name='GetVectorIndex',
-            method='GET',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -89,23 +89,23 @@ def get_vector_index(client: _SyncClientImpl, request: models.GetVectorIndexRequ
     )
 
 
-def list_vector_index(client: _SyncClientImpl, request: models.ListVectorsIndexRequest, **kwargs) -> models.ListVectorsIndexResult:
+def list_vector_indexes(client: _SyncClientImpl, request: models.ListVectorIndexesRequest, **kwargs) -> models.ListVectorIndexesResult:
     """
     list_vector_index synchronously
 
     Args:
         client (_SyncClientImpl): A agent that sends the request.
-        request (ListVectorsIndexRequest): The request for the ListVectorIndex operation.
+        request (ListVectorIndexesRequest): The request for the ListVectorIndexes operation.
 
     Returns:
-        ListVectorsIndexResult: The result for the ListVectorIndex operation.
+        ListVectorIndexesResult: The result for the ListVectorIndexes operation.
     """
 
     op_input = serialize_input_vector_json_model(
         request=request,
         op_input=OperationInput(
-            op_name='ListVectorIndex',
-            method='GET',
+            op_name='ListVectorIndexes',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -122,7 +122,7 @@ def list_vector_index(client: _SyncClientImpl, request: models.ListVectorsIndexR
     op_output = client.invoke_operation(op_input, **kwargs)
 
     return serde.deserialize_output(
-        result=models.ListVectorsIndexResult(),
+        result=models.ListVectorIndexesResult(),
         op_output=op_output,
         custom_deserializer=[
             deserialize_output_vector_json_model
@@ -146,7 +146,7 @@ def delete_vector_index(client: _SyncClientImpl, request: models.DeleteVectorInd
         request=request,
         op_input=OperationInput(
             op_name='DeleteVectorIndex',
-            method='DELETE',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),

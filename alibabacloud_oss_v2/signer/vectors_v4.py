@@ -84,8 +84,8 @@ class VectorsSignerV4(Signer):
         string_to_sign = self._calc_string_to_sign(
             datetime_now_iso8601, scope, canonical_request)
 
-        print('\ncanonical_request:{}\n'.format(canonical_request))
-        print('string_to_sign:{}\n'.format(string_to_sign))
+        # print('\ncanonical_request:{}\n'.format(canonical_request))
+        # print('string_to_sign:{}\n'.format(string_to_sign))
 
         # signature
         signature = self._calc_signature(
@@ -196,8 +196,8 @@ class VectorsSignerV4(Signer):
 
         request.url = request.url + f'&x-oss-signature={quote(signature, safe="")}'
 
-        print('\ncanonical_request:{}\n'.format(canonical_request))
-        print('string_to_sign:{}\n'.format(string_to_sign))
+        # print('\ncanonical_request:{}\n'.format(canonical_request))
+        # print('string_to_sign:{}\n'.format(string_to_sign))
         signing_ctx.string_to_sign = string_to_sign
         signing_ctx.signing_time = datetime_now
         signing_ctx.expiration_time = expiration_time

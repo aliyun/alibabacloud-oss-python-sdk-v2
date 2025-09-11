@@ -27,14 +27,14 @@ def main():
 
     vectors = [
         {
-            "data": {"float32": [0.1, 0.2, 0.3]},
-            "key": "vector-key-1",
-            "metadata": {"key1": "value1", "key2": "value2"}
+            "data": {"float32":  [0.1] * 128},
+            "key": "key1",
+            "metadata": {"metadata1": "value1", "metadata2": "value2"}
         },
         {
-            "data": {"float32": [0.1, 0.3, 0.4]},
-            "key": "vector-key-2",
-            "metadata": {"key3": "value3", "key4": "value4"}
+            "data": {"float32": [0.2] * 128},
+            "key": "key2",
+            "metadata": {"metadata3": "value3", "metadata4": "value4"}
         }
     ]
 

@@ -21,7 +21,7 @@ from .config import Config
 from .types import (
     Retryer,
     CredentialsProvider,
-    HttpClient,
+    HttpClient, AsyncHttpClient,
     HttpRequest,
     HttpResponse,
     SigningContext,
@@ -102,7 +102,7 @@ class _Options:
         retryer: Optional[Retryer] = None,
         signer: Optional[Signer] = None,
         credentials_provider: Optional[CredentialsProvider] = None,
-        http_client: Optional[Union[HttpClient]] = None,
+        http_client: Optional[Union[HttpClient, AsyncHttpClient]] = None,
         address_style: Optional[AddressStyle] = None,
         readwrite_timeout: Optional[Union[int, float]] = None,
         response_handlers: Optional[List] = None,
@@ -213,7 +213,7 @@ class _ClientImplMixIn:
     def apply_operation(self, options: _Options, op_input: OperationInput) -> None:
         """apply operation"""
         self._apply_operation_options(options) # pylint: disable=no-member
-        _apply_operation_metadata(op_input, options)
+        self._apply_operation_metadata(op_input, options)
 
 
     def build_request_context(self, op_input: OperationInput, options: _Options, inner: _InnerOptions
@@ -384,6 +384,15 @@ class _SyncClientImpl(_ClientImplMixIn):
         handlers.extend(options.response_handlers)
 
         options.response_handlers = handlers
+
+    def _apply_operation_metadata(self, op_input: OperationInput, options: _Options) -> None:
+        handlers = op_input.op_metadata.get('opm-response-handler', None)
+        if handlers is not None:
+            options.response_handlers.extend(handlers)
+
+        stream = op_input.op_metadata.get('response-stream', None)
+        if stream is not None:
+            options.response_stream = stream
 
     def _sent_request(self, op_input: OperationInput, options: _Options) -> OperationOutput:
         context = self.build_request_context(op_input, options, self._inner)
@@ -600,15 +609,6 @@ def _resolve_cloud_box(config: Config, options: _Options) -> None:
     options.region = keys[0]
     options.product = defaults.CLOUD_BOX_PRODUCT
 
-
-def _apply_operation_metadata(op_input: OperationInput, options: _Options) -> None:
-    handlers = op_input.op_metadata.get('opm-response-handler', None)
-    if handlers is not None:
-        options.response_handlers.extend(handlers)
-
-    stream = op_input.op_metadata.get('response-stream', None)
-    if stream is not None:
-        options.response_stream = stream
 
 
 def _build_url(op_input: OperationInput, options: _Options) -> str:

@@ -143,7 +143,7 @@ class TestVectorBasic(TestIntegrationVectors):
         self.assertEqual(index_name, get_index_result.index.index_name)
 
         # 9. List indexes
-        list_index_result = self.vector_client.list_vector_index(oss_vectors.models.ListVectorsIndexRequest(
+        list_index_result = self.vector_client.list_vector_indexes(oss_vectors.models.ListVectorIndexesRequest(
             bucket=bucket_name
         ))
         self.assertEqual(200, list_index_result.status_code)

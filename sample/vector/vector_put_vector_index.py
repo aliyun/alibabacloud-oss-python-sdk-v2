@@ -29,8 +29,8 @@ def main():
         bucket=args.bucket,
         index_name=args.index_name,
         dimension=128,
-        data_type='HNSW',
-        distance_metric='EUCLIDEAN',
+        data_type='float32',
+        distance_metric='cosine',
         metadata={"nonFilterableMetadataKeys": ["key1", "key2"]}
     ))
 

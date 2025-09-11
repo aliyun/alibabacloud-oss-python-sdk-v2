@@ -1674,6 +1674,25 @@ class TestRestoreObject(unittest.TestCase):
         request = model.RestoreObjectRequest(
             bucket='bucket_name',
             key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            restore_request=model.RestoreRequest(
+                days=7,
+                job_parameters=model.JobParameters(
+                    tier="Expedited"
+                )
+            ),
+            request_payer='requester',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', request.version_id)
+        self.assertEqual(7, request.restore_request.days)
+        self.assertEqual('Expedited', request.restore_request.job_parameters.tier)
+        self.assertEqual('requester', request.request_payer)
+
+        request = model.RestoreObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
             invalid_field='invalid_field',
         )
         self.assertTrue(hasattr(request, 'bucket'))
@@ -1720,7 +1739,32 @@ class TestRestoreObject(unittest.TestCase):
         root = ET.fromstring(op_input.body)
         self.assertEqual('RestoreRequest', root.tag)
         self.assertEqual(7, int(root.findtext('Days')))
-        self.assertEqual('Expedited', root.findtext('JobParameters.Tier'))
+        self.assertEqual('Expedited', root.findtext('JobParameters/Tier'))
+
+
+        request = model.RestoreObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+            restore_request=model.RestoreRequest(
+                days=7,
+                job_parameters=model.JobParameters(
+                    tier="Standard"
+                )
+            ),
+            request_payer='requester',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='RestoreObject',
+            method='POST',
+            bucket=request.bucket,
+        ))
+
+        root = ET.fromstring(op_input.body)
+        self.assertEqual('RestoreRequest', root.tag)
+        self.assertEqual(7, int(root.findtext('Days')))
+        self.assertEqual('Standard', root.findtext('JobParameters/Tier'))
 
     def test_constructor_result(self):
         result = model.RestoreObjectResult()

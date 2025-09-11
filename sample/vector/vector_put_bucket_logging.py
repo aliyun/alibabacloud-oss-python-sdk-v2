@@ -26,10 +26,13 @@ def main():
 
     result = vector_client.put_bucket_logging(oss_vectors.models.PutBucketLoggingRequest(
         bucket=args.bucket,
-        logging_enabled=oss_vectors.models.LoggingEnabled(
-            target_bucket='target-bucket-name',
-            target_prefix='log-prefix',
-        ),
+        bucket_logging_status=oss_vectors.models.BucketLoggingStatus(
+            logging_enabled=oss_vectors.models.LoggingEnabled(
+                target_bucket='oss-python-sdk-zxl-test',
+                target_prefix='log-prefix',
+                logging_role='AliyunOSSLoggingDefaultRole'
+            )
+        )
     ))
 
     print(f'status code: {result.status_code},'

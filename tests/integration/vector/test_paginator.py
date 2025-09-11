@@ -91,8 +91,8 @@ class TestPaginatorBasic(TestIntegrationVectors):
         ))
 
         # Test paginator with limit parameter set during initialization
-        paginator = self.vector_client.list_vector_index_paginator(limit=1)
-        request = oss_vectors.models.ListVectorsIndexRequest(
+        paginator = self.vector_client.list_vector_indexes_paginator(limit=1)
+        request = oss_vectors.models.ListVectorIndexesRequest(
             bucket=bucket_name
         )
         iterator = paginator.iter_page(request)
@@ -103,7 +103,7 @@ class TestPaginatorBasic(TestIntegrationVectors):
         self.assertEqual(3, len(pages))
 
         # Test paginator with custom limit parameter
-        paginator = self.vector_client.list_vector_index_paginator(limit=2)
+        paginator = self.vector_client.list_vector_indexes_paginator(limit=2)
         iterator = paginator.iter_page(request, limit=3)
         pages = []
         for p in iterator:
@@ -115,7 +115,7 @@ class TestPaginatorBasic(TestIntegrationVectors):
         self.assertGreater(len(pages), 0)
 
         # Test default paginator without limit
-        paginator = self.vector_client.list_vector_index_paginator()
+        paginator = self.vector_client.list_vector_indexes_paginator()
         iterator = paginator.iter_page(request)
         total_indexes = 0
         for p in iterator:

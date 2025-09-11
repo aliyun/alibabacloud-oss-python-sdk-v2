@@ -74,11 +74,11 @@ class TestVectorIndex(TestIntegrationVectors):
         self.assertEqual(distance_metric, get_result.index.distance_metric)
 
         # 4. List vector indexes and verify our index is included
-        list_indexes_request = oss_vectors.models.ListVectorsIndexRequest(
+        list_indexes_request = oss_vectors.models.ListVectorIndexesRequest(
             bucket=bucket_name
         )
 
-        list_result = self.vector_client.list_vector_index(list_indexes_request)
+        list_result = self.vector_client.list_vector_indexes(list_indexes_request)
 
         # Assert successful listing
         self.assertEqual(200, list_result.status_code)

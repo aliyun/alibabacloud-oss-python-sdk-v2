@@ -39,7 +39,7 @@ def main():
     # Iterate through the vectors pages
     for page in paginator.iter_page(request):
         for o in page.vectors:
-            print(f'Vector Key: {o.get("key")}')
+            print(f'Vector: {o}')
 
 if __name__ == "__main__":
     main()
