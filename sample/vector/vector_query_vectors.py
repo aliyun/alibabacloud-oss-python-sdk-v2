@@ -28,16 +28,12 @@ def main():
     query_filter = {
         "$and": [{
             "type": {
-                "$in": ["comedy", "documentary"]
-            }
-        }, {
-            "year": {
-                "$gte": 2020
+                "$nin": ["comedy", "documentary"]
             }
         }]
     }
 
-    query_vector = {"float32": [0.1, 0.2, 0.3]}
+    query_vector = {"float32": [0.1] * 128}
 
     result = vector_client.query_vectors(oss_vectors.models.QueryVectorsRequest(
         bucket=args.bucket,
@@ -45,7 +41,7 @@ def main():
         filter=query_filter,
         query_vector=query_vector,
         return_distance=True,
-        return_metadata=False,
+        return_metadata=True,
         top_k=10
     ))
 

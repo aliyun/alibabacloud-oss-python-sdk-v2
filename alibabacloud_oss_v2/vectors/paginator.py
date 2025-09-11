@@ -58,38 +58,38 @@ class ListVectorBucketsPaginator:
         return "<ListVectorBucketsPaginator>"
 
 
-class ListVectorIndexAPIClient(abc.ABC):
-    """Abstract base class for list_vector_index client."""
+class ListVectorIndexesAPIClient(abc.ABC):
+    """Abstract base class for list_vector_indexes client."""
 
     @abc.abstractmethod
-    def list_vector_index(self, request: models.ListVectorsIndexRequest, **kwargs) -> models.ListVectorsIndexResult:
+    def list_vector_indexes(self, request: models.ListVectorIndexesRequest, **kwargs) -> models.ListVectorIndexesResult:
         """Lists vector indexes in a bucket."""
 
 
-class ListVectorIndexPaginator:
-    """A paginator for ListVectorIndex"""
+class ListVectorIndexesPaginator:
+    """A paginator for ListVectorIndexes"""
 
     def __init__(
             self,
-            client: ListVectorIndexAPIClient,
+            client: ListVectorIndexesAPIClient,
             **kwargs: Any
     ) -> None:
         """
-            client (ListVectorIndexAPIClient): A agent that sends the request.
+            client (ListVectorIndexesAPIClient): A agent that sends the request.
             limit (int, optional): The maximum number of items in the response.
         """
         self._client = client
         self._limit = kwargs.get('limit', None)
 
-    def iter_page(self, request: models.ListVectorsIndexRequest, **kwargs: Any) -> Iterator[models.ListVectorsIndexResult]:
+    def iter_page(self, request: models.ListVectorIndexesRequest, **kwargs: Any) -> Iterator[models.ListVectorIndexesResult]:
         """Iterates over the vector indexes.
 
         Args:
-            request (models.ListVectorsIndexRequest): The request for the ListVectorIndex operation.
+            request (models.ListVectorIndexesRequest): The request for the ListVectorIndexes operation.
             limit (int, optional): The maximum number of items in the response.
 
         Yields:
-            Iterator[models.ListVectorsIndexResult]: An iterator of ListVectorsIndexResult from the response
+            Iterator[models.ListVectorIndexesResult]: An iterator of ListVectorIndexes from the response
         """
         limit = kwargs.get('limit', self._limit)
         req = copy.copy(request)
@@ -100,7 +100,7 @@ class ListVectorIndexPaginator:
         is_truncated = False
 
         while first_page or is_truncated:
-            result = self._client.list_vector_index(req)
+            result = self._client.list_vector_indexes(req)
             yield result
 
             first_page = False
@@ -109,7 +109,7 @@ class ListVectorIndexPaginator:
             is_truncated = bool(next_token)
 
     def __repr__(self) -> str:
-        return "<ListVectorIndexPaginator>"
+        return "<ListVectorIndexesPaginator>"
 
 
 

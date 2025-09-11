@@ -13,7 +13,7 @@ from . import operations
 from . import endpoints
 from .paginator import (
     ListVectorBucketsPaginator,
-    ListVectorIndexPaginator,
+    ListVectorIndexesPaginator,
     ListVectorsPaginator
 )
 
@@ -199,17 +199,17 @@ class Client:
         """
         return operations.get_vector_index(self._client, request, **kwargs)
 
-    def list_vector_index(self, request: models.ListVectorsIndexRequest, **kwargs) -> models.ListVectorsIndexResult:
+    def list_vector_indexes(self, request: models.ListVectorIndexesRequest, **kwargs) -> models.ListVectorIndexesResult:
         """
         List vector indexes in a bucket.
 
         Args:
-            request (ListVectorsIndexRequest): The request for the ListVectorIndex operation.
+            request (ListVectorIndexesRequest): The request for the ListVectorIndexes operation.
 
         Returns:
-            ListVectorsIndexResult: The result for the ListVectorIndex operation.
+            ListVectorIndexesResult: The result for the ListVectorIndexes operation.
         """
-        return operations.list_vector_index(self._client, request, **kwargs)
+        return operations.list_vector_indexes(self._client, request, **kwargs)
 
     def delete_vector_index(self, request: models.DeleteVectorIndexRequest, **kwargs) -> models.DeleteVectorIndexResult:
         """
@@ -333,13 +333,13 @@ class Client:
         """
         return ListVectorBucketsPaginator(self, **kwargs)
 
-    def list_vector_index_paginator(self, **kwargs) -> ListVectorIndexPaginator:
+    def list_vector_indexes_paginator(self, **kwargs) -> ListVectorIndexesPaginator:
         """Creates a paginator for ListVectorIndex
 
         Returns:
-            ListVectorIndexPaginator: a paginator for ListVectorIndex
+            ListVectorIndexesPaginator: a paginator for ListVectorIndex
         """
-        return ListVectorIndexPaginator(self, **kwargs)
+        return ListVectorIndexesPaginator(self, **kwargs)
 
     def list_vectors_paginator(self, **kwargs) -> ListVectorsPaginator:
         """Creates a paginator for ListVectors

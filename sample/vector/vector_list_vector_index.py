@@ -27,10 +27,10 @@ def main():
     client = oss_vectors.Client(cfg)
 
     # Create the Paginator for the ListVectorIndex operation
-    paginator = client.list_vector_index_paginator()
+    paginator = client.list_vector_indexes_paginator()
 
     # Iterate through the vector index pages
-    for page in paginator.iter_page(oss_vectors.models.ListVectorsIndexRequest(
+    for page in paginator.iter_page(oss_vectors.models.ListVectorIndexesRequest(
         bucket=args.bucket
         )
     ):

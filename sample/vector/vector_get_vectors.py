@@ -32,7 +32,7 @@ def main():
         index_name=args.index_name,
         keys=keys,
         return_data=True,
-        return_metadata=False
+        return_metadata=True
     ))
 
     print(f'status code: {result.status_code},'

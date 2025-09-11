@@ -23,7 +23,7 @@ def put_vectors(client: _SyncClientImpl, request: models.PutVectorsRequest, **kw
         request=request,
         op_input=OperationInput(
             op_name='PutVectors',
-            method='PUT',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -64,7 +64,7 @@ def get_vectors(client: _SyncClientImpl, request: models.GetVectorsRequest, **kw
         request=request,
         op_input=OperationInput(
             op_name='GetVectors',
-            method='GET',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -105,7 +105,7 @@ def list_vectors(client: _SyncClientImpl, request: models.ListVectorsRequest, **
         request=request,
         op_input=OperationInput(
             op_name='ListVectors',
-            method='GET',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),
@@ -146,7 +146,7 @@ def delete_vectors(client: _SyncClientImpl, request: models.DeleteVectorsRequest
         request=request,
         op_input=OperationInput(
             op_name='DeleteVectors',
-            method='DELETE',
+            method='POST',
             headers=CaseInsensitiveDict({
                 'Content-Type': 'application/json',
             }),

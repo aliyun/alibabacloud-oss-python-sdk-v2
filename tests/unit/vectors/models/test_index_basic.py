@@ -237,7 +237,7 @@ class TestDeleteVectorIndex(unittest.TestCase):
 
 class TestListVectorsIndex(unittest.TestCase):
     def test_constructor_request(self):
-        request = model.ListVectorsIndexRequest()
+        request = model.ListVectorIndexesRequest()
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.max_results)
         self.assertIsNone(request.next_token)
@@ -245,7 +245,7 @@ class TestListVectorsIndex(unittest.TestCase):
         self.assertIsInstance(request, serde.RequestModel)
 
     def test_constructor_request_with_parameters(self):
-        request = model.ListVectorsIndexRequest(
+        request = model.ListVectorIndexesRequest(
             bucket='test-bucket',
             max_results=100,
             next_token='test-token',
@@ -258,7 +258,7 @@ class TestListVectorsIndex(unittest.TestCase):
         self.assertIsInstance(request, serde.RequestModel)
 
     def test_serialize_request(self):
-        request = model.ListVectorsIndexRequest(
+        request = model.ListVectorIndexesRequest(
             bucket='test-bucket',
             max_results=100,
             next_token='test-token',
@@ -283,7 +283,7 @@ class TestListVectorsIndex(unittest.TestCase):
         self.assertEqual(json_str, op_input.body.decode())
 
     def test_constructor_result(self):
-        result = model.ListVectorsIndexResult()
+        result = model.ListVectorIndexesResult()
         self.assertIsInstance(result, serde.ResultModel)
 
     def test_deserialize_result(self):
@@ -315,7 +315,7 @@ class TestListVectorsIndex(unittest.TestCase):
             )
         )
 
-        result = model.ListVectorsIndexResult()
+        result = model.ListVectorIndexesResult()
         deserializer = [_serde.deserialize_output_vector_json_model]
         serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
 
