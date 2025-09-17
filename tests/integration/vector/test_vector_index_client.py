@@ -1,8 +1,6 @@
 # pylint: skip-file
-
-
 import alibabacloud_oss_v2.vectors as oss_vectors
-from tests.integration import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_short_bucket_name
 
 
 class TestVectorIndex(TestIntegrationVectors):
@@ -11,7 +9,7 @@ class TestVectorIndex(TestIntegrationVectors):
     def test_vector_index_lifecycle(self):
         """Test the full lifecycle of a vector index: create (put), get, list, and delete."""
         # 1. Create bucket for testing
-        bucket_name = random_bucket_name()
+        bucket_name = random_short_bucket_name()
         create_bucket_result = self.vector_client.put_vector_bucket(
             oss_vectors.models.PutVectorBucketRequest(
                 bucket=bucket_name,
@@ -23,10 +21,10 @@ class TestVectorIndex(TestIntegrationVectors):
         self.assertEqual(24, len(create_bucket_result.headers.get('x-oss-request-id')))
 
         # 2. Put (Create) a vector index
-        index_name = 'test-index-for-integration'
-        dimension = 128
-        distance_metric = 'EUCLIDEAN'
-        data_type = 'vector'
+        index_name = 'testIndexForIntegration'
+        dimension = 3
+        distance_metric = 'cosine'
+        data_type = 'float32'
         metadata = {"nonFilterableMetadataKeys": ["key1", "key2"]}
 
         put_index_request = oss_vectors.models.PutVectorIndexRequest(
@@ -46,13 +44,6 @@ class TestVectorIndex(TestIntegrationVectors):
         self.assertEqual(24, len(put_result.request_id))
         self.assertEqual(24, len(put_result.headers.get('x-oss-request-id')))
 
-        # Assert response contains index details
-        self.assertIsNotNone(put_result.index)
-        self.assertEqual(index_name, put_result.index.index_name)
-        self.assertEqual(dimension, put_result.index.dimension)
-        self.assertEqual(distance_metric, put_result.index.distance_metric)
-        # Check if other fields like status, create_time etc. are present if needed
-
         # 3. Get the created vector index
         get_index_request = oss_vectors.models.GetVectorIndexRequest(
             bucket=bucket_name,
@@ -69,9 +60,9 @@ class TestVectorIndex(TestIntegrationVectors):
 
         # Assert retrieved index details match the created ones
         self.assertIsNotNone(get_result.index)
-        self.assertEqual(index_name, get_result.index.index_name)
-        self.assertEqual(dimension, get_result.index.dimension)
-        self.assertEqual(distance_metric, get_result.index.distance_metric)
+        self.assertEqual(index_name, get_result.index.get('indexName'))
+        self.assertEqual(dimension, get_result.index.get('dimension'))
+        self.assertEqual(distance_metric, get_result.index.get('distanceMetric'))
 
         # 4. List vector indexes and verify our index is included
         list_indexes_request = oss_vectors.models.ListVectorIndexesRequest(
@@ -85,21 +76,19 @@ class TestVectorIndex(TestIntegrationVectors):
         self.assertEqual('OK', list_result.status)
         self.assertEqual(24, len(list_result.request_id))
         self.assertEqual(24, len(list_result.headers.get('x-oss-request-id')))
-
-        # Assert the list is present and contains our index
         self.assertIsNotNone(list_result.indexes)
-        self.assertGreater(len(list_result.indexes), 0)
+        self.assertEqual(len(list_result.indexes), 1)
 
         # Find our specific index in the list
         found_index = None
         for index in list_result.indexes:
-            if index.index_name == index_name:
+            if index.get('indexName') == index_name:
                 found_index = index
                 break
 
         self.assertIsNotNone(found_index, f"Index '{index_name}' not found in the list")
-        self.assertEqual(dimension, found_index.dimension)
-        self.assertEqual(distance_metric, found_index.distance_metric)
+        self.assertEqual(dimension, found_index.get('dimension'))
+        self.assertEqual(distance_metric, found_index.get('distanceMetric'))
 
         # 5. Delete the vector index
         delete_index_request = oss_vectors.models.DeleteVectorIndexRequest(

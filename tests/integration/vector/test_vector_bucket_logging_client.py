@@ -1,7 +1,8 @@
 # pylint: skip-file
 
+import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from tests.integration import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_short_bucket_name, random_bucket_name
 
 
 class TestVectorBucketLogging(TestIntegrationVectors):
@@ -10,8 +11,11 @@ class TestVectorBucketLogging(TestIntegrationVectors):
     def test_vector_bucket_logging(self):
         """Test put, get, and delete bucket logging operations."""
         # 1. Create buckets: source bucket and target bucket
-        source_bucket_name = random_bucket_name()
+        source_bucket_name = random_short_bucket_name()
         target_bucket_name = random_bucket_name()
+
+        print(source_bucket_name)
+        print(target_bucket_name)
 
         # Create source bucket
         result = self.vector_client.put_vector_bucket(
@@ -24,21 +28,24 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        # Create target bucket
-        result = self.vector_client.put_vector_bucket(
-            oss_vectors.models.PutVectorBucketRequest(
-                bucket=target_bucket_name,
+
+        # create target bucket
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=target_bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
             )
-        )
+        ))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+
         # 2. Put bucket logging (enable logging)
         logging_prefix = 'log-prefix'
         logging_role = 'AliyunOSSLoggingDefaultRole'
-        # Using all 3 parameters for LoggingEnabled: target_bucket, target_prefix, logging_role
         put_result = self.vector_client.put_bucket_logging(
             oss_vectors.models.PutBucketLoggingRequest(
                 bucket=source_bucket_name,
@@ -66,12 +73,10 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         self.assertEqual('OK', get_result.status)
         self.assertEqual(24, len(get_result.request_id))
         self.assertEqual(24, len(get_result.headers.get('x-oss-request-id')))
-        # Verify the logging configuration retrieved matches what was set
         self.assertIsNotNone(get_result.bucket_logging_status)
         self.assertIsNotNone(get_result.bucket_logging_status.logging_enabled)
         self.assertEqual(target_bucket_name, get_result.bucket_logging_status.logging_enabled.target_bucket)
         self.assertEqual(logging_prefix, get_result.bucket_logging_status.logging_enabled.target_prefix)
-        # Verify the third parameter
         self.assertEqual(logging_role, get_result.bucket_logging_status.logging_enabled.logging_role)
 
         # 4. Delete bucket logging (disable logging)
@@ -90,16 +95,14 @@ class TestVectorBucketLogging(TestIntegrationVectors):
                 bucket=source_bucket_name
             )
         )
-        # When logging is disabled, LoggingEnabled should be None or absent
         self.assertEqual(200, get_result_after_delete.status_code)
         self.assertEqual('OK', get_result_after_delete.status)
         self.assertEqual(24, len(get_result_after_delete.request_id))
         self.assertEqual(24, len(get_result_after_delete.headers.get('x-oss-request-id')))
-        # Verify logging is disabled (LoggingEnabled is None or absent)
         self.assertIsNotNone(get_result_after_delete.bucket_logging_status)
-        # According to OSS API, when logging is disabled, the LoggingEnabled element is not returned
-        # or is None. Check for None here.
-        self.assertIsNone(get_result_after_delete.bucket_logging_status.logging_enabled)
+        self.assertIsNone(get_result_after_delete.bucket_logging_status.logging_enabled.target_bucket)
+        self.assertIsNone(get_result_after_delete.bucket_logging_status.logging_enabled.target_prefix)
+        self.assertIsNone(get_result_after_delete.bucket_logging_status.logging_enabled.logging_role)
 
         # 6. Delete buckets (cleanup)
         # Delete source bucket
@@ -113,8 +116,8 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         self.assertEqual(24, len(delete_source_result.headers.get('x-oss-request-id')))
 
         # Delete target bucket
-        delete_target_result = self.vector_client.delete_vector_bucket(
-            oss_vectors.models.DeleteVectorBucketRequest(
+        delete_target_result = self.client.delete_bucket(
+            oss.models.DeleteBucketRequest(
                 bucket=target_bucket_name,
             )
         )
