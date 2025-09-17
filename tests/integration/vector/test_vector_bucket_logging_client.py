@@ -14,9 +14,6 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         source_bucket_name = random_short_bucket_name()
         target_bucket_name = random_bucket_name()
 
-        print(source_bucket_name)
-        print(target_bucket_name)
-
         # Create source bucket
         result = self.vector_client.put_vector_bucket(
             oss_vectors.models.PutVectorBucketRequest(
