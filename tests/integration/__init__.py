@@ -18,6 +18,7 @@ import alibabacloud_oss_v2.aio as ossaio
 ACCESS_ID = os.getenv("OSS_TEST_ACCESS_KEY_ID")
 ACCESS_KEY = os.getenv("OSS_TEST_ACCESS_KEY_SECRET")
 ENDPOINT = os.getenv("OSS_TEST_ENDPOINT")
+VECTOR_ENDPOINT = os.getenv("OSS_TEST_VECTOR_ENDPOINT")
 REGION = os.getenv("OSS_TEST_REGION", "cn-hangzhou")
 RAM_ROLE_ARN = os.getenv("OSS_TEST_RAM_ROLE_ARN")
 SIGNATURE_VERSION = os.getenv("OSS_TEST_SIGNATURE_VERSION")
@@ -102,7 +103,7 @@ def get_vectors_client() -> oss_vectors.Client:
     cfg = oss.config.load_default()
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
-    cfg.endpoint = ENDPOINT
+    cfg.endpoint = VECTOR_ENDPOINT
     cfg.account_id = USER_ID
     return oss_vectors.Client(cfg)
 
@@ -146,6 +147,9 @@ def random_str(n):
 
 def random_bucket_name():
     return BUCKETNAME_PREFIX + random_lowstr(4) + '-' + str(int(datetime.datetime.now(datetime.timezone.utc).timestamp()))
+
+def random_short_bucket_name():
+    return BUCKETNAME_PREFIX + random_lowstr(7)
 
 def clean_objects(client:oss.Client, bucket_name:str) -> None:
     marker = ''
@@ -253,7 +257,80 @@ def sts_assume_role(access_key_id:str, access_key_secret:str, role_arn:str) -> d
     response = requests.get(assume_url)
 
     return json.loads(response.content)
-    
+
+
+def clean_vector_buckets(prefix: str) -> None:
+    vector_client = get_vectors_client()
+
+    paginator = vector_client.list_vector_buckets_paginator()
+    for page in paginator.iter_page(oss_vectors.models.ListVectorBucketsRequest(prefix=prefix)):
+        for bucket in page.buckets:
+            actual_bucket_name = bucket.name.split(':')[-1]
+
+            # Clean all content in the bucket (indexes and vectors)
+            clean_vector_bucket_content(vector_client, actual_bucket_name)
+
+            # Delete the bucket itself
+            delete_vector_bucket(actual_bucket_name)
+
+def clean_vector_bucket_content(client: oss_vectors.Client, full_bucket_name: str) -> None:
+    """
+    Clean all content in the specified vector bucket (including indexes and vectors)
+    """
+    # Clean all vector indexes
+    clean_vector_indexes(client, full_bucket_name)
+
+
+def clean_vector_indexes(client: oss_vectors.Client, bucket_name: str) -> None:
+    """
+    Clean all vector indexes in the specified bucket and their contained vectors
+    """
+    paginator_index = client.list_vector_indexes_paginator()
+    for page_index in paginator_index.iter_page(
+            oss_vectors.models.ListVectorIndexesRequest(bucket=bucket_name)
+    ):
+        for index in page_index.indexes:
+            # Clean all vectors in the index
+            clean_vectors(client, bucket_name, index.get("indexName"))
+
+            # Delete the vector index
+            client.delete_vector_index(oss_vectors.models.DeleteVectorIndexRequest(
+                bucket=bucket_name,
+                index_name=index.get("indexName"),
+            ))
+
+
+def clean_vectors(client: oss_vectors.Client, bucket_name: str, index_name: str) -> None:
+    """
+    Clean all vectors in the specified index
+    """
+    paginator = client.list_vectors_paginator()
+    request = oss_vectors.models.ListVectorsRequest(
+        bucket=bucket_name,
+        index_name=index_name,
+    )
+
+    for page_vector in paginator.iter_page(request):
+        keys = []
+        for vec in page_vector.vectors:
+            keys.append(vec.get("key"))
+
+        # Delete all vectors on the current page
+        if keys:
+            client.delete_vectors(oss_vectors.models.DeleteVectorsRequest(
+                bucket=bucket_name,
+                index_name=index_name,
+                keys=keys
+            ))
+
+
+def delete_vector_bucket(bucket_name: str) -> None:
+    """
+    Delete vector bucket
+    """
+    client = get_vectors_client()
+    client.delete_vector_bucket(oss_vectors.models.DeleteVectorBucketRequest(bucket=bucket_name))
+
 
 class TestIntegrationVectors(TestIntegration):
     
@@ -262,8 +339,16 @@ class TestIntegrationVectors(TestIntegration):
         TestIntegration.setUpClass()
         cls.vector_client = get_vectors_client()
 
+        vector_bucket_name = random_short_bucket_name()
+        result = cls.vector_client.put_vector_bucket(
+            oss_vectors.models.PutVectorBucketRequest(
+                bucket=vector_bucket_name,
+            )
+        )
+        cls.vector_bucket_name = vector_bucket_name
+
     @classmethod
     def tearDownClass(cls):
         TestIntegration.tearDownClass()
-
+        clean_vector_buckets(BUCKETNAME_PREFIX)
 

@@ -6,9 +6,9 @@ from ..types import EndpointProvider, OperationInput
 def from_region(region: str, etype: str) -> str:
     """Generate vectors endpoint from region"""
     if etype == "internal":
-        return f"oss-{region}-internal.oss-vectors.aliyuncs.com"
+        return f"{region}-internal.oss-vectors.aliyuncs.com"
     else:
-        return f"oss-{region}.oss-vectors.aliyuncs.com"
+        return f"{region}.oss-vectors.aliyuncs.com"
 
 
 class VectorsEndpointProvider(EndpointProvider):

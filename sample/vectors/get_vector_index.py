@@ -36,7 +36,6 @@ def main():
 
     if result.index:
         print(f'index name: {result.index}')
-        print(f'vector bucket name: {result.vector_bucket_name}')
 
 
 
