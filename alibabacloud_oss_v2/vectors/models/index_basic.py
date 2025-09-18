@@ -89,24 +89,20 @@ class GetVectorIndexResult(serde.ResultModel):
 
     _attribute_map = {
         'index': {'tag': 'output', 'position': 'body', 'rename': 'index', 'type': 'dict'},
-        'vector_bucket_name': {'tag': 'output', 'position': 'body', 'rename': 'vectorBucketName', 'type': 'str'},
     }
 
 
     def __init__(
         self,
         index: Optional[Dict] = None,
-        vector_bucket_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             index (Dict, optional): The vector index information.
-            vector_bucket_name (str, optional): The name of the vector bucket.
         """
         super().__init__(**kwargs)
         self.index = index
-        self.vector_bucket_name = vector_bucket_name
 
 
 # List

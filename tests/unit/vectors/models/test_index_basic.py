@@ -134,9 +134,9 @@ class TestGetVectorIndex(unittest.TestCase):
               "metadata": { 
                  "nonFilterableMetadataKeys": ["key1", "key2"]
               },
-              "status": "Active"
+              "status": "Active",
+              "vectorBucketName": "test-bucket"
            },
-           "vectorBucketName": "test-bucket"
         }
         '''
 
@@ -160,9 +160,7 @@ class TestGetVectorIndex(unittest.TestCase):
         self.assertEqual(result.index.get('distanceMetric'), 'EUCLIDEAN')
         self.assertEqual(result.index.get('indexName'), 'test-index')
         self.assertEqual(result.index.get('status'), 'Active')
-        self.assertEqual(result.vector_bucket_name, 'test-bucket')
-        self.assertIsNotNone(result.index.get('metadata'))
-        self.assertIn('nonFilterableMetadataKeys', result.index.get('metadata'))
+        self.assertEqual(result.index.get('vectorBucketName'), 'test-bucket')
         self.assertEqual(result.index.get('metadata').get('nonFilterableMetadataKeys'), ['key1', 'key2'])
 
 
