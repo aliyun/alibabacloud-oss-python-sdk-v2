@@ -453,6 +453,12 @@ class StreamBody(abc.ABC):
         :rtype: Iterator[str]
         """
 
+class EndpointProvider(abc.ABC):
+    """Abstract base class for a EndpointProvider."""
+
+    @abc.abstractmethod
+    def build_url(self, op_input: OperationInput) -> None:
+        """build the request url"""
 
 class AsyncStreamBody(abc.ABC):
     """Abstract base class for a AsyncStreamBody."""

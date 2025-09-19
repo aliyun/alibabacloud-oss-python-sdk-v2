@@ -29,7 +29,8 @@ class Config(object):
         additional_headers: Optional[List[str]] = None,
         user_agent: Optional[str] = None,
         cloud_box_id: Optional[str] = None,
-        enable_auto_detect_cloud_box_id: Optional[bool] = None
+        enable_auto_detect_cloud_box_id: Optional[bool] = None,
+        account_id: Optional[str] = None
     ) -> None:
         """
         Args:
@@ -73,6 +74,7 @@ class Config(object):
             user_agent: (str, optional): The optional user specific identifier appended to the User-Agent header.
             cloud_box_id: (str, optional): The cloud box id.
             enable_auto_detect_cloud_box_id: (bool, optional): The cloud box id is automatically extracted from endpoint.
+            account_id: (str, optional): The account id, must be required in vectors options.
         """
         self.region = region
         self.endpoint = endpoint
@@ -98,6 +100,7 @@ class Config(object):
         self.user_agent = user_agent
         self.cloud_box_id = cloud_box_id
         self.enable_auto_detect_cloud_box_id = enable_auto_detect_cloud_box_id
+        self.account_id = account_id
 
 def load_default() -> Config:
     """Using the SDK's default configuration"""

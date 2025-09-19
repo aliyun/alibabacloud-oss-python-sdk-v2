@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any, MutableMapping, List, Union
 from .. import serde
 from ..types import BodyType, StreamBody, AsyncStreamBody
 from .bucket_basic import Owner
-
+from dataclasses import dataclass
 
 class PutObjectRequest(serde.RequestModel):
     """The request for the PutObject operation."""

@@ -42,6 +42,7 @@ class PutBucketRequest(serde.RequestModel):
         "acl": {"tag": "input", "position": "header", "rename": "x-oss-acl"},
         "resource_group_id": {"tag": "input", "position": "header", "rename": "x-oss-resource-group-id"},
         "create_bucket_configuration": {"tag": "input", "position": "body", "rename": "CreateBucketConfiguration", "type": "xml"},
+        "bucket_tagging": {"tag": "input", "position": "header", "rename": "x-oss-bucket-tagging"},
     }
 
     def __init__(
@@ -50,6 +51,7 @@ class PutBucketRequest(serde.RequestModel):
         acl: Optional[str] = None,
         resource_group_id: Optional[str] = None,
         create_bucket_configuration: Optional["CreateBucketConfiguration"] = None,
+        bucket_tagging: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -58,13 +60,15 @@ class PutBucketRequest(serde.RequestModel):
             acl (str, optional): The access control list (ACL) of the bucket.
             resource_group_id (str, optional): The ID of the resource group.
             create_bucket_configuration (CreateBucketConfiguration, optional): 
-                The configuration information for the bucket. 
+                The configuration information for the bucket.
+            bucket_tagging (str, optional): The tagging information for the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.acl = acl
         self.resource_group_id = resource_group_id
         self.create_bucket_configuration = create_bucket_configuration
+        self.bucket_tagging = bucket_tagging
 
 
 class PutBucketResult(serde.ResultModel):
