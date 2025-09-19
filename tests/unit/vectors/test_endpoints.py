@@ -7,10 +7,10 @@ class TestVectorsEndpoints(unittest.TestCase):
 
     def test_from_region(self):
         result = from_region("cn-hangzhou", "")
-        self.assertEqual("oss-cn-hangzhou.oss-vectors.aliyuncs.com", result)
+        self.assertEqual("cn-hangzhou.oss-vectors.aliyuncs.com", result)
 
         result = from_region("cn-hangzhou", "internal")
-        self.assertEqual("oss-cn-hangzhou-internal.oss-vectors.aliyuncs.com", result)
+        self.assertEqual("cn-hangzhou-internal.oss-vectors.aliyuncs.com", result)
 
     def test_vectors_endpoint_provider_init(self):
         endpoint = urlparse("https://oss-cn-hangzhou.oss-vectors.aliyuncs.com")

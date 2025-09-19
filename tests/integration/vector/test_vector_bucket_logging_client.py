@@ -9,7 +9,6 @@ class TestVectorBucketLogging(TestIntegrationVectors):
     """Integration tests for Vector Bucket Logging operations."""
 
     def test_vector_bucket_logging(self):
-        """Test put, get, and delete bucket logging operations."""
         # 1. Create buckets: source bucket and target bucket
         source_bucket_name = random_short_bucket_name()
         target_bucket_name = random_bucket_name()

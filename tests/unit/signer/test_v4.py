@@ -718,7 +718,7 @@ class TestSignerV4(unittest.TestCase):
         sign_ctx.__dict__.update(base_sign_ctx.__dict__)  # Merge base context
         sign_ctx.region = 'cn-hangzhou'
         canonical_request_output = signer._calc_canonical_request(sign_ctx, set())
-        expected_uri_1 = f'/acs:ossvector:cn-hangzhou::'
+        expected_uri_1 = f'/acs:ossvector:cn-hangzhou::/'
         # The canonical request format is METHOD\nURI\nQUERY\nHEADERS\nADDITIONAL_HEADERS\nPAYLOAD
         # So the URI should be the second line.
         lines = canonical_request_output.split('\n')

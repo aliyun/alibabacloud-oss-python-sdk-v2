@@ -63,7 +63,7 @@ class TestListBuckets(unittest.TestCase):
             max_keys=100,
             is_truncated=False,
             next_marker='',
-            buckets=[model.Bucket(
+            buckets=[model.BucketProperties(
                 name='bucket1',
                 location='oss-cn-hangzhou',
                 creation_date='2023-01-01T00:00:00.000Z',

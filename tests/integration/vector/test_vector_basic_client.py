@@ -9,7 +9,6 @@ class TestVectorBasic(TestIntegrationVectors):
     """Integration tests for basic Vector operations."""
 
     def test_vector_basic(self):
-        """Test put, get, list, delete and query vector operations."""
         # 1. Create bucket
         bucket_name = random_short_bucket_name()
         vector_key = "vector-key-1"
