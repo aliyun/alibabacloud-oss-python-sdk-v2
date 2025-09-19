@@ -1,5 +1,11 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.2.0 日期：2025-09-19
+### 变更内容
+- Feature：Add async client
+- Feature：Add vectors bucket
+- Fix: Missing jobparameter in the restore object api
+
 ## 版本号：1.1.3 日期：2025-07-30
 ### 变更内容
 - Break Change: change MetaQuery.media_types type to MetaQueryMediaTypes
