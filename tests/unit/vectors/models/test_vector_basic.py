@@ -5,7 +5,7 @@ from alibabacloud_oss_v2 import serde
 from alibabacloud_oss_v2.vectors.operations import _serde
 from alibabacloud_oss_v2.vectors.models import vector_basic as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict
-from tests.unit import MockHttpResponse
+from ... import MockHttpResponse
 
 
 class TestPutVectors(unittest.TestCase):
