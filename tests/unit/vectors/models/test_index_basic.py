@@ -136,7 +136,7 @@ class TestGetVectorIndex(unittest.TestCase):
               },
               "status": "Active",
               "vectorBucketName": "test-bucket"
-           },
+           }
         }
         '''
 

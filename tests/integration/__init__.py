@@ -18,7 +18,7 @@ import alibabacloud_oss_v2.aio as ossaio
 ACCESS_ID = os.getenv("OSS_TEST_ACCESS_KEY_ID")
 ACCESS_KEY = os.getenv("OSS_TEST_ACCESS_KEY_SECRET")
 ENDPOINT = os.getenv("OSS_TEST_ENDPOINT")
-VECTOR_ENDPOINT = os.getenv("OSS_TEST_VECTOR_ENDPOINT")
+VECTORS_ENDPOINT = os.getenv("OSS_TEST_VECTORS_ENDPOINT")
 REGION = os.getenv("OSS_TEST_REGION", "cn-hangzhou")
 RAM_ROLE_ARN = os.getenv("OSS_TEST_RAM_ROLE_ARN")
 SIGNATURE_VERSION = os.getenv("OSS_TEST_SIGNATURE_VERSION")
@@ -103,7 +103,7 @@ def get_vectors_client() -> oss_vectors.Client:
     cfg = oss.config.load_default()
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
-    cfg.endpoint = VECTOR_ENDPOINT
+    cfg.endpoint = VECTORS_ENDPOINT
     cfg.account_id = USER_ID
     return oss_vectors.Client(cfg)
 

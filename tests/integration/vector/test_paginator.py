@@ -1,12 +1,12 @@
 # pylint: skip-file
 
 import alibabacloud_oss_v2.vectors as oss_vectors
-from tests.integration import TestIntegrationVectors, random_bucket_name
+from tests.integration import TestIntegrationVectors, random_bucket_name, random_short_bucket_name
 
 class TestPaginatorBasic(TestIntegrationVectors):
     def test_list_vector_buckets_paginator(self):
         # Create test vector buckets with a common prefix
-        bucket_name_prefix = random_bucket_name()
+        bucket_name_prefix = random_short_bucket_name()
         bucket_name1 = bucket_name_prefix + '-1'
         self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name1))
         bucket_name2 = bucket_name_prefix + '-2'
@@ -24,7 +24,8 @@ class TestPaginatorBasic(TestIntegrationVectors):
         for p in iterator:
             self.assertEqual(1, len(p.buckets))
             # Verify that bucket names start with the bucket_name_prefix
-            self.assertTrue(p.buckets[0].name.startswith(bucket_name_prefix))
+            vals = p.buckets[0].name.split(':')
+            self.assertTrue(vals[4].startswith(bucket_name_prefix))
             j += 1
         self.assertIsNone(request.marker)
 
@@ -36,7 +37,8 @@ class TestPaginatorBasic(TestIntegrationVectors):
             self.assertEqual(3, len(p.buckets))
             # Verify that all bucket names start with the bucket_name_prefix
             for bucket in p.buckets:
-                self.assertTrue(bucket.name.startswith(bucket_name_prefix))
+                vals = bucket.name.split(':')
+                self.assertTrue(vals[4].startswith(bucket_name_prefix))
         self.assertIsNone(request.marker)
 
         # Test default paginator without limit
@@ -48,45 +50,48 @@ class TestPaginatorBasic(TestIntegrationVectors):
             self.assertEqual(3, len(p.buckets))
             # Verify that all bucket names start with the bucket_name_prefix
             for bucket in p.buckets:
-                self.assertTrue(bucket.name.startswith(bucket_name_prefix))
+                vals = bucket.name.split(':')
+                self.assertTrue(vals[4].startswith(bucket_name_prefix))
             j += 1
         self.assertEqual(1, j)
 
     def test_list_vector_index_paginator(self):
         # Create a test vector bucket
-        bucket_name = random_bucket_name()
-        self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name))
+        bucket_name = random_short_bucket_name()
+        result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
 
         # Create test vector indexes
-        index_name1 = "test-index-1"
-        index_name2 = "test-index-2"
-        index_name3 = "test-index-3"
+        index_name1 = "testindex1"
+        index_name2 = "testindex2"
+        index_name3 = "testindex3"
 
         # Create vector indexes using put_vector_index
         self.vector_client.put_vector_index(oss_vectors.models.PutVectorIndexRequest(
             bucket=bucket_name,
             index_name=index_name1,
-            data_type='vector',
+            data_type='float32',
             dimension=128,
-            distance_metric='EUCLIDEAN',
+            distance_metric='cosine',
             metadata={"nonFilterableMetadataKeys": ["key1", "key2"]}
         ))
 
         self.vector_client.put_vector_index(oss_vectors.models.PutVectorIndexRequest(
             bucket=bucket_name,
             index_name=index_name2,
-            data_type='vector',
+            data_type='float32',
             dimension=128,
-            distance_metric='EUCLIDEAN',
+            distance_metric='cosine',
             metadata={"nonFilterableMetadataKeys": ["key1", "key2"]}
         ))
 
         self.vector_client.put_vector_index(oss_vectors.models.PutVectorIndexRequest(
             bucket=bucket_name,
             index_name=index_name3,
-            data_type='vector',
+            data_type='float32',
             dimension=128,
-            distance_metric='EUCLIDEAN',
+            distance_metric='cosine',
             metadata={"nonFilterableMetadataKeys": ["key1", "key2"]}
         ))
 
@@ -128,11 +133,20 @@ class TestPaginatorBasic(TestIntegrationVectors):
 
     def test_list_vectors_paginator(self):
         # Create a test vector bucket
-        bucket_name = random_bucket_name()
+        bucket_name = random_short_bucket_name()
         self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name))
 
         # Create test vectors using put_vectors
-        index_name = "test-index"
+        index_name = "testindex"
+
+        self.vector_client.put_vector_index(oss_vectors.models.PutVectorIndexRequest(
+            bucket=bucket_name,
+            index_name=index_name,
+            data_type='float32',
+            dimension=4,
+            distance_metric='cosine',
+            metadata={"nonFilterableMetadataKeys": ["key1", "key2"]}
+        ))
 
         # Insert vectors using put_vectors
         vectors_data = [
