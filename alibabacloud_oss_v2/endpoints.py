@@ -37,7 +37,6 @@ def from_region(region:str, disable_ssl:bool, etype:str) -> str:
 
     return endpoint
 
-
 def is_ip(hostname:str):
     """Check whether the host name is an IP address."""
     is_ipv6 = False

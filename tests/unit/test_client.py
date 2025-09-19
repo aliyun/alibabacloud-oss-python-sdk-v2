@@ -1978,3 +1978,195 @@ class TestClientCRC(unittest.TestCase):
             self.assertEqual(1, len(self.save_data))
             for d in self.save_data:
                 self.assertEqual(data.encode(), d)
+
+class TestClientReturnsJson(unittest.TestCase):
+
+    def test_get_json_error_normal(self):  
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request) 
+            self.save_data.append(_read_body(request.body))
+            err_xml = r'''
+                {
+                    "Error": {
+                        "Code": "MissingArgument",
+                        "Message": "Missing Some Required Arguments.",
+                        "RequestId": "57ABD896CCB80C366955****",
+                        "HostId": "oss-example.oss-cn-hangzhou.aliyuncs.com",
+                        "EC": "0016-00000502",
+                        "RecommendDoc": "https://api.aliyun.com/troubleshoot?q=0016-00000502"
+                    }
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=403,
+                reason='Forbidden',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-ec': '0016-00000502',
+                    'x-oss-request-id': 'id-1234',
+                },
+                body=err_xml.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("MissingArgument", serr.code)
+                self.assertEqual("0016-00000502", serr.ec)
+
+    def test_get_json_error_invalid_foramt(self):  
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request) 
+            self.save_data.append(_read_body(request.body))
+            err_xml = r'''
+                    "Error": {
+                        "Code": "MissingArgument",
+                        "Message": "Missing Some Required Arguments.",
+                        "RequestId": "57ABD896CCB80C366955****",
+                        "HostId": "oss-example.oss-cn-hangzhou.aliyuncs.com",
+                        "EC": "0016-00000502",
+                        "RecommendDoc": "https://api.aliyun.com/troubleshoot?q=0016-00000502"
+                    }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=403,
+                reason='Forbidden',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-ec': '0016-00000502',
+                    'x-oss-request-id': 'id-1234',
+                },
+                body=err_xml.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("MissingArgument", serr.code)
+                self.assertEqual("0016-00000502", serr.ec)
+                self.assertIn("Failed to parse json from response body due to", serr.message)
+
+
+    def test_get_json_error_multi_keys(self):  
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request) 
+            self.save_data.append(_read_body(request.body))
+            err_xml = r'''
+                {
+                    "Tag1": {
+                        "Code": "MissingArgument",
+                        "Message": "Missing Some Required Arguments.",
+                        "RequestId": "57ABD896CCB80C366955****",
+                        "HostId": "oss-example.oss-cn-hangzhou.aliyuncs.com",
+                        "EC": "0016-00000502",
+                        "RecommendDoc": "https://api.aliyun.com/troubleshoot?q=0016-00000502"
+                    },
+                    "Tag2": {
+                        "Code": "MissingArgument",
+                        "Message": "Missing Some Required Arguments.",
+                        "RequestId": "57ABD896CCB80C366955****",
+                        "HostId": "oss-example.oss-cn-hangzhou.aliyuncs.com",
+                        "EC": "0016-00000502",
+                        "RecommendDoc": "https://api.aliyun.com/troubleshoot?q=0016-00000502"
+                    }
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=403,
+                reason='Forbidden',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-ec': '0016-00000402',
+                    'x-oss-request-id': 'id-1234',
+                },
+                body=err_xml.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("BadErrorResponse", serr.code)
+                self.assertEqual("0016-00000402", serr.ec)
+                self.assertIn("Expect root node Error, but get", serr.message)
+

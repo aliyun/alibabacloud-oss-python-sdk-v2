@@ -1,4 +1,5 @@
 import datetime
+from dataclasses import dataclass
 from typing import Optional, List, Any, Union
 from .. import serde
 
@@ -71,6 +72,7 @@ class GetPublicAccessBlockResult(serde.ResultModel):
         super().__init__(**kwargs)
         self.public_access_block_configuration = public_access_block_configuration
 
+@dataclass
 class PutPublicAccessBlockRequest(serde.RequestModel):
     """
     The request for the PutPublicAccessBlock operation.

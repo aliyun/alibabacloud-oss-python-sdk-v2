@@ -498,7 +498,9 @@ class TestObjectBasic(TestOperations):
         root = ET.fromstring(self.request_dump.body)
         self.assertEqual('RestoreRequest', root.tag)
         self.assertEqual(7, int(root.findtext('Days')))
-        self.assertEqual('Expedited', root.findtext('JobParameters.Tier'))
+        elem = root.find('JobParameters')
+        self.assertIsNotNone(elem)
+        self.assertEqual('Expedited', elem.findtext('Tier'))
 
     async def test_restore_object_fail(self):
         self.set_responseFunc(self.response_403_InvalidAccessKeyId)

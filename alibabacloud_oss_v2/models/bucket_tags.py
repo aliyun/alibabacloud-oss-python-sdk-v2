@@ -2,7 +2,7 @@ import datetime
 from typing import Optional, List, Any, Union
 from .. import serde
 from .object_basic import TagSet, Tag
-
+from dataclasses import dataclass
 
 class Tagging(serde.Model):
     """

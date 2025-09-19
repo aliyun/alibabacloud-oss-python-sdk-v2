@@ -266,3 +266,7 @@ def get_default_user_agent() -> str:
     sysinfo = f'{platform.system()}/{platform.release()}/{platform.machine()};{platform.python_version()}'
     return f'alibabacloud-python-sdk-v2/{VERSION} ({sysinfo})'
 
+def get_vector_user_agent() -> str:
+    """Returns the default user agent string
+    """
+    return 'vector-client'
