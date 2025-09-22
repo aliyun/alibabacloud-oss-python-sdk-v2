@@ -2,7 +2,7 @@
 
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from tests.integration import TestIntegrationVectors, random_short_bucket_name, random_bucket_name
+from .. import TestIntegrationVectors, random_short_bucket_name, random_bucket_name
 
 
 class TestVectorBucketLogging(TestIntegrationVectors):
