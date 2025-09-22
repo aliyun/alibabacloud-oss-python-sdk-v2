@@ -439,6 +439,7 @@ class _UploaderDelegate:
         self._reader_pos = next_offset
         self._part_number = part_number + 1
         self._ccrc = ccrc
+        self._transferred = next_offset
 
 
     def set_reader(self, reader) ->IO[bytes]:
@@ -690,6 +691,10 @@ class _UploaderDelegate:
 
         if self._check_crc and hash_crc64 is not None:
             self._ccrc = Crc64.combine(self._ccrc, int(hash_crc64), size)
+
+        self._transferred += size
+        if self._request.progress_fn is not None:
+            self._request.progress_fn(size, self._transferred, self._total_size)
 
 
     def _assert_crc_same(self, headers: MutableMapping):
