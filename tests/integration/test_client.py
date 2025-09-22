@@ -4421,3 +4421,140 @@ class TestCopier(TestIntegration):
         self.assertEqual("Multipart", hresult.object_type)
         self.assertEqual(src_crc64, hresult.hash_crc64)
 
+
+class TestUploader(TestIntegration):
+    def test_uploader_progress_with_single_upload(self):
+        length = 100 * 1024 + 123
+        data = random_str(length)
+        object_name = OBJECTNAME_PREFIX + random_str(16)
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+        uploader = self.client.uploader()
+
+        result = uploader.upload_from(oss.PutObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name,
+                progress_fn=_progress_fn
+            ), io.StringIO(data),
+                part_size=500 * 1024,
+                parallel_num=5,
+                leave_parts_on_error=True
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name
+        ))
+        self.assertEqual("Normal", hresult.object_type)
+        self.assertEqual(length, hresult.content_length)
+
+    def test_uploader_progress_with_single_multipart(self):
+        length = 500 * 1024 + 123
+        data = random_str(length)
+        object_name = OBJECTNAME_PREFIX + random_str(16)
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+        uploader = self.client.uploader()
+        result = uploader.upload_from(oss.PutObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name,
+                progress_fn=_progress_fn
+            ), io.StringIO(data),
+                part_size=100 * 1024,
+                parallel_num=1,
+                leave_parts_on_error=True,
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name
+        ))
+        self.assertEqual("Multipart", hresult.object_type)
+        self.assertEqual(length, hresult.content_length)
+
+    def test_uploader_progress_with_thread_multipart(self):
+        length = 500 * 1024 + 123
+        data = random_str(length)
+        object_name = OBJECTNAME_PREFIX + random_str(16)
+
+        global bytes_added, total_bytes_transferred, total_bytes_expected, last_written
+        bytes_added = 0
+        total_bytes_transferred = 0
+        total_bytes_expected = 0
+        last_written = 0
+
+        def _progress_fn(n, written, total):
+            global last_written
+            global bytes_added
+            global total_bytes_transferred
+            global total_bytes_expected
+
+            n = written - last_written
+            bytes_added += n
+            total_bytes_transferred = written
+            last_written = written
+            total_bytes_expected = total
+
+        uploader = self.client.uploader()
+        result = uploader.upload_from(oss.PutObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name,
+                progress_fn=_progress_fn
+            ), io.StringIO(data),
+                part_size=100 * 1024,
+                parallel_num=3,
+                leave_parts_on_error=True,
+        )
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(total_bytes_transferred, length)
+        self.assertEqual(total_bytes_expected, length)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name
+        ))
+        self.assertEqual("Multipart", hresult.object_type)
+        self.assertEqual(length, hresult.content_length)
