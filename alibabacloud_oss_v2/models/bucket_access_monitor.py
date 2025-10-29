@@ -20,6 +20,7 @@ class AccessMonitorConfiguration(serde.Model):
 
     _attribute_map = { 
         'status': {'tag': 'xml', 'rename': 'Status', 'type': 'str'},
+        'allow_copy': {'tag': 'xml', 'rename': 'AllowCopy', 'type': 'bool'},
     }
 
     _xml_map = {
@@ -29,14 +30,17 @@ class AccessMonitorConfiguration(serde.Model):
     def __init__(
         self,
         status: Optional[Union[str, AccessMonitorStatusType]] = None,
+        allow_copy: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             status (str | AccessMonitorStatusType, optional): The access tracking status of the bucket. Valid values:- Enabled: Access tracking is enabled.- Disabled: Access tracking is disabled.
+            allow_copy (bool, optional): Whether to allow copying.
         """
         super().__init__(**kwargs)
         self.status = status
+        self.allow_copy = allow_copy
 
 
 class PutBucketAccessMonitorRequest(serde.RequestModel):

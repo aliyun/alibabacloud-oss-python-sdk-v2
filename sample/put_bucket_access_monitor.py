@@ -6,6 +6,7 @@ parser.add_argument('--region', help='The region in which the bucket is located.
 parser.add_argument('--bucket', help='The name of the bucket.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 parser.add_argument('--status', help='The access tracking status of the bucket. Valid values:- Enabled: Access tracking is enabled.- Disabled: Access tracking is disabled.', required=True)
+parser.add_argument('--allow_copy', help='Whether to allow copying.')
 
 def main():
 
@@ -26,7 +27,8 @@ def main():
     # result = client.put_bucket_access_monitor(oss.PutBucketAccessMonitorRequest(
     #         bucket=args.bucket,
     #         access_monitor_configuration=oss.AccessMonitorConfiguration(
-    #             status=oss.AccessMonitorStatusType.ENABLED
+    #             status=oss.AccessMonitorStatusType.ENABLED,
+    #             allow_copy=args.allow_copy
     #         ),
     # ))
 
