@@ -796,7 +796,7 @@ class CopyObjectRequest(serde.RequestModel):
         self,
         bucket: str = None,
         key: str = None,
-        source_bucket: Optional[str] = None,
+        source_bucket: str = None,
         source_key: Optional[str] = None,
         source_version_id: Optional[str] = None,
         if_match: Optional[str] = None,

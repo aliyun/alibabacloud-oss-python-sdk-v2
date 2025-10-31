@@ -7,21 +7,21 @@ class PutVectorsRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', 'required': True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
         'vectors': {'tag': 'input', 'position': 'body', 'rename': 'vectors', 'type': '[dict]'},
     }
 
     def __init__(
             self,
-            bucket: Optional[str] = None,
+            bucket: str = None,
             index_name: Optional[str] = None,
             vectors: Optional[List[Dict]] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index.
             vectors (List[Dict], optional): The list of vectors to put.
         """
@@ -47,7 +47,7 @@ class GetVectorsRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', 'required': True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
         'keys': {'tag': 'input', 'position': 'body', 'rename': 'keys', 'type': '[str]'},
         'return_data': {'tag': 'input', 'position': 'body', 'rename': 'returnData', 'type': 'bool'},
@@ -56,7 +56,7 @@ class GetVectorsRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         index_name: Optional[str] = None,
         keys: Optional[List[str]] = None,
         return_data: Optional[bool] = None,
@@ -65,7 +65,7 @@ class GetVectorsRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index.
             keys (List[str], optional): The list of vector keys to retrieve.
             return_data (bool, optional): Whether to return vector data.
@@ -108,7 +108,7 @@ class ListVectorsRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', 'required': True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
         'max_results': {'tag': 'input', 'position': 'body', 'rename': 'maxResults', 'type': 'int'},
         'next_token': {'tag': 'input', 'position': 'body', 'rename': 'nextToken', 'type': 'str'},
@@ -120,7 +120,7 @@ class ListVectorsRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         index_name: Optional[str] = None,
         max_results: Optional[int] = None,
         next_token: Optional[str] = None,
@@ -132,7 +132,7 @@ class ListVectorsRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index.
             max_results (int, optional): The maximum number of vectors to return.
             next_token (str, optional): The token for the next page of vectors.
@@ -185,21 +185,21 @@ class DeleteVectorsRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', 'required': True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
         'keys': {'tag': 'input', 'position': 'body', 'rename': 'keys', 'type': '[str]'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         index_name: Optional[str] = None,
         keys: Optional[List[str]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index.
             keys (List[str], optional): The list of vector keys to delete.
         """
@@ -222,7 +222,7 @@ class QueryVectorsRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', 'required': True},
         'filter': {'tag': 'input', 'position': 'body', 'rename': 'filter', 'type': 'dict'},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
         'query_vector': {'tag': 'input', 'position': 'body', 'rename': 'queryVector', 'type': 'dict'},
@@ -233,7 +233,7 @@ class QueryVectorsRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         filter: Optional[Dict] = None,
         index_name: Optional[str] = None,
         query_vector: Optional[Dict] = None,
@@ -244,7 +244,7 @@ class QueryVectorsRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             filter (Dict, optional): The filter conditions for querying vectors.
             index_name (str, optional): The name of the index.
             query_vector (Dict, optional): The query vector data.

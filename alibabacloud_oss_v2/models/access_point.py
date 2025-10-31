@@ -442,21 +442,21 @@ class PutAccessPointPolicyRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'access_point_name': {'tag': 'input', 'position': 'header', 'rename': 'x-oss-access-point-name', 'type': 'str'},
         'body': {'tag': 'input', 'position': 'body', 'rename': 'nop'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         access_point_name: Optional[str] = None,
         body: Optional[BodyType] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             access_point_name (str, optional): The name of the access point.
             body (BodyType, optional): The configurations of the access point policy.
         """
