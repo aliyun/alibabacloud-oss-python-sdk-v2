@@ -16,6 +16,9 @@ class ListBucketsRequest(serde.RequestModel):
         "max_keys": {"tag": "input", "position": "query", "rename": "max-keys", "type": "int"},
         "prefix": {"tag": "input", "position": "query", "rename": "prefix"},
         "resource_group_id": {"tag": "input", "position": "header", "rename": "x-oss-resource-group-id"},
+        "tag_key": {"tag": "input", "position": "query", "rename": "tag-key"},
+        "tag_value": {"tag": "input", "position": "query", "rename": "tag-value"},
+        "tagging": {"tag": "input", "position": "query", "rename": "tagging"},
     }
 
     def __init__(
@@ -24,6 +27,9 @@ class ListBucketsRequest(serde.RequestModel):
         max_keys: Optional[int] = None,
         prefix: Optional[str] = None,
         resource_group_id: Optional[str] = None,
+        tag_key: Optional[str] = None,
+        tag_value: Optional[str] = None,
+        tagging: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -33,13 +39,21 @@ class ListBucketsRequest(serde.RequestModel):
                 Valid values: 1 to 1000.
             prefix (str, optional): The prefix that the names of returned buckets must contain.
                 Limits the response to keys that begin with the specified prefix
-            request_payer (str, optional): The ID of the resource group.
+            resource_group_id (str, optional): The ID of the resource group.
+            tag_key (str, optional): A tag key of target buckets. The listing results will only include Buckets that have been tagged with this key.
+            tag_value (str, optional): A tag value for the target buckets. If this parameter is specified in the request, the tag-key must also be specified. 
+                The listing results will only include Buckets that have been tagged with this key-value pair.
+            tagging (str, optional): Tag list of target buckets. Only Buckets that match all the key-value pairs in the list will added into the listing results. 
+                The tagging parameter cannot be used with the tag-key and tag-value parameters in a request.
         """
         super().__init__(**kwargs)
         self.marker = marker
         self.max_keys = max_keys
         self.prefix = prefix
         self.resource_group_id = resource_group_id
+        self.tag_key = tag_key
+        self.tag_value = tag_value
+        self.tagging = tagging
 
 
 class BucketProperties(serde.Model):

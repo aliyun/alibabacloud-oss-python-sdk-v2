@@ -16,6 +16,9 @@ class TestListBuckets(unittest.TestCase):
         self.assertIsNone(request.marker)
         self.assertIsNone(request.max_keys)
         self.assertIsNone(request.resource_group_id)
+        self.assertIsNone(request.tag_key)
+        self.assertIsNone(request.tag_value)
+        self.assertIsNone(request.tagging)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
@@ -26,11 +29,17 @@ class TestListBuckets(unittest.TestCase):
             marker='marker1',
             max_keys=100,
             resource_group_id='rg-id-123',
+            tag_key='test-key',
+            tag_value='test-value',
+            tagging='"k1":"v1","k2":"v2"',
         )
         self.assertEqual('test', request.prefix)
         self.assertEqual('marker1', request.marker)
         self.assertEqual(100, request.max_keys)
         self.assertEqual('rg-id-123', request.resource_group_id)
+        self.assertEqual('test-key', request.tag_key)
+        self.assertEqual('test-value', request.tag_value)
+        self.assertEqual('"k1":"v1","k2":"v2"', request.tagging)
 
     def test_serialize_request(self):
         request = model.ListBucketsRequest(
@@ -38,6 +47,9 @@ class TestListBuckets(unittest.TestCase):
             marker='marker1',
             max_keys=100,
             resource_group_id='rg-id-123',
+            tag_key='test-key',
+            tag_value='test-value',
+            tagging='"k1":"v1","k2":"v2"',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
