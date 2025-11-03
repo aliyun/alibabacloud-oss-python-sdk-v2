@@ -446,3 +446,61 @@ class TestBucketWebsite(TestIntegration):
             self.assertEqual(403, serr.status_code)
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('InvalidAccessKeyId', serr.code)
+
+    def test_bucket_website_lua_config(self):
+        # create bucket
+        bucket_name = random_bucket_name()
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put bucket website with lua_config
+        result = self.client.put_bucket_website(oss.PutBucketWebsiteRequest(
+            bucket=bucket_name,
+            website_configuration=oss.WebsiteConfiguration(
+                index_document=oss.IndexDocument(
+                    suffix='index.html',
+                ),
+                routing_rules=oss.RoutingRules(
+                    routing_rules=[oss.RoutingRule(
+                        rule_number=1,
+                        condition=oss.RoutingRuleCondition(
+                            key_prefix_equals='key',
+                        ),
+                        redirect=oss.RoutingRuleRedirect(
+                            redirect_type='Mirror',
+                            mirror_url='http://example.com/',
+                        ),
+                        lua_config=oss.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
+                    )],
+                ),
+            ),
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+
+        # get bucket website and verify lua_config
+        result = self.client.get_bucket_website(oss.GetBucketWebsiteRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual('test.lua', result.website_configuration.routing_rules.routing_rules[0].lua_config.script)
+
+        # delete bucket website
+        result = self.client.delete_bucket_website(oss.DeleteBucketWebsiteRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(204, result.status_code)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))

@@ -110,7 +110,19 @@ def main():
                         redirect_type='External',
                         host_name='example.com',
                     ),
-                )],
+                ), oss.RoutingRule(
+                        rule_number=4,
+                        condition=oss.RoutingRuleCondition(
+                            key_prefix_equals='key',
+                        ),
+                        redirect=oss.RoutingRuleRedirect(
+                            redirect_type='Mirror',
+                            mirror_url='http://example.com/',
+                        ),
+                        lua_config=oss.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
+                    )],
             ),
         ),
     ))

@@ -297,6 +297,32 @@ class RoutingRuleRedirect(serde.Model):
         self.mirror_pass_original_slashes = mirror_pass_original_slashes
 
 
+class RoutingRuleLuaConfig(serde.Model):
+    """
+    Lua script config for the routing rule.
+    """
+
+    _attribute_map = {
+        'script': {'tag': 'xml', 'rename': 'Script', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'LuaConfig'
+    }
+
+    def __init__(
+        self,
+        script: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            script (str, optional): The name of the Lua script.
+        """
+        super().__init__(**kwargs)
+        self.script = script
+
+
 class RoutingRule(serde.Model):
     """
     The container for the redirection rule or mirroring-based back-to-origin rule. You can specify up to 20 rules.
@@ -306,6 +332,7 @@ class RoutingRule(serde.Model):
         'rule_number': {'tag': 'xml', 'rename': 'RuleNumber', 'type': 'int'},
         'condition': {'tag': 'xml', 'rename': 'Condition', 'type': 'RoutingRuleCondition'},
         'redirect': {'tag': 'xml', 'rename': 'Redirect', 'type': 'RoutingRuleRedirect'},
+        'lua_config': {'tag': 'xml', 'rename': 'LuaConfig', 'type': 'RoutingRuleLuaConfig'},
     }
 
     _xml_map = {
@@ -315,6 +342,7 @@ class RoutingRule(serde.Model):
     _dependency_map = {
         'RoutingRuleCondition': {'new': lambda: RoutingRuleCondition()},
         'RoutingRuleRedirect': {'new': lambda: RoutingRuleRedirect()},
+        'RoutingRuleLuaConfig': {'new': lambda: RoutingRuleLuaConfig()},
     }
 
     def __init__(
@@ -322,6 +350,7 @@ class RoutingRule(serde.Model):
         rule_number: Optional[int] = None,
         condition: Optional[RoutingRuleCondition] = None,
         redirect: Optional[RoutingRuleRedirect] = None,
+        lua_config: Optional[RoutingRuleLuaConfig] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -329,11 +358,13 @@ class RoutingRule(serde.Model):
             rule_number (int, optional): The sequence number that is used to match and run the redirection rules. OSS matches redirection rules based on this parameter. If a match succeeds, only the rule is run and the subsequent rules are not run.  This parameter must be specified if RoutingRule is specified.
             condition (RoutingRuleCondition, optional): The matching condition. If all of the specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition.  This parameter must be specified if RoutingRule is specified.
             redirect (RoutingRuleRedirect, optional): The operation to perform after the rule is matched.  This parameter must be specified if RoutingRule is specified.
+            lua_config (RoutingRuleLuaConfig, optional): The Lua script config of this rule.
         """
         super().__init__(**kwargs)
         self.rule_number = rule_number
         self.condition = condition
         self.redirect = redirect
+        self.lua_config = lua_config
 
 
 class RoutingRules(serde.Model):

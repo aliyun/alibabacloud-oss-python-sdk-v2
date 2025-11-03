@@ -72,6 +72,9 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
                         ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
                     ), model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
@@ -114,6 +117,9 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
                         ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
+                        ),
                     )],
                 ),
             ),
@@ -155,6 +161,7 @@ class TestPutBucketWebsite(unittest.TestCase):
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
+        self.assertEqual('test.lua', request.website_configuration.routing_rules.routing_rules[0].lua_config.script)
         self.assertEqual(6052, request.website_configuration.routing_rules.routing_rules[1].rule_number)
         self.assertEqual('bbc/', request.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
         self.assertEqual(403, request.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
@@ -186,6 +193,7 @@ class TestPutBucketWebsite(unittest.TestCase):
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
+        self.assertEqual('script2.lua', request.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
     def test_serialize_request(self):
         request = model.PutBucketWebsiteRequest(
@@ -243,6 +251,9 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
                         ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
                     ), model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
@@ -284,6 +295,9 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
                         ),
                     )],
                 ),
@@ -419,6 +433,9 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
                         ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
                     ), model.RoutingRule(
                         rule_number=6052,
                         condition=model.RoutingRuleCondition(
@@ -461,6 +478,9 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
                         ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
+                        ),
                     )],
                 ),
             ),
@@ -501,6 +521,7 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
+        self.assertEqual('test.lua', result.website_configuration.routing_rules.routing_rules[0].lua_config.script)
         self.assertEqual(6052, result.website_configuration.routing_rules.routing_rules[1].rule_number)
         self.assertEqual('bbc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
         self.assertEqual(403, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
@@ -532,6 +553,7 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
+        self.assertEqual('script2.lua', result.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -576,6 +598,9 @@ class TestGetBucketWebsite(unittest.TestCase):
                   </Set>
                 </MirrorHeaders>
               </Redirect>
+              <LuaConfig>
+                <Script>test.lua</Script>
+              </LuaConfig>
             </RoutingRule>
             <RoutingRule>
               <RuleNumber>2</RuleNumber>
@@ -595,6 +620,9 @@ class TestGetBucketWebsite(unittest.TestCase):
                 <ReplaceKeyWith>prefix/${key}.suffix</ReplaceKeyWith>
                 <HttpRedirectCode>301</HttpRedirectCode>
               </Redirect>
+              <LuaConfig>
+                <Script>script2.lua</Script>
+              </LuaConfig>
             </RoutingRule>
           </RoutingRules>
         </WebsiteConfiguration>
@@ -630,6 +658,7 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual('myheader-key4', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
         self.assertEqual('myheader-key5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
         self.assertEqual('myheader-value5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('test.lua', result.website_configuration.routing_rules.routing_rules[0].lua_config.script)
         self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].rule_number)
         self.assertEqual('host', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
         self.assertEqual('test.oss-cn-beijing-internal.aliyuncs.com', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
@@ -641,6 +670,7 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
         self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
         self.assertEqual(301, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
+        self.assertEqual('script2.lua', result.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
 
 class TestDeleteBucketWebsite(unittest.TestCase):
