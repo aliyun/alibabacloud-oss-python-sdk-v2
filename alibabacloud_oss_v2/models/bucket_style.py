@@ -144,17 +144,17 @@ class ListStyleRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
