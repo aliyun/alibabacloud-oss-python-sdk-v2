@@ -84,7 +84,7 @@ class DeleteBucketRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         **kwargs: Any
     ) -> None:
         """

@@ -37,17 +37,17 @@ class GetBucketPublicAccessBlockRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional):
+            bucket (str, required):
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -84,19 +84,19 @@ class PutBucketPublicAccessBlockRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'public_access_block_configuration': {'tag': 'input', 'position': 'body', 'rename': 'PublicAccessBlockConfiguration', 'type': 'xml'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         public_access_block_configuration: Optional[PublicAccessBlockConfiguration] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             public_access_block_configuration (PublicAccessBlockConfiguration, optional): Request body.
         """
         super().__init__(**kwargs)
@@ -115,17 +115,17 @@ class DeleteBucketPublicAccessBlockRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

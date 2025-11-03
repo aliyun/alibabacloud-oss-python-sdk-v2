@@ -21,7 +21,7 @@ class PutVectorIndexRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         data_type: Optional[str] = None,
         dimension: Optional[int] = None,
         distance_metric: Optional[str] = None,
@@ -31,7 +31,7 @@ class PutVectorIndexRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             data_type (str, optional): The type of data for the vector index.
             dimension (int, optional): The dimension of the vector data.
             distance_metric (str, optional): The distance measurement function has the following optional values:
@@ -62,19 +62,19 @@ class GetVectorIndexRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', "required": True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         index_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index.
         """
         super().__init__(**kwargs)
@@ -112,7 +112,7 @@ class ListVectorIndexesRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', "required": True},
         'max_results': {'tag': 'input', 'position': 'body', 'rename': 'maxResults', 'type': 'int'},
         'next_token': {'tag': 'input', 'position': 'body', 'rename': 'nextToken', 'type': 'str'},
         'prefix': {'tag': 'input', 'position': 'body', 'rename': 'prefix', 'type': 'str'},
@@ -120,7 +120,7 @@ class ListVectorIndexesRequest(serde.RequestModel):
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         max_results: Optional[int] = None,
         next_token: Optional[str] = None,
         prefix: Optional[str] = None,
@@ -128,7 +128,7 @@ class ListVectorIndexesRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             max_results (int, optional): The maximum number of indexes to return.
             next_token (str, optional): The token for the next page of indexes.
             prefix (str, optional): The prefix to filter indexes by name.
@@ -174,19 +174,19 @@ class DeleteVectorIndexRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'path', 'rename': 'bucket', 'type': 'str', "required": True},
         'index_name': {'tag': 'input', 'position': 'body', 'rename': 'indexName', 'type': 'str'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         index_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             index_name (str, optional): The name of the index to delete.
         """
         super().__init__(**kwargs)
