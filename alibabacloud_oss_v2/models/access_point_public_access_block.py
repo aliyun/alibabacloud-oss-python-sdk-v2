@@ -71,19 +71,19 @@ class GetAccessPointPublicAccessBlockRequest(serde.RequestModel):
     """
 
     _attribute_map = {
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'access_point_name': {'tag': 'input', 'position': 'query', 'rename': 'x-oss-access-point-name', 'type': 'str'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         access_point_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             access_point_name (str, optional): The name of the access point.
         """
         super().__init__(**kwargs)
@@ -123,19 +123,19 @@ class DeleteAccessPointPublicAccessBlockRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'access_point_name': {'tag': 'input', 'position': 'query', 'rename': 'x-oss-access-point-name', 'type': 'str'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         access_point_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The name of the bucket.
+            bucket (str, required): The name of the bucket.
             access_point_name (str, optional): The name of the access point.
         """
         super().__init__(**kwargs)

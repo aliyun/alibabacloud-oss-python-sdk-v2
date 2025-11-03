@@ -84,19 +84,19 @@ class PutBucketResourceGroupRequest(serde.RequestModel):
     """
 
     _attribute_map = { 
-        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str'},
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'bucket_resource_group_configuration': {'tag': 'input', 'position': 'body', 'rename': 'BucketResourceGroupConfiguration', 'type': 'xml'},
     }
 
     def __init__(
         self,
-        bucket: Optional[str] = None,
+        bucket: str = None,
         bucket_resource_group_configuration: Optional[BucketResourceGroupConfiguration] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            bucket (str, optional): The bucket for which you want to modify the ID of the resource group.
+            bucket (str, required): The bucket for which you want to modify the ID of the resource group.
             bucket_resource_group_configuration (BucketResourceGroupConfiguration, optional): The request body schema.
         """
         super().__init__(**kwargs)
