@@ -99,12 +99,14 @@ class ErrorDocument(serde.Model):
 
 class RoutingRuleIncludeHeader(serde.Model):
     """
-    只有请求中包含了指定Header且值为指定值时，才能匹配此规则。该容器最多可指定10个。
+    The rule will only be matched when the request contains the specified Header with the specified value. Up to 10 of these can be specified in the container.
     """
 
-    _attribute_map = { 
+    _attribute_map = {
         'key': {'tag': 'xml', 'rename': 'Key', 'type': 'str'},
         'equals': {'tag': 'xml', 'rename': 'Equals', 'type': 'str'},
+        'starts_with': {'tag': 'xml', 'rename': 'StartsWith', 'type': 'str'},
+        'ends_with': {'tag': 'xml', 'rename': 'EndsWith', 'type': 'str'},
     }
 
     _xml_map = {
@@ -115,17 +117,58 @@ class RoutingRuleIncludeHeader(serde.Model):
         self,
         key: Optional[str] = None,
         equals: Optional[str] = None,
+        starts_with: Optional[str] = None,
+        ends_with: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
-        Args:
-            key (str, optional): 只有请求中包含了此Header且值为Equals的指定值时，才能匹配此规则。
-            equals (str, optional): 只有请求中包含了Key指定的Header且值为指定值时，才能匹配此规则。
+        key (str, optional): The rule will only be matched when the request contains this Header and its value is equal to the specified value.
+        equals (str, optional): The rule will only be matched when the request contains this Header and its value is equal to the specified value.
+        starts_with (str, optional): The rule will only be matched when the request contains this Header and its value starts with the specified value.
+        ends_with (str, optional): The rule will only be matched when the request contains this Header and its value ends with the specified value.
         """
         super().__init__(**kwargs)
         self.key = key
         self.equals = equals
+        self.starts_with = starts_with
+        self.ends_with = ends_with
 
+
+class MirrorAuth(serde.Model):
+    """
+    The authentication information for the origin server in mirror-based back-to-origin.
+    """
+
+    _attribute_map = {
+        'access_key_id': {'tag': 'xml', 'rename': 'AccessKeyId', 'type': 'str'},
+        'access_key_secret': {'tag': 'xml', 'rename': 'AccessKeySecret', 'type': 'str'},
+        'auth_type': {'tag': 'xml', 'rename': 'AuthType', 'type': 'str'},
+        'region': {'tag': 'xml', 'rename': 'Region', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'MirrorAuth'
+    }
+
+    def __init__(
+        self,
+        access_key_id: Optional[str] = None,
+        access_key_secret: Optional[str] = None,
+        auth_type: Optional[str] = None,
+        region: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        access_key_id (str, optional): The access key id for signature.
+        access_key_secret (str, optional): The access key secret for signature.
+        auth_type (str, optional): The authentication type.
+        region (str, optional): The sign region for signature.
+        """
+        super().__init__(**kwargs)
+        self.access_key_id = access_key_id
+        self.access_key_secret = access_key_secret
+        self.auth_type = auth_type
+        self.region = region
 
 class RoutingRuleCondition(serde.Model):
     """
@@ -210,6 +253,185 @@ class MirrorHeaders(serde.Model):
         self.removes = removes
         self.sets = sets
 
+class RuleTaggings(serde.Model):
+    """
+    The rule list for setting tags.
+    """
+
+    _attribute_map = {
+        'key': {'tag': 'xml', 'rename': 'Key', 'type': 'str'},
+        'value': {'tag': 'xml', 'rename': 'Value', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'Taggings'
+    }
+
+    def __init__(
+        self,
+        key: Optional[str] = None,
+        value: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        key (str, optional): The tag key.
+        value (str, optional): The rule for setting tag value for a specific tag key.
+        """
+        super().__init__(**kwargs)
+        self.key = key
+        self.value = value
+
+
+class MirrorTaggings(serde.Model):
+    """
+    The rules for setting tags when saving files during mirror-based back-to-origin.
+    """
+
+    _attribute_map = {
+        'taggings': {'tag': 'xml', 'rename': 'Taggings', 'type': '[RuleTaggings]'},
+    }
+
+    _xml_map = {
+        'name': 'MirrorTaggings'
+    }
+
+    _dependency_map = {
+        'Taggings': {'new': lambda: RuleTaggings()},
+    }
+
+    def __init__(
+        self,
+        taggings: Optional[List[RuleTaggings]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        taggings (List[RuleTaggings], optional): The rule list for setting tags.
+        """
+        super().__init__(**kwargs)
+        self.taggings = taggings
+
+class MirrorMultiAlternate(serde.Model):
+    """
+    The configuration list for multiple origins.
+    """
+
+    _attribute_map = {
+        'mirror_multi_alternate_number': {'tag': 'xml', 'rename': 'MirrorMultiAlternateNumber', 'type': 'int'},
+        'mirror_multi_alternate_url': {'tag': 'xml', 'rename': 'MirrorMultiAlternateURL', 'type': 'str'},
+        'mirror_multi_alternate_vpc_id': {'tag': 'xml', 'rename': 'MirrorMultiAlternateVpcId', 'type': 'str'},
+        'mirror_multi_alternate_dst_region': {'tag': 'xml', 'rename': 'MirrorMultiAlternateDstRegion', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'MirrorMultiAlternate'
+    }
+
+    def __init__(
+        self,
+        mirror_multi_alternate_number: Optional[int] = None,
+        mirror_multi_alternate_url: Optional[str] = None,
+        mirror_multi_alternate_vpc_id: Optional[str] = None,
+        mirror_multi_alternate_dst_region: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        mirror_multi_alternate_number (int, optional): The distinct number of a specific origin.
+        mirror_multi_alternate_url (str, optional): The URL for a specific origin.
+        mirror_multi_alternate_vpc_id (str, optional): The VPC ID for a specific origin.
+        mirror_multi_alternate_dst_region (str, optional): The region for a specific origin.
+        """
+        super().__init__(**kwargs)
+        self.mirror_multi_alternate_number = mirror_multi_alternate_number
+        self.mirror_multi_alternate_url = mirror_multi_alternate_url
+        self.mirror_multi_alternate_vpc_id = mirror_multi_alternate_vpc_id
+        self.mirror_multi_alternate_dst_region = mirror_multi_alternate_dst_region
+
+
+
+class MirrorMultiAlternates(serde.Model):
+    """
+    The container to store the configuration for multiple origins in mirror-based back-to-origin.
+    """
+
+    _attribute_map = {
+        'mirror_multi_alternates': {'tag': 'xml', 'rename': 'MirrorMultiAlternate', 'type': '[MirrorMultiAlternate]'},
+    }
+
+    _xml_map = {
+        'name': 'MirrorMultiAlternates'
+    }
+
+    _dependency_map = {
+        'MirrorMultiAlternate': {'new': lambda: MirrorMultiAlternate()},
+    }
+
+    def __init__(
+        self,
+        mirror_multi_alternates: Optional[List[MirrorMultiAlternate]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        mirror_multi_alternates (List[MirrorMultiAlternate], optional): The configuration list for multiple origins.
+        """
+        super().__init__(**kwargs)
+        self.mirror_multi_alternates = mirror_multi_alternates
+
+class ReturnHeader(serde.Model):
+    """
+    The rule list for setting response headers in mirror-based back-to-origin.
+    """
+
+    _attribute_map = {
+        'value': {'tag': 'xml', 'rename': 'Value', 'type': 'str'},
+        'key': {'tag': 'xml', 'rename': 'Key', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'ReturnHeader'
+    }
+
+    def __init__(
+        self,
+        value: Optional[str] = None,
+        key: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        value (str, optional): The rule for setting response header value for a specific header.
+        key (str, optional): The response header.
+        """
+        super().__init__(**kwargs)
+        self.value = value
+        self.key = key
+
+class MirrorReturnHeaders(serde.Model):
+    """
+    Container to store the rules for setting response headers in mirror-based back-to-origin.
+    """
+
+    _attribute_map = {
+        'return_headers': {'tag': 'xml', 'rename': 'ReturnHeader', 'type': '[ReturnHeader]'},
+    }
+
+    _xml_map = {
+        'name': 'MirrorReturnHeaders'
+    }
+
+    _dependency_map = {
+        'ReturnHeader': {'new': lambda: ReturnHeader()},
+    }
+
+    def __init__(
+        self,
+        return_headers: Optional[List[ReturnHeader]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        return_headers (List[ReturnHeader], optional): The rule list for setting response headers in mirror-based back-to-origin.
+        """
+        super().__init__(**kwargs)
+        self.return_headers = return_headers
+
 
 class RoutingRuleRedirect(serde.Model):
     """
@@ -232,6 +454,28 @@ class RoutingRuleRedirect(serde.Model):
         'mirror_follow_redirect': {'tag': 'xml', 'rename': 'MirrorFollowRedirect', 'type': 'bool'},
         'mirror_check_md5': {'tag': 'xml', 'rename': 'MirrorCheckMd5', 'type': 'bool'},
         'mirror_pass_original_slashes': {'tag': 'xml', 'rename': 'MirrorPassOriginalSlashes', 'type': 'bool'},
+        'mirror_allow_video_snapshot': {'tag': 'xml', 'rename': 'MirrorAllowVideoSnapshot', 'type': 'bool'},
+        'mirror_async_status': {'tag': 'xml', 'rename': 'MirrorAsyncStatus', 'type': 'int'},
+        'mirror_taggings': {'tag': 'xml', 'rename': 'MirrorTaggings', 'type': 'MirrorTaggings'},
+        'mirror_auth': {'tag': 'xml', 'rename': 'MirrorAuth', 'type': 'MirrorAuth'},
+        'mirror_dst_region': {'tag': 'xml', 'rename': 'MirrorDstRegion', 'type': 'str'},
+        'mirror_dst_vpc_id': {'tag': 'xml', 'rename': 'MirrorDstVpcId', 'type': 'str'},
+        'mirror_tunnel_id': {'tag': 'xml', 'rename': 'MirrorTunnelId', 'type': 'str'},
+        'mirror_role': {'tag': 'xml', 'rename': 'MirrorRole', 'type': 'str'},
+        'mirror_using_role': {'tag': 'xml', 'rename': 'MirrorUsingRole', 'type': 'bool'},
+        'mirror_return_headers': {'tag': 'xml', 'rename': 'MirrorReturnHeaders', 'type': 'MirrorReturnHeaders'},
+        'mirror_proxy_pass': {'tag': 'xml', 'rename': 'MirrorProxyPass', 'type': 'bool'},
+        'mirror_is_express_tunnel': {'tag': 'xml', 'rename': 'MirrorIsExpressTunnel', 'type': 'bool'},
+        'mirror_dst_slave_vpc_id': {'tag': 'xml', 'rename': 'MirrorDstSlaveVpcId', 'type': 'str'},
+        'mirror_allow_head_object': {'tag': 'xml', 'rename': 'MirrorAllowHeadObject', 'type': 'bool'},
+        'transparent_mirror_response_codes': {'tag': 'xml', 'rename': 'TransparentMirrorResponseCodes', 'type': 'str'},
+        'mirror_save_oss_meta': {'tag': 'xml', 'rename': 'MirrorSaveOssMeta', 'type': 'bool'},
+        'mirror_allow_get_image_info': {'tag': 'xml', 'rename': 'MirrorAllowGetImageInfo', 'type': 'bool'},
+        'mirror_url_probe': {'tag': 'xml', 'rename': 'MirrorURLProbe', 'type': 'str'},
+        'mirror_url_slave': {'tag': 'xml', 'rename': 'MirrorURLSlave', 'type': 'str'},
+        'mirror_user_last_modified': {'tag': 'xml', 'rename': 'MirrorUserLastModified', 'type': 'bool'},
+        'mirror_switch_all_errors': {'tag': 'xml', 'rename': 'MirrorSwitchAllErrors', 'type': 'bool'},
+        'mirror_multi_alternates': {'tag': 'xml', 'rename': 'MirrorMultiAlternates', 'type': 'MirrorMultiAlternates'},
     }
 
     _xml_map = {
@@ -240,6 +484,10 @@ class RoutingRuleRedirect(serde.Model):
 
     _dependency_map = {
         'MirrorHeaders': {'new': lambda: MirrorHeaders()},
+        'MirrorTaggings': {'new': lambda: MirrorTaggings()},
+        'MirrorAuth': {'new': lambda: MirrorAuth()},
+        'MirrorReturnHeaders': {'new': lambda: MirrorReturnHeaders()},
+        'MirrorMultiAlternates': {'new': lambda: MirrorMultiAlternates()},
     }
 
     def __init__(
@@ -259,6 +507,28 @@ class RoutingRuleRedirect(serde.Model):
         mirror_follow_redirect: Optional[bool] = None,
         mirror_check_md5: Optional[bool] = None,
         mirror_pass_original_slashes: Optional[bool] = None,
+        mirror_allow_video_snapshot: Optional[bool] = None,
+        mirror_async_status: Optional[int] = None,
+        mirror_taggings: Optional[MirrorTaggings] = None,
+        mirror_auth: Optional[MirrorAuth] = None,
+        mirror_dst_region: Optional[str] = None,
+        mirror_dst_vpc_id: Optional[str] = None,
+        mirror_tunnel_id: Optional[str] = None,
+        mirror_role: Optional[str] = None,
+        mirror_using_role: Optional[bool] = None,
+        mirror_return_headers: Optional[MirrorReturnHeaders] = None,
+        mirror_proxy_pass: Optional[bool] = None,
+        mirror_is_express_tunnel: Optional[bool] = None,
+        mirror_dst_slave_vpc_id: Optional[str] = None,
+        mirror_allow_head_object: Optional[bool] = None,
+        transparent_mirror_response_codes: Optional[str] = None,
+        mirror_save_oss_meta: Optional[bool] = None,
+        mirror_allow_get_image_info: Optional[bool] = None,
+        mirror_url_probe: Optional[str] = None,
+        mirror_url_slave: Optional[str] = None,
+        mirror_user_last_modified: Optional[bool] = None,
+        mirror_switch_all_errors: Optional[bool] = None,
+        mirror_multi_alternates: Optional[MirrorMultiAlternates] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -278,6 +548,41 @@ class RoutingRuleRedirect(serde.Model):
             mirror_follow_redirect (bool, optional): Specifies whether to redirect the access to the address specified by Location if the origin returns an HTTP 3xx status code. This parameter takes effect only when the value of RedirectType is Mirror. For example, when a mirroring-based back-to-origin request is initiated, the origin returns 302 and Location is specified.*   If you set MirrorFollowRedirect to true, OSS continues requesting the resource at the address specified by Location. The access can be redirected up to 10 times. If the access is redirected more than 10 times, the mirroring-based back-to-origin request fails.*   If you set MirrorFollowRedirect to false, OSS returns 302 and passes through Location.Default value: true.
             mirror_check_md5 (bool, optional): Specifies whether to check the MD5 hash of the body of the response returned by the origin. This parameter takes effect only when the value of RedirectType is Mirror. When **MirrorCheckMd5** is set to true and the response returned by the origin includes the Content-Md5 header, OSS checks whether the MD5 hash of the obtained data matches the header value. If the MD5 hash of the obtained data does not match the header value, the obtained data is not stored in OSS. Default value: false.
             mirror_pass_original_slashes (bool, optional): Whether to transparently pass through to the origin server
+            mirror_allow_video_snapshot (bool, optional): Whether to allow take video snapshot in mirror-based back-to-origin.
+            mirror_async_status (int, optional): The HTTP status codes that trigger the asynchronous pull mode in mirror-based back-to-origin.
+            mirror_taggings (MirrorTaggings, optional): The rules for setting tags when saving files during mirror-based back-to-origin.
+            mirror_auth (MirrorAuth, optional): The authentication information for the origin server in mirror-based back-to-origin.
+            mirror_dst_region (str, optional): The VPC region for mirror-based back-to-origin express tunnel.
+            mirror_dst_vpc_id (str, optional): The VPC ID for mirror-based back-to-origin express tunnel.
+            mirror_tunnel_id (str, optional): The tunnel ID for mirror-based back-to-origin.
+            mirror_role (str, optional): The role name used for mirror-based back-to-origin.
+            mirror_using_role (bool, optional): Whether to use role for mirror-based back-to-origin.
+            mirror_return_headers (MirrorReturnHeaders, optional): Container to store the rules for setting response headers in mirror-based back-to-origin.
+            mirror_proxy_pass (bool, optional): Not save data in web-based back-to-origin.
+            mirror_is_express_tunnel (bool, optional): Mirror-based back-to-origin with express tunnel.
+            mirror_dst_slave_vpc_id (str, optional): The slave VPC ID for mirror-based back-to-origin express tunnel.
+            mirror_allow_head_object (bool, optional): Whether to allow take HeadObject in mirror-based back-to-origin.
+            transparent_mirror_response_codes (str, optional): Specify which status codes returned by the origin server should be passed through to the client along with the body. The value should be HTTP status codes such as 4xx, 5xx, etc., separated by commas (,), for example, 400,404. This setting takes effect only when RedirectType is set to Mirror. When OSS requests content from the origin server, if the origin server returns one of the status codes specified in this parameter, OSS will pass through the status code and body returned by the origin server to the client. If the 404 status code is specified in this parameter, the configured ErrorDocument will be ineffective.
+            mirror_save_oss_meta (bool, optional): Whether to save OSS metadata in mirror-based back-to-origin.
+            mirror_allow_get_image_info (bool, optional): Whether to allow getting image info in mirror-based back-to-origin.
+            mirror_url_probe (str, optional): The probe URL for mirror-based back-to-origin.
+            mirror_url_slave (str, optional): The slave URL for mirror-based back-to-origin.
+            mirror_user_last_modified (bool, optional): Whether to use last modified in mirror-based back-to-origin.
+            mirror_switch_all_errors (bool, optional): Whether to switch all errors in mirror-based back-to-origin.
+            mirror_multi_alternates (MirrorMultiAlternates, optional): The multi alternates for mirror-based back-to-origin.ected. This parameter can be set to the ${key} variable, which indicates the object name in the request. For example, if ReplaceKeyWith is set to `prefix/${key}.suffix` and the object to access is test, the value of the Location header is `http://example.com/prefix/test.suffix`.
+            mirror_save_oss_meta (bool, optional): Whether to save the OSS meta in mirror-based back-to-origin.
+            mirror_allow_get_image_info (bool, optional): Whether to allow get image info in mirror-based back-to-origin.
+            mirror_follow_redirect (bool, optional): Specifies whether to redirect the access to the address specified by Location if the origin returns an HTTP 3xx status code. This parameter takes effect only when the value of RedirectType is Mirror. For example, when a mirroring-based back-to-origin request is initiated, the origin returns 302 and Location is specified.*   If you set MirrorFollowRedirect to true, OSS continues requesting the resource at the address specified by Location. The access can be redirected up to 10 times. If the access is redirected more than 10 times, the mirroring-based back-to-origin request fails.*   If you set MirrorFollowRedirect to false, OSS returns 302 and passes through Location.Default value: true.
+            mirror_url_probe (str, optional): The URL for probing the origin server in mirror-based back-to-origin.
+            protocol (str, optional): The protocol used for redirection. This parameter takes effect only when RedirectType is set to External or AliCDN. For example, if you access an object named test, Protocol is set to https, and Hostname is set to `example.com`, the value of the Location header is `https://example.com/test`. Valid values: **http** and **https**.
+            enable_replace_prefix (bool, optional): If this parameter is set to true, the prefix of the object names is replaced with the value specified by ReplaceKeyPrefixWith. If this parameter is not specified or empty, the prefix of object names is truncated.  When the ReplaceKeyWith parameter is not empty, the EnableReplacePrefix parameter cannot be set to true.Default value: false.
+            mirror_pass_original_slashes (bool, optional): Whether to transparently pass through to the origin server
+            mirror_url_slave (str, optional): The URL for the slave origin server in mirror-based back-to-origin.
+            mirror_user_last_modified (bool, optional): Whether to use the last modified time of the user in mirror-based back-to-origin.
+            mirror_switch_all_errors (bool, optional): Whether to switch all errors in mirror-based back-to-origin.
+            mirror_sni (bool, optional): Whether to pass through SNI in mirror-based back-to-origin.
+            mirror_check_md5 (bool, optional): Specifies whether to check the MD5 hash of the body of the response returned by the origin. This parameter takes effect only when the value of RedirectType is Mirror. When **MirrorCheckMd5** is set to true and the response returned by the origin includes the Content-Md5 header, OSS checks whether the MD5 hash of the obtained data matches the header value. If the MD5 hash of the obtained data does not match the header value, the obtained data is not stored in OSS. Default value: false.
+            mirror_multi_alternates (MirrorMultiAlternates, optional): The rules for setting multiple alternates in mirror-based back-to-origin.
         """
         super().__init__(**kwargs)
         self.mirror_url = mirror_url
@@ -295,6 +600,28 @@ class RoutingRuleRedirect(serde.Model):
         self.mirror_follow_redirect = mirror_follow_redirect
         self.mirror_check_md5 = mirror_check_md5
         self.mirror_pass_original_slashes = mirror_pass_original_slashes
+        self.mirror_allow_video_snapshot = mirror_allow_video_snapshot
+        self.mirror_async_status = mirror_async_status
+        self.mirror_taggings = mirror_taggings
+        self.mirror_auth = mirror_auth
+        self.mirror_dst_region = mirror_dst_region
+        self.mirror_dst_vpc_id = mirror_dst_vpc_id
+        self.mirror_tunnel_id = mirror_tunnel_id
+        self.mirror_role = mirror_role
+        self.mirror_using_role = mirror_using_role
+        self.mirror_return_headers = mirror_return_headers
+        self.mirror_proxy_pass = mirror_proxy_pass
+        self.mirror_is_express_tunnel = mirror_is_express_tunnel
+        self.mirror_dst_slave_vpc_id = mirror_dst_slave_vpc_id
+        self.mirror_allow_head_object = mirror_allow_head_object
+        self.transparent_mirror_response_codes = transparent_mirror_response_codes
+        self.mirror_save_oss_meta = mirror_save_oss_meta
+        self.mirror_allow_get_image_info = mirror_allow_get_image_info
+        self.mirror_url_probe = mirror_url_probe
+        self.mirror_url_slave = mirror_url_slave
+        self.mirror_user_last_modified = mirror_user_last_modified
+        self.mirror_switch_all_errors = mirror_switch_all_errors
+        self.mirror_multi_alternates = mirror_multi_alternates
 
 
 class RoutingRuleLuaConfig(serde.Model):
