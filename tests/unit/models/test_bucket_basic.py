@@ -438,7 +438,7 @@ class TestListObjectsV2(unittest.TestCase):
                 object_type='Normal',
                 size=344606,
                 etag='5B3C1A2E053D763E1B002CC607C5A0FE1****',
-                last_modified=datetime.datetime.fromtimestamp(1702743657),
+                last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                 storage_class='ColdArchive',
                 owner=model.Owner(
                     id='0022012****',
@@ -464,7 +464,7 @@ class TestListObjectsV2(unittest.TestCase):
         self.assertEqual('b', result.start_after)
         self.assertEqual(20, result.key_count)
         self.assertEqual('fun/movie/001.avi', result.contents[0].key)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.contents[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.contents[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual("5B3C1A2E053D763E1B002CC607C5A0FE1****", result.contents[0].etag)
         self.assertEqual('Normal', result.contents[0].object_type)
         self.assertEqual(344606, result.contents[0].size)
@@ -814,7 +814,7 @@ class TestListObjects(unittest.TestCase):
                 object_type='Normal',
                 size=344606,
                 etag='5B3C1A2E053D763E1B002CC607C5A0FE1****',
-                last_modified=datetime.datetime.fromtimestamp(1702743657),
+                last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                 storage_class='ColdArchive',
                 owner=model.Owner(
                     id='0022012****',
@@ -836,7 +836,7 @@ class TestListObjects(unittest.TestCase):
         self.assertEqual('NextChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', result.next_marker)
         self.assertEqual('url', result.encoding_type)
         self.assertEqual('fun/movie/001.avi', result.contents[0].key)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.contents[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.contents[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual("5B3C1A2E053D763E1B002CC607C5A0FE1****", result.contents[0].etag)
         self.assertEqual('Normal', result.contents[0].object_type)
         self.assertEqual(344606, result.contents[0].size)
@@ -1420,7 +1420,7 @@ class TestListObjectVersions(unittest.TestCase):
                 key='demo%2FREADME-CN.md',
                 version_id='CAEQEhiBgICDzK6NnBgiIGRlZWJhYmNlMGUxZDQ4YTZhNTU2MzM4Mzk5NDBl****',
                 is_latest=False,
-                last_modified=datetime.datetime.fromtimestamp(1702743657),
+                last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                 etag='"E317049B40462DE37C422CE4FC1B****"',
                 object_type='Normal',
                 size=2943,
@@ -1435,7 +1435,7 @@ class TestListObjectVersions(unittest.TestCase):
                 key='example-object-2.jpg',
                 version_id='',
                 is_latest=True,
-                last_modified=datetime.datetime.fromtimestamp(1702733657),
+                last_modified=datetime.datetime.fromtimestamp(1702733657, datetime.timezone.utc),
                 etag='5B3C1A2E053D763E1B002CC607C5A0FE1****',
                 size=20,
                 storage_class='STANDARD',
@@ -1450,7 +1450,7 @@ class TestListObjectVersions(unittest.TestCase):
                 key='demo%2FREADME-CN.md',
                 version_id='CAEQFBiCgID3.86GohgiIDc4ZTE0NTNhZTc5MDQxYzBhYTU5MjY1ZDFjNGJm****',
                 is_latest=True,
-                last_modified=datetime.datetime.fromtimestamp(1702755657),
+                last_modified=datetime.datetime.fromtimestamp(1702755657, datetime.timezone.utc),
                 owner=model.Owner(
                     id='150692521021****',
                     display_name='350692521021****',
@@ -1460,7 +1460,7 @@ class TestListObjectVersions(unittest.TestCase):
                 key='demo%2FLICENSE',
                 version_id='CAEQFBiBgMD0.86GohgiIGZmMmFlM2UwNjdlMzRiMGFhYjk4MjM1ZGUyZDY0****',
                 is_latest=True,
-                last_modified=datetime.datetime.fromtimestamp(1702743377),
+                last_modified=datetime.datetime.fromtimestamp(1702743377, datetime.timezone.utc),
                 owner=model.Owner(
                     id='150692521021****',
                     display_name='250692521021****',
@@ -1487,7 +1487,7 @@ class TestListObjectVersions(unittest.TestCase):
         self.assertEqual('demo%2FREADME-CN.md', result.version[0].key)
         self.assertEqual('CAEQEhiBgICDzK6NnBgiIGRlZWJhYmNlMGUxZDQ4YTZhNTU2MzM4Mzk5NDBl****',result.version[0].version_id)
         self.assertEqual(False, result.version[0].is_latest)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.version[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.version[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('"E317049B40462DE37C422CE4FC1B****"', result.version[0].etag)
         self.assertEqual('Normal', result.version[0].object_type)
         self.assertEqual(2943, result.version[0].size)
@@ -1498,7 +1498,7 @@ class TestListObjectVersions(unittest.TestCase):
         self.assertEqual('example-object-2.jpg', result.version[1].key)
         self.assertEqual('', result.version[1].version_id)
         self.assertEqual(True, result.version[1].is_latest)
-        self.assertEqual('2023-12-16T21:34:17.000Z', result.version[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T13:34:17.000Z', result.version[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('5B3C1A2E053D763E1B002CC607C5A0FE1****', result.version[1].etag)
         self.assertEqual(20, result.version[1].size)
         self.assertEqual('STANDARD', result.version[1].storage_class)
@@ -1508,13 +1508,13 @@ class TestListObjectVersions(unittest.TestCase):
         self.assertEqual('demo%2FREADME-CN.md', result.delete_marker[0].key)
         self.assertEqual('CAEQFBiCgID3.86GohgiIDc4ZTE0NTNhZTc5MDQxYzBhYTU5MjY1ZDFjNGJm****',result.delete_marker[0].version_id)
         self.assertEqual(True, result.delete_marker[0].is_latest)
-        self.assertEqual('2023-12-17T03:40:57.000Z', result.delete_marker[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T19:40:57.000Z', result.delete_marker[0].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('150692521021****', result.delete_marker[0].owner.id)
         self.assertEqual('350692521021****', result.delete_marker[0].owner.display_name)
         self.assertEqual('demo%2FLICENSE', result.delete_marker[1].key)
         self.assertEqual('CAEQFBiBgMD0.86GohgiIGZmMmFlM2UwNjdlMzRiMGFhYjk4MjM1ZGUyZDY0****',result.delete_marker[1].version_id)
         self.assertEqual(True, result.delete_marker[1].is_latest)
-        self.assertEqual('2023-12-17T00:16:17.000Z', result.delete_marker[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual('2023-12-16T16:16:17.000Z', result.delete_marker[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('150692521021****', result.delete_marker[1].owner.id)
         self.assertEqual('250692521021****', result.delete_marker[1].owner.display_name)
         self.assertEqual('demo%2F.git%2F', result.common_prefixes[0].prefix)
