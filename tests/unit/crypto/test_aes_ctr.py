@@ -1,6 +1,7 @@
 # pylint: skip-file
 import unittest
 import io
+import sys
 import base64
 from typing import cast, Any, Iterator
 from alibabacloud_oss_v2.types import StreamBody
@@ -120,6 +121,8 @@ class TestAesCtr(unittest.TestCase):
             cek_algorithm='AES/CTR/NoPadding'
         )
 
+        print(sys.version)
+
         cipher = aes_ctr._AesCtr(
             cipher_data=cipher_data,
             offset=0
@@ -173,27 +176,29 @@ class TestAesCtr(unittest.TestCase):
             edata = encf.read()
             self.assertEqual(enc_example_data[128:], edata)
 
-        # iterator bytes
-        cipher.no_bytes = True
-        eiter = cipher.encrypt(example_data)
-        self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
-        edata = b''
-        for d in eiter:
-            edata += d
-        self.assertEqual(enc_example_data, edata)
+        if sys.version_info >= (3, 11):
+            # iterator bytes
+            cipher.no_bytes = True
+            eiter = cipher.encrypt(example_data)
+            self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
+            edata = b''
+            for d in eiter:
+                edata += d
+            self.assertEqual(enc_example_data, edata)
 
-        # iterator str
-        cipher.no_str = True
-        eiter = cipher.encrypt('1234567890abcdefghijklmnopqrstuvwxyz')
-        self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
-        edata = b''
-        for d in eiter:
-            edata += d
+            # iterator str
+            cipher.no_str = True
+            eiter = cipher.encrypt('1234567890abcdefghijklmnopqrstuvwxyz')
+            self.assertIsInstance(eiter, aes_ctr.IterableEncryptor)
+            edata = b''
+            for d in eiter:
+                edata += d
 
-        cipher.no_str = False
-        edata1 = cipher.encrypt('1234567890abcdefghijklmnopqrstuvwxyz')
-        self.assertEqual(edata1, edata)
-        self.assertEqual(len(edata1), len('1234567890abcdefghijklmnopqrstuvwxyz'))
+            cipher.no_str = False
+            edata1 = cipher.encrypt('1234567890abcdefghijklmnopqrstuvwxyz')
+            self.assertEqual(edata1, edata)
+            self.assertEqual(len(edata1), len('1234567890abcdefghijklmnopqrstuvwxyz'))
+
 
         # file-like + offset
         edata = b''

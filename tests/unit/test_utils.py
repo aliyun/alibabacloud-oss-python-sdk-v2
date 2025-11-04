@@ -69,8 +69,8 @@ class TestUtils(unittest.TestCase):
         self.assertEqual("application/javascript", utils.guess_content_type("demo.js", None))
         self.assertEqual("application/vnd.android.package-archive", utils.guess_content_type("demo.apk", None))
         self.assertEqual(None, utils.guess_content_type("demo", None))
-        self.assertEqual(None, utils.guess_content_type("demo.123", None))
-        self.assertEqual('', utils.guess_content_type("demo.123", ''))
+        self.assertEqual(None, utils.guess_content_type("demo.321", None))
+        self.assertEqual('', utils.guess_content_type("demo.321", ''))
 
         self.assertEqual("text/html", utils.guess_content_type("demo.txt.html", None))
 

@@ -53,19 +53,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     ),
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class=model.StorageClassType.COLDARCHIVE,
                         is_access_time=False,
                         return_to_std_when_visit=False,
                         allow_small_file=True,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class=model.StorageClassType.DEEPCOLDARCHIVE,
                         is_access_time=False,
@@ -90,7 +90,7 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     status='OK',
                     abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=37348,
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                     ),
                 ), model.LifecycleRule(
                     tags=[model.Tag(
@@ -116,19 +116,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     ),
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class=model.StorageClassType.ARCHIVE,
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class=model.StorageClassType.COLDARCHIVE,
                         is_access_time=True,
@@ -153,7 +153,7 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     status='OK',
                     abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=37348,
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                     ),
                 )],
             ),
@@ -174,19 +174,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('key4', request.lifecycle_configuration.rules[0].filter.filter_not[1].tag.key)
         self.assertEqual('value4', request.lifecycle_configuration.rules[0].filter.filter_not[1].tag.value)
         self.assertEqual('0022012****', request.lifecycle_configuration.rules[0].id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].expiration.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].expiration.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].expiration.days)
         self.assertEqual(False, request.lifecycle_configuration.rules[0].expiration.expired_object_delete_marker)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].transitions[0].days)
         self.assertEqual('ColdArchive', request.lifecycle_configuration.rules[0].transitions[0].storage_class)
         self.assertEqual(False, request.lifecycle_configuration.rules[0].transitions[0].is_access_time)
         self.assertEqual(False, request.lifecycle_configuration.rules[0].transitions[0].return_to_std_when_visit)
         self.assertEqual(True, request.lifecycle_configuration.rules[0].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].transitions[1].days)
         self.assertEqual('DeepColdArchive', request.lifecycle_configuration.rules[0].transitions[1].storage_class)
         self.assertEqual(False, request.lifecycle_configuration.rules[0].transitions[1].is_access_time)
@@ -206,8 +206,8 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', request.lifecycle_configuration.rules[0].prefix)
         self.assertEqual('OK', request.lifecycle_configuration.rules[0].status)
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].abort_multipart_upload.days)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('key5', request.lifecycle_configuration.rules[1].tags[0].key)
         self.assertEqual('value5', request.lifecycle_configuration.rules[1].tags[0].value)
         self.assertEqual('key6', request.lifecycle_configuration.rules[1].tags[1].key)
@@ -219,19 +219,19 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('key7', request.lifecycle_configuration.rules[1].filter.filter_not[0].tag.key)
         self.assertEqual('value7', request.lifecycle_configuration.rules[1].filter.filter_not[0].tag.value)
         self.assertEqual('0022012****', request.lifecycle_configuration.rules[1].id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].expiration.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].expiration.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].expiration.days)
         self.assertEqual(False, request.lifecycle_configuration.rules[1].expiration.expired_object_delete_marker)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].transitions[0].days)
         self.assertEqual('Archive', request.lifecycle_configuration.rules[1].transitions[0].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].is_access_time)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].return_to_std_when_visit)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].transitions[1].days)
         self.assertEqual('ColdArchive', request.lifecycle_configuration.rules[1].transitions[1].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[1].is_access_time)
@@ -251,8 +251,8 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', request.lifecycle_configuration.rules[1].prefix)
         self.assertEqual('OK', request.lifecycle_configuration.rules[1].status)
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].abort_multipart_upload.days)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
 
 
         request = model.PutBucketLifecycleRequest(
@@ -261,14 +261,14 @@ class TestPutBucketLifecycle(unittest.TestCase):
             lifecycle_configuration=model.LifecycleConfiguration(
                 rules=[model.LifecycleRule(
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class='Standard',
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class='DeepColdArchive',
                         is_access_time=True,
@@ -290,14 +290,14 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     )],
                 ), model.LifecycleRule(
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class='ColdArchive',
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class='IA',
                         is_access_time=True,
@@ -322,15 +322,15 @@ class TestPutBucketLifecycle(unittest.TestCase):
         )
         self.assertEqual('bucketexampletest', request.bucket)
         self.assertEqual('false', request.allow_same_action_overlap)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].transitions[0].days)
         self.assertEqual('Standard', request.lifecycle_configuration.rules[0].transitions[0].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[0].transitions[0].is_access_time)
         self.assertEqual(True, request.lifecycle_configuration.rules[0].transitions[0].return_to_std_when_visit)
         self.assertEqual(True, request.lifecycle_configuration.rules[0].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[0].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[0].transitions[1].days)
         self.assertEqual('DeepColdArchive', request.lifecycle_configuration.rules[0].transitions[1].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[0].transitions[1].is_access_time)
@@ -346,15 +346,15 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual(True, request.lifecycle_configuration.rules[0].noncurrent_version_transitions[1].allow_small_file)
         self.assertEqual(80479, request.lifecycle_configuration.rules[0].noncurrent_version_transitions[1].noncurrent_days)
         self.assertEqual('Archive', request.lifecycle_configuration.rules[0].noncurrent_version_transitions[1].storage_class)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].transitions[0].days)
         self.assertEqual('ColdArchive', request.lifecycle_configuration.rules[1].transitions[0].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].is_access_time)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].return_to_std_when_visit)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), request.lifecycle_configuration.rules[1].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(37348, request.lifecycle_configuration.rules[1].transitions[1].days)
         self.assertEqual('IA', request.lifecycle_configuration.rules[1].transitions[1].storage_class)
         self.assertEqual(True, request.lifecycle_configuration.rules[1].transitions[1].is_access_time)
@@ -380,12 +380,12 @@ class TestPutBucketLifecycle(unittest.TestCase):
                 rules=[model.LifecycleRule(
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         expired_object_delete_marker=False,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=37348,
                         storage_class='Standard',
                         is_access_time=True,
@@ -510,19 +510,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     ),
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
                         is_access_time=False,
                         return_to_std_when_visit=True,
                         allow_small_file=False,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
                         is_access_time=True,
@@ -547,7 +547,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     status='OK',
                     abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                     ),
                 ), model.LifecycleRule(
                     tags=[model.Tag(
@@ -573,19 +573,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     ),
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         storage_class=model.StorageClassType.IA,
                         is_access_time=True,
                         return_to_std_when_visit=True,
                         allow_small_file=True,
                     ), model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         storage_class=model.StorageClassType.STANDARD,
                         is_access_time=True,
@@ -610,7 +610,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     status='OK',
                     abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                     ),
                 )],
             ),
@@ -629,19 +629,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('key4', result.lifecycle_configuration.rules[0].filter.filter_not[1].tag.key)
         self.assertEqual('value4', result.lifecycle_configuration.rules[0].filter.filter_not[1].tag.value)
         self.assertEqual('0022012****', result.lifecycle_configuration.rules[0].id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].expiration.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].expiration.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].expiration.days)
         self.assertEqual(True, result.lifecycle_configuration.rules[0].expiration.expired_object_delete_marker)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].transitions[0].days)
         self.assertEqual('IA', result.lifecycle_configuration.rules[0].transitions[0].storage_class)
         self.assertEqual(False, result.lifecycle_configuration.rules[0].transitions[0].is_access_time)
         self.assertEqual(True, result.lifecycle_configuration.rules[0].transitions[0].return_to_std_when_visit)
         self.assertEqual(False, result.lifecycle_configuration.rules[0].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].transitions[1].days)
         self.assertEqual('IA', result.lifecycle_configuration.rules[0].transitions[1].storage_class)
         self.assertEqual(True, result.lifecycle_configuration.rules[0].transitions[1].is_access_time)
@@ -661,8 +661,8 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', result.lifecycle_configuration.rules[0].prefix)
         self.assertEqual('OK', result.lifecycle_configuration.rules[0].status)
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].abort_multipart_upload.days)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('key5', result.lifecycle_configuration.rules[1].tags[0].key)
         self.assertEqual('value5', result.lifecycle_configuration.rules[1].tags[0].value)
         self.assertEqual('key6', result.lifecycle_configuration.rules[1].tags[1].key)
@@ -674,19 +674,19 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('key7', result.lifecycle_configuration.rules[1].filter.filter_not[0].tag.key)
         self.assertEqual('value7', result.lifecycle_configuration.rules[1].filter.filter_not[0].tag.value)
         self.assertEqual('0022012****', result.lifecycle_configuration.rules[1].id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[1].expiration.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[1].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[1].expiration.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[1].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[1].expiration.days)
         self.assertEqual(True, result.lifecycle_configuration.rules[1].expiration.expired_object_delete_marker)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[1].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[1].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[1].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[1].transitions[0].days)
         self.assertEqual('IA', result.lifecycle_configuration.rules[1].transitions[0].storage_class)
         self.assertEqual(True, result.lifecycle_configuration.rules[1].transitions[0].is_access_time)
         self.assertEqual(True, result.lifecycle_configuration.rules[1].transitions[0].return_to_std_when_visit)
         self.assertEqual(True, result.lifecycle_configuration.rules[1].transitions[0].allow_small_file)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[1].transitions[1].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[1].transitions[1].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[1].transitions[1].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[1].transitions[1].days)
         self.assertEqual('Standard', result.lifecycle_configuration.rules[1].transitions[1].storage_class)
         self.assertEqual(True, result.lifecycle_configuration.rules[1].transitions[1].is_access_time)
@@ -706,8 +706,8 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', result.lifecycle_configuration.rules[1].prefix)
         self.assertEqual('OK', result.lifecycle_configuration.rules[1].status)
         self.assertEqual(12590, result.lifecycle_configuration.rules[1].abort_multipart_upload.days)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[1].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
 
 
         result = model.GetBucketLifecycleResult(
@@ -729,12 +729,12 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     ),
                     id='0022012****',
                     expiration=model.LifecycleRuleExpiration(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         expired_object_delete_marker=True,
                     ),
                     transitions=[model.LifecycleRuleTransition(
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                         days=12590,
                         storage_class='Archive',
                         is_access_time=True,
@@ -753,7 +753,7 @@ class TestGetBucketLifecycle(unittest.TestCase):
                     status='OK',
                     abort_multipart_upload=model.LifecycleRuleAbortMultipartUpload(
                         days=12590,
-                        created_before_date=datetime.datetime.fromtimestamp(1702743657),
+                        created_before_date=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                     ),
                 )],
             ),
@@ -765,12 +765,12 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual(68626, result.lifecycle_configuration.rules[0].filter.object_size_less_than)
         self.assertEqual('aaa', result.lifecycle_configuration.rules[0].filter.filter_not[0].prefix)
         self.assertEqual('0022012****', result.lifecycle_configuration.rules[0].id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].expiration.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].expiration.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].expiration.days)
         self.assertEqual(True, result.lifecycle_configuration.rules[0].expiration.expired_object_delete_marker)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].transitions[0].created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].transitions[0].created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].transitions[0].created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].transitions[0].days)
         self.assertEqual('Archive', result.lifecycle_configuration.rules[0].transitions[0].storage_class)
         self.assertEqual(True, result.lifecycle_configuration.rules[0].transitions[0].is_access_time)
@@ -785,8 +785,8 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', result.lifecycle_configuration.rules[0].prefix)
         self.assertEqual('OK', result.lifecycle_configuration.rules[0].status)
         self.assertEqual(12590, result.lifecycle_configuration.rules[0].abort_multipart_upload.days)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].abort_multipart_upload.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
 
     def test_deserialize_result(self):
         xml_data = r'''
