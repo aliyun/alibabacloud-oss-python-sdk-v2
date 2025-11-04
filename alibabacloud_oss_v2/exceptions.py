@@ -109,6 +109,9 @@ class ServiceError(BaseError):
         Request Id: {request_id}.\n\
         Message: {message}.\n\
         EC: {ec}.\n\
+        ErrorDetail: {error_detail}\n\
+        ArgumentName: {argument_name}\n\
+        ArgumentValue: {argument_value}\n\
         Timestamp: {timestamp}.\n\
         Request Endpoint: {request_target}.'
 
@@ -119,6 +122,9 @@ class ServiceError(BaseError):
         self.message = kwargs.get("message", None)
         self.request_id = kwargs.get("request_id", None)
         self.ec = kwargs.get("ec", None)
+        self.error_detail = kwargs.get("error_detail", None)
+        self.argument_name = kwargs.get("argument_name", None)
+        self.argument_value = kwargs.get("argument_value", None)
         self.timestamp = kwargs.get("timestamp", None)
         self.request_target = kwargs.get("request_target", None)
         self.snapshot = kwargs.get("snapshot", None)

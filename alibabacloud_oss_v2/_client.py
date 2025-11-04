@@ -642,6 +642,9 @@ def _to_service_error(response: HttpResponse) -> exceptions.ServiceError:
     code = 'BadErrorResponse'
     message = ''
     ec = ''
+    error_detail = ''
+    argument_name = ''
+    argument_value = ''
     request_id = ''
     err_body = b''
     try:
@@ -656,6 +659,9 @@ def _to_service_error(response: HttpResponse) -> exceptions.ServiceError:
             message = error_fileds.get('Message', '')
             code = error_fileds.get('Code', '')
             ec = error_fileds.get('EC', '')
+            error_detail = error_fileds.get('ErrorDetail', '')
+            argument_name = error_fileds.get('ArgumentName', '')
+            argument_value = error_fileds.get('ArgumentValue', '')
             request_id = error_fileds.get('RequestId', '')
         else:
             message = f'Expect root node Error, but get {root.tag}.'
@@ -679,6 +685,9 @@ def _to_service_error(response: HttpResponse) -> exceptions.ServiceError:
         message=message,
         request_id=request_id or response.headers.get('x-oss-request-id', ''),
         ec=ec or response.headers.get('x-oss-ec', ''),
+        error_detail=error_detail,
+        argument_name=argument_name,
+        argument_value=argument_value,
         timestamp=timestamp,
         request_target=f'{response.request.method} {response.request.url}',
         snapshot=content,
@@ -695,6 +704,9 @@ def _to_service_error_json(response: HttpResponse) -> exceptions.ServiceError:
     code = 'BadErrorResponse'
     message = ''
     ec = ''
+    error_detail = ''
+    argument_name = ''
+    argument_value = ''
     request_id = ''
     err_body = b''
     try:
@@ -711,6 +723,9 @@ def _to_service_error_json(response: HttpResponse) -> exceptions.ServiceError:
             message = error_fileds.get('Message', '')
             code = error_fileds.get('Code', '')
             ec = error_fileds.get('EC', '')
+            error_detail = error_fileds.get('ErrorDetail', '')
+            argument_name = error_fileds.get('ArgumentName', '')
+            argument_value = error_fileds.get('ArgumentValue', '')
             request_id = error_fileds.get('RequestId', '')
         else:
             message = f'Expect root node Error, but get {root.keys()}.'
@@ -734,6 +749,9 @@ def _to_service_error_json(response: HttpResponse) -> exceptions.ServiceError:
         message=message,
         request_id=request_id or response.headers.get('x-oss-request-id', ''),
         ec=ec or response.headers.get('x-oss-ec', ''),
+        error_detail=error_detail,
+        argument_name=argument_name,
+        argument_value=argument_value,
         timestamp=timestamp,
         request_target=f'{response.request.method} {response.request.url}',
         snapshot=content,
