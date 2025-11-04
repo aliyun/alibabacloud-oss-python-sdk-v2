@@ -20,7 +20,7 @@ jobs:
 
     - name: Install dependencies
       run: |
-        pip install -y requests pycryptodome crcmod-plus aiohttp
+        pip install requests pycryptodome crcmod-plus aiohttp
     
     - name: Run tests
       run: |
