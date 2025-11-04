@@ -1,0 +1,27 @@
+name: Run tests
+
+on: [push, pull_request]
+
+jobs:
+  unittest:
+    name: UnitTest
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      fail-fast: false
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12", "3.13", "3.14"]
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v6
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Install dependencies
+      run: |
+        pip install -y requests pycryptodome crcmod-plus aiohttp
+    
+    - name: Run tests
+      run: |
+        python -m unittest discover -t . -v tests/unit
