@@ -22,7 +22,7 @@ jobs:
       if: ${{ matrix.operating-system == 'ubuntu-latest'}}
       run: |
         sudo apt update
-        apt install -y --no-install-recommends media-types
+        sudo apt install -y --no-install-recommends media-types
 
     - name: Install dependencies
       run: |
