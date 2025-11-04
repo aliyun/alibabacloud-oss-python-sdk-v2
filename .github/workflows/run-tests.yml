@@ -22,7 +22,7 @@ jobs:
       if: ${{ matrix.operating-system == 'ubuntu-latest'}}
       run: |
         sudo apt update
-        sudo apt install -y mime-support
+        apt install -y --no-install-recommends media-types
 
     - name: Install dependencies
       run: |
