@@ -176,7 +176,7 @@ class TestAesCtr(unittest.TestCase):
             edata = encf.read()
             self.assertEqual(enc_example_data[128:], edata)
 
-        if sys.version_info > (3, 10):
+        if sys.version_info >= (3, 11):
             # iterator bytes
             cipher.no_bytes = True
             eiter = cipher.encrypt(example_data)
