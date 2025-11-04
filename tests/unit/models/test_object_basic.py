@@ -377,7 +377,7 @@ class TestHeadObject(unittest.TestCase):
             content_length=1024,
             content_type='text/xml',
             etag='"A082B659EF78733A5A042FA253B1****"',
-            last_modified=datetime.datetime.fromtimestamp(1702743657),
+            last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             content_md5='B5eJF1ptWaXm4bijSPyxw==',
             metadata={
                 "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
@@ -412,8 +412,8 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual(1024, result.content_length)
         self.assertEqual('text/xml', result.content_type)
         self.assertEqual('"A082B659EF78733A5A042FA253B1****"', result.etag)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('B5eJF1ptWaXm4bijSPyxw==',result.content_md5)
         self.assertEqual('no-cache', result.cache_control)
         self.assertEqual('attachment; filename=testing.txt',result.content_disposition)
@@ -648,7 +648,7 @@ class TestGetObject(unittest.TestCase):
             content_range='bytes 0~9/44',
             content_type='application/octet-stream',
             etag='etag-test',
-            last_modified=datetime.datetime.fromtimestamp(1702743657),
+            last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             content_md5='B5eJF1ptWaXm4bijSPyxw==',
             metadata={
                 "client-side-encryption-key": "nyXOp7delQ/MQLjKQMhHLaTHIB6q+C+RA6lGwqqYVa+n3aV5uWhygyv1MWmESurppg=",
@@ -678,7 +678,7 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual('bytes 0~9/44', result.content_range)
         self.assertEqual('application/octet-stream', result.content_type)
         self.assertEqual('etag-test', result.etag)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_modified)
         self.assertEqual('B5eJF1ptWaXm4bijSPyxw==',result.content_md5)
         self.assertEqual('no-cache', result.cache_control)
         self.assertEqual('attachment', result.content_disposition)
@@ -1182,7 +1182,7 @@ class TestCopyObject(unittest.TestCase):
             server_side_encryption='SM4',
             server_side_data_encryption='KMS',
             server_side_encryption_key_id='9468da86-3509-4f8d-a61e-6eab1eac****',
-            last_modified=datetime.datetime.fromtimestamp(1702743657),
+            last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             etag='"D41D8CD98F00B204E9800998ECF8****"',
         )
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
@@ -1191,8 +1191,8 @@ class TestCopyObject(unittest.TestCase):
         self.assertEqual('SM4', result.server_side_encryption)
         self.assertEqual('KMS', result.server_side_data_encryption)
         self.assertEqual('9468da86-3509-4f8d-a61e-6eab1eac****', result.server_side_encryption_key_id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
 
         result = model.CopyObjectResult(
@@ -1591,18 +1591,18 @@ class TestGetObjectMeta(unittest.TestCase):
         result = model.GetObjectMetaResult(
             content_length=101,
             etag='"D41D8CD98F00B204E9800998ECF8****"',
-            last_modified=datetime.datetime.fromtimestamp(1702743657),
-            last_access_time=datetime.datetime.fromtimestamp(1702743657),
+            last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
+            last_access_time=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
             hash_crc64='316181249502703****',
             transition_time='2024-10-12T00:00:00.000Z',
         )
         self.assertEqual(101, result.content_length)
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime("%Y-%m-%dT%H:%M:%S.000Z"))
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_access_time)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_access_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.last_modified.strftime("%Y-%m-%dT%H:%M:%S.000Z"))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_access_time)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.last_access_time.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
         self.assertEqual('316181249502703****', result.hash_crc64)
         self.assertEqual('2024-10-12T00:00:00.000Z', result.transition_time)
@@ -2552,12 +2552,12 @@ class TestUploadPartCopy(unittest.TestCase):
         self.assertIsInstance(result, serde.Model)
 
         result = model.UploadPartCopyResult(
-            last_modified=datetime.datetime.fromtimestamp(1702743657),
+            last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             etag='"D41D8CD98F00B204E9800998ECF8****"',
             source_version_id='D8CD98F00B204E9800998ECF8**',
         )
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.etag)
         self.assertEqual('D8CD98F00B204E9800998ECF8**', result.source_version_id)
 
@@ -3003,11 +3003,11 @@ class TestListMultipartUploads(unittest.TestCase):
             uploads=[model.Upload(
                 key='example-object-1.jpg',
                 upload_id='0004B9894A22E5B1888A1E29F823****',
-                initiated=datetime.datetime.fromtimestamp(1702743657),
+                initiated=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             ), model.Upload(
                 key='example-object-2.jpg',
                 upload_id='4B9894A22E5B1888A1E29F823****',
-                initiated=datetime.datetime.fromtimestamp(1702743657),
+                initiated=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
             )],
         )
         self.assertEqual('url', result.encoding_type)
@@ -3022,12 +3022,12 @@ class TestListMultipartUploads(unittest.TestCase):
         self.assertEqual(True, result.is_truncated)
         self.assertEqual('example-object-1.jpg', result.uploads[0].key)
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', result.uploads[0].upload_id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.uploads[0].initiated)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.uploads[0].initiated.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.uploads[0].initiated)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.uploads[0].initiated.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual('example-object-2.jpg', result.uploads[1].key)
         self.assertEqual('4B9894A22E5B1888A1E29F823****', result.uploads[1].upload_id)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.uploads[1].initiated)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.uploads[0].initiated.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.uploads[1].initiated)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.uploads[0].initiated.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
 
 
         result = model.ListMultipartUploadsResult(
@@ -3219,13 +3219,13 @@ class TestListParts(unittest.TestCase):
             parts=[model.Part(
                 part_number=1,
                 etag='"D41D8CD98F00B204E9800998ECF8****"',
-                last_modified=datetime.datetime.fromtimestamp(1702743657),
+                last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                 size=344606,
                 hash_crc64='316181249502703****',
             ), model.Part(
                 part_number=2,
                 etag='"4E9800998ECF8****"',
-                last_modified=datetime.datetime.fromtimestamp(1702743657),
+                last_modified=datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc),
                 size=606,
                 hash_crc64='32703****',
             )],
@@ -3247,14 +3247,14 @@ class TestListParts(unittest.TestCase):
         self.assertEqual(94474, result.client_encryption_part_size)
         self.assertEqual(1, result.parts[0].part_number)
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.parts[0].etag)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.parts[0].last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.parts[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.parts[0].last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.parts[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(344606, result.parts[0].size)
         self.assertEqual('316181249502703****', result.parts[0].hash_crc64)
         self.assertEqual(2, result.parts[1].part_number)
         self.assertEqual('"4E9800998ECF8****"', result.parts[1].etag)
-        self.assertEqual(datetime.datetime.fromtimestamp(1702743657), result.parts[1].last_modified)
-        self.assertEqual('2023-12-17T00:20:57.000Z', result.parts[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
+        self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.parts[1].last_modified)
+        self.assertEqual('2023-12-16T16:20:57.000Z', result.parts[1].last_modified.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
         self.assertEqual(606, result.parts[1].size)
         self.assertEqual('32703****', result.parts[1].hash_crc64)
 
