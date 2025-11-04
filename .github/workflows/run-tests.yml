@@ -20,7 +20,9 @@ jobs:
 
     - name:
       if: ${{ matrix.operating-system == 'ubuntu-latest'}}
-      run: apt-get install mime-support
+      run: |
+        sudo apt update
+        sudo apt install -y mime-support
 
     - name: Install dependencies
       run: |
