@@ -18,6 +18,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    - name:
+      if: ${{ matrix.operating-system == 'ubuntu-latest'}}
+      run: apt-get install mime-support
+
     - name: Install dependencies
       run: |
         pip install requests pycryptodome crcmod-plus aiohttp
