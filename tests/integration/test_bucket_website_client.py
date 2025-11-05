@@ -261,10 +261,10 @@ class TestBucketWebsite(TestIntegration):
                             mirror_allow_video_snapshot=True,
                             # mirror_async_status=302,
                             mirror_taggings=oss.MirrorTaggings(
-                                taggings=[oss.RuleTaggings(
+                                taggings=[oss.MirrorTagging(
                                     key='tag-key1',
                                     value='tag-value1',
-                                ), oss.RuleTaggings(
+                                ), oss.MirrorTagging(
                                     key='tag-key2',
                                     value='tag-value2',
                                 )],
@@ -723,10 +723,10 @@ class TestBucketWebsite(TestIntegration):
                             mirror_allow_video_snapshot=True,
                             # mirror_async_status=302,
                             mirror_taggings=oss.MirrorTaggings(
-                                taggings=[oss.RuleTaggings(
+                                taggings=[oss.MirrorTagging(
                                     key='tag-key1',
                                     value='tag-value1',
-                                ), oss.RuleTaggings(
+                                ), oss.MirrorTagging(
                                     key='tag-key2',
                                     value='tag-value2',
                                 )],

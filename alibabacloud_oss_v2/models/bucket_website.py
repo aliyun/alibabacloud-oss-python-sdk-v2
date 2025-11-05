@@ -253,7 +253,7 @@ class MirrorHeaders(serde.Model):
         self.removes = removes
         self.sets = sets
 
-class RuleTaggings(serde.Model):
+class MirrorTagging(serde.Model):
     """
     The rule list for setting tags.
     """
@@ -288,7 +288,7 @@ class MirrorTaggings(serde.Model):
     """
 
     _attribute_map = {
-        'taggings': {'tag': 'xml', 'rename': 'Taggings', 'type': '[RuleTaggings]'},
+        'taggings': {'tag': 'xml', 'rename': 'Taggings', 'type': '[MirrorTagging]'},
     }
 
     _xml_map = {
@@ -296,16 +296,16 @@ class MirrorTaggings(serde.Model):
     }
 
     _dependency_map = {
-        'Taggings': {'new': lambda: RuleTaggings()},
+        'Taggings': {'new': lambda: MirrorTagging()},
     }
 
     def __init__(
         self,
-        taggings: Optional[List[RuleTaggings]] = None,
+        taggings: Optional[List[MirrorTagging]] = None,
         **kwargs: Any
     ) -> None:
         """
-        taggings (List[RuleTaggings], optional): The rule list for setting tags.
+        taggings (List[MirrorTagging], optional): The rule list for setting tags.
         """
         super().__init__(**kwargs)
         self.taggings = taggings

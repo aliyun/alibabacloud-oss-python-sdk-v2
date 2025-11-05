@@ -74,7 +74,7 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=True,
                             mirror_async_status=1,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key1',
                                     value='value1'
                                 )]
@@ -163,7 +163,7 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=False,
                             mirror_async_status=2,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key2',
                                     value='value2'
                                 )]
@@ -401,7 +401,7 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=True,
                             mirror_async_status=1,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key1',
                                     value='value1'
                                 )]
@@ -490,7 +490,7 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=False,
                             mirror_async_status=2,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key2',
                                     value='value2'
                                 )]
@@ -671,7 +671,7 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=True,
                             mirror_async_status=1,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key1',
                                     value='value1'
                                 )]
@@ -760,7 +760,7 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_allow_video_snapshot=False,
                             mirror_async_status=2,
                             mirror_taggings=model.MirrorTaggings(
-                                taggings=[model.RuleTaggings(
+                                taggings=[model.MirrorTagging(
                                     key='key2',
                                     value='value2'
                                 )]
