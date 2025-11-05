@@ -1111,8 +1111,8 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         "encoding_type": {"tag": "input", "position": "query", "rename": "encoding-type"},
         "objects": {"tag": "input", "position": "nop"},
         "quiet": {"tag": "input", "position": "nop"},
-        "delete": {"tag": "input", "position": "body", "rename": "nop"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        "delete": {"tag": "input", "position": "body", "rename": "nop"},
     }
 
     def __init__(
@@ -1121,8 +1121,8 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         encoding_type: Optional[str] = None,
         objects: Optional[List[DeleteObject]] = None,
         quiet: Optional[bool] = None,
-        delete: Optional[Delete] = None,
         request_payer: Optional[str] = None,
+        delete: Optional[Delete] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1132,16 +1132,16 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
             objects ([DeleteObject], optional): The container that stores information about you want to delete objects.
             quiet (bool, optional): Specifies whether to enable the Quiet return mode.
                 The DeleteMultipleObjects operation provides the following return modes: Valid value: true,false
-            delete (Delete, optional): The container that stores information about you want to delete objects.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            delete (Delete, optional): The container that stores information about you want to delete objects.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.encoding_type = encoding_type
         self.objects = objects
         self.quiet = quiet
-        self.delete = delete
         self.request_payer = request_payer
+        self.delete = delete
 
 
 class DeletedInfo(serde.Model):

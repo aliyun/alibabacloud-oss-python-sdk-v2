@@ -1593,11 +1593,11 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         # Test serialization error when both old and new parameters are set
         request = model.DeleteMultipleObjectsRequest(
             bucket='bucket_name',
-            objects=[model.DeleteObject(key='old_key')],
             delete=model.Delete(
                 quiet=True,
                 objects=[model.ObjectIdentifier(key='new_key')]
-            )
+            ),
+            objects=[model.DeleteObject(key='old_key')],
         )
         
         with self.assertRaises(Exception) as context:
