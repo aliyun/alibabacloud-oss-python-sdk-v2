@@ -2,7 +2,7 @@
 import datetime
 import unittest
 import xml.etree.ElementTree as ET
-from alibabacloud_oss_v2 import serde
+from alibabacloud_oss_v2 import serde, serde_utils
 from alibabacloud_oss_v2.models import object_basic as model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict
 from .. import MockHttpResponse
@@ -1412,6 +1412,209 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertDictEqual({'key1': 'value1'}, request.headers)
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
+
+    def test_delete_multiple_objects_request_with_delete(self):
+        # Test constructor with Delete parameter
+        request = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+            delete=model.Delete(
+                quiet=True,
+                objects=[
+                    model.ObjectIdentifier(
+                        key='key1',
+                        version_id='version1'
+                    ),
+                    model.ObjectIdentifier(
+                        key='key2',
+                        version_id='version2'
+                    )
+                ]
+            )
+        )
+        self.assertIsNotNone(request.bucket)
+        self.assertIsNotNone(request.delete)
+        self.assertIsNone(request.encoding_type)
+        self.assertIsNone(request.objects)
+        self.assertIsNone(request.quiet)
+        self.assertIsNone(request.request_payer)
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertTrue(request.delete.quiet)
+        self.assertEqual(2, len(request.delete.objects))
+        self.assertEqual('key1', request.delete.objects[0].key)
+        self.assertEqual('version1', request.delete.objects[0].version_id)
+        self.assertEqual('key2', request.delete.objects[1].key)
+        self.assertEqual('version2', request.delete.objects[1].version_id)
+        self.assertIsInstance(request, serde.RequestModel)
+
+        # Test constructor with both old and new parameters - should work for construction
+        request = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+            objects=[model.DeleteObject(key='old_key')],
+            quiet=False,
+            delete=model.Delete(
+                quiet=True,
+                objects=[
+                    model.ObjectIdentifier(key='new_key')
+                ]
+            ),
+            encoding_type='url',
+            request_payer='requester'
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        # New parameter should be preserved
+        self.assertIsNotNone(request.delete)
+        self.assertTrue(request.delete.quiet)
+        self.assertEqual(1, len(request.delete.objects))
+        self.assertEqual('new_key', request.delete.objects[0].key)
+        # Old parameters should also be preserved
+        self.assertIsNotNone(request.objects)
+        self.assertEqual(1, len(request.objects))
+        self.assertEqual('old_key', request.objects[0].key)
+        self.assertFalse(request.quiet)
+        self.assertEqual('url', request.encoding_type)
+        self.assertEqual('requester', request.request_payer)
+
+    def test_serialize_delete_multiple_objects_request_with_delete(self):
+        # Test serialization with new Delete parameter
+        request_new = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+            delete=model.Delete(
+                quiet=True,
+                objects=[
+                    model.ObjectIdentifier(
+                        key='key1',
+                        version_id='version1'
+                    ),
+                    model.ObjectIdentifier(
+                        key='key2'
+                    )
+                ]
+            ),
+            request_payer='requester'
+        )
+
+        op_input_new = serde.serialize_input(
+            request_new,
+            OperationInput(
+                op_name='DeleteMultipleObjects',
+                method='POST',
+                bucket=request_new.bucket,
+            ),
+            custom_serializer=[
+                serde_utils.serialize_delete_objects,
+                serde_utils.add_content_md5,
+            ],
+        )
+        self.assertEqual('DeleteMultipleObjects', op_input_new.op_name)
+        self.assertEqual('POST', op_input_new.method)
+        self.assertEqual('bucket_name', op_input_new.bucket)
+        self.assertEqual('requester', op_input_new.headers.get('x-oss-request-payer'))
+        
+        # Check if the body contains the correct XML for new parameter
+        import xml.etree.ElementTree as ET
+        root_new = ET.fromstring(op_input_new.body)
+        self.assertEqual('Delete', root_new.tag)
+        self.assertEqual('true', root_new.findtext('Quiet'))
+        objects_new = root_new.findall('Object')
+        self.assertEqual(2, len(objects_new))
+        self.assertEqual('key1', objects_new[0].findtext('Key'))
+        self.assertEqual('version1', objects_new[0].findtext('VersionId'))
+        self.assertEqual('key2', objects_new[1].findtext('Key'))
+        self.assertIsNone(objects_new[1].find('VersionId'))
+        
+        # Test serialization with old parameters
+        request_old = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+            objects=[
+                model.DeleteObject(
+                    key='key1',
+                    version_id='version1'
+                ),
+                model.DeleteObject(
+                    key='key2'
+                )
+            ],
+            quiet=True,
+            request_payer='requester'
+        )
+
+        op_input_old = serde.serialize_input(
+            request_old,
+            OperationInput(
+                op_name='DeleteMultipleObjects',
+                method='POST',
+                bucket=request_old.bucket,
+            ),
+            custom_serializer=[
+                serde_utils.serialize_delete_objects,
+                serde_utils.add_content_md5,
+            ],
+        )
+        self.assertEqual('DeleteMultipleObjects', op_input_old.op_name)
+        self.assertEqual('POST', op_input_old.method)
+        self.assertEqual('bucket_name', op_input_old.bucket)
+        self.assertEqual('requester', op_input_old.headers.get('x-oss-request-payer'))
+        
+        # Check if the body contains the correct XML for old parameters
+        root_old = ET.fromstring(op_input_old.body)
+        self.assertEqual('Delete', root_old.tag)
+        self.assertEqual('true', root_old.findtext('Quiet'))
+        objects_old = root_old.findall('Object')
+        self.assertEqual(2, len(objects_old))
+        self.assertEqual('key1', objects_old[0].findtext('Key'))
+        self.assertEqual('version1', objects_old[0].findtext('VersionId'))
+        self.assertEqual('key2', objects_old[1].findtext('Key'))
+        self.assertIsNone(objects_old[1].find('VersionId'))
+        
+        # Compare the XML generated by new and old parameters - they should be identical
+        self.assertEqual(op_input_new.body, op_input_old.body)
+
+    def test_serialize_delete_multiple_objects_request_error_conditions(self):
+        # Test serialization error when neither old nor new parameters are set
+        request = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+        )
+        
+        with self.assertRaises(Exception) as context:
+            serde.serialize_input(
+                request,
+                OperationInput(
+                    op_name='DeleteMultipleObjects',
+                    method='POST',
+                    bucket=request.bucket,
+                ),
+                custom_serializer=[
+                    serde_utils.serialize_delete_objects,
+                    serde_utils.add_content_md5,
+                ],
+            )
+        self.assertIn('Either old parameters', str(context.exception))
+        
+        # Test serialization error when both old and new parameters are set
+        request = model.DeleteMultipleObjectsRequest(
+            bucket='bucket_name',
+            objects=[model.DeleteObject(key='old_key')],
+            delete=model.Delete(
+                quiet=True,
+                objects=[model.ObjectIdentifier(key='new_key')]
+            )
+        )
+        
+        with self.assertRaises(Exception) as context:
+            serde.serialize_input(
+                request,
+                OperationInput(
+                    op_name='DeleteMultipleObjects',
+                    method='POST',
+                    bucket=request.bucket,
+                ),
+                custom_serializer=[
+                    serde_utils.serialize_delete_objects,
+                    serde_utils.add_content_md5,
+                ],
+            )
+        self.assertIn('Either old parameters', str(context.exception))
+
 
     def test_serialize_request(self):
         request = model.DeleteMultipleObjectsRequest(

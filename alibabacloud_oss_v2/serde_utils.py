@@ -235,20 +235,48 @@ def serialize_delete_objects(request: serde.Model, op_input: OperationInput) -> 
     if not isinstance(request, DeleteMultipleObjectsRequest):
         raise exceptions.SerializationError(error=f'Unsupport type {type(request)}')
 
-    xml = '<Delete>'
-    if request.quiet is not None:
-        xml += f'<Quiet>{"true" if request.quiet else "false"}</Quiet>'
+    # Check if both old and new parameters are set or neither is set
+    has_old_params = request.objects is not None or request.quiet is not None
+    has_new_params = request.delete is not None
+    
+    if (has_old_params and has_new_params) or (not has_old_params and not has_new_params):
+        raise exceptions.SerializationError(
+            error='Either old parameters (objects, quiet) or new parameter (delete) must be set, but not both'
+        )
 
-    if isinstance(request.objects, List):
-        for _, o in enumerate(request.objects):
-            xml += '<Object>'
-            key = utils.safety_str(o.key)
-            if len(key) > 0:
-                xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
-            vid = utils.safety_str(o.version_id)
-            if len(vid) > 0:
-                xml += f'<VersionId>{vid}</VersionId>'
-            xml += '</Object>'
+    xml = '<Delete>'
+    
+    # Handle new parameter (delete)
+    if has_new_params:
+        if request.delete.quiet is not None:
+            xml += f'<Quiet>{"true" if request.delete.quiet else "false"}</Quiet>'
+
+        if isinstance(request.delete.objects, List):
+            for _, o in enumerate(request.delete.objects):
+                xml += '<Object>'
+                key = utils.safety_str(o.key)
+                if len(key) > 0:
+                    xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
+                vid = utils.safety_str(o.version_id)
+                if len(vid) > 0:
+                    xml += f'<VersionId>{vid}</VersionId>'
+                xml += '</Object>'
+    
+    # Handle old parameters (objects, quiet)
+    elif has_old_params:
+        if request.quiet is not None:
+            xml += f'<Quiet>{"true" if request.quiet else "false"}</Quiet>'
+
+        if isinstance(request.objects, List):
+            for _, o in enumerate(request.objects):
+                xml += '<Object>'
+                key = utils.safety_str(o.key)
+                if len(key) > 0:
+                    xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
+                vid = utils.safety_str(o.version_id)
+                if len(vid) > 0:
+                    xml += f'<VersionId>{vid}</VersionId>'
+                xml += '</Object>'
 
     xml += '</Delete>'
 
