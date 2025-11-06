@@ -110,6 +110,87 @@ def main():
                         redirect_type='External',
                         host_name='example.com',
                     ),
+                ), oss.RoutingRule(
+                        rule_number=4,
+                        condition=oss.RoutingRuleCondition(
+                            key_prefix_equals='key',
+                        ),
+                        redirect=oss.RoutingRuleRedirect(
+                            redirect_type='Mirror',
+                            mirror_url='http://example.com/',
+                        ),
+                        lua_config=oss.RoutingRuleLuaConfig(
+                            script='test.lua',
+                        ),
+                ), oss.RoutingRule(
+                        rule_number=5,
+                        condition=oss.RoutingRuleCondition(
+                            key_suffix_equals='abc/',
+                            http_error_code_returned_equals=404,
+                            include_headers=[oss.RoutingRuleIncludeHeader(
+                                key='key1',
+                                equals='value1',
+                            ), oss.RoutingRuleIncludeHeader(
+                                key='key2',
+                                equals='value2',
+                            )],
+                            key_prefix_equals='key',
+                        ),
+                        redirect=oss.RoutingRuleRedirect(
+                            redirect_type='Mirror',
+                            mirror_url='http://example.com/',
+                            mirror_allow_video_snapshot=True,
+
+                            mirror_taggings=oss.MirrorTaggings(
+                                taggings=[oss.MirrorTagging(
+                                    key='tag-key1',
+                                    value='tag-value1',
+                                ), oss.MirrorTagging(
+                                    key='tag-key2',
+                                    value='tag-value2',
+                                )],
+                            ),
+                            mirror_auth=oss.MirrorAuth(
+                                access_key_id='test-access-key-id',
+                                access_key_secret='test-access-key-secret',
+                                auth_type='S3V4',
+                                region='cn-hangzhou',
+                            ),
+                            mirror_dst_region='oss-cn-hangzhou',
+                            mirror_role='test-role',
+                            mirror_using_role=True,
+                            mirror_return_headers=oss.MirrorReturnHeaders(
+                                return_headers=[oss.ReturnHeader(
+                                    key='header-key1',
+                                    value='header-value1',
+                                ), oss.ReturnHeader(
+                                    key='header-key2',
+                                    value='header-value2',
+                                )],
+                            ),
+                            mirror_proxy_pass=False,
+                            mirror_is_express_tunnel=True,
+                            mirror_allow_head_object=True,
+                            transparent_mirror_response_codes='404,500',
+                            mirror_save_oss_meta=True,
+                            mirror_allow_get_image_info=True,
+                            mirror_url_probe='http://probe.example.com/',
+                            mirror_user_last_modified=True,
+                            mirror_switch_all_errors=False,
+                            mirror_multi_alternates=oss.MirrorMultiAlternates(
+                                mirror_multi_alternates=[oss.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=1,
+                                    mirror_multi_alternate_url='http://alternate1.example.com/',
+                                    mirror_multi_alternate_vpc_id='vpc-alternate-1',
+                                    mirror_multi_alternate_dst_region='oss-cn-shanghai',
+                                ), oss.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=2,
+                                    mirror_multi_alternate_url='http://alternate2.example.com/',
+                                    mirror_multi_alternate_vpc_id='vpc-alternate-2',
+                                    mirror_multi_alternate_dst_region='oss-cn-beijing',
+                                )],
+                            ),
+                        ),
                 )],
             ),
         ),

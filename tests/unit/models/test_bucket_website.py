@@ -71,6 +71,53 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
+                            mirror_allow_video_snapshot=True,
+                            mirror_async_status=1,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id',
+                                access_key_secret='test-access-key-secret',
+                                auth_type='type',
+                                region='region'
+                            ),
+                            mirror_dst_region='region',
+                            mirror_dst_vpc_id='vpc-id',
+                            mirror_tunnel_id='tunnel-id',
+                            mirror_role='role',
+                            mirror_using_role=True,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_proxy_pass=True,
+                            mirror_is_express_tunnel=True,
+                            mirror_dst_slave_vpc_id='slave-vpc-id',
+                            mirror_allow_head_object=True,
+                            transparent_mirror_response_codes='404,500',
+                            mirror_save_oss_meta=True,
+                            mirror_allow_get_image_info=True,
+                            mirror_url_probe='http://probe.com/',
+                            mirror_url_slave='http://slave.com/',
+                            mirror_user_last_modified=True,
+                            mirror_switch_all_errors=True,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=1,
+                                    mirror_multi_alternate_url='http://multi1.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-1',
+                                    mirror_multi_alternate_dst_region='multi-region-1'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
                         ),
                     ), model.RoutingRule(
                         rule_number=6052,
@@ -113,6 +160,53 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
+                            mirror_allow_video_snapshot=False,
+                            mirror_async_status=2,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id-2',
+                                access_key_secret='test-access-key-secret-2',
+                                auth_type='type2',
+                                region='region2'
+                            ),
+                            mirror_dst_region='region2',
+                            mirror_dst_vpc_id='vpc-id-2',
+                            mirror_tunnel_id='tunnel-id-2',
+                            mirror_role='role2',
+                            mirror_using_role=False,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_proxy_pass=False,
+                            mirror_is_express_tunnel=False,
+                            mirror_dst_slave_vpc_id='slave-vpc-id-2',
+                            mirror_allow_head_object=False,
+                            transparent_mirror_response_codes='403',
+                            mirror_save_oss_meta=False,
+                            mirror_allow_get_image_info=False,
+                            mirror_url_probe='http://probe2.com/',
+                            mirror_url_slave='http://slave2.com/',
+                            mirror_user_last_modified=False,
+                            mirror_switch_all_errors=False,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=2,
+                                    mirror_multi_alternate_url='http://multi2.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-2',
+                                    mirror_multi_alternate_dst_region='multi-region-2'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
                         ),
                     )],
                 ),
@@ -155,6 +249,37 @@ class TestPutBucketWebsite(unittest.TestCase):
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(1, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_async_status)
+        self.assertEqual('key1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.auth_type)
+        self.assertEqual('region', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.region)
+        self.assertEqual('region', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_tunnel_id)
+        self.assertEqual('role', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_role)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_using_role)
+        self.assertEqual('key1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_proxy_pass)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_is_express_tunnel)
+        self.assertEqual('slave-vpc-id', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_head_object)
+        self.assertEqual('404,500', request.website_configuration.routing_rules.routing_rules[0].redirect.transparent_mirror_response_codes)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_save_oss_meta)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe.com/', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_probe)
+        self.assertEqual('http://slave.com/', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_slave)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_user_last_modified)
+        self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_switch_all_errors)
+        self.assertEqual(1, request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi1.com/', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-1', request.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual('test.lua', request.website_configuration.routing_rules.routing_rules[0].lua_config.script)
         self.assertEqual(6052, request.website_configuration.routing_rules.routing_rules[1].rule_number)
         self.assertEqual('bbc/', request.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
         self.assertEqual(403, request.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
@@ -186,6 +311,37 @@ class TestPutBucketWebsite(unittest.TestCase):
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(2, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_async_status)
+        self.assertEqual('key2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.auth_type)
+        self.assertEqual('region2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.region)
+        self.assertEqual('region2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_tunnel_id)
+        self.assertEqual('role2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_role)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_using_role)
+        self.assertEqual('key2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_proxy_pass)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_is_express_tunnel)
+        self.assertEqual('slave-vpc-id-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_head_object)
+        self.assertEqual('403', request.website_configuration.routing_rules.routing_rules[1].redirect.transparent_mirror_response_codes)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_save_oss_meta)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe2.com/', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_probe)
+        self.assertEqual('http://slave2.com/', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_slave)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_user_last_modified)
+        self.assertEqual(False, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_switch_all_errors)
+        self.assertEqual(2, request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi2.com/', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-2', request.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual('script2.lua', request.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
     def test_serialize_request(self):
         request = model.PutBucketWebsiteRequest(
@@ -242,6 +398,53 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
+                            mirror_allow_video_snapshot=True,
+                            mirror_async_status=1,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id',
+                                access_key_secret='test-access-key-secret',
+                                auth_type='type',
+                                region='region'
+                            ),
+                            mirror_dst_region='region',
+                            mirror_dst_vpc_id='vpc-id',
+                            mirror_tunnel_id='tunnel-id',
+                            mirror_role='role',
+                            mirror_using_role=True,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_proxy_pass=True,
+                            mirror_is_express_tunnel=True,
+                            mirror_dst_slave_vpc_id='slave-vpc-id',
+                            mirror_allow_head_object=True,
+                            transparent_mirror_response_codes='404,500',
+                            mirror_save_oss_meta=True,
+                            mirror_allow_get_image_info=True,
+                            mirror_url_probe='http://probe.com/',
+                            mirror_url_slave='http://slave.com/',
+                            mirror_user_last_modified=True,
+                            mirror_switch_all_errors=True,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=1,
+                                    mirror_multi_alternate_url='http://multi1.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-1',
+                                    mirror_multi_alternate_dst_region='multi-region-1'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
                         ),
                     ), model.RoutingRule(
                         rule_number=6052,
@@ -284,6 +487,53 @@ class TestPutBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
+                            mirror_allow_video_snapshot=False,
+                            mirror_async_status=2,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id-2',
+                                access_key_secret='test-access-key-secret-2',
+                                auth_type='type2',
+                                region='region2'
+                            ),
+                            mirror_dst_region='region2',
+                            mirror_dst_vpc_id='vpc-id-2',
+                            mirror_tunnel_id='tunnel-id-2',
+                            mirror_role='role2',
+                            mirror_using_role=False,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_proxy_pass=False,
+                            mirror_is_express_tunnel=False,
+                            mirror_dst_slave_vpc_id='slave-vpc-id-2',
+                            mirror_allow_head_object=False,
+                            transparent_mirror_response_codes='403',
+                            mirror_save_oss_meta=False,
+                            mirror_allow_get_image_info=False,
+                            mirror_url_probe='http://probe2.com/',
+                            mirror_url_slave='http://slave2.com/',
+                            mirror_user_last_modified=False,
+                            mirror_switch_all_errors=False,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=2,
+                                    mirror_multi_alternate_url='http://multi2.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-2',
+                                    mirror_multi_alternate_dst_region='multi-region-2'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
                         ),
                     )],
                 ),
@@ -418,6 +668,53 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=False,
+                            mirror_allow_video_snapshot=True,
+                            mirror_async_status=1,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id',
+                                access_key_secret='test-access-key-secret',
+                                auth_type='type',
+                                region='region'
+                            ),
+                            mirror_dst_region='region',
+                            mirror_dst_vpc_id='vpc-id',
+                            mirror_tunnel_id='tunnel-id',
+                            mirror_role='role',
+                            mirror_using_role=True,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key1',
+                                    value='value1'
+                                )]
+                            ),
+                            mirror_proxy_pass=True,
+                            mirror_is_express_tunnel=True,
+                            mirror_dst_slave_vpc_id='slave-vpc-id',
+                            mirror_allow_head_object=True,
+                            transparent_mirror_response_codes='404,500',
+                            mirror_save_oss_meta=True,
+                            mirror_allow_get_image_info=True,
+                            mirror_url_probe='http://probe.com/',
+                            mirror_url_slave='http://slave.com/',
+                            mirror_user_last_modified=True,
+                            mirror_switch_all_errors=True,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=1,
+                                    mirror_multi_alternate_url='http://multi1.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-1',
+                                    mirror_multi_alternate_dst_region='multi-region-1'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='test.lua',
                         ),
                     ), model.RoutingRule(
                         rule_number=6052,
@@ -460,6 +757,53 @@ class TestGetBucketWebsite(unittest.TestCase):
                             mirror_follow_redirect=True,
                             mirror_check_md5=False,
                             mirror_pass_original_slashes=True,
+                            mirror_allow_video_snapshot=False,
+                            mirror_async_status=2,
+                            mirror_taggings=model.MirrorTaggings(
+                                taggings=[model.MirrorTagging(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_auth=model.MirrorAuth(
+                                access_key_id='test-access-key-id-2',
+                                access_key_secret='test-access-key-secret-2',
+                                auth_type='type2',
+                                region='region2'
+                            ),
+                            mirror_dst_region='region2',
+                            mirror_dst_vpc_id='vpc-id-2',
+                            mirror_tunnel_id='tunnel-id-2',
+                            mirror_role='role2',
+                            mirror_using_role=False,
+                            mirror_return_headers=model.MirrorReturnHeaders(
+                                return_headers=[model.ReturnHeader(
+                                    key='key2',
+                                    value='value2'
+                                )]
+                            ),
+                            mirror_proxy_pass=False,
+                            mirror_is_express_tunnel=False,
+                            mirror_dst_slave_vpc_id='slave-vpc-id-2',
+                            mirror_allow_head_object=False,
+                            transparent_mirror_response_codes='403',
+                            mirror_save_oss_meta=False,
+                            mirror_allow_get_image_info=False,
+                            mirror_url_probe='http://probe2.com/',
+                            mirror_url_slave='http://slave2.com/',
+                            mirror_user_last_modified=False,
+                            mirror_switch_all_errors=False,
+                            mirror_multi_alternates=model.MirrorMultiAlternates(
+                                mirror_multi_alternates=[model.MirrorMultiAlternate(
+                                    mirror_multi_alternate_number=2,
+                                    mirror_multi_alternate_url='http://multi2.com/',
+                                    mirror_multi_alternate_vpc_id='multi-vpc-id-2',
+                                    mirror_multi_alternate_dst_region='multi-region-2'
+                                )]
+                            )
+                        ),
+                        lua_config=model.RoutingRuleLuaConfig(
+                            script='script2.lua',
                         ),
                     )],
                 ),
@@ -501,6 +845,68 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(1, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_async_status)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.auth_type)
+        self.assertEqual('region', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.region)
+        self.assertEqual('region', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_tunnel_id)
+        self.assertEqual('role', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_role)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_using_role)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_proxy_pass)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_is_express_tunnel)
+        self.assertEqual('slave-vpc-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_head_object)
+        self.assertEqual('404,500', result.website_configuration.routing_rules.routing_rules[0].redirect.transparent_mirror_response_codes)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_save_oss_meta)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_probe)
+        self.assertEqual('http://slave.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_slave)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_user_last_modified)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_switch_all_errors)
+        self.assertEqual(1, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi1.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual('test.lua', result.website_configuration.routing_rules.routing_rules[0].lua_config.script)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_async_status)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.auth_type)
+        self.assertEqual('region2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.region)
+        self.assertEqual('region2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_tunnel_id)
+        self.assertEqual('role2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_role)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_using_role)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_proxy_pass)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_is_express_tunnel)
+        self.assertEqual('slave-vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_head_object)
+        self.assertEqual('403', result.website_configuration.routing_rules.routing_rules[1].redirect.transparent_mirror_response_codes)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_save_oss_meta)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_probe)
+        self.assertEqual('http://slave2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_slave)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_user_last_modified)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_switch_all_errors)
+        self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual('script2.lua', result.website_configuration.routing_rules.routing_rules[1].lua_config.script)
         self.assertEqual(6052, result.website_configuration.routing_rules.routing_rules[1].rule_number)
         self.assertEqual('bbc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
         self.assertEqual(403, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
@@ -532,6 +938,7 @@ class TestGetBucketWebsite(unittest.TestCase):
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
+        self.assertEqual('script2.lua', result.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
     def test_deserialize_result(self):
         xml_data = r'''
@@ -545,6 +952,8 @@ class TestGetBucketWebsite(unittest.TestCase):
         <WebsiteConfiguration>
           <IndexDocument>
             <Suffix>index.html</Suffix>
+            <SupportSubDir>true</SupportSubDir>
+            <Type>0</Type>
           </IndexDocument>
           <ErrorDocument>
             <Key>error.html</Key>
@@ -556,6 +965,15 @@ class TestGetBucketWebsite(unittest.TestCase):
               <Condition>
                 <KeyPrefixEquals>abc/</KeyPrefixEquals>
                 <HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals>
+                <KeySuffixEquals>abc/</KeySuffixEquals>
+                <IncludeHeader>
+                  <Key>key1</Key>
+                  <Equals>value1</Equals>
+                </IncludeHeader>
+                <IncludeHeader>
+                  <Key>key2</Key>
+                  <Equals>value2</Equals>
+                </IncludeHeader>
               </Condition>
               <Redirect>
                 <RedirectType>Mirror</RedirectType>
@@ -564,6 +982,58 @@ class TestGetBucketWebsite(unittest.TestCase):
                 <MirrorPassQueryString>true</MirrorPassQueryString>
                 <MirrorFollowRedirect>true</MirrorFollowRedirect>
                 <MirrorCheckMd5>false</MirrorCheckMd5>
+                <MirrorPassOriginalSlashes>false</MirrorPassOriginalSlashes>
+                <MirrorAllowVideoSnapshot>true</MirrorAllowVideoSnapshot>
+                <MirrorAsyncStatus>1</MirrorAsyncStatus>
+                <MirrorSNI>false</MirrorSNI>
+                <Protocol>http</Protocol>
+                <ReplaceKeyPrefixWith>abc/</ReplaceKeyPrefixWith>
+                <HttpRedirectCode>203</HttpRedirectCode>
+                <ReplaceKeyWith>aab/</ReplaceKeyWith>
+                <HostName>example.com</HostName>
+                <EnableReplacePrefix>true</EnableReplacePrefix>
+                <MirrorDstRegion>region</MirrorDstRegion>
+                <MirrorDstVpcId>vpc-id</MirrorDstVpcId>
+                <MirrorTunnelId>tunnel-id</MirrorTunnelId>
+                <MirrorRole>role</MirrorRole>
+                <MirrorUsingRole>true</MirrorUsingRole>
+                <MirrorReturnHeaders>
+                  <ReturnHeader>
+                    <Key>key1</Key>
+                    <Value>value1</Value>
+                  </ReturnHeader>
+                </MirrorReturnHeaders>
+                <MirrorProxyPass>true</MirrorProxyPass>
+                <MirrorIsExpressTunnel>true</MirrorIsExpressTunnel>
+                <MirrorDstSlaveVpcId>slave-vpc-id</MirrorDstSlaveVpcId>
+                <MirrorAllowHeadObject>true</MirrorAllowHeadObject>
+                <TransparentMirrorResponseCodes>404,500</TransparentMirrorResponseCodes>
+                <MirrorSaveOssMeta>true</MirrorSaveOssMeta>
+                <MirrorAllowGetImageInfo>true</MirrorAllowGetImageInfo>
+                <MirrorURLProbe>http://probe.com/</MirrorURLProbe>
+                <MirrorURLSlave>http://slave.com/</MirrorURLSlave>
+                <MirrorUserLastModified>true</MirrorUserLastModified>
+                <MirrorSwitchAllErrors>true</MirrorSwitchAllErrors>
+                <MirrorTaggings>
+                  <Taggings>
+                    <Key>key1</Key>
+                    <Value>value1</Value>
+                  </Taggings>
+                </MirrorTaggings>
+                <MirrorAuth>
+                  <AccessKeyId>test-access-key-id</AccessKeyId>
+                  <AccessKeySecret>test-access-key-secret</AccessKeySecret>
+                  <AuthType>type</AuthType>
+                  <Region>region</Region>
+                </MirrorAuth>
+                <MirrorMultiAlternates>
+                  <MirrorMultiAlternate>
+                    <MirrorMultiAlternateNumber>1</MirrorMultiAlternateNumber>
+                    <MirrorMultiAlternateURL>http://multi1.com/</MirrorMultiAlternateURL>
+                    <MirrorMultiAlternateVpcId>multi-vpc-id-1</MirrorMultiAlternateVpcId>
+                    <MirrorMultiAlternateDstRegion>multi-region-1</MirrorMultiAlternateDstRegion>
+                  </MirrorMultiAlternate>
+                </MirrorMultiAlternates>
                 <MirrorHeaders>
                   <PassAll>true</PassAll>
                   <Pass>myheader-key1</Pass>
@@ -572,29 +1042,111 @@ class TestGetBucketWebsite(unittest.TestCase):
                   <Remove>myheader-key4</Remove>
                   <Set>
                     <Key>myheader-key5</Key>
-                    <Value>myheader-value5</Value>
+                    <Value>myheader-value</Value>
+                  </Set>
+                  <Set>
+                    <Key>myheader-key6</Key>
+                    <Value>myheader-valu2</Value>
                   </Set>
                 </MirrorHeaders>
               </Redirect>
+              <LuaConfig>
+                <Script>test.lua</Script>
+              </LuaConfig>
             </RoutingRule>
             <RoutingRule>
               <RuleNumber>2</RuleNumber>
               <Condition>
                 <IncludeHeader>
-                  <Key>host</Key>
-                  <Equals>test.oss-cn-beijing-internal.aliyuncs.com</Equals>
+                  <Key>key21</Key>
+                  <Equals>value21</Equals>
+                </IncludeHeader>
+                <IncludeHeader>
+                  <Key>key22</Key>
+                  <Equals>value22U</Equals>
                 </IncludeHeader>
                 <KeyPrefixEquals>abc/</KeyPrefixEquals>
-                <HttpErrorCodeReturnedEquals>404</HttpErrorCodeReturnedEquals>
+                <HttpErrorCodeReturnedEquals>403</HttpErrorCodeReturnedEquals>
+                <KeySuffixEquals>bbc/</KeySuffixEquals>
               </Condition>
               <Redirect>
                 <RedirectType>AliCDN</RedirectType>
-                <Protocol>http</Protocol>
+                <Protocol>https</Protocol>
                 <HostName>example.com</HostName>
-                <PassQueryString>false</PassQueryString>
-                <ReplaceKeyWith>prefix/${key}.suffix</ReplaceKeyWith>
-                <HttpRedirectCode>301</HttpRedirectCode>
+                <PassQueryString>true</PassQueryString>
+                <ReplaceKeyPrefixWith>prefix/${key}.suffix</ReplaceKeyPrefixWith>
+                <HttpRedirectCode>2970</HttpRedirectCode>
+                <ReplaceKeyWith>prefix/${key}</ReplaceKeyWith>
+                <EnableReplacePrefix>true</EnableReplacePrefix>
+                <MirrorURL>http://example.com/</MirrorURL>
+                <MirrorPassQueryString>false</MirrorPassQueryString>
+                <MirrorFollowRedirect>true</MirrorFollowRedirect>
+                <MirrorCheckMd5>false</MirrorCheckMd5>
+                <MirrorPassOriginalSlashes>true</MirrorPassOriginalSlashes>
+                <MirrorAllowVideoSnapshot>false</MirrorAllowVideoSnapshot>
+                <MirrorAsyncStatus>2</MirrorAsyncStatus>
+                <MirrorSNI>true</MirrorSNI>
+                <MirrorDstRegion>region2</MirrorDstRegion>
+                <MirrorDstVpcId>vpc-id-2</MirrorDstVpcId>
+                <MirrorTunnelId>tunnel-id-2</MirrorTunnelId>
+                <MirrorRole>role2</MirrorRole>
+                <MirrorUsingRole>false</MirrorUsingRole>
+                <MirrorReturnHeaders>
+                  <ReturnHeader>
+                    <Key>key2</Key>
+                    <Value>value2</Value>
+                  </ReturnHeader>
+                </MirrorReturnHeaders>
+                <MirrorProxyPass>false</MirrorProxyPass>
+                <MirrorIsExpressTunnel>false</MirrorIsExpressTunnel>
+                <MirrorDstSlaveVpcId>slave-vpc-id-2</MirrorDstSlaveVpcId>
+                <MirrorAllowHeadObject>false</MirrorAllowHeadObject>
+                <TransparentMirrorResponseCodes>403</TransparentMirrorResponseCodes>
+                <MirrorSaveOssMeta>false</MirrorSaveOssMeta>
+                <MirrorAllowGetImageInfo>false</MirrorAllowGetImageInfo>
+                <MirrorURLProbe>http://probe2.com/</MirrorURLProbe>
+                <MirrorURLSlave>http://slave2.com/</MirrorURLSlave>
+                <MirrorUserLastModified>false</MirrorUserLastModified>
+                <MirrorSwitchAllErrors>false</MirrorSwitchAllErrors>
+                <MirrorTaggings>
+                  <Taggings>
+                    <Key>key2</Key>
+                    <Value>value2</Value>
+                  </Taggings>
+                </MirrorTaggings>
+                <MirrorAuth>
+                  <AccessKeyId>test-access-key-id-2</AccessKeyId>
+                  <AccessKeySecret>test-access-key-secret-2</AccessKeySecret>
+                  <AuthType>type2</AuthType>
+                  <Region>region2</Region>
+                </MirrorAuth>
+                <MirrorMultiAlternates>
+                  <MirrorMultiAlternate>
+                    <MirrorMultiAlternateNumber>2</MirrorMultiAlternateNumber>
+                    <MirrorMultiAlternateURL>http://multi2.com/</MirrorMultiAlternateURL>
+                    <MirrorMultiAlternateVpcId>multi-vpc-id-2</MirrorMultiAlternateVpcId>
+                    <MirrorMultiAlternateDstRegion>multi-region-2</MirrorMultiAlternateDstRegion>
+                  </MirrorMultiAlternate>
+                </MirrorMultiAlternates>
+                <MirrorHeaders>
+                  <PassAll>true</PassAll>
+                  <Pass>myheader-key21</Pass>
+                  <Pass>myheader-key22</Pass>
+                  <Remove>myheader-key23</Remove>
+                  <Remove>myheader-key24</Remove>
+                  <Set>
+                    <Key>myheader-key25</Key>
+                    <Value>myheader-value2</Value>
+                  </Set>
+                  <Set>
+                    <Key>myheader-key26</Key>
+                    <Value>myheader-value22</Value>
+                  </Set>
+                </MirrorHeaders>
               </Redirect>
+              <LuaConfig>
+                <Script>script2.lua</Script>
+              </LuaConfig>
             </RoutingRule>
           </RoutingRules>
         </WebsiteConfiguration>
@@ -612,35 +1164,134 @@ class TestGetBucketWebsite(unittest.TestCase):
         serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
         self.assertEqual('OK', result.status)
         self.assertEqual('index.html', result.website_configuration.index_document.suffix)
+        self.assertEqual(True, result.website_configuration.index_document.support_sub_dir)
+        self.assertEqual(0, result.website_configuration.index_document.type)
         self.assertEqual('error.html', result.website_configuration.error_document.key)
         self.assertEqual(404, result.website_configuration.error_document.http_status)
         self.assertEqual(1, result.website_configuration.routing_rules.routing_rules[0].rule_number)
         self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].condition.key_prefix_equals)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].condition.key_suffix_equals)
         self.assertEqual(404, result.website_configuration.routing_rules.routing_rules[0].condition.http_error_code_returned_equals)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[0].equals)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[0].condition.include_headers[1].equals)
         self.assertEqual('Mirror', result.website_configuration.routing_rules.routing_rules[0].redirect.redirect_type)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.pass_query_string)
         self.assertEqual('http://example.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url)
+        self.assertEqual('aab/', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_with)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.enable_replace_prefix)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_query_string)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_follow_redirect)
         self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_check_md5)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_pass_original_slashes)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(1, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_async_status)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_sni)
+        self.assertEqual('http', result.website_configuration.routing_rules.routing_rules[0].redirect.protocol)
+        self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[0].redirect.replace_key_prefix_with)
+        self.assertEqual(203, result.website_configuration.routing_rules.routing_rules[0].redirect.http_redirect_code)
+        self.assertEqual('example.com', result.website_configuration.routing_rules.routing_rules[0].redirect.host_name)
         self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.pass_all)
         self.assertEqual('myheader-key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[0])
         self.assertEqual('myheader-key2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.passs[1])
         self.assertEqual('myheader-key3', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[0])
         self.assertEqual('myheader-key4', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.removes[1])
         self.assertEqual('myheader-key5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].key)
-        self.assertEqual('myheader-value5', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-value', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key6', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-valu2', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_headers.sets[1].value)
+        self.assertEqual('region', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_tunnel_id)
+        self.assertEqual('role', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_role)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_using_role)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_proxy_pass)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_is_express_tunnel)
+        self.assertEqual('slave-vpc-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_head_object)
+        self.assertEqual('404,500', result.website_configuration.routing_rules.routing_rules[0].redirect.transparent_mirror_response_codes)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_save_oss_meta)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_probe)
+        self.assertEqual('http://slave.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_url_slave)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_user_last_modified)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_switch_all_errors)
+        self.assertEqual('key1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.auth_type)
+        self.assertEqual('region', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_auth.region)
+        self.assertEqual(1, result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi1.com/', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-1', result.website_configuration.routing_rules.routing_rules[0].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual('test.lua', result.website_configuration.routing_rules.routing_rules[0].lua_config.script)
         self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].rule_number)
-        self.assertEqual('host', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
-        self.assertEqual('test.oss-cn-beijing-internal.aliyuncs.com', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
+        self.assertEqual('key21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].key)
+        self.assertEqual('value21', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[0].equals)
+        self.assertEqual('key22', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].key)
+        self.assertEqual('value22U', result.website_configuration.routing_rules.routing_rules[1].condition.include_headers[1].equals)
         self.assertEqual('abc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_prefix_equals)
-        self.assertEqual(404, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
+        self.assertEqual('bbc/', result.website_configuration.routing_rules.routing_rules[1].condition.key_suffix_equals)
+        self.assertEqual(403, result.website_configuration.routing_rules.routing_rules[1].condition.http_error_code_returned_equals)
         self.assertEqual('AliCDN', result.website_configuration.routing_rules.routing_rules[1].redirect.redirect_type)
-        self.assertEqual('http', result.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
+        self.assertEqual('https', result.website_configuration.routing_rules.routing_rules[1].redirect.protocol)
         self.assertEqual('example.com', result.website_configuration.routing_rules.routing_rules[1].redirect.host_name)
-        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
-        self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
-        self.assertEqual(301, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.pass_query_string)
+        self.assertEqual('prefix/${key}.suffix', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_prefix_with)
+        self.assertEqual(2970, result.website_configuration.routing_rules.routing_rules[1].redirect.http_redirect_code)
+        self.assertEqual('prefix/${key}', result.website_configuration.routing_rules.routing_rules[1].redirect.replace_key_with)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.enable_replace_prefix)
+        self.assertEqual('http://example.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_query_string)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_follow_redirect)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_check_md5)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_pass_original_slashes)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_video_snapshot)
+        self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_async_status)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_sni)
+        self.assertEqual('slave-vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_slave_vpc_id)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_head_object)
+        self.assertEqual('403', result.website_configuration.routing_rules.routing_rules[1].redirect.transparent_mirror_response_codes)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_save_oss_meta)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_allow_get_image_info)
+        self.assertEqual('http://probe2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_probe)
+        self.assertEqual('http://slave2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_url_slave)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_user_last_modified)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_switch_all_errors)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_taggings.taggings[0].value)
+        self.assertEqual('test-access-key-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_id)
+        self.assertEqual('test-access-key-secret-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.access_key_secret)
+        self.assertEqual('type2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.auth_type)
+        self.assertEqual('region2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_auth.region)
+        self.assertEqual('region2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_region)
+        self.assertEqual('vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_dst_vpc_id)
+        self.assertEqual('tunnel-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_tunnel_id)
+        self.assertEqual('role2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_role)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_using_role)
+        self.assertEqual('key2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].key)
+        self.assertEqual('value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_return_headers.return_headers[0].value)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_proxy_pass)
+        self.assertEqual(False, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_is_express_tunnel)
+        self.assertEqual(2, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_number)
+        self.assertEqual('http://multi2.com/', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_url)
+        self.assertEqual('multi-vpc-id-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_vpc_id)
+        self.assertEqual('multi-region-2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_multi_alternates.mirror_multi_alternates[0].mirror_multi_alternate_dst_region)
+        self.assertEqual(True, result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.pass_all)
+        self.assertEqual('myheader-key21', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[0])
+        self.assertEqual('myheader-key22', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.passs[1])
+        self.assertEqual('myheader-key23', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[0])
+        self.assertEqual('myheader-key24', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.removes[1])
+        self.assertEqual('myheader-key25', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].key)
+        self.assertEqual('myheader-value2', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[0].value)
+        self.assertEqual('myheader-key26', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].key)
+        self.assertEqual('myheader-value22', result.website_configuration.routing_rules.routing_rules[1].redirect.mirror_headers.sets[1].value)
+        self.assertEqual('script2.lua', result.website_configuration.routing_rules.routing_rules[1].lua_config.script)
 
 
 class TestDeleteBucketWebsite(unittest.TestCase):
