@@ -2224,6 +2224,85 @@ class TestPaginator(TestIntegration):
             j += 1
         self.assertEqual(1, j)
 
+    def test_list_buckets_with_tag_filter(self):
+        # Create buckets with different tags
+        bucket_name_prefix = random_bucket_name()
+        bucket_name1 = bucket_name_prefix + '-tag1'
+        bucket_name2 = bucket_name_prefix + '-tag2'
+        bucket_name3 = bucket_name_prefix + '-tag3'
+        
+        # Create buckets
+        self.client.put_bucket(oss.PutBucketRequest(bucket=bucket_name1))
+        self.client.put_bucket(oss.PutBucketRequest(bucket=bucket_name2))
+        self.client.put_bucket(oss.PutBucketRequest(bucket=bucket_name3))
+        
+        # Add tags to buckets
+        self.client.put_bucket_tags(oss.PutBucketTagsRequest(
+            bucket=bucket_name1,
+            tagging=oss.Tagging(
+                tag_set=oss.TagSet(
+                    tags=[oss.Tag(
+                        key='env',
+                        value='test',
+                    )],
+                ),
+            ),
+        ))
+        
+        self.client.put_bucket_tags(oss.PutBucketTagsRequest(
+            bucket=bucket_name2,
+            tagging=oss.Tagging(
+                tag_set=oss.TagSet(
+                    tags=[oss.Tag(
+                        key='env',
+                        value='test',
+                    ), oss.Tag(
+                        key='team',
+                        value='dev',
+                    )],
+                ),
+            ),
+        ))
+        
+        self.client.put_bucket_tags(oss.PutBucketTagsRequest(
+            bucket=bucket_name3,
+            tagging=oss.Tagging(
+                tag_set=oss.TagSet(
+                    tags=[oss.Tag(
+                        key='env',
+                        value='prod',
+                    )],
+                ),
+            ),
+        ))
+        
+        # Test tag-key filter
+        request = oss.ListBucketsRequest(
+            prefix=bucket_name_prefix,
+            tag_key='env'
+        )
+        result = self.client.list_buckets(request)
+        # Should return all 3 buckets since they all have 'env' tag
+        self.assertEqual(3, len(result.buckets))
+        
+        # Test tag-value filter
+        request = oss.ListBucketsRequest(
+            prefix=bucket_name_prefix,
+            tag_key='env',
+            tag_value='test'
+        )
+        result = self.client.list_buckets(request)
+        # Should return 2 buckets (bucket_name1 and bucket_name2) which have 'env=test'
+        self.assertEqual(2, len(result.buckets))
+        
+        # Test tagging filter
+        request = oss.ListBucketsRequest(
+            prefix=bucket_name_prefix,
+            tagging='"env":"test","team":"dev"'
+        )
+        result = self.client.list_buckets(request)
+        # Should return 1 bucket (bucket_name2) which has both tags
+        self.assertEqual(1, len(result.buckets))
 
     def test_list_parts_paginator(self):
         bucket_name = random_bucket_name()
