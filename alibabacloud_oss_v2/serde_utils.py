@@ -236,7 +236,7 @@ def serialize_delete_objects(request: serde.Model, op_input: OperationInput) -> 
         raise exceptions.SerializationError(error=f'Unsupport type {type(request)}')
 
     # Check if both old and new parameters are set or neither is set
-    has_old_params = request.objects is not None or request.quiet is not None
+    has_old_params = request.objects is not None
     has_new_params = request.delete is not None
     
     if (has_old_params and has_new_params) or (not has_old_params and not has_new_params):

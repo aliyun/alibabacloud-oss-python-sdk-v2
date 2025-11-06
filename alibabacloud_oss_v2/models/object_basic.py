@@ -1130,8 +1130,10 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url
             objects ([DeleteObject], optional): The container that stores information about you want to delete objects.
+                This parameter is deprecated. Use 'delete' parameter instead.
             quiet (bool, optional): Specifies whether to enable the Quiet return mode.
                 The DeleteMultipleObjects operation provides the following return modes: Valid value: true,false
+                This parameter is deprecated. Use 'delete' parameter instead.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             delete (Delete, optional): The container that stores information about you want to delete objects.
         """
