@@ -356,6 +356,82 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
             serr = cast(oss.exceptions.ServiceError, serr)
             self.assertIn('NoSuchKey', serr.code)
 
+    async def test_delete_multiple_objects_with_delete_parameter(self):
+        # Test the new Delete parameter mode
+        length = 1234
+        data = random_str(length)
+        key1 = OBJECTNAME_PREFIX + random_str(16)
+        key2 = OBJECTNAME_PREFIX + random_str(16)
+        
+        # Put objects to be deleted
+        result1 = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key1,
+            body=data,
+        ))
+        self.assertIsNotNone(result1)
+        self.assertEqual(200, result1.status_code)
+        
+        result2 = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key2,
+            body=data,
+        ))
+        self.assertIsNotNone(result2)
+        self.assertEqual(200, result2.status_code)
+
+        # Delete multiple objects using the new Delete parameter
+        delete_request = oss.Delete(
+            objects=[
+                oss.ObjectIdentifier(key=key1),
+                oss.ObjectIdentifier(key=key2)
+            ],
+            quiet=False
+        )
+        
+        result = await self.async_client.delete_multiple_objects(oss.DeleteMultipleObjectsRequest(
+            bucket=self.bucket_name,
+            delete=delete_request,
+        ))
+        
+        self.assertIsInstance(result, oss.DeleteMultipleObjectsResult)
+        self.assertEqual(200, result.status_code)
+        self.assertIsNotNone(result.headers.get('x-oss-request-id'))
+        self.assertEqual(2, len(result.deleted_objects))
+        
+        deleted_keys = [obj.key for obj in result.deleted_objects]
+        self.assertIn(key1, deleted_keys)
+        self.assertIn(key2, deleted_keys)
+
+        # Verify objects are deleted
+        try:
+            await self.async_client.head_object(oss.HeadObjectRequest(
+                bucket=self.bucket_name,
+                key=key1,
+            ))
+            self.fail("Should have raised an exception")
+        except Exception as err:
+            self.assertIsInstance(err, oss.exceptions.OperationError)
+            err = cast(oss.exceptions.OperationError, err)
+            serr = err.unwrap()
+            self.assertIsInstance(serr, oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, serr)
+            self.assertIn('NoSuchKey', serr.code)
+            
+        try:
+            await self.async_client.head_object(oss.HeadObjectRequest(
+                bucket=self.bucket_name,
+                key=key2,
+            ))
+            self.fail("Should have raised an exception")
+        except Exception as err:
+            self.assertIsInstance(err, oss.exceptions.OperationError)
+            err = cast(oss.exceptions.OperationError, err)
+            serr = err.unwrap()
+            self.assertIsInstance(serr, oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, serr)
+            self.assertIn('NoSuchKey', serr.code)
+
     async def test_restore_object(self):
         length = 123
         data = random_str(length)

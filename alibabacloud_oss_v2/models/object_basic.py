@@ -1043,15 +1043,76 @@ class DeleteObject(serde.Model):
         "name": "Object"
     }
 
+class ObjectIdentifier(serde.Model):
+    """The identifier of an object to delete."""
+
+    _attribute_map = {
+        "key": {"tag": "xml", "rename": "Key", "required": True},
+        "version_id": {"tag": "xml", "rename": "VersionId"},
+    }
+
+    _xml_map = {
+        "name": "Object"
+    }
+
+    def __init__(
+        self,
+        key: Optional[str] = None,
+        version_id: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            key (str, required): The name of the object.
+            version_id (str, optional): The version ID of the object.
+        """
+        super().__init__(**kwargs)
+        self.key = key
+        self.version_id = version_id
+
+
+class Delete(serde.Model):
+    """The container for the objects to delete."""
+
+    _attribute_map = {
+        "objects": {"tag": "xml", "rename": "Object", "type": "[ObjectIdentifier]"},
+        "quiet": {"tag": "xml", "rename": "Quiet", "type": "bool"},
+    }
+
+    _xml_map = {
+        "name": "Delete"
+    }
+
+    _dependency_map = {
+        "ObjectIdentifier": {"new": lambda: ObjectIdentifier()},
+    }
+
+    def __init__(
+        self,
+        objects: Optional[List[ObjectIdentifier]] = None,
+        quiet: Optional[bool] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            objects (List[ObjectIdentifier], optional): The list of objects to delete.
+            quiet (bool, optional): Specifies whether to enable the Quiet return mode.
+        """
+        super().__init__(**kwargs)
+        self.objects = objects
+        self.quiet = quiet
+
+
 class DeleteMultipleObjectsRequest(serde.RequestModel):
     """The request for the DeleteMultipleObjects operation."""
 
     _attribute_map = {
         "bucket": {"tag": "input", "position": "host", "required": True},
         "encoding_type": {"tag": "input", "position": "query", "rename": "encoding-type"},
-        "objects": {"tag": "input", "position": "nop", "required": True},
+        "objects": {"tag": "input", "position": "nop"},
         "quiet": {"tag": "input", "position": "nop"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        "delete": {"tag": "input", "position": "body", "rename": "nop"},
     }
 
     def __init__(
@@ -1061,6 +1122,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         objects: Optional[List[DeleteObject]] = None,
         quiet: Optional[bool] = None,
         request_payer: Optional[str] = None,
+        delete: Optional[Delete] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1068,9 +1130,12 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url
             objects ([DeleteObject], optional): The container that stores information about you want to delete objects.
+                This parameter is deprecated. Use 'delete' parameter instead.
             quiet (bool, optional): Specifies whether to enable the Quiet return mode.
                 The DeleteMultipleObjects operation provides the following return modes: Valid value: true,false
+                This parameter is deprecated. Use 'delete' parameter instead.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            delete (Delete, optional): The container that stores information about you want to delete objects.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -1078,6 +1143,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         self.objects = objects
         self.quiet = quiet
         self.request_payer = request_payer
+        self.delete = delete
 
 
 class DeletedInfo(serde.Model):
