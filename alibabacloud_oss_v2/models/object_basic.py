@@ -63,6 +63,7 @@ class PutObjectRequest(serde.RequestModel):
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -96,11 +97,14 @@ class PutObjectRequest(serde.RequestModel):
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             body (BodyType,optional): Object data.
             progress_fn (Any,optional): Progress callback function.
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
-        self.acl = acl
+        self.acl = object_acl if object_acl is not None else acl
         self.storage_class = storage_class
         self.metadata = metadata
         self.cache_control = cache_control
@@ -650,6 +654,7 @@ class AppendObjectRequest(serde.RequestModel):
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -686,12 +691,15 @@ class AppendObjectRequest(serde.RequestModel):
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             body (BodyType,optional): Object data.
             progress_fn (Any,optional): Progress callback function.
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
         self.position = position
-        self.acl = acl
+        self.acl = object_acl if object_acl is not None else acl
         self.storage_class = storage_class
         self.metadata = metadata
         self.cache_control = cache_control
@@ -823,6 +831,7 @@ class CopyObjectRequest(serde.RequestModel):
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -877,6 +886,9 @@ class CopyObjectRequest(serde.RequestModel):
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             progress_fn (Any,optional):  Progress callback function, it works in Copier.copy only.
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -888,7 +900,7 @@ class CopyObjectRequest(serde.RequestModel):
         self.if_none_match = if_none_match
         self.if_modified_since = if_modified_since
         self.if_unmodified_since = if_unmodified_since
-        self.acl = acl
+        self.acl = object_acl if object_acl is not None else acl
         self.storage_class = storage_class
         self.metadata = metadata
         self.cache_control = cache_control
@@ -1434,6 +1446,7 @@ class PutObjectAclRequest(serde.RequestModel):
         acl: Optional[str] = None,
         version_id: Optional[str] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1443,11 +1456,14 @@ class PutObjectAclRequest(serde.RequestModel):
             acl (str, required): The access control list (ACL) of the object.
             version_id (str, optional): The version ID of the source object.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
-        self.acl = acl
+        self.acl = object_acl if object_acl is not None else acl
         self.version_id = version_id
         self.request_payer = request_payer
 
@@ -1966,6 +1982,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
         forbid_overwrite: Optional[bool] = None,
         encoding_type: Optional[str] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1983,12 +2000,15 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
                 overwrites an existing object that has the same name.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
         self.upload_id = upload_id
-        self.acl = acl
+        self.acl = object_acl if object_acl is not None else acl
         self.complete_multipart_upload = complete_multipart_upload
         self.complete_all = complete_all
         self.callback = callback
@@ -2454,6 +2474,8 @@ class PutSymlinkRequest(serde.RequestModel):
         metadata: Optional[MutableMapping] = None,
         forbid_overwrite: Optional[bool] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
+        symlink_target: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -2467,12 +2489,18 @@ class PutSymlinkRequest(serde.RequestModel):
             forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_acl (str, optional): The access control list (ACL) of the object.
+                The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
+                If both exist simultaneously, the value of object_acl will take precedence.
+            symlink_target (str, optional): The destination object to which the symbolic link points.
+                The symlink_target parameter has the same functionality as the target parameter. it is the standardized name for target.
+                If both exist simultaneously, the value of symlink_target will take precedence.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
-        self.target = target
-        self.acl = acl
+        self.target = symlink_target if symlink_target is not None else target
+        self.acl = object_acl if object_acl is not None else acl
         self.storage_class = storage_class
         self.metadata = metadata
         self.forbid_overwrite = forbid_overwrite
@@ -2546,19 +2574,24 @@ class GetSymlinkResult(serde.ResultModel):
         target: Optional[str] = None,
         etag: Optional[str] = None,
         metadata: Optional[MutableMapping] = None,
+        symlink_target: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             version_id (str, optional): Version of the object.
             target (str, optional): Indicates the target object that the symbol link directs to.
+                This parameter is deprecated. Use 'symlink_target' parameter instead
             etag (str, optional): The entity tag (ETag).
                 An ETag is created when an object is created to identify the content of the object.
             metadata (MutableMapping, optional): A map of metadata to store with the object.
+            symlink_target (str, optional): The destination object to which the symbolic link points.
+                The symlink_target parameter has the same functionality as the target parameter. it is the standardized name for target. 
+                If both exist simultaneously, the value of symlink_target will take precedence.
         """
         super().__init__(**kwargs)
         self.version_id = version_id
-        self.target = target
+        self.target = symlink_target if symlink_target is not None else target
         self.etag = etag
         self.metadata = metadata
 

@@ -28,7 +28,7 @@ def main():
     result = client.put_object_acl(oss.PutObjectAclRequest(
         bucket=args.bucket,
         key=args.key,
-        acl=args.acl,
+        object_acl=args.acl,
     ))
 
     print(f'status code: {result.status_code},'
