@@ -110,6 +110,16 @@ class TestPutObject(unittest.TestCase):
         self.assertEqual('key-test', request.key)
         self.assertFalse(hasattr(request, 'invalid_field'))
 
+        # Test deprecated parameter
+        request = model.PutObjectRequest(
+            bucket='bucket-test',
+            key='key-test',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket-test', request.bucket)
+        self.assertEqual('key-test', request.key)
+        self.assertEqual('public-read', request.acl)
+
         request = model.PutObjectRequest(
             bucket='bucket-test',
             key='key-test',
@@ -841,6 +851,18 @@ class TestAppendObject(unittest.TestCase):
         self.assertEqual(0, request.position)
         self.assertFalse(hasattr(request, 'invalid_field'))
 
+        # Test deprecated parameter
+        request = model.AppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=0,
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual(0, request.position)
+        self.assertEqual('public-read', request.acl)
+
         request = model.AppendObjectRequest(
             bucket='bucket_name',
             key='example-object-2.jpg',
@@ -1074,6 +1096,18 @@ class TestCopyObject(unittest.TestCase):
         self.assertTrue(hasattr(request, 'source_key'))
         self.assertEqual('source-invalid-key', request.source_key)
         self.assertFalse(hasattr(request, 'invalid_field'))
+
+        # Test deprecated parameter
+        request = model.CopyObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            source_key='source-invalid-key',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('source-invalid-key', request.source_key)
+        self.assertEqual('public-read', request.acl)
 
         request = model.CopyObjectRequest(
             bucket='bucket_name',
@@ -1843,6 +1877,26 @@ class TestPutObjectAcl(unittest.TestCase):
         self.assertTrue(hasattr(request, 'acl'))
         self.assertEqual('private', request.acl)
         self.assertFalse(hasattr(request, 'invalid_field'))
+
+        # Test deprecated parameter
+        request = model.PutObjectAclRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('public-read', request.acl)
+
+        # Test deprecated parameter
+        request = model.PutObjectAclRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('public-read', request.acl)
 
         request = model.PutObjectAclRequest(
             bucket='bucket_name',
@@ -2654,6 +2708,18 @@ class TestCompleteMultipartUpload(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
         self.assertFalse(hasattr(request, 'invalid_field'))
 
+        # Test deprecated parameter
+        request = model.CompleteMultipartUploadRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            upload_id='0004B9894A22E5B1888A1E29F823****',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
+        self.assertEqual('public-read', request.acl)
+
         request = model.CompleteMultipartUploadRequest(
             bucket='bucket_name',
             key='example-object-2.jpg',
@@ -3378,6 +3444,30 @@ class TestPutSymlink(unittest.TestCase):
         self.assertEqual('KbGMxddWss', request.target)
         self.assertFalse(hasattr(request, 'invalid_field'))
 
+        # Test deprecated parameters
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            symlink_target='target-object',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('target-object', request.target)
+        self.assertEqual('private', request.acl)
+
+        # Test deprecated parameters
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            symlink_target='target-object',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('target-object', request.target)
+        self.assertEqual('private', request.acl)
+
         request = model.PutSymlinkRequest(
             bucket='bucket_name',
             key='example-object-2.jpg',
@@ -3568,6 +3658,12 @@ class TestGetSymlink(unittest.TestCase):
         self.assertEqual("De/S3T8wFjx7QPxAAFl7h7TeI2EsZlfCwovrHyoSZGr343NxCUGIp6fQ9sSuOLMoJg7hNw=", result.metadata.get("client-side-encryption-start"))
         self.assertEqual("AES/CTR/NoPadding", result.metadata.get("client-side-encryption-cek-alg"))
         self.assertEqual("RSA/NONE/PKCS1Padding", result.metadata.get("client-side-encryption-wrap-alg"))
+
+        # Test deprecated parameter
+        result = model.GetSymlinkResult(
+            symlink_target='target-object',
+        )
+        self.assertEqual('target-object', result.target)
 
         result = model.GetSymlinkResult(
             version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',

@@ -63,6 +63,7 @@ class PutObjectRequest(serde.RequestModel):
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -70,6 +71,7 @@ class PutObjectRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             acl (str, optional): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             storage_class (str, optional): The storage class of the object.
             metadata (MutableMapping,The metadata of the object that you want to upload.
             cache_control (str, optional): The caching behavior of the web page when the object is downloaded.
@@ -96,6 +98,7 @@ class PutObjectRequest(serde.RequestModel):
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             body (BodyType,optional): Object data.
             progress_fn (Any,optional): Progress callback function.
+            object_acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -121,6 +124,8 @@ class PutObjectRequest(serde.RequestModel):
         self.request_payer = request_payer
         self.body = body
         self.progress_fn = progress_fn
+        if object_acl is not None:
+            self.acl = object_acl
 
 
 class PutObjectResult(serde.ResultModel):
@@ -650,6 +655,7 @@ class AppendObjectRequest(serde.RequestModel):
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -660,6 +666,7 @@ class AppendObjectRequest(serde.RequestModel):
                 Each time an AppendObject operation succeeds, the x-oss-next-append-position header is included in
                 the response to specify the position from which the next AppendObject operation starts.
             acl (str, optional): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             storage_class (str, optional): The storage class of the object.
             metadata (MutableMapping,The metadata of the object that you want to upload.
             cache_control (str, optional): The caching behavior of the web page when the object is downloaded.
@@ -686,6 +693,7 @@ class AppendObjectRequest(serde.RequestModel):
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             body (BodyType,optional): Object data.
             progress_fn (Any,optional): Progress callback function.
+            object_acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -710,6 +718,8 @@ class AppendObjectRequest(serde.RequestModel):
         self.request_payer = request_payer
         self.body = body
         self.progress_fn = progress_fn
+        if object_acl is not None:
+            self.acl = object_acl
 
 
 class AppendObjectResult(serde.ResultModel):
@@ -823,6 +833,7 @@ class CopyObjectRequest(serde.RequestModel):
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
         progress_fn: Optional[Any] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -844,6 +855,7 @@ class CopyObjectRequest(serde.RequestModel):
                 the object modified time, the object and 200 OK are returned. Otherwise, 412 Precondition Failed is returned.
                 The time must be in GMT. Example: Fri, 13 Nov 2015 14:47:53 GMT.
             acl (str, optional): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             storage_class (str, optional): The storage class of the object.
             metadata (MutableMapping,The metadata of the object that you want to upload.
             cache_control (str, optional): The caching behavior of the web page when the object is downloaded.
@@ -877,6 +889,7 @@ class CopyObjectRequest(serde.RequestModel):
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             progress_fn (Any,optional):  Progress callback function, it works in Copier.copy only.
+            object_acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -908,6 +921,8 @@ class CopyObjectRequest(serde.RequestModel):
         self.traffic_limit = traffic_limit
         self.request_payer = request_payer
         self.progress_fn = progress_fn
+        if object_acl is not None:
+            self.acl = object_acl
 
 
 class CopyObjectResult(serde.ResultModel):
@@ -1368,6 +1383,7 @@ class PutObjectAclRequest(serde.RequestModel):
         acl: Optional[str] = None,
         version_id: Optional[str] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1375,8 +1391,10 @@ class PutObjectAclRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             acl (str, required): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             version_id (str, optional): The version ID of the source object.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs
+            object_acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -1384,6 +1402,8 @@ class PutObjectAclRequest(serde.RequestModel):
         self.acl = acl
         self.version_id = version_id
         self.request_payer = request_payer
+        if object_acl is not None:
+            self.acl = object_acl
 
 
 class PutObjectAclResult(serde.ResultModel):
@@ -1900,6 +1920,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
         forbid_overwrite: Optional[bool] = None,
         encoding_type: Optional[str] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1908,6 +1929,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
             key (str, required): The name of the object.
             upload_id (str, optional): The ID of the multipart upload task.
             acl (str, optional): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             complete_multipart_upload (CompleteMultipartUpload, optional): The container that stores the content of the CompleteMultipartUpload
             complete_all (str, optional): Specifies whether to list all parts that are uploaded by using the current upload ID.
                 Valid value: yes
@@ -1917,6 +1939,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
                 overwrites an existing object that has the same name.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_acl (str, optional): The access control list (ACL) of the object.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -1930,6 +1953,8 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
         self.forbid_overwrite = forbid_overwrite
         self.encoding_type = encoding_type
         self.request_payer = request_payer
+        if object_acl is not None:
+            self.acl = object_acl
 
 
 class CompleteMultipartUploadResult(serde.ResultModel):
@@ -2388,6 +2413,8 @@ class PutSymlinkRequest(serde.RequestModel):
         metadata: Optional[MutableMapping] = None,
         forbid_overwrite: Optional[bool] = None,
         request_payer: Optional[str] = None,
+        object_acl: Optional[str] = None,
+        symlink_target: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -2395,12 +2422,16 @@ class PutSymlinkRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket.
             key (str, required): The name of the object.
             target (str, required): The destination object to which the symbolic link points.
+                This parameter is deprecated. Use 'symlink_target' parameter instead
             acl (str, optional): The access control list (ACL) of the object.
+                This parameter is deprecated. Use 'object_acl' parameter instead
             storage_class (str, optional): The storage class of the object.
             metadata (MutableMapping,The metadata of the object that you want to upload.
             forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_acl (str, optional): The access control list (ACL) of the object.
+            symlink_target (str, optional): The destination object to which the symbolic link points.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -2411,6 +2442,10 @@ class PutSymlinkRequest(serde.RequestModel):
         self.metadata = metadata
         self.forbid_overwrite = forbid_overwrite
         self.request_payer = request_payer
+        if object_acl is not None:
+            self.acl = object_acl
+        if symlink_target is not None:
+            self.target = symlink_target
 
 
 class PutSymlinkResult(serde.ResultModel):
@@ -2480,21 +2515,26 @@ class GetSymlinkResult(serde.ResultModel):
         target: Optional[str] = None,
         etag: Optional[str] = None,
         metadata: Optional[MutableMapping] = None,
+        symlink_target: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             version_id (str, optional): Version of the object.
             target (str, optional): Indicates the target object that the symbol link directs to.
+                This parameter is deprecated. Use 'symlink_target' parameter instead
             etag (str, optional): The entity tag (ETag).
                 An ETag is created when an object is created to identify the content of the object.
             metadata (MutableMapping, optional): A map of metadata to store with the object.
+            symlink_target (str, optional): The destination object to which the symbolic link points.
         """
         super().__init__(**kwargs)
         self.version_id = version_id
         self.target = target
         self.etag = etag
         self.metadata = metadata
+        if symlink_target is not None:
+            self.target = symlink_target
 
 class Tag(serde.Model):
     """The inforamtion about the tag."""
