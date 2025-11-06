@@ -123,6 +123,26 @@ class TestPutObject(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test standardized name
+        request = model.PutObjectRequest(
+            bucket='bucket-test',
+            key='key-test',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket-test', request.bucket)
+        self.assertEqual('key-test', request.key)
+        self.assertEqual('public-read', request.acl)
+
+        request = model.PutObjectRequest(
+            bucket='bucket-test',
+            key='key-test',
+            acl='public-read',
+            object_acl='private',
+        )
+        self.assertEqual('bucket-test', request.bucket)
+        self.assertEqual('key-test', request.key)
+        self.assertEqual('private', request.acl)
+
 
     def test_serialize_request(self):
         request = model.PutObjectRequest(
@@ -856,6 +876,30 @@ class TestAppendObject(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test standardized name
+        request = model.AppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=0,
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual(0, request.position)
+        self.assertEqual('public-read', request.acl)
+
+        request = model.AppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=0,
+            acl = 'public-read',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual(0, request.position)
+        self.assertEqual('private', request.acl)
+
     def test_serialize_request(self):
         request = model.AppendObjectRequest(
             bucket='bucket_name',
@@ -1089,6 +1133,31 @@ class TestCopyObject(unittest.TestCase):
         self.assertDictEqual({'key1': 'value1'}, request.headers)
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
+
+        # Test standardized name
+        request = model.CopyObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            source_key='source-invalid-key',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('source-invalid-key', request.source_key)
+        self.assertEqual('public-read', request.acl)
+
+        request = model.CopyObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            source_key='source-invalid-key',
+            acl='public-read',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('source-invalid-key', request.source_key)
+        self.assertEqual('private', request.acl)
+
 
     def test_serialize_request(self):
         request = model.CopyObjectRequest(
@@ -2085,6 +2154,26 @@ class TestPutObjectAcl(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test standardized name
+        request = model.PutObjectAclRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('public-read', request.acl)
+
+        request = model.PutObjectAclRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            acl='public-read',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('private', request.acl)
+
     def test_serialize_request(self):
         request = model.PutObjectAclRequest(
             bucket='bucket_name',
@@ -2895,6 +2984,31 @@ class TestCompleteMultipartUpload(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test standardized name
+        request = model.CompleteMultipartUploadRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            upload_id='0004B9894A22E5B1888A1E29F823****',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
+        self.assertEqual('public-read', request.acl)
+
+        request = model.CompleteMultipartUploadRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            upload_id='0004B9894A22E5B1888A1E29F823****',
+            acl='public-read',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
+        self.assertEqual('private', request.acl)
+
+
     def test_serialize_request(self):
         request = model.CompleteMultipartUploadRequest(
             bucket='bucket_name',
@@ -3619,6 +3733,32 @@ class TestPutSymlink(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test standardized name
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            symlink_target='target-object',
+            object_acl='private',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('target-object', request.target)
+        self.assertEqual('private', request.acl)
+
+        request = model.PutSymlinkRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            symlink='target-object',
+            acl='private',
+            symlink_target='target-object-1',
+            object_acl='public-read',
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual('target-object-1', request.target)
+        self.assertEqual('public-read', request.acl)
+
+
     def test_serialize_request(self):
         request = model.PutSymlinkRequest(
             bucket='bucket_name',
@@ -3801,6 +3941,19 @@ class TestGetSymlink(unittest.TestCase):
         )
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.version_id)
         self.assertFalse(hasattr(result, 'invalid_field'))
+
+        # Test standardized name
+        result = model.GetSymlinkResult(
+            symlink_target='target-object',
+        )
+        self.assertEqual('target-object', result.target)
+
+        result = model.GetSymlinkResult(
+            target='target-object',
+            symlink_target='target-object-1',
+        )
+        self.assertEqual('target-object-1', result.target)
+
 
     def test_deserialize_result(self):
         xml_data = None
