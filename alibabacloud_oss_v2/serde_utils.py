@@ -235,20 +235,51 @@ def serialize_delete_objects(request: serde.Model, op_input: OperationInput) -> 
     if not isinstance(request, DeleteMultipleObjectsRequest):
         raise exceptions.SerializationError(error=f'Unsupport type {type(request)}')
 
-    xml = '<Delete>'
-    if request.quiet is not None:
-        xml += f'<Quiet>{"true" if request.quiet else "false"}</Quiet>'
+    # Check if both old and new parameters are set or neither is set
+    if request.objects is not None and request.delete is not None:
+        raise exceptions.SerializationError(
+            error='Either old parameters (objects, quiet) or new parameter (delete) is set, but not both'
+        )
 
-    if isinstance(request.objects, List):
-        for _, o in enumerate(request.objects):
-            xml += '<Object>'
-            key = utils.safety_str(o.key)
-            if len(key) > 0:
-                xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
-            vid = utils.safety_str(o.version_id)
-            if len(vid) > 0:
-                xml += f'<VersionId>{vid}</VersionId>'
-            xml += '</Object>'
+    xml = '<Delete>'
+    
+    # Handle new parameter (delete)
+    if request.delete is not None:
+        if request.delete.objects is None:
+            raise exceptions.ParamRequiredError(field='delete.objects')
+
+        if request.delete.quiet is not None:
+            xml += f'<Quiet>{"true" if request.delete.quiet else "false"}</Quiet>'
+
+        if isinstance(request.delete.objects, List):
+            for _, o in enumerate(request.delete.objects):
+                xml += '<Object>'
+                key = utils.safety_str(o.key)
+                if len(key) > 0:
+                    xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
+                vid = utils.safety_str(o.version_id)
+                if len(vid) > 0:
+                    xml += f'<VersionId>{vid}</VersionId>'
+                xml += '</Object>'
+    
+    # Handle old parameters (objects, quiet)
+    else:
+        if request.objects is None:
+            raise exceptions.ParamRequiredError(field='request.objects')
+
+        if request.quiet is not None:
+            xml += f'<Quiet>{"true" if request.quiet else "false"}</Quiet>'
+
+        if isinstance(request.objects, List):
+            for _, o in enumerate(request.objects):
+                xml += '<Object>'
+                key = utils.safety_str(o.key)
+                if len(key) > 0:
+                    xml += f'<Key>{utils.escape_xml_value(key)}</Key>'
+                vid = utils.safety_str(o.version_id)
+                if len(vid) > 0:
+                    xml += f'<VersionId>{vid}</VersionId>'
+                xml += '</Object>'
 
     xml += '</Delete>'
 
