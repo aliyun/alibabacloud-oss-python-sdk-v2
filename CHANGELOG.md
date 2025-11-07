@@ -1,5 +1,13 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.2.1 日期：2025-11-07
+### 变更内容
+- Update：Routing rule supports more parameters
+- Update：The uploader supports progress
+- Update: Mark the bucket parameter as required
+- Update: ListBuckets api supports more parameters
+- Update：Normalize parameter naming
+
 ## 版本号：1.2.0 日期：2025-09-19
 ### 变更内容
 - Feature：Add async client
