@@ -4658,3 +4658,78 @@ class TestAsyncProcessObject(unittest.TestCase):
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
 
 
+class TestSealAppendObject(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.SealAppendObjectRequest(
+        )
+        self.assertIsNone(request.bucket)
+        self.assertIsNone(request.key)
+        self.assertIsNone(request.position)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.SealAppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=1000,
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual(1000, request.position)
+
+    def test_serialize_request(self):
+        request = model.SealAppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=1000,
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='SealAppendObject',
+            method='POST',
+            bucket=request.bucket,
+            key=request.key,
+        ))
+        self.assertEqual('SealAppendObject', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('example-object-2.jpg', op_input.key)
+        self.assertEqual('1000', op_input.parameters.get('position'))
+
+    def test_constructor_result(self):
+        result = model.SealAppendObjectResult()
+        self.assertIsNone(result.sealed_time)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.SealAppendObjectResult(
+            sealed_time='Fri, 13 Nov 2015 14:47:53 GMT',
+        )
+        self.assertEqual('Fri, 13 Nov 2015 14:47:53 GMT', result.sealed_time)
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.SealAppendObjectResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-sealed-time': 'Fri, 13 Nov 2015 14:47:53 GMT',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234',
+                             'x-oss-sealed-time': 'Fri, 13 Nov 2015 14:47:53 GMT'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('Fri, 13 Nov 2015 14:47:53 GMT', result.headers.get('x-oss-sealed-time'))

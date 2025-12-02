@@ -2998,3 +2998,56 @@ class CleanRestoredObjectResult(serde.ResultModel):
     """
     The request for the CleanRestoredObject operation.
     """
+
+
+class SealAppendObjectRequest(serde.RequestModel):
+    """
+    The request for the SealAppendObject operation.
+    """
+
+    _attribute_map = {
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
+        'key': {'tag': 'input', 'position': 'path', 'rename': 'key', 'type': 'str', 'required': True},
+        'position': {'tag': 'input', 'position': 'query', 'rename': 'position', 'type': 'int', 'required': True},
+    }
+
+    def __init__(
+        self,
+        bucket: str = None,
+        key: str = None,
+        position: int = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        bucket (str, required): Bucket name
+        key (str, required): Name of the Appendable Object
+        position (int, required): Used to specify the expected length of the file when the user wants to seal it.
+        """
+        super().__init__(**kwargs)
+        self.bucket = bucket
+        self.key = key
+        self.position = position
+
+
+class SealAppendObjectResult(serde.ResultModel):
+    """
+    The request for the SealAppendObject operation.
+    """
+
+    _attribute_map = {
+        'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        sealed_time: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        The result for the SealAppendObject operation.
+
+        Args:
+            sealed_time (str, optional): The time when the object was sealed.
+        """
+        super().__init__(**kwargs)
+        self.sealed_time = sealed_time
