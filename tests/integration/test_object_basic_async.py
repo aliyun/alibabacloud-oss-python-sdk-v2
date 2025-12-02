@@ -732,3 +732,48 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
             self.assertEqual(len, result.content_length)
             self.assertEqual(ccrc, result.hash_crc64)
 
+
+    @unittest.skip("Skip seal_append_object test until environment supports it")
+    async def test_seal_append_object(self):
+        # First create an appendable object
+        data1 = b'hello'
+        key = OBJECTNAME_PREFIX + random_str(16) + '-seal-async'
+
+        # Append some data
+        result = await self.async_client.append_object(oss.AppendObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            position=0,
+            body=data1,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(5, result.next_position)
+
+        # Seal the object
+        seal_result = await self.async_client.seal_append_object(oss.SealAppendObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            position=result.next_position,
+        ))
+        self.assertIsNotNone(seal_result)
+        self.assertEqual(200, seal_result.status_code)
+        self.assertIsNotNone(seal_result.sealed_time)
+
+        # Try to append more data - should fail
+        try:
+            await self.async_client.append_object(oss.AppendObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+                position=seal_result.next_position if hasattr(seal_result, 'next_position') else result.next_position,
+                body=b' world',
+            ))
+            # If we reach here, the seal didn't work properly
+            self.fail("Expected to fail when appending to sealed object")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(400, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('AppendSealedObjectNotAllowed', serr.code)
