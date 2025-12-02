@@ -1042,3 +1042,47 @@ def clean_restored_object(client: _SyncClientImpl, request: models.CleanRestored
             serde.deserialize_output_xmlbody
         ],
     )
+
+
+def seal_append_object(client: _SyncClientImpl, request: models.SealAppendObjectRequest, **kwargs) -> models.SealAppendObjectResult:
+    """
+    seal_append_object synchronously
+
+    Args:
+        client (_SyncClientImpl): A agent that sends the request.
+        request (SealAppendObjectRequest): The request for the SealAppendObject operation.
+
+    Returns:
+        SealAppendObjectResult: The result for the SealAppendObject operation.
+    """
+
+    op_input = serde.serialize_input(
+        request=request,
+        op_input=OperationInput(
+            op_name='SealAppendObject',
+            method='POST',
+            headers=CaseInsensitiveDict({
+                'Content-Type': 'application/xml',
+            }),
+            parameters={
+                'seal': '',
+                'position': str(request.position),
+            },
+            bucket=request.bucket,
+            key=request.key,
+            op_metadata={'sub-resource': ['seal']},
+        ),
+        custom_serializer=[
+            serde_utils.add_content_md5
+        ]
+    )
+
+    op_output = client.invoke_operation(op_input, **kwargs)
+
+    return serde.deserialize_output(
+        result=models.SealAppendObjectResult(),
+        op_output=op_output,
+        custom_deserializer=[
+            serde.deserialize_output_headers
+        ],
+    )

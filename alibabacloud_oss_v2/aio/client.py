@@ -610,6 +610,19 @@ class AsyncClient:
 
         return await operations.async_process_object(self._client, request, **kwargs)
 
+    async def seal_append_object(self, request: models.SealAppendObjectRequest, **kwargs
+                    ) -> models.SealAppendObjectResult:
+        """
+        Seals an appendable object. After an object is sealed, you cannot append data to the object.
+
+        Args:
+            request (SealAppendObjectRequest): Request parameters for SealAppendObject operation.
+
+        Returns:
+            SealAppendObjectResult: Response result for SealAppendObject operation.
+        """
+
+        return await operations.seal_append_object(self._client, request, **kwargs)
 
     # others apis
     async def is_object_exist(self, bucket: str, key: str,

@@ -391,6 +391,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertIsNone(result.allow_headers)
         self.assertIsNone(result.expose_headers)
         self.assertIsNone(result.transition_time)
+        self.assertIsNone(result.sealed_time)
         self.assertIsInstance(result, serde.Model)
 
         result = model.HeadObjectResult(
@@ -428,6 +429,7 @@ class TestHeadObject(unittest.TestCase):
             allow_headers='{a:a1, b:b2}',
             expose_headers='{a:a1, b:b2}',
             transition_time='2024-10-12T00:00:00.000Z',
+            sealed_time='2024-12-01T10:00:00.000Z',
         )
         self.assertEqual(1024, result.content_length)
         self.assertEqual('text/xml', result.content_type)
@@ -458,6 +460,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('{a:a1, b:b2}', result.allow_headers)
         self.assertEqual('{a:a1, b:b2}', result.expose_headers)
         self.assertEqual('2024-10-12T00:00:00.000Z', result.transition_time)
+        self.assertEqual('2024-12-01T10:00:00.000Z', result.sealed_time)
 
         result = model.HeadObjectResult(
             expose_headers='expose_headers-test',
@@ -480,6 +483,7 @@ class TestHeadObject(unittest.TestCase):
                     'etag': '"D41D8CD98F00B204E9800998ECF8****"',
                     'hash_crc64': '316181249502703****',
                     'version_id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT'
                 }),
                 http_response=MockHttpResponse(
                     status_code=200,
@@ -496,6 +500,7 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.headers.get('etag'))
         self.assertEqual('316181249502703****', result.headers.get('hash_crc64'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('version_id'))
+        self.assertEqual('Wed, 07 May 2025 23:00:00 GMT', result.headers.get('x-oss-sealed-time'))
 
 
 class TestGetObject(unittest.TestCase):
@@ -660,6 +665,7 @@ class TestGetObject(unittest.TestCase):
         self.assertIsNone(result.restore)
         self.assertIsNone(result.process_status)
         self.assertIsNone(result.delete_marker)
+        self.assertIsNone(result.sealed_time)
         self.assertIsNone(result.body)
         self.assertIsInstance(result, serde.Model)
 
@@ -693,6 +699,7 @@ class TestGetObject(unittest.TestCase):
             restore='ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',
             process_status='process_status-test',
             delete_marker=True,
+            sealed_time='2024-12-01T10:00:00.000Z',
         )
         self.assertEqual(1024 * 10, int(result.content_length))
         self.assertEqual('bytes 0~9/44', result.content_range)
@@ -717,6 +724,7 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual('ongoing-request=\"false\", expiry-date=\"Sun, 16 Apr 2017 08:12:33 GMT\"',result.restore)
         self.assertEqual('process_status-test', result.process_status)
         self.assertEqual(True, bool(result.delete_marker))
+        self.assertEqual('2024-12-01T10:00:00.000Z', result.sealed_time)
 
         result = model.GetObjectResult(
             delete_marker=True,
@@ -739,6 +747,7 @@ class TestGetObject(unittest.TestCase):
                     'etag': '"D41D8CD98F00B204E9800998ECF8****"',
                     'hash_crc64': '316181249502703****',
                     'version_id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
+                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT'
                 }),
                 http_response=MockHttpResponse(
                     status_code=200,
@@ -755,6 +764,7 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual('"D41D8CD98F00B204E9800998ECF8****"', result.headers.get('etag'))
         self.assertEqual('316181249502703****', result.headers.get('hash_crc64'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('version_id'))
+        self.assertEqual('Wed, 07 May 2025 23:00:00 GMT', result.headers.get('x-oss-sealed-time'))
 
 
 class TestAppendObject(unittest.TestCase):
@@ -4658,3 +4668,78 @@ class TestAsyncProcessObject(unittest.TestCase):
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
 
 
+class TestSealAppendObject(unittest.TestCase):
+    def test_constructor_request(self):
+        request = model.SealAppendObjectRequest(
+        )
+        self.assertIsNone(request.bucket)
+        self.assertIsNone(request.key)
+        self.assertIsNone(request.position)
+        self.assertFalse(hasattr(request, 'headers'))
+        self.assertFalse(hasattr(request, 'parameters'))
+        self.assertFalse(hasattr(request, 'payload'))
+        self.assertIsInstance(request, serde.RequestModel)
+
+        request = model.SealAppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=1000,
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('example-object-2.jpg', request.key)
+        self.assertEqual(1000, request.position)
+
+    def test_serialize_request(self):
+        request = model.SealAppendObjectRequest(
+            bucket='bucket_name',
+            key='example-object-2.jpg',
+            position=1000,
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='SealAppendObject',
+            method='POST',
+            bucket=request.bucket,
+            key=request.key,
+        ))
+        self.assertEqual('SealAppendObject', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual('example-object-2.jpg', op_input.key)
+        self.assertEqual('1000', op_input.parameters.get('position'))
+
+    def test_constructor_result(self):
+        result = model.SealAppendObjectResult()
+        self.assertIsNone(result.sealed_time)
+        self.assertIsInstance(result, serde.Model)
+
+        result = model.SealAppendObjectResult(
+            sealed_time='Fri, 13 Nov 2015 14:47:53 GMT',
+        )
+        self.assertEqual('Fri, 13 Nov 2015 14:47:53 GMT', result.sealed_time)
+
+    def test_deserialize_result(self):
+        xml_data = None
+        result = model.SealAppendObjectResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({
+                    'x-oss-request-id': '123',
+                    'x-oss-sealed-time': 'Fri, 13 Nov 2015 14:47:53 GMT',
+                }),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234',
+                             'x-oss-sealed-time': 'Fri, 13 Nov 2015 14:47:53 GMT'},
+                    body=xml_data,
+                )
+            )
+        )
+        self.assertEqual('OK', result.status)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('123', result.request_id)
+        self.assertEqual('Fri, 13 Nov 2015 14:47:53 GMT', result.headers.get('x-oss-sealed-time'))

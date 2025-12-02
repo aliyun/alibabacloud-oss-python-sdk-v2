@@ -252,6 +252,7 @@ class HeadObjectResult(serde.ResultModel):
         "allow_headers": {"tag": "output", "position": "header", "rename": "Access-Control-Allow-Headers"},
         "expose_headers": {"tag": "output", "position": "header", "rename": "Access-Control-Expose-Headers"},
         'transition_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-transition-time'},
+        'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time'},
     }
 
     def __init__(
@@ -285,6 +286,7 @@ class HeadObjectResult(serde.ResultModel):
         allow_headers: Optional[str] = None,
         expose_headers: Optional[str] = None,
         transition_time: Optional[str] = None,
+        sealed_time: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -331,6 +333,7 @@ class HeadObjectResult(serde.ResultModel):
             allow_headers (str, optional): The headers allowed for CORS.
             expose_headers (str, optional): The headers that can be accessed by JavaScript applications on the client.
             transition_time (str, optional): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
+            sealed_time (str, optional): The time when the object was sealed.
         """
         super().__init__(**kwargs)
         self.content_length = content_length
@@ -362,6 +365,7 @@ class HeadObjectResult(serde.ResultModel):
         self.allow_headers = allow_headers
         self.expose_headers = expose_headers
         self.transition_time = transition_time
+        self.sealed_time = sealed_time
 
 class GetObjectRequest(serde.RequestModel):
     """The request for the GetObject operation."""
@@ -501,6 +505,7 @@ class GetObjectResult(serde.ResultModel):
         "restore": {"tag": "output", "position": "header", "rename": "x-oss-restore"},
         "process_status": {"tag": "output", "position": "header", "rename": "x-oss-process-status"},
         "delete_marker": {"tag": "output", "position": "header", "rename": "x-oss-delete-marker", "type": "bool"},
+        'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time'},
         "body": {},
     }
 
@@ -530,6 +535,7 @@ class GetObjectResult(serde.ResultModel):
         restore: Optional[str] = None,
         process_status: Optional[str] = None,
         delete_marker: Optional[bool] = None,
+        sealed_time: Optional[str] = None,
         body: Optional[Union[StreamBody, AsyncStreamBody]] = None,
         **kwargs: Any
     ) -> None:
@@ -571,6 +577,7 @@ class GetObjectResult(serde.ResultModel):
                 If the storage class of the bucket is Archive and a RestoreObject request is submitted,
             process_status (str, optional): The result of an event notification that is triggered for the object.
             delete_marker (bool, optional): Specifies whether the object retrieved was (true) or was not (false) a Delete  Marker.
+            sealed_time (str, optional): The time when the object was sealed.
             body (Any, optional): Object data.
         """
         super().__init__(**kwargs)
@@ -598,6 +605,7 @@ class GetObjectResult(serde.ResultModel):
         self.restore = restore
         self.process_status = process_status
         self.delete_marker = delete_marker
+        self.sealed_time = sealed_time
         self.body = body
 
 
@@ -2998,3 +3006,55 @@ class CleanRestoredObjectResult(serde.ResultModel):
     """
     The request for the CleanRestoredObject operation.
     """
+
+
+class SealAppendObjectRequest(serde.RequestModel):
+    """
+    The request for the SealAppendObject operation.
+    """
+
+    _attribute_map = {
+        'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
+        'key': {'tag': 'input', 'position': 'path', 'rename': 'key', 'type': 'str', 'required': True},
+        'position': {'tag': 'input', 'position': 'query', 'rename': 'position', 'type': 'int', 'required': True},
+    }
+
+    def __init__(
+        self,
+        bucket: str = None,
+        key: str = None,
+        position: int = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            bucket (str, required): Bucket name
+            key (str, required): Name of the Appendable Object
+            position (int, required): Used to specify the expected length of the file when the user wants to seal it.
+        """
+        super().__init__(**kwargs)
+        self.bucket = bucket
+        self.key = key
+        self.position = position
+
+
+class SealAppendObjectResult(serde.ResultModel):
+    """
+    The request for the SealAppendObject operation.
+    """
+
+    _attribute_map = {
+        'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time', 'type': 'str'},
+    }
+
+    def __init__(
+        self,
+        sealed_time: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            sealed_time (str, optional): The time when the object was sealed.
+        """
+        super().__init__(**kwargs)
+        self.sealed_time = sealed_time
