@@ -953,4 +953,36 @@ class TestObjectBasic(TestOperations):
         self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?encoding-type=url&uploadId=0004B9895DBBB6EC9', self.request_dump.url)
         self.assertEqual('GET', self.request_dump.method)
 
+    async def test_seal_append_object(self):
+        request = model.SealAppendObjectRequest(
+            bucket='bucket',
+            key='example-object-2.jpg',
+            position=1000,
+        )
 
+        result = await operations.seal_append_object(self.client, request)
+        self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?seal=&position=1000', self.request_dump.url)
+        self.assertEqual('POST', self.request_dump.method)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+
+    async def test_seal_append_object_fail(self):
+        self.set_responseFunc(self.response_403_InvalidAccessKeyId)
+        request = model.SealAppendObjectRequest(
+            bucket='bucket',
+            key='example-object-2.jpg',
+            position=1000,
+        )
+
+        try:
+            result = await operations.seal_append_object(self.client, request)
+            self.fail('should not here')
+        except exceptions.OperationError as ope:
+            self.assertIsInstance(ope.unwrap(), exceptions.ServiceError)
+            serr = cast(exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual('id-1234', serr.request_id)
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+
+        self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?seal=&position=1000', self.request_dump.url)
+        self.assertEqual('POST', self.request_dump.method)

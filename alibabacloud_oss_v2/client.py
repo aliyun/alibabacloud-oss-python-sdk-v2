@@ -2209,3 +2209,17 @@ class Client:
         """
 
         return operations.list_cloud_boxes(self._client, request, **kwargs)
+
+    # seal append object
+    def seal_append_object(self, request: models.SealAppendObjectRequest, **kwargs
+                           ) -> models.SealAppendObjectResult:
+        """
+        This operation stops writing to the Appendable Object, after which the user can configure lifecycle rules to change the storage class of the corresponding Appendable Object to Cold Archive or Deep Cold Archive.
+
+        Args:
+            request (SealAppendObjectRequest): Request parameters for SealAppendObject operation.
+
+        Returns:
+            SealAppendObjectResult: Response result for SealAppendObject operation.
+        """
+        return operations.seal_append_object(self._client, request, **kwargs)
