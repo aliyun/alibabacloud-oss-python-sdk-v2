@@ -3,6 +3,44 @@ from typing import Optional, List, Any, Union
 from .. import serde
 
 
+class CipherSuite(serde.Model):
+    """
+    The container that stores cipher suite configurations.
+    """
+
+    _attribute_map = { 
+        'enable': {'tag': 'xml', 'rename': 'Enable', 'type': 'bool'},
+        'strong_cipher_suite': {'tag': 'xml', 'rename': 'StrongCipherSuite', 'type': 'bool'},
+        'custom_cipher_suite': {'tag': 'xml', 'rename': 'CustomCipherSuite', 'type': 'str'},
+        'tls13_custom_cipher_suite': {'tag': 'xml', 'rename': 'TLS13CustomCipherSuite', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'CipherSuite'
+    }
+
+    def __init__(
+        self,
+        enable: Optional[bool] = None,
+        strong_cipher_suite: Optional[bool] = None,
+        custom_cipher_suite: Optional[str] = None,
+        tls13_custom_cipher_suite: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            enable (bool, optional): Specifies whether to enable the cipher suite.
+            strong_cipher_suite (bool, optional): Specifies whether to enable strong cipher suite.
+            custom_cipher_suite (str, optional): The custom cipher suite.
+            tls13_custom_cipher_suite (str, optional): The TLS13 custom cipher suite.
+        """
+        super().__init__(**kwargs)
+        self.enable = enable
+        self.strong_cipher_suite = strong_cipher_suite
+        self.custom_cipher_suite = custom_cipher_suite
+        self.tls13_custom_cipher_suite = tls13_custom_cipher_suite
+
+
 class TLS(serde.Model):
     """
     The container that stores TLS version configurations.
@@ -40,6 +78,7 @@ class HttpsConfiguration(serde.Model):
 
     _attribute_map = { 
         'tls': {'tag': 'xml', 'rename': 'TLS', 'type': 'TLS'},
+        'cipher_suite': {'tag': 'xml', 'rename': 'CipherSuite', 'type': 'CipherSuite'},
     }
 
     _xml_map = {
@@ -48,19 +87,23 @@ class HttpsConfiguration(serde.Model):
 
     _dependency_map = { 
         'TLS': {'new': lambda: TLS()},
+        'CipherSuite': {'new': lambda: CipherSuite()},
     }
 
     def __init__(
         self,
         tls: Optional[TLS] = None,
+        cipher_suite: Optional[CipherSuite] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             tls (TLS, optional): The container that stores TLS version configurations.
+            cipher_suite (CipherSuite, optional): The cipher suite configuration.
         """
         super().__init__(**kwargs)
         self.tls = tls
+        self.cipher_suite = cipher_suite
 
 
 
