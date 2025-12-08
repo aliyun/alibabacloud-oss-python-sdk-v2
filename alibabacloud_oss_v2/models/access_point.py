@@ -13,7 +13,7 @@ class AccessPointVpcConfiguration(serde.Model):
     }
 
     _xml_map = {
-        'name': 'AccessPointVpcConfiguration'
+        'name': 'VpcConfiguration'
     }
 
     def __init__(

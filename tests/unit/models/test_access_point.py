@@ -52,6 +52,29 @@ class TestCreateAccessPoint(unittest.TestCase):
         self.assertEqual('POST', op_input.method)
         self.assertEqual('bucket_name', op_input.bucket)
 
+        xml_str = '<CreateAccessPointConfiguration><AccessPointName>ap-01</AccessPointName><NetworkOrigin>vpc</NetworkOrigin><VpcConfiguration><VpcId>vpc-t4nlw426y44rd3iq4xxxx</VpcId></VpcConfiguration></CreateAccessPointConfiguration>'
+
+        request = model.CreateAccessPointRequest(
+            bucket='bucket_name',
+            create_access_point_configuration=model.CreateAccessPointConfiguration(
+                access_point_name='ap-01',
+                network_origin='vpc',
+                vpc_configuration=model.AccessPointVpcConfiguration(
+                    vpc_id='vpc-t4nlw426y44rd3iq4xxxx',
+                ),
+            ),
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='CreateAccessPoint',
+            method='POST',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('CreateAccessPoint', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucket_name', op_input.bucket)
+        self.assertEqual(xml_str, op_input.body.decode())
+
     def test_constructor_result(self):
         result = model.CreateAccessPointResult()
         self.assertIsNone(result.access_point_arn)
