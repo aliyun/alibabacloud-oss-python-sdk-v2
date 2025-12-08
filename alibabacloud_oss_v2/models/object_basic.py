@@ -58,7 +58,7 @@ class PutObjectRequest(serde.RequestModel):
         tagging: Optional[str] = None,
         callback: Optional[str] = None,
         callback_var: Optional[str] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
@@ -90,7 +90,7 @@ class PutObjectRequest(serde.RequestModel):
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             callback (str, optional): A callback parameter is a Base64-encoded string that contains multiple fields in the JSON format.
             callback_var (str, optional): Configure custom parameters by using the callback-var parameter.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             traffic_limit (int, optional): Specify the speed limit value.
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
@@ -649,7 +649,7 @@ class AppendObjectRequest(serde.RequestModel):
         server_side_data_encryption: Optional[str] = None,
         server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
         body: Optional[BodyType] = None,
@@ -684,7 +684,7 @@ class AppendObjectRequest(serde.RequestModel):
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
             callback (str, optional): A callback parameter is a Base64-encoded string that contains multiple fields in the JSON format.
             callback_var (str, optional): Configure custom parameters by using the callback-var parameter.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             traffic_limit (int, optional): Specify the speed limit value.
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
@@ -827,7 +827,7 @@ class CopyObjectRequest(serde.RequestModel):
         server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
         tagging_directive: Optional[str] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
         progress_fn: Optional[Any] = None,
@@ -880,7 +880,7 @@ class CopyObjectRequest(serde.RequestModel):
             tagging_directive (str, optional): The method that is used to configure tags for the destination object.
                 Valid values: Copy (default): The tags of the source object are copied to the destination object.
                 Replace: The tags specified in the request are configured for the destination object.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             traffic_limit (int, optional): Specify the speed limit value.
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
@@ -1599,7 +1599,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         server_side_data_encryption: Optional[str] = None,
         server_side_encryption_key_id: Optional[str] = None,
         tagging: Optional[str] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         request_payer: Optional[str] = None,
         cse_data_size: Optional[int] = None,
         cse_part_size: Optional[int] = None,
@@ -1628,7 +1628,7 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
             server_side_encryption_key_id (str, optional): The ID of the customer master key (CMK) that is managed by Key Management Service (KMS).
             tagging (str, optional): The tags that are specified for the object by using a key-value pair.
                 You can specify multiple tags for an object. Example: TagA=A&TagB=B.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             cse_data_size (int, optional): The total size when using client side encryption.
@@ -1979,7 +1979,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
         complete_all: Optional[str] = None,
         callback: Optional[str] = None,
         callback_var: Optional[str] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         encoding_type: Optional[str] = None,
         request_payer: Optional[str] = None,
         object_acl: Optional[str] = None,
@@ -1996,7 +1996,7 @@ class CompleteMultipartUploadRequest(serde.RequestModel):
                 Valid value: yes
             callback (str, optional): A callback parameter is a Base64-encoded string that contains multiple fields in the JSON format.
             callback_var (str, optional): Configure custom parameters by using the callback-var parameter.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             encoding_type (str, optional): The encoding type of the object names in the response. Valid value: url.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
@@ -2283,7 +2283,7 @@ class ListPartsRequest(serde.RequestModel):
         upload_id: str = None,
         encoding_type: Optional[str] = None,
         max_parts: Optional[int] = None,
-        part_number_marker: Optional[str] = None,
+        part_number_marker: Optional[Union[str, int]] = None,
         request_payer: Optional[str] = None,
         **kwargs: Any
     ) -> None:
@@ -2295,7 +2295,7 @@ class ListPartsRequest(serde.RequestModel):
             encoding_type (str, optional): The encoding type of the content in the response. Valid value: url
             max_parts (int, optional): The maximum number of parts that can be returned by OSS.
                 Default value: 1000. Maximum value: 1000.
-            part_number_marker (str, optional): The position from which the list starts.
+            part_number_marker (Union[str, int], optional): The position from which the list starts.
                 All parts whose part numbers are greater than the value of this parameter are listed.
             request_payer (str, optional): To indicate that the requester is aware that the request 
                 and data download will incur costs
@@ -2472,7 +2472,7 @@ class PutSymlinkRequest(serde.RequestModel):
         acl: Optional[str] = None,
         storage_class: Optional[str] = None,
         metadata: Optional[MutableMapping] = None,
-        forbid_overwrite: Optional[bool] = None,
+        forbid_overwrite: Optional[Union[str, bool]] = None,
         request_payer: Optional[str] = None,
         object_acl: Optional[str] = None,
         symlink_target: Optional[str] = None,
@@ -2486,7 +2486,7 @@ class PutSymlinkRequest(serde.RequestModel):
             acl (str, optional): The access control list (ACL) of the object.
             storage_class (str, optional): The storage class of the object.
             metadata (MutableMapping,The metadata of the object that you want to upload.
-            forbid_overwrite (bool, optional): Specifies whether the object that is uploaded by calling the PutObject operation
+            forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             object_acl (str, optional): The access control list (ACL) of the object.

@@ -143,6 +143,18 @@ class TestPutObject(unittest.TestCase):
         self.assertEqual('key-test', request.key)
         self.assertEqual('private', request.acl)
 
+        # Test forbid overwrite
+        request = model.PutObjectRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.PutObjectRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
+
+
 
     def test_serialize_request(self):
         request = model.PutObjectRequest(
@@ -900,6 +912,17 @@ class TestAppendObject(unittest.TestCase):
         self.assertEqual(0, request.position)
         self.assertEqual('private', request.acl)
 
+        # Test forbid overwrite
+        request = model.AppendObjectRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.AppendObjectRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
+
     def test_serialize_request(self):
         request = model.AppendObjectRequest(
             bucket='bucket_name',
@@ -1158,6 +1181,16 @@ class TestCopyObject(unittest.TestCase):
         self.assertEqual('source-invalid-key', request.source_key)
         self.assertEqual('private', request.acl)
 
+        # Test forbid overwrite
+        request = model.CopyObjectRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.CopyObjectRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
 
     def test_serialize_request(self):
         request = model.CopyObjectRequest(
@@ -2460,6 +2493,17 @@ class TestInitiateMultipartUpload(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test forbid overwrite
+        request = model.InitiateMultipartUploadRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.InitiateMultipartUploadRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
+
     def test_serialize_request(self):
         request = model.InitiateMultipartUploadRequest(
             bucket='bucket_name',
@@ -3008,6 +3052,17 @@ class TestCompleteMultipartUpload(unittest.TestCase):
         self.assertEqual('0004B9894A22E5B1888A1E29F823****', request.upload_id)
         self.assertEqual('private', request.acl)
 
+        # Test forbid overwrite
+        request = model.CompleteMultipartUploadRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.CompleteMultipartUploadRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
+
 
     def test_serialize_request(self):
         request = model.CompleteMultipartUploadRequest(
@@ -3495,6 +3550,17 @@ class TestListParts(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # Test forbid overwrite
+        request = model.ListPartsRequest(
+            part_number_marker='1024',
+        )
+        self.assertEqual('1024', request.part_number_marker)
+
+        request = model.ListPartsRequest(
+            part_number_marker=1024,
+        )
+        self.assertEqual(1024, request.part_number_marker)
+
     def test_serialize_request(self):
         request = model.ListPartsRequest(
             bucket='bucket_name',
@@ -3757,6 +3823,17 @@ class TestPutSymlink(unittest.TestCase):
         self.assertEqual('example-object-2.jpg', request.key)
         self.assertEqual('target-object-1', request.target)
         self.assertEqual('public-read', request.acl)
+
+        # Test forbid overwrite
+        request = model.PutSymlinkRequest(
+            forbid_overwrite='true',
+        )
+        self.assertEqual('true', request.forbid_overwrite)
+
+        request = model.PutSymlinkRequest(
+            forbid_overwrite=True,
+        )
+        self.assertEqual(True, request.forbid_overwrite)
 
 
     def test_serialize_request(self):
