@@ -3560,7 +3560,7 @@ class TestListParts(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
-        # Test forbid overwrite
+        # Test part number marker
         request = model.ListPartsRequest(
             part_number_marker='1024',
         )
