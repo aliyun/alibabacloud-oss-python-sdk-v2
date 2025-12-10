@@ -367,6 +367,17 @@ class TestListUserDataRedundancyTransition(unittest.TestCase):
         self.assertEqual(10, int(op_input.parameters.get('max-keys')))
         self.assertEqual('ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA', op_input.parameters.get('continuation-token'))
 
+        # Test max keys
+        request = model.ListUserDataRedundancyTransitionRequest(
+            max_keys='100',
+        )
+        self.assertEqual('100', request.max_keys)
+
+        request = model.ListUserDataRedundancyTransitionRequest(
+            max_keys=102,
+        )
+        self.assertEqual(102, request.max_keys)
+
     def test_constructor_result(self):
         result = model.ListUserDataRedundancyTransitionResult()
         self.assertIsNone(result.list_bucket_data_redundancy_transition)
