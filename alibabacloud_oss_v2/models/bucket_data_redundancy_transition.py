@@ -259,13 +259,13 @@ class ListUserDataRedundancyTransitionRequest(serde.RequestModel):
 
     def __init__(
         self,
-        max_keys: Optional[int] = None,
+        max_keys: Optional[Union[str, int]] = None,
         continuation_token: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            max_keys (int, optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
+            max_keys (Union[str, int], optional): The maximum number of access points that can be returned. Valid values:*   For user-level access points: (0,1000].*   For bucket-level access points: (0,100].
             continuation_token (str, optional): The token from which the listing operation starts. You must specify the value of NextContinuationToken that is obtained from the previous query as the value of continuation-token.
         """
         super().__init__(**kwargs)
