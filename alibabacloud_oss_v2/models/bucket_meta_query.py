@@ -197,6 +197,92 @@ class MetaQueryGroup(serde.Model):
         self.count = count
 
 
+class WorkflowParameter(serde.Model):
+    """
+    The container that stores workflow parameter information.
+    """
+
+    _attribute_map = {
+        'name': {'tag': 'xml', 'rename': 'Name', 'type': 'str'},
+        'value': {'tag': 'xml', 'rename': 'Value', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'WorkflowParameter'
+    }
+
+    def __init__(
+        self,
+        name: Optional[str] = None,
+        value: Optional[str] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            name (str, optional): The name of the workflow parameter.
+            value (str, optional): The value of the workflow parameter.
+        """
+        super().__init__(**kwargs)
+        self.name = name
+        self.value = value
+
+
+class WorkflowParameters(serde.Model):
+    """
+    The container that stores workflow parameters.
+    """
+
+    _attribute_map = {
+        'workflow_parameters': {'tag': 'xml', 'rename': 'WorkflowParameter', 'type': '[WorkflowParameter]'},
+    }
+
+    _xml_map = {
+        'name': 'WorkflowParameters'
+    }
+
+    _dependency_map = {
+        'WorkflowParameter': {'new': lambda: WorkflowParameter()},
+    }
+
+    def __init__(
+        self,
+        workflow_parameters: Optional[List[WorkflowParameter]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            workflow_parameters (List[WorkflowParameter], optional): The list of workflow parameters.
+        """
+        super().__init__(**kwargs)
+        self.workflow_parameters = workflow_parameters
+
+
+class Filters(serde.Model):
+    """
+    The container that stores filter conditions.
+    """
+
+    _attribute_map = {
+        'filters': {'tag': 'xml', 'rename': 'Filter', 'type': '[str]'},
+    }
+
+    _xml_map = {
+        'name': 'Filters'
+    }
+
+    def __init__(
+        self,
+        filters: Optional[List[str]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            filters (List[str], optional): The list of filter conditions.
+        """
+        super().__init__(**kwargs)
+        self.filters = filters
+
+
 class MetaQueryGroups(serde.Model):
     """
         grouped aggregations
@@ -403,10 +489,18 @@ class MetaQueryStatus(serde.Model):
         'state': {'tag': 'xml', 'rename': 'State', 'type': 'str'},
         'phase': {'tag': 'xml', 'rename': 'Phase', 'type': 'str'},
         'meta_query_mode': {'tag': 'xml', 'rename': 'MetaQueryMode', 'type': 'str'},
+        'role': {'tag': 'xml', 'rename': 'Role', 'type': 'str'},
+        'filters': {'tag': 'xml', 'rename': 'Filters', 'type': 'Filters'},
+        'workflow_parameters': {'tag': 'xml', 'rename': 'WorkflowParameters', 'type': 'WorkflowParameters'},
     }
 
     _xml_map = {
         'name': 'MetaQueryStatus'
+    }
+
+    _dependency_map = {
+        'Filters': {'new': lambda: Filters()},
+        'WorkflowParameters': {'new': lambda: WorkflowParameters()},
     }
 
     def __init__(
@@ -416,6 +510,9 @@ class MetaQueryStatus(serde.Model):
         state: Optional[str] = None,
         phase: Optional[str] = None,
         meta_query_mode: Optional[str] = None,
+        role: Optional[str] = None,
+        filters: Optional[Filters] = None,
+        workflow_parameters: Optional[WorkflowParameters] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -425,6 +522,9 @@ class MetaQueryStatus(serde.Model):
             state (str, optional): The status of the metadata index library. Valid values:- Ready: The metadata index library is being prepared after it is created.In this case, the metadata index library cannot be used to query data.- Stop: The metadata index library is paused.- Running: The metadata index library is running.- Retrying: The metadata index library failed to be created and is being created again.- Failed: The metadata index library failed to be created.- Deleted: The metadata index library is deleted.
             phase (str, optional): The scan type. Valid values:- FullScanning: Full scanning is in progress.- IncrementalScanning: Incremental scanning is in progress.
             meta_query_mode (str, optional): Retrieval modes: basic: Scalar search, semantic: Vector search.
+            role (str, optional): The RAM role name of OSS service.
+            filters (Filters, optional): The filter conditions.
+            workflow_parameters (WorkflowParameters, optional): The workflow parameters.
         """
         super().__init__(**kwargs)
         self.create_time = create_time
@@ -432,6 +532,9 @@ class MetaQueryStatus(serde.Model):
         self.state = state
         self.phase = phase
         self.meta_query_mode = meta_query_mode
+        self.role = role
+        self.filters = filters
+        self.workflow_parameters = workflow_parameters
 
 
 class MetaQueryAggregation(serde.Model):
@@ -955,6 +1058,39 @@ class MetaQueryFiles(serde.Model):
         self.file = file
 
 
+class MetaQueryOpenRequest(serde.Model):
+    """
+    The container that stores OpenMetaQuery parameters.
+    """
+
+    _attribute_map = { 
+        'workflow_parameters': {'tag': 'xml', 'rename': 'WorkflowParameters', 'type': 'WorkflowParameters'},
+        'filters': {'tag': 'xml', 'rename': 'Filters', 'type': 'Filters'},
+    }
+
+    _xml_map = {
+        'name': 'MetaQuery'
+    }
+
+    _dependency_map = {
+        'WorkflowParameters': {'new': lambda: WorkflowParameters()},
+        'Filters': {'new': lambda: Filters()},
+    }
+
+    def __init__(
+        self,
+        workflow_parameters: Optional[WorkflowParameters] = None,
+        filters: Optional[Filters] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            workflow_parameters (WorkflowParameters, optional): The workflow parameters.
+            filters (Filters, optional): The filter conditions.
+        """
+        super().__init__(**kwargs)
+        self.workflow_parameters = workflow_parameters
+        self.filters = filters
 
 
 class OpenMetaQueryRequest(serde.RequestModel):
@@ -965,22 +1101,31 @@ class OpenMetaQueryRequest(serde.RequestModel):
     _attribute_map = {
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'mode': {'tag': 'input', 'position': 'query', 'rename': 'mode', 'type': 'str'},
+        'role': {'tag': 'input', 'position': 'query', 'rename': 'role', 'type': 'str'},
+        'meta_query': {'tag': 'input', 'position': 'body', 'rename': 'MetaQuery', 'type': 'xml'},
     }
+
 
     def __init__(
         self,
         bucket: str = None,
         mode: Optional[str] = None,
+        role: Optional[str] = None,
+        meta_query: Optional[MetaQueryOpenRequest] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             bucket (str, required): The name of the bucket.
             mode (str, optional): Specify search mode
+            role (str, optional): The RAM role name of OSS service
+            meta_query (MetaQueryOpenRequest, optional): The meta query parameters.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.mode = mode
+        self.role = role
+        self.meta_query = meta_query
 
 
 class OpenMetaQueryResult(serde.ResultModel):
