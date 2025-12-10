@@ -385,6 +385,7 @@ class GetObjectRequest(serde.RequestModel):
         "traffic_limit": {"tag": "input", "position": "header", "rename": "x-oss-traffic-limit", "type": "int"},
         "process": {"tag": "input", "position": "query", "rename": "x-oss-process"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        'accept_encoding': {'tag': 'input', 'position': 'header', 'rename': 'Accept-Encoding', 'type': 'str'},
         "progress_fn": {},
     }
 
@@ -408,6 +409,7 @@ class GetObjectRequest(serde.RequestModel):
         traffic_limit: Optional[int] = None,
         process: Optional[str] = None,
         request_payer: Optional[str] = None,
+        accept_encoding: Optional[str] = None,
         progress_fn: Optional[Any] = None,
         **kwargs: Any
     ) -> None:
@@ -449,6 +451,11 @@ class GetObjectRequest(serde.RequestModel):
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
             process (str, optional): Image processing parameters.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            accept_encoding (str, optional): The encoding type at the client side. If you want an object to be returned in the GZIP format, you must include the Accept-Encoding:gzip header in your request.
+                OSS determines whether to return the object compressed in the GZip format based on the Content-Type header and whether the size of the object is larger than or equal to 1 KB.
+                If an object is compressed in the GZip format, the response OSS returns does not include the ETag value of the object.
+                - OSS supports the following Content-Type values to compress the object in the GZip format:
+                    text/cache-manifest, text/xml, text/plain, text/css, application/javascript, application/x-javascript, application/rss+xml, application/json, and text/json. Default value: null
             progress_fn (Any, optional): Progress callback function.
         """
         super().__init__(**kwargs)
@@ -470,6 +477,7 @@ class GetObjectRequest(serde.RequestModel):
         self.traffic_limit = traffic_limit
         self.process = process
         self.request_payer = request_payer
+        self.accept_encoding = accept_encoding
         self.progress_fn = progress_fn
 
 

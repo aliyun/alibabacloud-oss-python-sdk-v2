@@ -523,6 +523,7 @@ class TestGetObject(unittest.TestCase):
         self.assertIsNone(request.process)
         self.assertIsNone(request.request_payer)
         self.assertIsNone(request.progress_fn)
+        self.assertIsNone(request.accept_encoding)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
@@ -633,6 +634,22 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual(1022, int(op_input.headers.get('x-oss-traffic-limit')))
         self.assertEqual('request_payer-test', op_input.headers.get('x-oss-request-payer'))
 
+        # Test forbid overwrite
+        request = model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+            accept_encoding='gzip'
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='GetObject',
+            method='GET',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('GetObject', op_input.op_name)
+        self.assertEqual('GET', op_input.method)
+        self.assertEqual('bucket', op_input.bucket)
+        self.assertEqual('gzip', op_input.headers.get('Accept-Encoding'))
 
     def test_constructor_result(self):
         result = model.GetObjectResult()
