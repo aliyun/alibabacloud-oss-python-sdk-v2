@@ -11,8 +11,8 @@ class CipherSuite(serde.Model):
     _attribute_map = { 
         'enable': {'tag': 'xml', 'rename': 'Enable', 'type': 'bool'},
         'strong_cipher_suite': {'tag': 'xml', 'rename': 'StrongCipherSuite', 'type': 'bool'},
-        'custom_cipher_suite': {'tag': 'xml', 'rename': 'CustomCipherSuite', 'type': '[str]'},
-        'tls13_custom_cipher_suite': {'tag': 'xml', 'rename': 'TLS13CustomCipherSuite', 'type': '[str]'},
+        'custom_cipher_suites': {'tag': 'xml', 'rename': 'CustomCipherSuite', 'type': '[str]'},
+        'tls13_custom_cipher_suites': {'tag': 'xml', 'rename': 'TLS13CustomCipherSuite', 'type': '[str]'},
     }
 
     _xml_map = {
@@ -23,22 +23,22 @@ class CipherSuite(serde.Model):
         self,
         enable: Optional[bool] = None,
         strong_cipher_suite: Optional[bool] = None,
-        custom_cipher_suite: Optional[List[str]] = None,
-        tls13_custom_cipher_suite: Optional[List[str]] = None,
+        custom_cipher_suites: Optional[List[str]] = None,
+        tls13_custom_cipher_suites: Optional[List[str]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             enable (bool, optional): Specifies whether to enable the cipher suite.
             strong_cipher_suite (bool, optional): Specifies whether to enable strong cipher suite.
-            custom_cipher_suite (List[str], optional): The custom cipher suites.
-            tls13_custom_cipher_suite (List[str], optional): The TLS13 custom cipher suites.
+            custom_cipher_suites (List[str], optional): The custom cipher suites.
+            tls13_custom_cipher_suites (List[str], optional): The TLS13 custom cipher suites.
         """
         super().__init__(**kwargs)
         self.enable = enable
         self.strong_cipher_suite = strong_cipher_suite
-        self.custom_cipher_suite = custom_cipher_suite
-        self.tls13_custom_cipher_suite = tls13_custom_cipher_suite
+        self.custom_cipher_suites = custom_cipher_suites
+        self.tls13_custom_cipher_suites = tls13_custom_cipher_suites
 
 
 class TLS(serde.Model):

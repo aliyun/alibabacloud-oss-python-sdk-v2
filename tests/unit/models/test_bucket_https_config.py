@@ -173,8 +173,8 @@ class TestGetBucketHttpsConfig(unittest.TestCase):
             cipher_suite=model.CipherSuite(
                 enable=True,
                 strong_cipher_suite=False,
-                custom_cipher_suite=['ECDHE-RSA-AES128-SHA', 'AES256-SHA'],
-                tls13_custom_cipher_suite=['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256']
+                custom_cipher_suites=['ECDHE-RSA-AES128-SHA', 'AES256-SHA'],
+                tls13_custom_cipher_suites=['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256']
             )
         )
 
@@ -195,8 +195,6 @@ class TestGetBucketHttpsConfig(unittest.TestCase):
         self.assertEqual(['TLSv1.2'], https_config.tls.tls_versions)
         self.assertEqual(True, https_config.cipher_suite.enable)
         self.assertEqual(False, https_config.cipher_suite.strong_cipher_suite)
-        self.assertEqual(['ECDHE-RSA-AES128-SHA', 'AES256-SHA'], https_config.cipher_suite.custom_cipher_suite)
-        self.assertEqual(['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256'], https_config.cipher_suite.tls13_custom_cipher_suite)
-        self.assertEqual('TLS_AES_128_GCM_SHA256', https_config.cipher_suite.tls13_custom_cipher_suite[0])
-        self.assertEqual('TLS_CHACHA20_POLY1305_SHA256', https_config.cipher_suite.tls13_custom_cipher_suite[1])
-        self.assertEqual(xml_str, op_input.body.decode())
+        self.assertEqual(['ECDHE-RSA-AES128-SHA', 'AES256-SHA'], https_config.cipher_suite.custom_cipher_suites)
+        self.assertEqual(['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256'], https_config.cipher_suite.tls13_custom_cipher_suites)
+        self.assertEqual(xml_str, op_input.body.decode().replace('\n', '').replace('\r', '').replace(' ', ''))
