@@ -11,8 +11,8 @@ class CipherSuite(serde.Model):
     _attribute_map = { 
         'enable': {'tag': 'xml', 'rename': 'Enable', 'type': 'bool'},
         'strong_cipher_suite': {'tag': 'xml', 'rename': 'StrongCipherSuite', 'type': 'bool'},
-        'custom_cipher_suite': {'tag': 'xml', 'rename': 'CustomCipherSuite', 'type': 'str'},
-        'tls13_custom_cipher_suite': {'tag': 'xml', 'rename': 'TLS13CustomCipherSuite', 'type': 'str'},
+        'custom_cipher_suite': {'tag': 'xml', 'rename': 'CustomCipherSuite', 'type': '[str]'},
+        'tls13_custom_cipher_suite': {'tag': 'xml', 'rename': 'TLS13CustomCipherSuite', 'type': '[str]'},
     }
 
     _xml_map = {
@@ -23,16 +23,16 @@ class CipherSuite(serde.Model):
         self,
         enable: Optional[bool] = None,
         strong_cipher_suite: Optional[bool] = None,
-        custom_cipher_suite: Optional[str] = None,
-        tls13_custom_cipher_suite: Optional[str] = None,
+        custom_cipher_suite: Optional[List[str]] = None,
+        tls13_custom_cipher_suite: Optional[List[str]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             enable (bool, optional): Specifies whether to enable the cipher suite.
             strong_cipher_suite (bool, optional): Specifies whether to enable strong cipher suite.
-            custom_cipher_suite (str, optional): The custom cipher suite.
-            tls13_custom_cipher_suite (str, optional): The TLS13 custom cipher suite.
+            custom_cipher_suite (List[str], optional): The custom cipher suites.
+            tls13_custom_cipher_suite (List[str], optional): The TLS13 custom cipher suites.
         """
         super().__init__(**kwargs)
         self.enable = enable
