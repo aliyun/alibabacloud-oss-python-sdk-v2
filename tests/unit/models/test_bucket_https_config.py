@@ -161,3 +161,40 @@ class TestGetBucketHttpsConfig(unittest.TestCase):
         self.assertEqual(True, result.https_configuration.tls.enable)
         self.assertEqual('TLSv1.2', result.https_configuration.tls.tls_versions[0])
         self.assertEqual('TLSv1.3', result.https_configuration.tls.tls_versions[1])
+
+    def test_cipher_suite_fields(self):
+        xml_str = '<HttpsConfiguration><TLS><Enable>true</Enable><TLSVersion>TLSv1.2</TLSVersion></TLS><CipherSuite><Enable>true</Enable><StrongCipherSuite>false</StrongCipherSuite><CustomCipherSuite>ECDHE-RSA-AES128-SHA</CustomCipherSuite><CustomCipherSuite>AES256-SHA</CustomCipherSuite><TLS13CustomCipherSuite>TLS_AES_128_GCM_SHA256</TLS13CustomCipherSuite><TLS13CustomCipherSuite>TLS_CHACHA20_POLY1305_SHA256</TLS13CustomCipherSuite></CipherSuite></HttpsConfiguration>'
+
+        https_config = model.HttpsConfiguration(
+            tls=model.TLS(
+                enable=True,
+                tls_versions=['TLSv1.2'],
+            ),
+            cipher_suite=model.CipherSuite(
+                enable=True,
+                strong_cipher_suite=False,
+                custom_cipher_suites=['ECDHE-RSA-AES128-SHA', 'AES256-SHA'],
+                tls13_custom_cipher_suites=['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256']
+            )
+        )
+
+        request = model.PutBucketHttpsConfigRequest(
+            bucket='bucketexampletest',
+            https_configuration=https_config
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucketHttpsConfig',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutBucketHttpsConfig', op_input.op_name)
+        self.assertEqual('PUT', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
+        self.assertEqual(True, https_config.tls.enable)
+        self.assertEqual(['TLSv1.2'], https_config.tls.tls_versions)
+        self.assertEqual(True, https_config.cipher_suite.enable)
+        self.assertEqual(False, https_config.cipher_suite.strong_cipher_suite)
+        self.assertEqual(['ECDHE-RSA-AES128-SHA', 'AES256-SHA'], https_config.cipher_suite.custom_cipher_suites)
+        self.assertEqual(['TLS_AES_128_GCM_SHA256', 'TLS_CHACHA20_POLY1305_SHA256'], https_config.cipher_suite.tls13_custom_cipher_suites)
+        self.assertEqual(xml_str, op_input.body.decode().replace('\n', '').replace('\r', '').replace(' ', ''))
