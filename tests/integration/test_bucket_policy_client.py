@@ -22,6 +22,13 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        self.client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
+            bucket=bucket_name,
+            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                block_public_access=False
+            )
+        ))
+
         policy_text = ''
         policy_text += '{'
         policy_text += '"Version":"1",'
@@ -93,6 +100,13 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        
+        self.signv1_client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
+            bucket=bucket_name,
+            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                block_public_access=False
+            )
+        ))
 
         policy_text = ''
         policy_text += '{'
@@ -159,6 +173,13 @@ class TestBucketPolicy(TestIntegration):
             acl='private',
             create_bucket_configuration=oss.CreateBucketConfiguration(
                 storage_class='IA'
+            )
+        ))
+
+        self.client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
+            bucket=bucket_name,
+            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                block_public_access=False
             )
         ))
 

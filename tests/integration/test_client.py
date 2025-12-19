@@ -70,6 +70,13 @@ class TestBucketBasic(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        self.client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
+            bucket=bucket_name,
+            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                block_public_access=False
+            )
+        ))
+
         # get bucket acl
         result = self.client.get_bucket_acl(oss.GetBucketAclRequest(
             bucket=bucket_name,
@@ -318,7 +325,7 @@ class TestBucketBasic(TestIntegration):
 
         self.assertEqual('private', result.bucket_info.acl)
         self.assertEqual('Disabled', result.bucket_info.access_monitor)
-        self.assertEqual(False, result.bucket_info.block_public_access)
+        self.assertEqual(True, result.bucket_info.block_public_access)
         self.assertEqual('LRS', result.bucket_info.data_redundancy_type)
         self.assertEqual('Disabled', result.bucket_info.cross_region_replication)
         self.assertIsNotNone(result.bucket_info.resource_group_id)
@@ -1253,7 +1260,7 @@ class TestObjectBasic(TestIntegration):
         result = self.client.put_object_acl(oss.PutObjectAclRequest(
             bucket=self.bucket_name,
             key=key,
-            acl=oss.ObjectACLType.PUBLICREAD
+            acl=oss.ObjectACLType.DEFAULT
         ))
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.PutObjectAclResult)
@@ -1266,7 +1273,7 @@ class TestObjectBasic(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     def test_get_object_acl_fail(self):
         try:
@@ -3983,7 +3990,7 @@ class TestCopier(TestIntegration):
             source_key=src_key,
             metadata_directive="COPY",
             tagging_directive="REPLACE",
-            acl="public-read",
+            acl="private",
             storage_class="IA"
         ), multipart_copy_threshold=100*1024)
         self.assertIsNotNone(result)
@@ -4015,7 +4022,7 @@ class TestCopier(TestIntegration):
             bucket=dst_bucket_name,
             key=dst_key,
         ))
-        self.assertEqual("public-read", aresult.acl)
+        self.assertEqual("private", aresult.acl)
 
         # multipart parallel_num = 1
         dst_key = 'multipart_key-1'

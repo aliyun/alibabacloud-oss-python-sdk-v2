@@ -493,7 +493,7 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         result = await self.async_client.put_object_acl(oss.PutObjectAclRequest(
             bucket=self.bucket_name,
             key=key,
-            acl=oss.ObjectACLType.PUBLICREAD
+            acl=oss.ObjectACLType.DEFAULT
         ))
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.PutObjectAclResult)
@@ -506,7 +506,7 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     async def test_get_object_acl_fail(self):
         try:

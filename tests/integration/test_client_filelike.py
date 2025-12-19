@@ -244,7 +244,7 @@ class TestAppendOnlyFile(TestIntegration):
         data1 = b'hello oss'
         data2 = b'just for test'
         with self.client.append_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
-            acl='public-read',
+            acl='private',
             storage_class='IA',
             content_type='plain/txt',
             metadata={'user':"test"}
@@ -266,7 +266,7 @@ class TestAppendOnlyFile(TestIntegration):
         self.assertEqual('plain/txt', result.content_type)
 
         with self.client.append_file(self.bucket_name, key, create_parameter=oss.AppendObjectRequest(
-            acl='public-read',
+            acl='private',
             storage_class='IA',
             content_type='plain/js',
             metadata={'user':"test"}
