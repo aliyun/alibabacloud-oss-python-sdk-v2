@@ -225,7 +225,7 @@ class LifecycleRuleFilter(serde.Model):
     _attribute_map = {
         'object_size_greater_than': {'tag': 'xml', 'rename': 'ObjectSizeGreaterThan', 'type': 'int'},
         'object_size_less_than': {'tag': 'xml', 'rename': 'ObjectSizeLessThan', 'type': 'int'},
-        'filter_not': {'tag': 'xml', 'rename': 'Not', 'type': '[LifecycleRuleNot]'},
+        'nots': {'tag': 'xml', 'rename': 'Not', 'type': '[LifecycleRuleNot]'},
     }
 
     _xml_map = {
@@ -236,11 +236,16 @@ class LifecycleRuleFilter(serde.Model):
         'Not': {'new': lambda: LifecycleRuleNot()},
     }
 
+    @property
+    def filter_not(self) -> Optional[List[LifecycleRuleNot]]:
+        return self.nots
+
     def __init__(
         self,
         object_size_greater_than: Optional[int] = None,
         object_size_less_than: Optional[int] = None,
         filter_not: Optional[List[LifecycleRuleNot]] = None,
+        nots: Optional[List[LifecycleRuleNot]] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -248,11 +253,14 @@ class LifecycleRuleFilter(serde.Model):
             object_size_greater_than (int, optional): This lifecycle rule only applies to files larger than this size.
             object_size_less_than (int, optional): This lifecycle rule only applies to files smaller than this size.
             filter_not (List[LifecycleRuleNot], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
+            nots (List[LifecycleRuleNot], optional): The condition that is matched by objects to which the lifecycle rule does not apply.
+                The nots parameter has the same functionality as the filter_not parameter. it is the standardized name for filter_not.
+                If both exist simultaneously, the value of nots will take precedence.
         """
         super().__init__(**kwargs)
         self.object_size_greater_than = object_size_greater_than
         self.object_size_less_than = object_size_less_than
-        self.filter_not = filter_not
+        self.nots = nots if nots is not None else filter_not
 
 
 class LifecycleRule(serde.Model):
