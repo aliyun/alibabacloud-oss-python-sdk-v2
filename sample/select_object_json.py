@@ -45,6 +45,7 @@ def main():
     request = oss.SelectObjectRequest(
         bucket=args.bucket,
         key=args.key,
+        process='json/select',
         select_request=oss.SelectRequest(
             expression=base64.b64encode(args.expression.encode()).decode(),
             input_serialization=oss.InputSerialization(
