@@ -106,7 +106,7 @@ class TestPutBucketLifecycle(unittest.TestCase):
                     filter=model.LifecycleRuleFilter(
                         object_size_greater_than=48877,
                         object_size_less_than=84934,
-                        filter_not=[model.LifecycleRuleNot(
+                        nots=[model.LifecycleRuleNot(
                             prefix='aaa',
                             tag=model.Tag(
                                 key='key7',
@@ -173,6 +173,14 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('bbb', request.lifecycle_configuration.rules[0].filter.filter_not[1].prefix)
         self.assertEqual('key4', request.lifecycle_configuration.rules[0].filter.filter_not[1].tag.key)
         self.assertEqual('value4', request.lifecycle_configuration.rules[0].filter.filter_not[1].tag.value)
+
+        self.assertEqual('aaa', request.lifecycle_configuration.rules[0].filter.nots[0].prefix)
+        self.assertEqual('key3', request.lifecycle_configuration.rules[0].filter.nots[0].tag.key)
+        self.assertEqual('value3', request.lifecycle_configuration.rules[0].filter.nots[0].tag.value)
+        self.assertEqual('bbb', request.lifecycle_configuration.rules[0].filter.nots[1].prefix)
+        self.assertEqual('key4', request.lifecycle_configuration.rules[0].filter.nots[1].tag.key)
+        self.assertEqual('value4', request.lifecycle_configuration.rules[0].filter.nots[1].tag.value)
+
         self.assertEqual('0022012****', request.lifecycle_configuration.rules[0].id)
         self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[0].expiration.created_before_date)
         self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
@@ -218,6 +226,11 @@ class TestPutBucketLifecycle(unittest.TestCase):
         self.assertEqual('aaa', request.lifecycle_configuration.rules[1].filter.filter_not[0].prefix)
         self.assertEqual('key7', request.lifecycle_configuration.rules[1].filter.filter_not[0].tag.key)
         self.assertEqual('value7', request.lifecycle_configuration.rules[1].filter.filter_not[0].tag.value)
+
+        self.assertEqual('aaa', request.lifecycle_configuration.rules[1].filter.nots[0].prefix)
+        self.assertEqual('key7', request.lifecycle_configuration.rules[1].filter.nots[0].tag.key)
+        self.assertEqual('value7', request.lifecycle_configuration.rules[1].filter.nots[0].tag.value)
+
         self.assertEqual('0022012****', request.lifecycle_configuration.rules[1].id)
         self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), request.lifecycle_configuration.rules[1].expiration.created_before_date)
         self.assertEqual('2023-12-16T16:20:57.000Z', request.lifecycle_configuration.rules[1].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
@@ -628,6 +641,14 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('bbb', result.lifecycle_configuration.rules[0].filter.filter_not[1].prefix)
         self.assertEqual('key4', result.lifecycle_configuration.rules[0].filter.filter_not[1].tag.key)
         self.assertEqual('value4', result.lifecycle_configuration.rules[0].filter.filter_not[1].tag.value)
+
+        self.assertEqual('aaa', result.lifecycle_configuration.rules[0].filter.nots[0].prefix)
+        self.assertEqual('key3', result.lifecycle_configuration.rules[0].filter.nots[0].tag.key)
+        self.assertEqual('value3', result.lifecycle_configuration.rules[0].filter.nots[0].tag.value)
+        self.assertEqual('bbb', result.lifecycle_configuration.rules[0].filter.nots[1].prefix)
+        self.assertEqual('key4', result.lifecycle_configuration.rules[0].filter.nots[1].tag.key)
+        self.assertEqual('value4', result.lifecycle_configuration.rules[0].filter.nots[1].tag.value)
+
         self.assertEqual('0022012****', result.lifecycle_configuration.rules[0].id)
         self.assertEqual(datetime.datetime.fromtimestamp(1702743657, datetime.timezone.utc), result.lifecycle_configuration.rules[0].expiration.created_before_date)
         self.assertEqual('2023-12-16T16:20:57.000Z', result.lifecycle_configuration.rules[0].expiration.created_before_date.strftime('%Y-%m-%dT%H:%M:%S.000Z'))
@@ -926,6 +947,43 @@ class TestGetBucketLifecycle(unittest.TestCase):
         self.assertEqual('abc/not2/', result.lifecycle_configuration.rules[3].filter.filter_not[1].prefix)
         self.assertEqual('notkey2', result.lifecycle_configuration.rules[3].filter.filter_not[1].tag.key)
         self.assertEqual('notvalue2', result.lifecycle_configuration.rules[3].filter.filter_not[1].tag.value)
+
+        self.assertEqual('abc/not1/', result.lifecycle_configuration.rules[3].filter.nots[0].prefix)
+        self.assertEqual('notkey1', result.lifecycle_configuration.rules[3].filter.nots[0].tag.key)
+        self.assertEqual('notvalue1', result.lifecycle_configuration.rules[3].filter.nots[0].tag.value)
+        self.assertEqual('abc/not2/', result.lifecycle_configuration.rules[3].filter.nots[1].prefix)
+        self.assertEqual('notkey2', result.lifecycle_configuration.rules[3].filter.nots[1].tag.key)
+        self.assertEqual('notvalue2', result.lifecycle_configuration.rules[3].filter.nots[1].tag.value)
+
+    def test_filter_model(self):
+        m = model.LifecycleRuleFilter()
+        self.assertIsNone(m.nots)
+        self.assertIsNone(m.filter_not)
+
+        m = model.LifecycleRuleFilter(
+            nots=[model.LifecycleRuleNot(
+                prefix='aaa',
+                tag=model.Tag(
+                    key='key7',
+                    value='value7',
+                ),
+            )],
+            filter_not=[model.LifecycleRuleNot(
+                prefix='bbb',
+                tag=model.Tag(
+                    key='key7',
+                    value='value7',
+                ),
+            )],
+        )
+        self.assertIsNotNone(m.nots)
+        self.assertIsNotNone(m.filter_not)
+
+        self.assertEqual(1, len(m.nots))
+        self.assertEqual(1, len(m.filter_not))
+
+        self.assertEqual('aaa', m.nots[0].prefix)
+        self.assertEqual('aaa', m.filter_not[0].prefix)
 
 
 class TestDeleteBucketLifecycle(unittest.TestCase):
