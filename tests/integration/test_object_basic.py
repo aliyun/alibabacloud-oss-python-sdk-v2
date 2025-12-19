@@ -60,7 +60,7 @@ class TestObjectBasicV2(TestIntegration):
         result = self.client.put_object_acl(oss.PutObjectAclRequest(
             bucket=self.bucket_name,
             key=key,
-            object_acl=oss.ObjectACLType.PUBLICREAD
+            object_acl=oss.ObjectACLType.DEFAULT
         ))
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.PutObjectAclResult)
@@ -73,7 +73,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     def test_append_object_acl(self):
         data1 = b'hello'
@@ -83,7 +83,7 @@ class TestObjectBasicV2(TestIntegration):
             key=key,
             position=0,
             body=data1,
-            acl='public-read'
+            acl='private'
         ))
         self.assertIsNotNone(result)
         self.assertEqual(200, result.status_code)
@@ -96,7 +96,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('private', result.acl)
 
     def test_append_object_object_acl(self):
         data1 = b'hello'
@@ -106,7 +106,7 @@ class TestObjectBasicV2(TestIntegration):
             key=key,
             position=0,
             body=data1,
-            object_acl='public-read'
+            object_acl='private'
         ))
         self.assertIsNotNone(result)
         self.assertEqual(200, result.status_code)
@@ -119,7 +119,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('private', result.acl)
 
     def test_copy_object_acl(self):
         length = 123
@@ -139,7 +139,7 @@ class TestObjectBasicV2(TestIntegration):
             bucket=self.bucket_name,
             key=dst_key,
             source_key=key,
-            acl=oss.ObjectACLType.PUBLICREAD,
+            acl=oss.ObjectACLType.DEFAULT,
         ))
         self.assertIsNotNone(result)
         self.assertEqual(200, result.status_code)
@@ -151,7 +151,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     def test_copy_object_object_acl(self):
         length = 123
@@ -171,7 +171,7 @@ class TestObjectBasicV2(TestIntegration):
             bucket=self.bucket_name,
             key=dst_key,
             source_key=key,
-            object_acl=oss.ObjectACLType.PUBLICREAD,
+            object_acl=oss.ObjectACLType.DEFAULT,
         ))
         self.assertIsNotNone(result)
         self.assertEqual(200, result.status_code)
@@ -183,7 +183,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     def test_mutilpart_object_acl(self):
         length1 = 100*1024
@@ -224,7 +224,7 @@ class TestObjectBasicV2(TestIntegration):
                     oss.UploadPart(part_number=1, etag=presult1.etag),
                 ]
             ),
-            acl='public-read',
+            acl='private',
         ))
         self.assertIsNotNone(cresult)
         self.assertIsInstance(cresult, oss.CompleteMultipartUploadResult)
@@ -239,7 +239,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('private', result.acl)
 
     def test_mutilpart_object_object_acl(self):
         length1 = 100*1024
@@ -298,7 +298,7 @@ class TestObjectBasicV2(TestIntegration):
                     oss.UploadPart(part_number=2, etag=presult2.etag),                    
                 ]
             ),
-            object_acl='public-read',
+            object_acl='private',
         ))
         self.assertIsNotNone(cresult)
         self.assertIsInstance(cresult, oss.CompleteMultipartUploadResult)
@@ -315,7 +315,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('private', result.acl)
 
     def test_symlink_object_object_acl(self):
         length = 123
@@ -343,7 +343,7 @@ class TestObjectBasicV2(TestIntegration):
         result = self.client.put_symlink(oss.PutSymlinkRequest(
             bucket=self.bucket_name,
             key=sym_key,
-            acl='public-read',
+            acl='private',
             target=key,
         ))
         self.assertIsNotNone(result)
@@ -356,7 +356,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('private', result.acl)
 
     def test_symlink_object_object_acl(self):
         length = 123
@@ -384,7 +384,7 @@ class TestObjectBasicV2(TestIntegration):
         result = self.client.put_symlink(oss.PutSymlinkRequest(
             bucket=self.bucket_name,
             key=sym_key,
-            object_acl='public-read',
+            object_acl='default',
             symlink_target=key,
         ))
         self.assertIsNotNone(result)
@@ -397,7 +397,7 @@ class TestObjectBasicV2(TestIntegration):
         self.assertIsNotNone(result)
         self.assertIsInstance(result, oss.GetObjectAclResult)
         self.assertEqual(200, result.status_code)
-        self.assertEqual('public-read', result.acl)
+        self.assertEqual('default', result.acl)
 
     @unittest.skip("Skip seal_append_object test until environment supports it")
     def test_seal_append_object(self):

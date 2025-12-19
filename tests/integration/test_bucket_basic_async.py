@@ -78,6 +78,13 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        self.client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
+            bucket=bucket_name,
+            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                block_public_access=False
+            )
+        ))
+
         # get bucket acl
         result = await self.async_client.get_bucket_acl(oss.GetBucketAclRequest(
             bucket=bucket_name,
@@ -326,7 +333,7 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
 
         self.assertEqual('private', result.bucket_info.acl)
         self.assertEqual('Disabled', result.bucket_info.access_monitor)
-        self.assertEqual(False, result.bucket_info.block_public_access)
+        self.assertEqual(True, result.bucket_info.block_public_access)
         self.assertEqual('LRS', result.bucket_info.data_redundancy_type)
         self.assertEqual('Disabled', result.bucket_info.cross_region_replication)
         self.assertIsNotNone(result.bucket_info.resource_group_id)
