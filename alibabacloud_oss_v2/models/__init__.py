@@ -31,3 +31,4 @@ from .bucket_meta_query import *
 from .bucket_https_config import *
 from .cloud_box import *
 from .select_object import *
+from .bucket_overwrite_config import *
