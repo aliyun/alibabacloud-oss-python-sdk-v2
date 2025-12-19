@@ -2251,3 +2251,45 @@ class Client:
             CreateSelectObjectMetaResult: Response result for CreateSelectObjectMeta operation.
         """
         return operations.create_select_object_meta(self._client, request, **kwargs)
+
+
+    def put_bucket_overwrite_config(self, request: models.PutBucketOverwriteConfigRequest, **kwargs
+                                    ) -> models.PutBucketOverwriteConfigResult:
+        """
+        Call the PutBucketOverwriteConfig operation to configure overwrite protection for a bucket. This prevents specified objects from being overwritten.
+
+        Args:
+            request (PutBucketOverwriteConfigRequest): Request parameters for PutBucketOverwriteConfig operation.
+
+        Returns:
+            PutBucketOverwriteConfigResult: Response result for PutBucketOverwriteConfig operation.
+        """
+        return operations.put_bucket_overwrite_config(self._client, request, **kwargs)
+
+
+    def get_bucket_overwrite_config(self, request: models.GetBucketOverwriteConfigRequest, **kwargs
+                                    ) -> models.GetBucketOverwriteConfigResult:
+        """
+        Call the GetBucketOverwriteConfig operation to retrieve the overwrite configuration of a bucket.
+
+        Args:
+            request (GetBucketOverwriteConfigRequest): Request parameters for GetBucketOverwriteConfig operation.
+
+        Returns:
+            GetBucketOverwriteConfigResult: Response result for GetBucketOverwriteConfig operation.
+        """
+        return operations.get_bucket_overwrite_config(self._client, request, **kwargs)
+
+
+    def delete_bucket_overwrite_config(self, request: models.DeleteBucketOverwriteConfigRequest, **kwargs
+                                       ) -> models.DeleteBucketOverwriteConfigResult:
+        """
+        Delete overwrite configuration rule for the bucket.
+
+        Args:
+            request (DeleteBucketOverwriteConfigRequest): Request parameters for DeleteBucketOverwriteConfig operation.
+
+        Returns:
+            DeleteBucketOverwriteConfigResult: Response result for DeleteBucketOverwriteConfig operation.
+        """
+        return operations.delete_bucket_overwrite_config(self._client, request, **kwargs)
