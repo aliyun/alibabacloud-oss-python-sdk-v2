@@ -34,6 +34,31 @@ class TestPutBucketAccessMonitor(unittest.TestCase):
         self.assertEqual('bucket_name', request.bucket)
         self.assertEqual('Enabled', request.access_monitor_configuration.status)
 
+    def test_constructor_request_with_allow_copy(self):
+        # Test constructor with allow_copy parameter
+        request = model.PutBucketAccessMonitorRequest(
+            bucket='bucket_name',
+            access_monitor_configuration=model.AccessMonitorConfiguration(
+                status='Enabled',
+                allow_copy=True
+            ),
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('Enabled', request.access_monitor_configuration.status)
+        self.assertTrue(request.access_monitor_configuration.allow_copy)
+
+        # Test allow_copy with False value
+        request = model.PutBucketAccessMonitorRequest(
+            bucket='bucket_name',
+            access_monitor_configuration=model.AccessMonitorConfiguration(
+                status='Disabled',
+                allow_copy=False
+            ),
+        )
+        self.assertEqual('bucket_name', request.bucket)
+        self.assertEqual('Disabled', request.access_monitor_configuration.status)
+        self.assertFalse(request.access_monitor_configuration.allow_copy)
+
     def test_serialize_request(self):
         request = model.PutBucketAccessMonitorRequest(
             bucket='bucket_name',
@@ -133,6 +158,27 @@ class TestGetBucketAccessMonitor(unittest.TestCase):
         )
         self.assertEqual('Disabled', result.access_monitor_configuration.status)
 
+    def test_constructor_result_with_allow_copy(self):
+        # Test constructor with allow_copy parameter
+        result = model.GetBucketAccessMonitorResult(
+            access_monitor_configuration=model.AccessMonitorConfiguration(
+                status='Enabled',
+                allow_copy=True
+            ),
+        )
+        self.assertEqual('Enabled', result.access_monitor_configuration.status)
+        self.assertTrue(result.access_monitor_configuration.allow_copy)
+
+        # Test allow_copy with False value
+        result = model.GetBucketAccessMonitorResult(
+            access_monitor_configuration=model.AccessMonitorConfiguration(
+                status='Disabled',
+                allow_copy=False
+            ),
+        )
+        self.assertEqual('Disabled', result.access_monitor_configuration.status)
+        self.assertFalse(result.access_monitor_configuration.allow_copy)
+
     def test_deserialize_result(self):
         xml_data = r'''
         <AccessMonitorConfiguration>
@@ -160,3 +206,47 @@ class TestGetBucketAccessMonitor(unittest.TestCase):
         self.assertEqual('OK', result.status)
         self.assertEqual('Enabled', result.access_monitor_configuration.status)
 
+    def test_deserialize_result_with_allow_copy(self):
+        # Test deserialization with AllowCopy field in XML data
+        xml_data = r'''
+        <AccessMonitorConfiguration>
+          <Status>Enabled</Status>
+          <AllowCopy>true</AllowCopy>
+        </AccessMonitorConfiguration>
+        '''
+
+        result = model.GetBucketAccessMonitorResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=xml_data,
+            )
+        )
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('OK', result.status)
+        self.assertEqual('Enabled', result.access_monitor_configuration.status)
+        self.assertTrue(result.access_monitor_configuration.allow_copy)
+
+        # Test allow_copy with False value
+        xml_data = r'''
+        <AccessMonitorConfiguration>
+          <Status>Disabled</Status>
+          <AllowCopy>false</AllowCopy>
+        </AccessMonitorConfiguration>
+        '''
+
+        result = model.GetBucketAccessMonitorResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=xml_data,
+            )
+        )
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('OK', result.status)
+        self.assertEqual('Disabled', result.access_monitor_configuration.status)
+        self.assertFalse(result.access_monitor_configuration.allow_copy)
