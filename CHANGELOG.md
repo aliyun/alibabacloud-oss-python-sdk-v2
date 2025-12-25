@@ -1,5 +1,14 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.2.2 日期：2025-12-25
+### 变更内容
+- Feature: Add bucket overwrite config api
+- Feature: Add select object api
+- Feature: Add seal append object api
+- Update: Bucket https configuration supports more parameters
+- Update：Normalize parameter naming
+- Fix: The XML name is incorrect in AccessPointVpoConfiguration
+
 ## 版本号：1.2.1 日期：2025-11-07
 ### 变更内容
 - Update：Routing rule supports more parameters
