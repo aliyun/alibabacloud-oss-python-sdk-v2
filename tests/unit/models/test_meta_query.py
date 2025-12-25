@@ -1,5 +1,5 @@
 # pylint: skip-file
-
+import html
 import unittest
 from alibabacloud_oss_v2 import serde
 from alibabacloud_oss_v2.models import bucket_meta_query as model
@@ -20,6 +20,52 @@ class TestOpenMetaQuery(unittest.TestCase):
             bucket='bucketexampletest',
         )
         self.assertEqual('bucketexampletest', request.bucket)
+
+    def test_constructor_request_with_role_and_meta_query(self):
+        xml_str = '<MetaQuery><WorkflowParameters><WorkflowParameter><Name>VideoInsightEnable</Name><Value>True</Value></WorkflowParameter><WorkflowParameter><Name>ImageInsightEnable</Name><Value>True</Value></WorkflowParameter></WorkflowParameters><Filters><Filter>Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z</Filter><Filter>Filename prefix (YWEvYmIv)</Filter></Filters></MetaQuery>'
+
+        request = model.OpenMetaQueryRequest(
+            bucket='bucketexampletest',
+            mode='semantic',
+            role='OSSServiceRole',
+            meta_query=model.MetaQueryOpenRequest(
+                workflow_parameters=model.WorkflowParameters(
+                    workflow_parameters=[
+                        model.WorkflowParameter(name='VideoInsightEnable', value='True'),
+                        model.WorkflowParameter(name='ImageInsightEnable', value='True')
+                    ]
+                ),
+                filters=model.Filters(
+                    filters=[
+                        'Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z',
+                        'Filename prefix (YWEvYmIv)'
+                    ]
+                )
+            )
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='OpenMetaQuery',
+            method='POST',
+            bucket=request.bucket,
+        ))
+
+        self.assertEqual('OpenMetaQuery', op_input.op_name)
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
+        self.assertEqual('semantic', op_input.parameters.get('mode'))
+        self.assertEqual('OSSServiceRole', op_input.parameters.get('role'))
+        self.assertEqual(xml_str, html.unescape(op_input.body.decode()))
+
+        self.assertEqual('bucketexampletest', request.bucket)
+        self.assertEqual('semantic', request.mode)
+        self.assertEqual('OSSServiceRole', request.role)
+        self.assertEqual('VideoInsightEnable', request.meta_query.workflow_parameters.workflow_parameters[0].name)
+        self.assertEqual('True', request.meta_query.workflow_parameters.workflow_parameters[0].value)
+        self.assertEqual('ImageInsightEnable', request.meta_query.workflow_parameters.workflow_parameters[1].name)
+        self.assertEqual('True', request.meta_query.workflow_parameters.workflow_parameters[1].value)
+        self.assertEqual('Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z', request.meta_query.filters.filters[0])
+        self.assertEqual('Filename prefix (YWEvYmIv)', request.meta_query.filters.filters[1])
 
     def test_serialize_request(self):
         request = model.OpenMetaQueryRequest(
@@ -149,6 +195,55 @@ class TestGetMetaQueryStatus(unittest.TestCase):
         self.assertEqual('2024-09-11T10:49:17.289372919+08:00', result.meta_query_status.update_time)
         self.assertEqual('basic', result.meta_query_status.meta_query_mode)
 
+    def test_deserialize_result_with_new_fields(self):
+        # Test deserializing GetMetaQueryStatusResult with new fields: Role, Filters, WorkflowParameters
+        xml_data = r'''
+        <MetaQueryStatus>
+          <State>Ready</State>
+          <Phase></Phase>
+          <MetaQueryMode>semantic</MetaQueryMode>
+          <CreateTime>2025-12-09T16:26:12.001503674+08:00</CreateTime>
+          <UpdateTime>2025-12-09T16:26:12.001503674+08:00</UpdateTime>
+          <Role>OSSServiceRole</Role>
+          <Filters>
+            <Filter>Size &gt; 1024, FileModifiedTime &gt; 2025-06-03T09:20:47.999Z</Filter>
+            <Filter>Filename prefix (YWEvYmIv)</Filter>
+          </Filters>
+          <WorkflowParameters>
+            <WorkflowParameter>
+              <Name>VideoInsightEnable</Name>
+              <Value>True</Value>
+            </WorkflowParameter>
+            <WorkflowParameter>
+              <Name>ImageInsightEnable</Name>
+              <Value>True</Value>
+            </WorkflowParameter>
+          </WorkflowParameters>
+        </MetaQueryStatus>
+        '''
+
+        result = model.GetMetaQueryStatusResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=xml_data,
+            )
+        )
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('OK', result.status)
+        self.assertEqual('Ready', result.meta_query_status.state)
+        self.assertEqual('2025-12-09T16:26:12.001503674+08:00', result.meta_query_status.create_time)
+        self.assertEqual('2025-12-09T16:26:12.001503674+08:00', result.meta_query_status.update_time)
+        self.assertEqual('semantic', result.meta_query_status.meta_query_mode)
+        self.assertEqual('OSSServiceRole', result.meta_query_status.role)
+        self.assertEqual('Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z', result.meta_query_status.filters.filters[0])
+        self.assertEqual('Filename prefix (YWEvYmIv)', result.meta_query_status.filters.filters[1])
+        self.assertEqual('VideoInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[0].name)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[0].value)
+        self.assertEqual('ImageInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[1].name)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[1].value)
 
 
 class TestCloseMetaQuery(unittest.TestCase):

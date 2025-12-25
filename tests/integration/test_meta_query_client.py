@@ -40,8 +40,8 @@ class TestOpenMetaQuery(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual('Ready', result.meta_query_status.state)
-        self.assertIsNotNone('2024-09-11T10:49:17.289372919+08:00')
-        self.assertIsNotNone('2024-09-11T10:49:17.289372919+08:00')
+        self.assertIsNotNone(result.meta_query_status.create_time)
+        self.assertIsNotNone(result.meta_query_status.update_time)
         self.assertEqual('basic', result.meta_query_status.meta_query_mode)
 
         # do meta query
@@ -148,6 +148,72 @@ class TestOpenMetaQuery(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+    def test_open_meta_query_and_get_meta_query_status_with_workflow_parameters_and_filters(self):
+        # create bucket
+        bucket_name = random_bucket_name()
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # open meta query with workflow parameters and filters
+        result = self.client.open_meta_query(oss.OpenMetaQueryRequest(
+            bucket=bucket_name,
+            mode='semantic',
+            role='OSSServiceRole',
+            meta_query=oss.MetaQueryOpenRequest(
+                workflow_parameters=oss.WorkflowParameters(
+                    workflow_parameters=[
+                        oss.WorkflowParameter(name='VideoInsightEnable', value='True'),
+                        oss.WorkflowParameter(name='ImageInsightEnable', value='True')
+                    ]
+                ),
+                filters=oss.Filters(
+                    filters=[
+                        'Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z',
+                        'Filename prefix (YWEvYmIv)'
+                    ]
+                )
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # get meta query status with new fields
+        result = self.client.get_meta_query_status(oss.GetMetaQueryStatusRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        self.assertEqual('Ready', result.meta_query_status.state)
+        self.assertIsNotNone(result.meta_query_status.create_time)
+        self.assertIsNotNone(result.meta_query_status.update_time)
+        self.assertEqual('semantic', result.meta_query_status.meta_query_mode)
+        # Check new fields
+        # self.assertEqual('OSSServiceRole', result.meta_query_status.role)
+        self.assertIsNotNone(result.meta_query_status.filters)
+        self.assertEqual(2, len(result.meta_query_status.filters.filters))
+        self.assertIn('Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z', result.meta_query_status.filters.filters)
+        self.assertIn('Filename prefix (YWEvYmIv)', result.meta_query_status.filters.filters)
+        self.assertIsNotNone(result.meta_query_status.workflow_parameters)
+        self.assertEqual(2, len(result.meta_query_status.workflow_parameters.workflow_parameters))
+        self.assertEqual('VideoInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[0].name)
+        self.assertEqual('ImageInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[1].name)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[0].value)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[1].value)
+
 
     def test_open_meta_query_v1(self):
         # create bucket
@@ -289,6 +355,71 @@ class TestOpenMetaQuery(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+    def test_open_meta_query_and_get_meta_query_status_with_workflow_parameters_and_filters_v1(self):
+        # create bucket
+        bucket_name = random_bucket_name()
+        result = self.signv1_client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # open meta query with workflow parameters and filters
+        result = self.signv1_client.open_meta_query(oss.OpenMetaQueryRequest(
+            bucket=bucket_name,
+            mode='semantic',
+            role='OSSServiceRole',
+            meta_query=oss.MetaQueryOpenRequest(
+                workflow_parameters=oss.WorkflowParameters(
+                    workflow_parameters=[
+                        oss.WorkflowParameter(name='VideoInsightEnable', value='True'),
+                        oss.WorkflowParameter(name='ImageInsightEnable', value='True')
+                    ]
+                ),
+                filters=oss.Filters(
+                    filters=[
+                        'Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z',
+                        'Filename prefix (YWEvYmIv)'
+                    ]
+                )
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # get meta query status with new fields
+        result = self.signv1_client.get_meta_query_status(oss.GetMetaQueryStatusRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        self.assertEqual('Ready', result.meta_query_status.state)
+        self.assertIsNotNone(result.meta_query_status.create_time)
+        self.assertIsNotNone(result.meta_query_status.update_time)
+        self.assertEqual('semantic', result.meta_query_status.meta_query_mode)
+        # Check new fields
+        # self.assertEqual('OSSServiceRole', result.meta_query_status.role)
+        self.assertIsNotNone(result.meta_query_status.filters)
+        self.assertEqual(2, len(result.meta_query_status.filters.filters))
+        self.assertIn('Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z', result.meta_query_status.filters.filters)
+        self.assertIn('Filename prefix (YWEvYmIv)', result.meta_query_status.filters.filters)
+        self.assertIsNotNone(result.meta_query_status.workflow_parameters)
+        self.assertEqual(2, len(result.meta_query_status.workflow_parameters.workflow_parameters))
+        self.assertEqual('VideoInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[0].name)
+        self.assertEqual('ImageInsightEnable', result.meta_query_status.workflow_parameters.workflow_parameters[1].name)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[0].value)
+        self.assertEqual('True', result.meta_query_status.workflow_parameters.workflow_parameters[1].value)
 
     def test_open_meta_query_fail(self):
         # create bucket
@@ -455,3 +586,58 @@ class TestOpenMetaQuery(TestIntegration):
             self.assertEqual(403, serr.status_code)
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('InvalidAccessKeyId', serr.code)
+
+    def test_open_meta_query_with_workflow_parameters_and_filters_fail(self):
+        # create bucket
+        bucket_name = random_bucket_name()
+        self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
+            )
+        ))
+
+        try:
+            self.invalid_client.open_meta_query(oss.OpenMetaQueryRequest(
+                bucket=bucket_name,
+                mode='semantic',
+                role='OSSServiceRole',
+                meta_query=oss.MetaQueryOpenRequest(
+                    workflow_parameters=oss.WorkflowParameters(
+                        workflow_parameters=[
+                            oss.WorkflowParameter(name='VideoInsightEnable', value='True'),
+                            oss.WorkflowParameter(name='ImageInsightEnable', value='True')
+                        ]
+                    ),
+                    filters=oss.Filters(
+                        filters=[
+                            'Size > 1024, FileModifiedTime > 2025-06-03T09:20:47.999Z',
+                            'Filename prefix (YWEvYmIv)'
+                        ]
+                    )
+                )
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+
+        try:
+            self.invalid_client.get_meta_query_status(oss.GetMetaQueryStatusRequest(
+                bucket=bucket_name,
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+
+
