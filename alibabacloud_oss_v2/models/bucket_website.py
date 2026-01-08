@@ -172,7 +172,7 @@ class MirrorAuth(serde.Model):
 
 class RoutingRuleCondition(serde.Model):
     """
-    The matching condition. If all of the specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition.  This parameter must be specified if RoutingRule is specified.
+    The matching condition. If all of specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition. This parameter must be specified if RoutingRule is specified.
     """
 
     _attribute_map = {
@@ -200,9 +200,9 @@ class RoutingRuleCondition(serde.Model):
     ) -> None:
         """
         Args:
-            key_suffix_equals (str, optional): 只有匹配此后缀的Object才能匹配此规则。
+            key_suffix_equals (str, optional): The suffix of object names. Only objects whose names match the specified suffix can match the rule.
             http_error_code_returned_equals (int, optional): The HTTP status code. The rule is matched only when the specified object is accessed and the specified HTTP status code is returned. If the redirection rule is the mirroring-based back-to-origin rule, the value of this parameter is 404.
-            include_headers (List[IncludeHeader], optional): 只有请求中包含了指定Header且值为指定值时，才能匹配此规则。该容器最多可指定10个。
+            include_headers (List[IncludeHeader], optional): The headers that the request must contain with specified values to match the rule. Up to 10 headers can be specified in this container.
             key_prefix_equals (str, optional): The prefix of object names. Only objects whose names contain the specified prefix match the rule.
         """
         super().__init__(**kwargs)
@@ -305,7 +305,7 @@ class MirrorTaggings(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        taggings (List[MirrorTagging], optional): The rule list for setting tags.
+        taggings (List[MirrorTagging], optional): The rules list for setting tags.
         """
         super().__init__(**kwargs)
         self.taggings = taggings
@@ -427,7 +427,7 @@ class MirrorReturnHeaders(serde.Model):
         **kwargs: Any
     ) -> None:
         """
-        return_headers (List[ReturnHeader], optional): The rule list for setting response headers in mirror-based back-to-origin.
+        return_headers (List[ReturnHeader], optional): The rules list for setting response headers in mirror-based back-to-origin.
         """
         super().__init__(**kwargs)
         self.return_headers = return_headers
@@ -539,7 +539,7 @@ class RoutingRuleRedirect(serde.Model):
             pass_query_string (bool, optional): Specifies whether to include parameters of the original request in the redirection request when the system runs the redirection rule or mirroring-based back-to-origin rule. For example, if the **PassQueryString** parameter is set to true, the `?a=b&c=d` parameter string is included in a request sent to OSS, and the redirection mode is 302, this parameter is added to the Location header. For example, if the request is `Location:example.com?a=b&c=d` and the redirection type is mirroring-based back-to-origin, the ?a=b&c=d parameter string is also included in the back-to-origin request. Valid values: true and false (default).
             mirror_headers (MirrorHeaders, optional): The headers contained in the response that is returned when you use mirroring-based back-to-origin. This parameter takes effect only when the value of RedirectType is Mirror.
             http_redirect_code (int, optional): The HTTP redirect code in the response. This parameter takes effect only when RedirectType is set to External or AliCDN. Valid values: 301, 302, and 307.
-            mirror_sni (bool, optional): 是否透传SNI
+            mirror_sni (bool, optional): Whether to pass through SNI in mirror-based back-to-origin.
             protocol (str, optional): The protocol used for redirection. This parameter takes effect only when RedirectType is set to External or AliCDN. For example, if you access an object named test, Protocol is set to https, and Hostname is set to `example.com`, the value of the Location header is `https://example.com/test`. Valid values: **http** and **https**.
             replace_key_prefix_with (str, optional): The string that is used to replace the prefix of the object name during redirection. If the prefix of an object name is empty, the string precedes the object name.  You can specify only one of the ReplaceKeyWith and ReplaceKeyPrefixWith parameters in a rule. For example, if you access an object named abc/test.txt, KeyPrefixEquals is set to abc/, ReplaceKeyPrefixWith is set to def/, the value of the Location header is `http://example.com/def/test.txt`.
             redirect_type (str, optional): The redirection type. Valid values:*   **Mirror**: mirroring-based back-to-origin.*   **External**: external redirection. OSS returns an HTTP 3xx status code and returns an address for you to redirect to.*   **AliCDN**: redirection based on Alibaba Cloud CDN. Compared with external redirection, OSS adds an additional header to the request. After Alibaba Cloud CDN identifies the header, Alibaba Cloud CDN redirects the access to the specified address and returns the obtained data instead of the HTTP 3xx status code that redirects the access to another address.  This parameter must be specified if Redirect is specified.
@@ -683,7 +683,7 @@ class RoutingRule(serde.Model):
         """
         Args:
             rule_number (int, optional): The sequence number that is used to match and run the redirection rules. OSS matches redirection rules based on this parameter. If a match succeeds, only the rule is run and the subsequent rules are not run.  This parameter must be specified if RoutingRule is specified.
-            condition (RoutingRuleCondition, optional): The matching condition. If all of the specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition.  This parameter must be specified if RoutingRule is specified.
+            condition (RoutingRuleCondition, optional): The matching condition. If all the specified conditions are met, the rule is run. A rule is considered matched only when the rule meets the conditions that are specified by all nodes in Condition.  This parameter must be specified if RoutingRule is specified.
             redirect (RoutingRuleRedirect, optional): The operation to perform after the rule is matched.  This parameter must be specified if RoutingRule is specified.
             lua_config (RoutingRuleLuaConfig, optional): The Lua script config of this rule.
         """

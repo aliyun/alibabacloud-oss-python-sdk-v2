@@ -70,7 +70,7 @@ class ListCloudBoxesRequest(serde.RequestModel):
         """
         Args:
             marker (str, optional): The name of the bucket from which the list operation begins.
-            max_keys (int, optional): The maximum number of buckets that can be returned in the single query. Valid values: 1 to 1000.
+            max_keys (int, optional): The maximum number of buckets that can be returned per single query. Valid values: 1 to 1000.
             prefix (str, optional): The prefix that the names of returned buckets must contain.
         """
         super().__init__(**kwargs)
@@ -118,8 +118,8 @@ class ListCloudBoxesResult(serde.ResultModel):
         Args:
             prefix (str, optional): The prefix that the names of returned buckets must contain.
             marker (str, optional): The name of the bucket from which the list operation begins.
-            max_keys (int, optional): The maximum number of buckets that can be returned in the single query. Valid values: 1 to 1000.
-            is_truncated (str, bool): Indicates whether the returned list is truncated. Valid values: * true: indicates that not all results are returned. * false: indicates that all results are returned.
+            max_keys (int, optional): The maximum number of buckets that can be returned per single query. Valid values: 1 to 1000.
+            is_truncated (bool, optional): Indicates whether the returned list is truncated. Valid values: * true: indicates that not all results are returned. * false: indicates that all results are returned.
             next_marker (str, optional): The marker for the next ListBuckets request, which can be used to return the remaining results.
             owner (Owner, optional): The container that stores information about the object owner.
             cloud_boxes ([CloudBoxProperties], optional): The container that stores information about cloud box bucket.
