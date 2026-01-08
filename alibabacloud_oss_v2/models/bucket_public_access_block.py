@@ -23,7 +23,7 @@ class PublicAccessBlockConfiguration(serde.Model):
     ) -> None:
         """
         Args:
-            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
+            block_public_access (bool, optional): Specifies whether to enable Block Public Access. true: enables Block Public Access. false (default): disables Block Public Access.
         """
         super().__init__(**kwargs)
         self.block_public_access = block_public_access

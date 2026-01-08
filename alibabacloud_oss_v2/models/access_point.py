@@ -56,7 +56,11 @@ class CreateAccessPointConfiguration(serde.Model):
     ) -> None:
         """
         Args:
-            access_point_name (str, optional): The name of the access point. The name of the access point must meet the following naming rules:*   The name must be unique in a region of your Alibaba Cloud account.*   The name cannot end with -ossalias.*   The name can contain only lowercase letters, digits, and hyphens (-). It cannot start or end with a hyphen (-).*   The name must be 3 to 19 characters in length.
+            access_point_name (str, optional): The name of the access point. The name of the access point must meet the following naming rules:
+                *   The name must be unique in a region of your Alibaba Cloud account.
+                *   The name cannot end with -ossalias.
+                *   The name can contain only lowercase letters, digits, and hyphens (-). It cannot start or end with a hyphen (-).
+                *   The name must be 3 to 19 characters in length.
             network_origin (str, optional): The network origin of the access point.
             vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
         """
@@ -145,7 +149,7 @@ class Endpoints(serde.Model):
         """
         Args:
             public_endpoint (str, optional): The public endpoint of the access point.
-            internal_endpoint (str, optional): 接入点的内网Endpoint。
+            internal_endpoint (str, optional): The internal endpoint of the access point.
         """
         super().__init__(**kwargs)
         self.public_endpoint = public_endpoint
@@ -172,7 +176,7 @@ class PublicAccessBlockConfiguration(serde.Model):
     ) -> None:
         """
         Args:
-            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access.false (default): disables Block Public Access.
+            block_public_access (bool, optional): Specifies whether to enable Block Public Access.true: enables Block Public Access. false (default): disables Block Public Access.
         """
         super().__init__(**kwargs)
         self.block_public_access = block_public_access
@@ -254,11 +258,11 @@ class GetAccessPointResult(serde.ResultModel):
             network_origin (str, optional): The network origin of the access point. Valid values: vpc and internet. vpc: You can only use the specified VPC ID to access the access point. internet: You can use public endpoints and internal endpoints to access the access point.
             access_point_arn (str, optional): The ARN of the access point.
             status (str, optional): The status of the access point.
-            creation_date (str, optional): 接入点创建时间。
+            creation_date (str, optional): The creation time of the access point.
             access_point_name (str, optional): The name of the access point.
             bucket (str, optional): The name of the bucket for which the access point is configured.
             endpoints (Endpoints, optional): The container that stores the network origin information about the access point.
-            public_access_block_configuration (PublicAccessBlockConfiguration, optional): 保存接入点阻止公共访问的配置
+            public_access_block_configuration (PublicAccessBlockConfiguration, optional): The configuration for blocking public access of the access point.
             vpc_configuration (AccessPointVpcConfiguration, optional): The container that stores the information about the VPC.
             alias (str, optional): The alias of the access point.
         """

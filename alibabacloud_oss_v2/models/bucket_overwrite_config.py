@@ -76,7 +76,7 @@ class OverwriteRule(serde.Model):
 
 class OverwriteConfiguration(serde.Model):
     """
-    The structure for the overwrite protection configuration.
+    The container that stores the overwrite-protection configuration.
     """
 
     _attribute_map = { 

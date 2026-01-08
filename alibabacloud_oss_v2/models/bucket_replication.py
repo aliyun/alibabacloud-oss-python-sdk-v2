@@ -819,7 +819,7 @@ class GetBucketReplicationProgressRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, required): The name of the bucekt.
+            bucket (str, required): The name of the bucket.
             rule_id (str, required): The ID of the data replication rule. You can call the GetBucketReplication operation to query the ID.
         """
         super().__init__(**kwargs)

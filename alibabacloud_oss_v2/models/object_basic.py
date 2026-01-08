@@ -2435,7 +2435,7 @@ class ListPartsResult(serde.ResultModel):
                 The encrypted data key is a string encrypted by a customer master key and encoded in Base64.
                 Only available in client-side encryption.
             client_encryption_start (str, optional): The initial value that is randomly generated for data encryption.
-                The initial value is is a string encrypted by a customer master key and encoded in Base64.
+                The initial value is a string encrypted by a customer master key and encoded in Base64.
                 Only available in client-side encryption.
             client_encryption_cek_alg (str, optional): The algorithm used to encrypt data.
                 Only available in client-side encryption.
@@ -2501,7 +2501,7 @@ class PutSymlinkRequest(serde.RequestModel):
             target (str, required): The destination object to which the symbolic link points.
             acl (str, optional): The access control list (ACL) of the object.
             storage_class (str, optional): The storage class of the object.
-            metadata (MutableMapping,The metadata of the object that you want to upload.
+            metadata (MutableMapping, optional): The metadata of the object that you want to upload.
             forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
@@ -2907,8 +2907,8 @@ class ProcessObjectResult(serde.ResultModel):
         """
         Args:
             bucket (str, optional): The name of the bucket.
-            file_size (str, optional): The size of the proessed object.
-            key (str, optional): The name of the proessed object.
+            file_size (int, optional): The size of the processed object.
+            key (str, optional): The name of the processed object.
             process_status (str, optional): The status.
         """
         super().__init__(**kwargs)
