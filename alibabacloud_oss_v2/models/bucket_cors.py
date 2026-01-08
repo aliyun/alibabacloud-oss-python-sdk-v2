@@ -248,11 +248,11 @@ class OptionObjectResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            access_control_allow_origin (str, optional): <no value>
-            access_control_allow_methods (str, optional): <no value>
-            access_control_allow_headers (str, optional): <no value>
-            access_control_expose_headers (str, optional): <no value>
-            access_control_max_age (int, optional): <no value>
+            access_control_allow_origin (str, optional): The value of the Access-Control-Allow-Origin response header, which indicates whether the response can be shared with resources from the specified origin.
+            access_control_allow_methods (str, optional): The value of the Access-Control-Allow-Methods response header, which specifies the method or methods allowed when accessing the resource in response to a preflight request.
+            access_control_allow_headers (str, optional): The value of the Access-Control-Allow-Headers response header, which indicates which headers can be used during the actual request.
+            access_control_expose_headers (str, optional): The value of the Access-Control-Expose-Headers response header, which indicates which headers are safe to expose to the API of a CORS API specification.
+            access_control_max_age (int, optional): The value of the Access-Control-Max-Age response header, which indicates how long the results of a preflight request can be cached.
         """
         super().__init__(**kwargs)
         self.access_control_allow_origin = access_control_allow_origin

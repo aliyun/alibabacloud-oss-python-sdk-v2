@@ -114,7 +114,7 @@ class CreateBucketDataRedundancyTransitionRequest(serde.RequestModel):
         """
         Args:
             bucket (str, required): The name of the bucket.
-            target_redundancy_type (str, required): The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of a bucket from LRS to ZRS.
+            target_redundancy_type (str, required): The redundancy type to which you want to convert the bucket. You can only convert the redundancy type of bucket from LRS to ZRS.
         """
         super().__init__(**kwargs)
         self.bucket = bucket

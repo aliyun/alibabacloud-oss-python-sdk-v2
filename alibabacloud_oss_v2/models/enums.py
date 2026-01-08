@@ -39,25 +39,25 @@ class StorageClassType(str, Enum):
     IA = 'IA'
     """
     IA provides highly durable storage at lower prices compared with Standard.
-	It has a minimum billable size of 64 KB and a minimum billable storage duration of 30 days.    
+    It has a minimum billable size of 64 KB and a minimum billable storage duration of 30 days.    
     """
 
     ARCHIVE = 'Archive'
     """
     Archive provides high-durability storage at lower prices compared with Standard and IA.
-	It has a minimum billable size of 64 KB and a minimum billable storage duration of 60 days.
+    It has a minimum billable size of 64 KB and a minimum billable storage duration of 60 days.
     """
 
     COLDARCHIVE = 'ColdArchive'
     """
     Cold Archive provides highly durable storage at lower prices compared with Archive.
-	It has a minimum billable size of 64 KB and a minimum billable storage duration of 180 days.    
+    It has a minimum billable size of 64 KB and a minimum billable storage duration of 180 days.    
     """
 
     DEEPCOLDARCHIVE = 'DeepColdArchive'
     """
     Deep Cold Archive provides highly durable storage at lower prices compared with Cold Archive.
-	It has a minimum billable size of 64 KB and a minimum billable storage duration of 180 days.    
+    It has a minimum billable size of 64 KB and a minimum billable storage duration of 180 days.    
     """
 
 

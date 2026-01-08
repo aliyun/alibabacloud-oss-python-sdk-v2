@@ -120,7 +120,7 @@ class Owner(serde.Model):
         """
         Args:
             id (str, optional): The ID of the bucket owner.
-            display_name (str, optional): The name of the object owner..
+            display_name (str, optional): The name of the object owner.
         """
         super().__init__(**kwargs)
         self.id = id
@@ -557,7 +557,7 @@ class ListObjectsV2Result(serde.ResultModel):
             start_after (str, optional): If the StartAfter parameter is specified in the request,
                 the StartAfter element will be included in the returned response.
             key_count (int, optional): The number of keys returned in this request. If a delimiter is specified,
-                KeyCount is the sum of the elements of Key and Commonprefixes.
+                KeyCount is the sum of the elements of Keys and CommonPrefixes.
         """
         super().__init__(**kwargs)
         self.name = name

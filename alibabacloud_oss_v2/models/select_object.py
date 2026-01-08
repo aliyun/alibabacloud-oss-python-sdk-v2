@@ -61,10 +61,10 @@ class CSVOutput(serde.Model):
         Args:
             record_delimiter (str, optional): A Base64-encoded line feed. The value of this parameter is up to two ANSI characters in length before encoding. For example, `` is used to represent a line feed in Java.Default value: ``
             field_delimiter (str, optional): The delimiter that you want to use to separate values in the CSV object. The value of this parameter must be Base64-encoded. The value of this parameter is an ANSI character before encoding. For example, a comma (`,`) is used to indicate a comma in Java.Default value: `,`
-            quote_character (str, Optional): Specify the quotation mark characters for CSV in Base64 encoding.
-                The default value is \ "(optional). Line breaks and column separators within quotation marks in CSV will be treated as regular characters.
+            quote_character (str, optional): Specify the quotation mark characters for CSV in Base64 encoding.
+                The default value is \" (optional). Line breaks and column separators within quotation marks in CSV will be treated as regular characters.
                 The value before encoding must be one character, represented by the ANSI value of the character,
-                for example, using '\' to indicate quotation marks in Java.            
+                for example, using '\"' to indicate quotation marks in Java.
         """
         super().__init__(**kwargs)
         self.record_delimiter = record_delimiter
