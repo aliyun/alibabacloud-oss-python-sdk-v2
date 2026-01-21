@@ -352,6 +352,16 @@ class TestDoMetaQuery(unittest.TestCase):
                     object_acl='default',
                     oss_crc64='4858A48BD1466884',
                     server_side_encryption_customer_algorithm='SM4',
+                    insights=model.MetaQueryRespFileInsights(
+                        video=model.MetaQueryRespFileInsightsVideo(
+                            caption='Holding shampoo',
+                            description='The video shows two different scenes: one with a stationary white plate, black bottle, and transparent glass, and another of a hand holding a shampoo bottle labeled "YEZOLU" moving slowly upward in the bathroom',
+                        ),
+                        image=model.MetaQueryRespFileInsightsImage(
+                            caption='A person standing',
+                            description='The image contains a person wearing a dark suit jacket with a white shirt underneath. The background is a gradient from light blue to gray.',
+                        ),
+                    ),
                 ),
             ),
             aggregations=model.MetaQueryAggregations(
@@ -384,6 +394,10 @@ class TestDoMetaQuery(unittest.TestCase):
         self.assertEqual('default', result.files.file.object_acl)
         self.assertEqual('4858A48BD1466884', result.files.file.oss_crc64)
         self.assertEqual('SM4', result.files.file.server_side_encryption_customer_algorithm)
+        self.assertEqual('Holding shampoo', result.files.file.insights.video.caption)
+        self.assertEqual('The video shows two different scenes: one with a stationary white plate, black bottle, and transparent glass, and another of a hand holding a shampoo bottle labeled "YEZOLU" moving slowly upward in the bathroom', result.files.file.insights.video.description)
+        self.assertEqual('A person standing', result.files.file.insights.image.caption)
+        self.assertEqual('The image contains a person wearing a dark suit jacket with a white shirt underneath. The background is a gradient from light blue to gray.', result.files.file.insights.image.description)
         self.assertEqual('Size', result.aggregations.aggregations[0].field)
         self.assertEqual('sum', result.aggregations.aggregations[0].operation)
         self.assertEqual('Size', result.aggregations.aggregations[1].field)
@@ -1238,6 +1252,16 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
                   <Value>val</Value>
                 </UserMeta>
               </OSSUserMeta>
+              <Insights>
+                <Video>
+                  <Caption>Holding shampoo</Caption>
+                  <Description>The video shows two different scenes: one with a stationary white plate, black bottle, and transparent glass, and another of a hand holding a shampoo bottle labeled "YEZOLU" moving slowly upward in the bathroom</Description>
+                </Video>
+                <Image>
+                  <Caption>A person standing</Caption>
+                  <Description>The image contains a person wearing a dark suit jacket with a white shirt underneath. The background is a gradient from light blue to gray.</Description>
+                </Image>
+              </Insights>
             </File>
             <File>
                   <AlbumArtist>Jenny</AlbumArtist>
@@ -1356,6 +1380,10 @@ class TestDoMetaQueryWithSemantic(unittest.TestCase):
         self.assertEqual('val2', result.files.file[0].oss_tagging.taggings[1].value)
         self.assertEqual('key', result.files.file[0].oss_user_meta.user_metas[0].key)
         self.assertEqual('val', result.files.file[0].oss_user_meta.user_metas[0].value)
+        self.assertEqual('Holding shampoo', result.files.file[0].insights.video.caption)
+        self.assertEqual('The video shows two different scenes: one with a stationary white plate, black bottle, and transparent glass, and another of a hand holding a shampoo bottle labeled "YEZOLU" moving slowly upward in the bathroom', result.files.file[0].insights.video.description)
+        self.assertEqual('A person standing', result.files.file[0].insights.image.caption)
+        self.assertEqual('The image contains a person wearing a dark suit jacket with a white shirt underneath. The background is a gradient from light blue to gray.', result.files.file[0].insights.image.description)
         self.assertEqual('Jenny', result.files.file[1].album_artist)
         self.assertEqual('Jane', result.files.file[1].composer)
         self.assertEqual('Jane', result.files.file[1].performer)
