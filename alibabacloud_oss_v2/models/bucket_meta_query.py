@@ -595,6 +595,102 @@ class MetaQueryAggregations(serde.Model):
         super().__init__(**kwargs)
         self.aggregations = aggregations
 
+
+class MetaQueryRespFileInsightsImage(serde.Model):
+    """
+    Image file description information.
+    """
+
+    _attribute_map = {
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'str'},
+        'description': {'tag': 'xml', 'rename': 'Description', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'MetaQueryRespFileInsightsImage'
+    }
+
+    def __init__(
+            self,
+            caption: Optional[str] = None,
+            description: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            caption (str, optional): Brief description information.
+            description (str, optional): Detailed description information.
+        """
+        super().__init__(**kwargs)
+        self.caption = caption
+        self.description = description
+
+
+class MetaQueryRespFileInsightsVideo(serde.Model):
+    """
+    Description information for video files.
+    """
+
+    _attribute_map = {
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'str'},
+        'description': {'tag': 'xml', 'rename': 'Description', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'MetaQueryRespFileInsightsVideo'
+    }
+
+    def __init__(
+            self,
+            caption: Optional[str] = None,
+            description: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            caption (str, optional): Brief description information.
+            description (str, optional): Detailed description information.
+        """
+        super().__init__(**kwargs)
+        self.caption = caption
+        self.description = description
+
+
+class MetaQueryRespFileInsights(serde.Model):
+    """
+    Container for video and image description information.
+    """
+
+    _attribute_map = {
+        'video': {'tag': 'xml', 'rename': 'Video', 'type': 'MetaQueryRespFileInsightsVideo'},
+        'image': {'tag': 'xml', 'rename': 'Image', 'type': 'MetaQueryRespFileInsightsImage'},
+    }
+
+    _xml_map = {
+        'name': 'MetaQueryRespFileInsights'
+    }
+
+    _dependency_map = {
+        'MetaQueryRespFileInsightsVideo': {'new': lambda: MetaQueryRespFileInsightsVideo()},
+        'MetaQueryRespFileInsightsImage': {'new': lambda: MetaQueryRespFileInsightsImage()},
+    }
+
+    def __init__(
+            self,
+            video: Optional[MetaQueryRespFileInsightsVideo] = None,
+            image: Optional[MetaQueryRespFileInsightsImage] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            video (MetaQueryRespFileInsightsVideo, optional): Container for video file description information.
+            image (MetaQueryRespFileInsightsImage, optional): Container for image file description information.
+        """
+        super().__init__(**kwargs)
+        self.video = video
+        self.image = image
+
+
 class MetaQueryMediaTypes(serde.Model):
     """
     Multimedia metadata retrieval criteria.
@@ -759,6 +855,7 @@ class MetaQueryFile(serde.Model):
         'composer': {'tag': 'xml', 'rename': 'Composer', 'type': 'str'},
         'duration': {'tag': 'xml', 'rename': 'Duration', 'type': 'float'},
         'meta_query_subtitles': {'tag': 'xml', 'rename': 'Subtitles', 'type': 'Subtitles'},
+        'insights': {'tag': 'xml', 'rename': 'Insights', 'type': 'MetaQueryRespFileInsights'},
     }
 
     _xml_map = {
@@ -772,6 +869,7 @@ class MetaQueryFile(serde.Model):
         'Addresses': {'new': lambda: MetaQueryAddresses()},
         'VideoStreams': {'new': lambda: MetaQueryVideoStreams()},
         'Subtitles': {'new': lambda: MetaQuerySubtitles()},
+        'MetaQueryRespFileInsights': {'new': lambda: MetaQueryRespFileInsights()},
     }
 
     def __init__(
@@ -819,6 +917,7 @@ class MetaQueryFile(serde.Model):
         composer: Optional[str] = None,
         duration: Optional[float] = None,
         meta_query_subtitles: Optional[MetaQuerySubtitles] = None,
+        insights: Optional[MetaQueryRespFileInsights] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -878,6 +977,7 @@ class MetaQueryFile(serde.Model):
             composer (str, optional): The composer.
             duration (float, optional): The total duration of the video. Unit: seconds.
             meta_query_subtitles (Subtitles, optional): The list of subtitle streams.
+            insights (MetaQueryRespFileInsights, optional): Video and image description information container.
         """
         super().__init__(**kwargs)
         self.file_modified_time = file_modified_time
@@ -923,6 +1023,7 @@ class MetaQueryFile(serde.Model):
         self.composer = composer
         self.duration = duration
         self.meta_query_subtitles = meta_query_subtitles
+        self.insights = insights
 
 
 class MetaQueryFiles(serde.Model):
