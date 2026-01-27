@@ -22,16 +22,148 @@ class InventoryFrequencyType(str, Enum):
 
 class InventoryOptionalFieldType(str, Enum):
     """
-    InventoryOptionalFieldType The configuration fields that are included in inventory lists.
+    Inventory optional field type enum.
+    Used to specify optional fields included in OSS inventory reports.
     """
 
     SIZE = 'Size'
+    """
+    Object size.
+    """
+
     LAST_MODIFIED_DATE = 'LastModifiedDate'
+    """
+    Last modified date.
+    """
+
     E_TAG = 'ETag'
+    """
+    ETag value.
+    """
+
     STORAGE_CLASS = 'StorageClass'
+    """
+    Storage class.
+    """
+
     IS_MULTIPART_UPLOADED = 'IsMultipartUploaded'
+    """
+    Is multipart uploaded.
+    """
+
     ENCRYPTION_STATUS = 'EncryptionStatus'
+    """
+    Encryption status.
+    """
+
     TRANSITION_TIME = 'TransitionTime'
+    """
+    Transition time.
+    """
+
+    OBJECT_ACL = 'ObjectAcl'
+    """
+    Object ACL.
+    """
+
+    TAGGING_COUNT = 'TaggingCount'
+    """
+    Tagging count.
+    """
+
+    OBJECT_TYPE = 'ObjectType'
+    """
+    Object type.
+    """
+
+    CRC64 = 'Crc64'
+    """
+    CRC64 checksum.
+    """
+
+
+
+class IncrementalInventoryOptionalFieldType(str, Enum):
+    """
+    Incremental inventory optional field type enum.
+    Used to specify optional fields included in OSS incremental inventory reports.
+    """
+
+    SEQUENCE_NUMBER = 'SequenceNumber'
+    """
+    Sequence number.
+    """
+
+    RECORD_TYPE = 'RecordType'
+    """
+    Event type.
+    """
+
+    RECORD_TIMESTAMP = 'RecordTimestamp'
+    """
+    Timestamp.
+    """
+
+    REQUESTER = 'Requester'
+    """
+    Alibaba Cloud ID or Principal ID of the requester.
+    """
+
+    SOURCE_IP = 'SourceIp'
+    """
+    Source IP of the requester.
+    """
+
+    REQUEST_ID = 'RequestId'
+    """
+    Unique identifier of the request.
+    """
+
+    SIZE = 'Size'
+    """
+    Size of the object.
+    """
+
+    STORAGE_CLASS = 'StorageClass'
+    """
+    Storage class of the object.
+    """
+
+    LAST_MODIFIED_DATE = 'LastModifiedDate'
+    """
+    Last modified date of the object.
+    """
+
+    E_TAG = 'ETag'
+    """
+    ETag used to identify the content of an object.
+    """
+
+    IS_MULTIPART_UPLOADED = 'IsMultipartUploaded'
+    """
+    Whether the object is uploaded via multipart upload.
+    """
+
+    OBJECT_TYPE = 'ObjectType'
+    """
+    Type of the object.
+    """
+
+    OBJECT_ACL = 'ObjectAcl'
+    """
+    Read/write permissions of the object.
+    """
+
+    CRC64 = 'Crc64'
+    """
+    CRC64 of the object.
+    """
+
+    ENCRYPTION_STATUS = 'EncryptionStatus'
+    """
+    Whether the object is encrypted.
+    """
+
 
 
 class SSEKMS(serde.Model):
@@ -44,7 +176,7 @@ class SSEKMS(serde.Model):
     }
 
     _xml_map = {
-        'name': 'SSEKMS'
+        'name': 'SSE-KMS'
     }
 
     def __init__(
@@ -160,6 +292,97 @@ class OptionalFields(serde.Model):
         super().__init__(**kwargs)
         self.fields = fields
 
+
+class IncrementInventorySchedule(serde.Model):
+    """
+    Container for incremental inventory export cycle information.
+    """
+
+    _attribute_map = {
+        'frequency': {'tag': 'xml', 'rename': 'Frequency', 'type': 'int'},
+    }
+
+    _xml_map = {
+        'name': 'Schedule'
+    }
+
+    def __init__(
+            self,
+            frequency: Optional[int] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            frequency (int, optional): Describes the frequency at which incremental inventory files are exported,
+        """
+        super().__init__(**kwargs)
+        self.frequency = frequency
+
+
+class IncrementalInventoryOptionalFields(serde.Model):
+    """
+    The container that stores the configuration fields in incremental inventory lists.
+    """
+
+    _attribute_map = { 
+        'fields': {'tag': 'xml', 'rename': 'Field', 'type': '[str]'},
+    }
+
+    _xml_map = {
+        'name': 'OptionalFields'
+    }
+
+
+    def __init__(
+        self,
+        fields: Optional[List[Union[str, IncrementalInventoryOptionalFieldType]]] = None,
+        **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            fields (List[Union[str, IncrementalInventoryOptionalFieldType]], optional): The configuration fields that are included in incremental inventory lists.
+        """
+        super().__init__(**kwargs)
+        self.fields = fields
+
+
+class IncrementalInventory(serde.Model):
+    """
+    Configuration container for incremental inventory.
+    """
+
+    _attribute_map = {
+        'is_enabled': {'tag': 'xml', 'rename': 'IsEnabled', 'type': 'bool'},
+        'schedule': {'tag': 'xml', 'rename': 'Schedule', 'type': 'IncrementInventorySchedule'},
+        'optional_fields': {'tag': 'xml', 'rename': 'OptionalFields', 'type': 'IncrementalInventoryOptionalFields'},
+    }
+
+    _xml_map = {
+        'name': 'IncrementalInventory'
+    }
+
+    _dependency_map = {
+        'IncrementInventorySchedule': {'new': lambda: IncrementInventorySchedule()},
+        'IncrementalInventoryOptionalFields': {'new': lambda: IncrementalInventoryOptionalFields()},
+    }
+
+    def __init__(
+            self,
+            is_enabled: Optional[bool] = None,
+            schedule: Optional[IncrementInventorySchedule] = None,
+            optional_fields: Optional[IncrementalInventoryOptionalFields] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            is_enabled (bool, optional): Specifies whether incremental inventory is enabled.
+            schedule (IncrementInventorySchedule, optional): Container for incremental inventory export cycle.
+            optional_fields (IncrementalInventoryOptionalFields, optional): Configuration container for incremental inventory file attributes.
+        """
+        super().__init__(**kwargs)
+        self.is_enabled = is_enabled
+        self.schedule = schedule
+        self.optional_fields = optional_fields
 
 class InventoryEncryption(serde.Model):
     """
@@ -288,6 +511,7 @@ class InventoryConfiguration(serde.Model):
         'destination': {'tag': 'xml', 'rename': 'Destination', 'type': 'InventoryDestination'},
         'schedule': {'tag': 'xml', 'rename': 'Schedule', 'type': 'InventorySchedule'},
         'filter': {'tag': 'xml', 'rename': 'Filter', 'type': 'InventoryFilter'},
+        'incremental_inventory': {'tag': 'xml', 'rename': 'IncrementalInventory', 'type': 'IncrementalInventory'},
     }
 
     _xml_map = {
@@ -299,6 +523,7 @@ class InventoryConfiguration(serde.Model):
         'InventoryDestination': {'new': lambda: InventoryDestination()},
         'InventorySchedule': {'new': lambda: InventorySchedule()},
         'InventoryFilter': {'new': lambda: InventoryFilter()},
+        'IncrementalInventory': {'new': lambda: IncrementalInventory()},
     }
 
     def __init__(
@@ -310,6 +535,7 @@ class InventoryConfiguration(serde.Model):
         destination: Optional[InventoryDestination] = None,
         schedule: Optional[InventorySchedule] = None,
         filter: Optional[InventoryFilter] = None,
+        incremental_inventory: Optional[IncrementalInventory] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -321,6 +547,7 @@ class InventoryConfiguration(serde.Model):
             destination (InventoryDestination, optional): The container that stores the exported inventory lists.
             schedule (InventorySchedule, optional): The container that stores information about the frequency at which inventory lists are exported.
             filter (InventoryFilter, optional): The container that stores the prefix used to filter objects. Only objects whose names contain the specified prefix are included in the inventory.
+            incremental_inventory (IncrementalInventory, optional): Configuration container for incremental inventory.
         """
         super().__init__(**kwargs)
         self.included_object_versions = included_object_versions
@@ -330,7 +557,7 @@ class InventoryConfiguration(serde.Model):
         self.destination = destination
         self.schedule = schedule
         self.filter = filter
-
+        self.incremental_inventory = incremental_inventory
 
 class ListInventoryConfigurationsResult(serde.Model):
     """
