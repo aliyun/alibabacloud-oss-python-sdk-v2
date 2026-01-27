@@ -160,6 +160,85 @@ class TestPutBucketInventory(unittest.TestCase):
         self.assertEqual('316181249502703****', result.headers.get('x-oss-hash-crc64ecma'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('x-oss-version-id'))
 
+    def test_serialize_request_with_incremental_inventory(self):
+        """Test serialization of PutBucketInventoryRequest with incremental inventory configuration."""
+        xml_str = '<InventoryConfiguration><IncludedObjectVersions>All</IncludedObjectVersions><OptionalFields><Field>EncryptionStatus</Field><Field>StorageClass</Field></OptionalFields><Id>report1</Id><IsEnabled>true</IsEnabled><Destination><OSSBucketDestination><Format>CSV</Format><AccountId>100000000000000</AccountId><RoleArn>acs:ram::100000000000000:role/AliyunOSSRole</RoleArn><Bucket>bucketexampletest</Bucket><Prefix>aaa/</Prefix><Encryption><SSE-KMS><KeyId>GGUIFHBKJNFkjghug</KeyId></SSE-KMS><SSE-OSS>sse_oss_example</SSE-OSS></Encryption></OSSBucketDestination></Destination><Schedule><Frequency>Weekly</Frequency></Schedule><Filter><LowerSizeBound>53305</LowerSizeBound><UpperSizeBound>8328</UpperSizeBound><StorageClass>ColdArchive</StorageClass><Prefix>aab/</Prefix><LastModifyBeginTimeStamp>19696</LastModifyBeginTimeStamp><LastModifyEndTimeStamp>44727</LastModifyEndTimeStamp></Filter><IncrementalInventory><IsEnabled>true</IsEnabled><Schedule><Frequency>600</Frequency></Schedule><OptionalFields><Field>SequenceNumber</Field><Field>RecordType</Field><Field>RecordTimestamp</Field><Field>Requester</Field><Field>SourceIp</Field><Field>RequestId</Field><Field>Size</Field><Field>StorageClass</Field><Field>LastModifiedDate</Field><Field>ETag</Field><Field>IsMultipartUploaded</Field><Field>ObjectType</Field><Field>ObjectAcl</Field><Field>Crc64</Field><Field>EncryptionStatus</Field></OptionalFields></IncrementalInventory></InventoryConfiguration>'
+
+        request = model.PutBucketInventoryRequest(
+            bucket='bucketexampletest',
+            inventory_id='report1',
+            inventory_configuration=model.InventoryConfiguration(
+                included_object_versions='All',
+                optional_fields=model.OptionalFields(
+                    fields=[model.InventoryOptionalFieldType.ENCRYPTION_STATUS, model.InventoryOptionalFieldType.STORAGE_CLASS],
+                ),
+                id='report1',
+                is_enabled=True,
+                destination=model.InventoryDestination(
+                    oss_bucket_destination=model.InventoryOSSBucketDestination(
+                        format=model.InventoryFormatType.CSV,
+                        account_id='100000000000000',
+                        role_arn='acs:ram::100000000000000:role/AliyunOSSRole',
+                        bucket='bucketexampletest',
+                        prefix='aaa/',
+                        encryption=model.InventoryEncryption(
+                            sse_kms=model.SSEKMS(
+                                key_id='GGUIFHBKJNFkjghug',
+                            ),
+                            sse_oss='sse_oss_example',
+                        ),
+                    ),
+                ),
+                schedule=model.InventorySchedule(
+                    frequency=model.InventoryFrequencyType.WEEKLY,
+                ),
+                filter=model.InventoryFilter(
+                    lower_size_bound=53305,
+                    upper_size_bound=8328,
+                    storage_class='ColdArchive',
+                    prefix='aab/',
+                    last_modify_begin_time_stamp=19696,
+                    last_modify_end_time_stamp=44727,
+                ),
+                incremental_inventory=model.IncrementalInventory(
+                    is_enabled=True,
+                    schedule=model.IncrementInventorySchedule(
+                        frequency=600
+                    ),
+                    optional_fields=model.OptionalFields(
+                        fields=[
+                            model.IncrementalInventoryOptionalFieldType.SEQUENCE_NUMBER,
+                            model.IncrementalInventoryOptionalFieldType.RECORD_TYPE,
+                            model.IncrementalInventoryOptionalFieldType.RECORD_TIMESTAMP,
+                            model.IncrementalInventoryOptionalFieldType.REQUESTER,
+                            model.IncrementalInventoryOptionalFieldType.SOURCE_IP,
+                            model.IncrementalInventoryOptionalFieldType.REQUEST_ID,
+                            model.IncrementalInventoryOptionalFieldType.SIZE,
+                            model.IncrementalInventoryOptionalFieldType.STORAGE_CLASS,
+                            model.IncrementalInventoryOptionalFieldType.LAST_MODIFIED_DATE,
+                            model.IncrementalInventoryOptionalFieldType.E_TAG,
+                            model.IncrementalInventoryOptionalFieldType.IS_MULTIPART_UPLOADED,
+                            model.IncrementalInventoryOptionalFieldType.OBJECT_TYPE,
+                            model.IncrementalInventoryOptionalFieldType.OBJECT_ACL,
+                            model.IncrementalInventoryOptionalFieldType.CRC64,
+                            model.IncrementalInventoryOptionalFieldType.ENCRYPTION_STATUS
+                        ]
+                    )
+                )
+            )
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucketInventory',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutBucketInventory', op_input.op_name)
+        self.assertEqual('PUT', op_input.method)
+        self.assertEqual('bucketexampletest', op_input.bucket)
+        self.assertEqual('report1', op_input.parameters.get('inventoryId'))
+        self.assertEqual(xml_str, op_input.body.decode())
+
 
 class TestGetBucketInventory(unittest.TestCase):
     def test_constructor_request(self):

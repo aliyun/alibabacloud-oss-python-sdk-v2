@@ -56,6 +56,32 @@ def main():
                     last_modify_begin_time_stamp=1637883649,
                     last_modify_end_time_stamp=1638347592,
                 ),
+                # incremental inventory
+                # incremental_inventory=oss.IncrementalInventory(
+                #     is_enabled=True,
+                #     schedule=oss.IncrementInventorySchedule(
+                #         frequency=600
+                #     ),
+                #     optional_fields=oss.OptionalFields(
+                #         fields=[
+                #             oss.IncrementalInventoryOptionalFieldType.SEQUENCE_NUMBER,
+                #             oss.IncrementalInventoryOptionalFieldType.RECORD_TYPE,
+                #             oss.IncrementalInventoryOptionalFieldType.RECORD_TIMESTAMP,
+                #             oss.IncrementalInventoryOptionalFieldType.REQUESTER,
+                #             oss.IncrementalInventoryOptionalFieldType.SOURCE_IP,
+                #             oss.IncrementalInventoryOptionalFieldType.REQUEST_ID,
+                #             oss.IncrementalInventoryOptionalFieldType.SIZE,
+                #             oss.IncrementalInventoryOptionalFieldType.STORAGE_CLASS,
+                #             oss.IncrementalInventoryOptionalFieldType.LAST_MODIFIED_DATE,
+                #             oss.IncrementalInventoryOptionalFieldType.E_TAG,
+                #             oss.IncrementalInventoryOptionalFieldType.IS_MULTIPART_UPLOADED,
+                #             oss.IncrementalInventoryOptionalFieldType.OBJECT_TYPE,
+                #             oss.IncrementalInventoryOptionalFieldType.OBJECT_ACL,
+                #             oss.IncrementalInventoryOptionalFieldType.CRC64,
+                #             oss.IncrementalInventoryOptionalFieldType.ENCRYPTION_STATUS
+                #         ]
+                #     )
+                # )
             ),
     ))
 
