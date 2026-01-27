@@ -282,12 +282,12 @@ class OptionalFields(serde.Model):
 
     def __init__(
         self,
-        fields: Optional[List[Union[str, InventoryOptionalFieldType]]] = None,
+        fields: Optional[List[Union[str, InventoryOptionalFieldType, IncrementalInventoryOptionalFieldType]]] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            fields (List[Union[str, InventoryOptionalFieldType]], optional): The configuration fields that are included in inventory lists. Available configuration fields:*   Size: the size of the object.*   LastModifiedDate: the time when the object was last modified.*   ETag: the ETag of the object. It is used to identify the content of the object.*   StorageClass: the storage class of the object.*   IsMultipartUploaded: specifies whether the object is uploaded by using multipart upload.*   EncryptionStatus: the encryption status of the object.
+            fields (List[Union[str, InventoryOptionalFieldType, IncrementalInventoryOptionalFieldType]], optional): The configuration fields that are included in inventory lists.
         """
         super().__init__(**kwargs)
         self.fields = fields
@@ -319,33 +319,6 @@ class IncrementInventorySchedule(serde.Model):
         self.frequency = frequency
 
 
-class IncrementalInventoryOptionalFields(serde.Model):
-    """
-    The container that stores the configuration fields in incremental inventory lists.
-    """
-
-    _attribute_map = { 
-        'fields': {'tag': 'xml', 'rename': 'Field', 'type': '[str]'},
-    }
-
-    _xml_map = {
-        'name': 'OptionalFields'
-    }
-
-
-    def __init__(
-        self,
-        fields: Optional[List[Union[str, IncrementalInventoryOptionalFieldType]]] = None,
-        **kwargs: Any
-    ) -> None:
-        """
-        Args:
-            fields (List[Union[str, IncrementalInventoryOptionalFieldType]], optional): The configuration fields that are included in incremental inventory lists.
-        """
-        super().__init__(**kwargs)
-        self.fields = fields
-
-
 class IncrementalInventory(serde.Model):
     """
     Configuration container for incremental inventory.
@@ -354,7 +327,7 @@ class IncrementalInventory(serde.Model):
     _attribute_map = {
         'is_enabled': {'tag': 'xml', 'rename': 'IsEnabled', 'type': 'bool'},
         'schedule': {'tag': 'xml', 'rename': 'Schedule', 'type': 'IncrementInventorySchedule'},
-        'optional_fields': {'tag': 'xml', 'rename': 'OptionalFields', 'type': 'IncrementalInventoryOptionalFields'},
+        'optional_fields': {'tag': 'xml', 'rename': 'OptionalFields', 'type': 'OptionalFields'},
     }
 
     _xml_map = {
@@ -363,21 +336,21 @@ class IncrementalInventory(serde.Model):
 
     _dependency_map = {
         'IncrementInventorySchedule': {'new': lambda: IncrementInventorySchedule()},
-        'IncrementalInventoryOptionalFields': {'new': lambda: IncrementalInventoryOptionalFields()},
+        'OptionalFields': {'new': lambda: OptionalFields()},
     }
 
     def __init__(
             self,
             is_enabled: Optional[bool] = None,
             schedule: Optional[IncrementInventorySchedule] = None,
-            optional_fields: Optional[IncrementalInventoryOptionalFields] = None,
+            optional_fields: Optional[OptionalFields] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
             is_enabled (bool, optional): Specifies whether incremental inventory is enabled.
             schedule (IncrementInventorySchedule, optional): Container for incremental inventory export cycle.
-            optional_fields (IncrementalInventoryOptionalFields, optional): Configuration container for incremental inventory file attributes.
+            optional_fields (OptionalFields, optional): Configuration container for incremental inventory file attributes.
         """
         super().__init__(**kwargs)
         self.is_enabled = is_enabled

@@ -205,7 +205,7 @@ class TestPutBucketInventory(unittest.TestCase):
                     schedule=model.IncrementInventorySchedule(
                         frequency=600
                     ),
-                    optional_fields=model.IncrementalInventoryOptionalFields(
+                    optional_fields=model.OptionalFields(
                         fields=[
                             model.IncrementalInventoryOptionalFieldType.SEQUENCE_NUMBER,
                             model.IncrementalInventoryOptionalFieldType.RECORD_TYPE,

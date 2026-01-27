@@ -62,7 +62,7 @@ def main():
                 #     schedule=oss.IncrementInventorySchedule(
                 #         frequency=600
                 #     ),
-                #     optional_fields=oss.IncrementalInventoryOptionalFields(
+                #     optional_fields=oss.OptionalFields(
                 #         fields=[
                 #             oss.IncrementalInventoryOptionalFieldType.SEQUENCE_NUMBER,
                 #             oss.IncrementalInventoryOptionalFieldType.RECORD_TYPE,

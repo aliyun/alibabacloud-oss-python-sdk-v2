@@ -41,11 +41,11 @@ class TestBucketInventory(TestIntegration):
                         role_arn=RAM_ROLE_ARN,
                         bucket='acs:oss:::'+bucket_name,
                         prefix='aaa',
-                        encryption=oss.InventoryEncryption(
-                            sse_kms=oss.SSEKMS(
-                                key_id='GGUIFHBKJNFkjghug',
-                            ),
-                        ),
+                        # encryption=oss.InventoryEncryption(
+                        #     sse_kms=oss.SSEKMS(
+                        #         key_id='GGUIFHBKJNFkjghug',
+                        #     ),
+                        # ),
                     ),
                 ),
                 schedule=oss.InventorySchedule(
@@ -160,11 +160,11 @@ class TestBucketInventory(TestIntegration):
                         role_arn=RAM_ROLE_ARN,
                         bucket='acs:oss:::'+bucket_name,
                         prefix='aaa',
-                        encryption=oss.InventoryEncryption(
-                            sse_kms=oss.SSEKMS(
-                                key_id='GGUIFHBKJNFkjghug',
-                            ),
-                        ),
+                        # encryption=oss.InventoryEncryption(
+                        #     sse_kms=oss.SSEKMS(
+                        #         key_id='GGUIFHBKJNFkjghug',
+                        #     ),
+                        # ),
                     ),
                 ),
                 schedule=oss.InventorySchedule(
@@ -404,7 +404,7 @@ class TestBucketInventory(TestIntegration):
                         schedule=oss.IncrementInventorySchedule(
                             frequency=600
                         ),
-                        optional_fields=oss.IncrementalInventoryOptionalFields(
+                        optional_fields=oss.OptionalFields(
                             fields=[
                                 oss.IncrementalInventoryOptionalFieldType.SEQUENCE_NUMBER,
                                 oss.IncrementalInventoryOptionalFieldType.RECORD_TYPE,
