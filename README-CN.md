@@ -138,7 +138,7 @@ if __name__ == "__main__":
 ### 运行示例
 > - 进入示例程序目录 `sample`。
 > - 通过环境变量，配置访问凭证, `export OSS_ACCESS_KEY_ID="your access key id"`, `export OSS_ACCESS_KEY_SECRET="your access key secrect"`。
-> - 以 list_buckets.go 为例，执行 `python list_buckets.python --region cn-hangzhou`。
+> - 以 list_buckets.go 为例，执行 `python list_buckets.py --region cn-hangzhou`。
 
 ## 资源
 [开发者指南](DEVGUIDE-CN.md) - 参阅该指南，来帮助您安装、配置和使用该开发套件。
