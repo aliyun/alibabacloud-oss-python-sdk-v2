@@ -7,7 +7,7 @@ alibabacloud-oss-python-sdk-v2 is the v2 of the OSS SDK for the Python programmi
 ## [README in Chinese](README-CN.md)
 
 ## About
-> - This Python SDK is based on the official APIs of [Alibaba Cloud OSS](http://www.aliyun.com/product/oss/).
+> - This Python SDK is based on the official APIs of [Alibaba Cloud OSS](https://www.aliyun.com/product/oss/).
 > - Alibaba Cloud Object Storage Service (OSS) is a cloud storage service provided by Alibaba Cloud, featuring massive capacity, security, a low cost, and high reliability. 
 > - The OSS can store any type of files and therefore applies to various websites, development enterprises and developers.
 > - With this SDK, you can upload, download and manage data on any app anytime and anywhere conveniently. 
