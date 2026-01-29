@@ -1,5 +1,10 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.2.3 日期：2026-01-29
+### 变更内容
+- Feature: Inventory supports incremental inventory
+- Feature: Metaquery supports Insights field
+
 ## 版本号：1.2.2 日期：2025-12-25
 ### 变更内容
 - Feature: Add bucket overwrite config api
