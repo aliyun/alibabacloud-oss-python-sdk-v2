@@ -2,13 +2,13 @@
 
 [![GitHub version](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2.svg)](https://badge.fury.io/gh/aliyun%2Falibabacloud-oss-python-sdk-v2)
 
-alibabacloud-oss-python-sdk-v2 是OSS在Python编译语言下的第二版SDK
+alibabacloud-oss-python-sdk-v2 是 OSS 在 Python 编译语言下的第二版 SDK
 
 ## [README in English](README-CN.md)
 
 ## 关于
-> - 此Python SDK基于[阿里云对象存储服务](http://www.aliyun.com/product/oss/)官方API构建。
-> - 阿里云对象存储（Object Storage Service，简称OSS），是阿里云对外提供的海量，安全，低成本，高可靠的云存储服务。
+> - 此 Python SDK 基于[阿里云对象存储服务](https://www.aliyun.com/product/oss/)官方 API 构建。
+> - 阿里云对象存储（Object Storage Service，简称 OSS），是阿里云对外提供的海量，安全，低成本，高可靠的云存储服务。
 > - OSS适合存放任意文件类型，适合各种网站、开发企业及开发者使用。
 > - 使用此SDK，用户可以方便地在任何应用、任何时间、任何地点上传，下载和管理数据。
 
@@ -133,7 +133,7 @@ if __name__ == "__main__":
 ```
 
 ## 更多示例
-请参看`sample`目录
+请参看 `sample` 目录
 
 ### 运行示例
 > - 进入示例程序目录 `sample`。
