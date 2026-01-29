@@ -138,7 +138,7 @@ More example projects can be found in the `sample` folder
 ### Running Example
 > - Go to the sample code folder `sample`。
 > - Configure credentials values from the environment variables, like `export OSS_ACCESS_KEY_ID="your access key id"`, `export OSS_ACCESS_KEY_SECRET="your access key secrect"`
-> - Take list_buckets.python as an example，run `python list_buckets.py --region cn-hangzhou` command。
+> - Take `list_buckets.py` as an example，run `python list_buckets.py --region cn-hangzhou` command。
 
 ## Resources
 [Developer Guide](DEVGUIDE-CN.md) - Use this document to learn how to get started and use this sdk.
