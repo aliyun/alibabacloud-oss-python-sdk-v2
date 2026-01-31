@@ -334,6 +334,10 @@ class AsyncStreamBodyReader(AsyncStreamBody):
     async def __aexit__(self, *args: Any) -> None:
         await self._response.__exit__(*args)
 
+    def __aiter__(self) -> AsyncIterator[bytes]:
+        """Allow the body to be used in an 'async for' loop."""
+        return self.iter_bytes()
+
     @property
     def is_closed(self) -> bool:
         return self._response.is_closed
