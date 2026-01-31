@@ -464,11 +464,11 @@ class AsyncStreamBody(abc.ABC):
     """Abstract base class for a AsyncStreamBody."""
 
     @abc.abstractmethod
-    async def __aenter__(self):
+    async def __aenter__(self) -> "AsyncStreamBody":
         """Return `self` upon entering the runtime context."""
 
     @abc.abstractmethod
-    async def __aexit__(self, exc_type, exc_value, traceback):
+    async def __aexit__(self, exc_type, exc_value, traceback) -> None:
         """Raise any exception triggered within the runtime context."""
 
     @property
