@@ -268,7 +268,7 @@ class HttpResponse(_HttpResponseBase):
         """Iterates over the response's bytes. Will decompress in the process.
 
         :return: An iterator of bytes from the response
-        :rtype: Iterator[str]
+        :rtype: Iterator[bytes]
         """
 
     def __repr__(self) -> str:
@@ -450,7 +450,7 @@ class StreamBody(abc.ABC):
         """Iterates over the stream's bytes. Will decompress in the process.
 
         :return: An iterator of bytes from the stream
-        :rtype: Iterator[str]
+        :rtype: Iterator[bytes]
         """
 
 class EndpointProvider(abc.ABC):
@@ -515,7 +515,7 @@ class AsyncStreamBody(abc.ABC):
         """Iterates over the stream's bytes. Will decompress in the process.
 
         :return: An iterator of bytes from the stream
-        :rtype: Iterator[str]
+        :rtype: AsyncIterator[bytes]
         """
 
 class AsyncHttpResponse(_HttpResponseBase, AsyncContextManager["AsyncHttpResponse"]):
