@@ -355,4 +355,5 @@ class AsyncStreamBodyReader(AsyncStreamBody):
         await self._response.close()
 
     async def iter_bytes(self, **kwargs: Any) -> AsyncIterator[bytes]:
-        return self._response.iter_bytes(**kwargs)
+        async for chunk in self._response.iter_bytes(**kwargs):
+            yield chunk
