@@ -35,7 +35,7 @@ class TeeIterator:
         """
         if self._writers is not None:
             for w in self._writers:
-                if hasattr(self._writers, 'reset'):
+                if hasattr(w, 'reset'):
                     w.reset()
 
     @staticmethod
