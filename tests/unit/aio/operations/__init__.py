@@ -1,5 +1,7 @@
 # pylint: skip-file
 import unittest
+import inspect
+
 from alibabacloud_oss_v2.types import HttpRequest, HttpResponse, HttpClient
 from ... import MockAsyncHttpResponse, mock_async_client
 
@@ -23,10 +25,13 @@ class TestOperations(unittest.IsolatedAsyncioTestCase):
         pass
 
     @classmethod
-    def requestFunc(cls, request: HttpRequest):
+    async def requestFunc(cls, request: HttpRequest):
         cls.request_dump = request
         if cls.invoke_request is not None:
-            cls.invoke_request(request)
+            if inspect.iscoroutinefunction(cls.invoke_request):
+                await cls.invoke_request(request)
+            else:
+                cls.invoke_request(request)
 
     @classmethod
     def responseFunc(cls) -> MockAsyncHttpResponse:

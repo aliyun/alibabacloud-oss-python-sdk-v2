@@ -14,7 +14,8 @@ from alibabacloud_oss_v2 import (
     retry,
     transport,
     utils,
-    io_utils
+    io_utils,
+    crc
 )
 from alibabacloud_oss_v2.types import (
     HttpRequest, 
@@ -24,7 +25,7 @@ from alibabacloud_oss_v2.types import (
     OperationOutput,
     SigningContext
 )
-from . import MockHttpResponse, MockHttpClient
+from . import MockHttpResponse, MockHttpClient, random_lowstr
 
 
 def _mock_client(request_fn, response_fn, **kwargs):
@@ -42,9 +43,13 @@ def _get_tempfile() -> str:
     return tempfile.gettempprefix()
 
 progress_save_n = 0
+progress_save_written = 0
 def _progress_fn(n, _written, total):
     global progress_save_n
+    global progress_save_written
     progress_save_n += n
+    progress_save_written = _written
+    print(f'n:{n}, written:{_written}\n')
 
 def _read_body(obj: Any) -> bytes:
     if isinstance(obj, bytes):
@@ -1904,6 +1909,70 @@ class TestClientCRC(unittest.TestCase):
             self.assertEqual(1, len(self.save_data))
             for d in self.save_data:
                 self.assertEqual(data.encode(), d)
+
+    def test_put_object_crc64_flags_retry(self):
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        datalen = 100 * 1024 + 12345
+
+        crc64_a = crc.Crc64(0)
+        data = random_lowstr(datalen)
+        crc64_a.update(data.encode())
+        crc1 = crc64_a.sum64()
+
+        self.assertNotEqual(0, crc1)
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            if len(self.save_request) < 3:
+                return MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234', 'x-oss-hash-crc64ecma': '123'},
+                    body=''
+                )
+            else:
+                return MockHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-12345', 'x-oss-hash-crc64ecma': str(crc1)},
+                    body=''
+                )
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        self.progress_n = 0
+        self.progress_written = 0
+
+        def progress_fn(n, written, total):
+            self.progress_n += n
+            self.progress_written = written
+            #print(f'n:{n}, written:{written}\n')
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            result = clinet.put_object(models.PutObjectRequest(
+                bucket='bucket',
+                key='key',
+                body=data,
+                progress_fn=progress_fn
+            ))
+
+            self.assertEqual('id-12345', result.request_id)
+            self.assertEqual(3, len(self.save_request))
+            self.assertEqual(3, len(self.save_data))
+            for d in self.save_data:
+                self.assertEqual(data.encode(), d)
+
+            self.assertEqual(self.progress_written, len(data))
+
 
     def test_upload_part_crc64_flags(self):  
         self.save_request: List[HttpRequest] = None
