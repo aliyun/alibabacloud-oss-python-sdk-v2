@@ -1,4 +1,7 @@
 # pylint: skip-file
+import random
+import string
+
 from typing import Any
 from alibabacloud_oss_v2 import _client
 from alibabacloud_oss_v2.aio._aioclient import _AsyncClientImpl
@@ -204,7 +207,7 @@ class MockAsyncHttpClient(AsyncHttpClient):
 
     async def send(self, request: HttpRequest, **kwargs: Any) -> AsyncHttpResponse:
         if self._request_fn is not None:
-            self._request_fn(request)
+            await self._request_fn(request)
 
         if self._response_fn is not None:
             response = self._response_fn()
@@ -241,3 +244,6 @@ def mock_async_client(request_fn, response_fn, **kwargs):
         kwargs=kwargs
     )
     return _AsyncClientImpl(cfg)
+
+def random_lowstr(n):
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(n))

@@ -1,10 +1,16 @@
 # pylint: skip-file
-from typing import cast
+import random
+import string
+from typing import cast, AsyncIterable, Any
 import xml.etree.ElementTree as ET
-from alibabacloud_oss_v2 import exceptions
+from alibabacloud_oss_v2 import exceptions, crc
 from alibabacloud_oss_v2.models import object_basic as model
 from alibabacloud_oss_v2.aio.operations import object_basic as operations
-from . import TestOperations
+from alibabacloud_oss_v2.types import HttpRequest
+from . import TestOperations, MockAsyncHttpResponse
+
+def random_lowstr(n):
+    return ''.join(random.choice(string.ascii_lowercase) for i in range(n))
 
 class TestObjectBasic(TestOperations):
 
@@ -986,3 +992,59 @@ class TestObjectBasic(TestOperations):
 
         self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/example-object-2.jpg?seal=&position=1000', self.request_dump.url)
         self.assertEqual('POST', self.request_dump.method)
+
+    async def test_put_object_crc64_flags_retry(self):
+        datalen = 100 * 1024 + 12345
+        crc64_a = crc.Crc64(0)
+        data = random_lowstr(datalen)
+        crc64_a.update(data.encode())
+        crc1 = crc64_a.sum64()
+        self.assertNotEqual(0, crc1)
+        self.requestCnt = 0
+        self.progress_n = 0
+        self.progress_written = 0
+
+        def progress_fn(n, written, total):
+            self.progress_n += n
+            self.progress_written = written
+
+        async def request_mock(request: HttpRequest):
+            if isinstance(request.body, AsyncIterable):
+                async for a in request.body:
+                    """pass"""
+
+        def response_mock():
+            self.requestCnt += 1
+            if self.requestCnt < 3:
+                return MockAsyncHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-1234', 'x-oss-hash-crc64ecma': '123'},
+                    body=''
+                )
+            else:
+                return MockAsyncHttpResponse(
+                    status_code=200,
+                    reason='OK',
+                    headers={'x-oss-request-id': 'id-12345', 'x-oss-hash-crc64ecma': str(crc1)},
+                    body=''
+                )
+
+
+
+
+        self.set_requestFunc(request_mock)
+        self.set_responseFunc(response_mock)
+
+        request = model.PutObjectRequest(
+            bucket='bucket',
+            key='key-test',
+            body=data,
+            progress_fn=progress_fn
+        )
+        result = await operations.put_object(self.client, request)
+
+        self.assertEqual('id-12345', result.request_id)
+        self.assertEqual(3, self.requestCnt)
+        self.assertEqual(self.progress_written, len(data))
+
