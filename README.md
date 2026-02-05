@@ -7,7 +7,7 @@ alibabacloud-oss-python-sdk-v2 is the v2 of the OSS SDK for the Python programmi
 ## [README in Chinese](README-CN.md)
 
 ## About
-> - This Python SDK is based on the official APIs of [Alibaba Cloud OSS](http://www.aliyun.com/product/oss/).
+> - This Python SDK is based on the official APIs of [Alibaba Cloud OSS](https://www.aliyun.com/product/oss/).
 > - Alibaba Cloud Object Storage Service (OSS) is a cloud storage service provided by Alibaba Cloud, featuring massive capacity, security, a low cost, and high reliability. 
 > - The OSS can store any type of files and therefore applies to various websites, development enterprises and developers.
 > - With this SDK, you can upload, download and manage data on any app anytime and anywhere conveniently. 
@@ -138,7 +138,7 @@ More example projects can be found in the `sample` folder
 ### Running Example
 > - Go to the sample code folder `sample`。
 > - Configure credentials values from the environment variables, like `export OSS_ACCESS_KEY_ID="your access key id"`, `export OSS_ACCESS_KEY_SECRET="your access key secrect"`
-> - Take list_buckets.python as an example，run `python list_buckets.py --region cn-hangzhou` command。
+> - Take `list_buckets.py` as an example，run `python list_buckets.py --region cn-hangzhou` command。
 
 ## Resources
 [Developer Guide](DEVGUIDE-CN.md) - Use this document to learn how to get started and use this sdk.
