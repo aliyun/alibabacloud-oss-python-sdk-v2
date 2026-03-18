@@ -256,6 +256,33 @@ class AsyncClient:
 
         return await operations.list_object_versions(self._client, request, **kwargs)
 
+    # bucket object worm configuration
+    async def put_bucket_object_worm_configuration(self, request: models.PutBucketObjectWormConfigurationRequest, **kwargs
+                                                   ) -> models.PutBucketObjectWormConfigurationResult:
+        """
+        Enables object retention on the bucket and configures a retention policy.
+
+        Args:
+            request (PutBucketObjectWormConfigurationRequest): Request parameters for PutBucketObjectWormConfiguration operation.
+
+        Returns:
+            PutBucketObjectWormConfigurationResult: Response result for PutBucketObjectWormConfiguration operation.
+        """
+        return await operations.put_bucket_object_worm_configuration(self._client, request, **kwargs)
+
+    async def get_bucket_object_worm_configuration(self, request: models.GetBucketObjectWormConfigurationRequest, **kwargs
+                                                   ) -> models.GetBucketObjectWormConfigurationResult:
+        """
+        Queries the object-level retention policy of a bucket.
+
+        Args:
+            request (GetBucketObjectWormConfigurationRequest): Request parameters for GetBucketObjectWormConfiguration operation.
+
+        Returns:
+            GetBucketObjectWormConfigurationResult: Response result for GetBucketObjectWormConfiguration operation.
+        """
+        return await operations.get_bucket_object_worm_configuration(self._client, request, **kwargs)
+
     # object
     async def put_object(self, request: models.PutObjectRequest, **kwargs
                    ) -> models.PutObjectResult:

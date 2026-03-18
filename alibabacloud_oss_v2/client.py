@@ -1724,6 +1724,35 @@ class Client:
         return operations.get_bucket_worm(self._client, request, **kwargs)
 
 
+    # object worm configuration
+    def put_bucket_object_worm_configuration(self, request: models.PutBucketObjectWormConfigurationRequest, **kwargs
+                                             ) -> models.PutBucketObjectWormConfigurationResult:
+        """
+        Enables object retention on the bucket and configures a retention policy.
+
+        Args:
+            request (PutBucketObjectWormConfigurationRequest): Request parameters for PutBucketObjectWormConfiguration operation.
+
+        Returns:
+            PutBucketObjectWormConfigurationResult: Response result for PutBucketObjectWormConfiguration operation.
+        """
+        return operations.put_bucket_object_worm_configuration(self._client, request, **kwargs)
+
+
+    def get_bucket_object_worm_configuration(self, request: models.GetBucketObjectWormConfigurationRequest, **kwargs
+                                             ) -> models.GetBucketObjectWormConfigurationResult:
+        """
+        Queries the object-level retention policy of a bucket.
+
+        Args:
+            request (GetBucketObjectWormConfigurationRequest): Request parameters for GetBucketObjectWormConfiguration operation.
+
+        Returns:
+            GetBucketObjectWormConfigurationResult: Response result for GetBucketObjectWormConfiguration operation.
+        """
+        return operations.get_bucket_object_worm_configuration(self._client, request, **kwargs)
+
+
     # bucket request payment
     def put_bucket_request_payment(self, request: models.PutBucketRequestPaymentRequest, **kwargs
                                ) -> models.PutBucketRequestPaymentResult:

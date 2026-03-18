@@ -43,6 +43,7 @@ from .models.bucket_https_config import *
 from .models.cloud_box import *
 from .models.select_object import *
 from .models.bucket_overwrite_config import *
+from .models.bucket_object_worm_configuration import *
 
 from .config import Config
 from .client import Client
