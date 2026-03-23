@@ -32,3 +32,5 @@ from .bucket_https_config import *
 from .cloud_box import *
 from .select_object import select_object, create_select_object_meta
 from .bucket_overwrite_config import *
+from .object_worm import *
+from .bucket_object_worm_configuration import *
