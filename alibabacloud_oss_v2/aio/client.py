@@ -342,6 +342,86 @@ class AsyncClient:
 
         return await operations.delete_multiple_objects(self._client, request, **kwargs)
 
+    # bucket object worm configuration
+    async def put_bucket_object_worm_configuration(self, request: models.PutBucketObjectWormConfigurationRequest, **kwargs
+                                                   ) -> models.PutBucketObjectWormConfigurationResult:
+        """
+        Enables object retention on the bucket and configures a retention policy.
+
+        Args:
+            request (PutBucketObjectWormConfigurationRequest): Request parameters for PutBucketObjectWormConfiguration operation.
+
+        Returns:
+            PutBucketObjectWormConfigurationResult: Response result for PutBucketObjectWormConfiguration operation.
+        """
+        return await operations.put_bucket_object_worm_configuration(self._client, request, **kwargs)
+
+    async def get_bucket_object_worm_configuration(self, request: models.GetBucketObjectWormConfigurationRequest, **kwargs
+                                                   ) -> models.GetBucketObjectWormConfigurationResult:
+        """
+        Queries the object-level retention policy of a bucket.
+
+        Args:
+            request (GetBucketObjectWormConfigurationRequest): Request parameters for GetBucketObjectWormConfiguration operation.
+
+        Returns:
+            GetBucketObjectWormConfigurationResult: Response result for GetBucketObjectWormConfiguration operation.
+        """
+        return await operations.get_bucket_object_worm_configuration(self._client, request, **kwargs)
+
+    # object worm - retention and legal hold
+    async def put_object_retention(self, request: models.PutObjectRetentionRequest, **kwargs
+                                   ) -> models.PutObjectRetentionResult:
+        """
+        Configures object retention (WORM protection) for an object.
+
+        Args:
+            request (PutObjectRetentionRequest): Request parameters for PutObjectRetention operation.
+
+        Returns:
+            PutObjectRetentionResult: Response result for PutObjectRetention operation.
+        """
+        return await operations.put_object_retention(self._client, request, **kwargs)
+
+    async def get_object_retention(self, request: models.GetObjectRetentionRequest, **kwargs
+                                   ) -> models.GetObjectRetentionResult:
+        """
+        Queries object retention (WORM protection) configuration for an object.
+
+        Args:
+            request (GetObjectRetentionRequest): Request parameters for GetObjectRetention operation.
+
+        Returns:
+            GetObjectRetentionResult: Response result for GetObjectRetention operation.
+        """
+        return await operations.get_object_retention(self._client, request, **kwargs)
+
+    async def put_object_legal_hold(self, request: models.PutObjectLegalHoldRequest, **kwargs
+                                    ) -> models.PutObjectLegalHoldResult:
+        """
+        Configures legal hold for an object.
+
+        Args:
+            request (PutObjectLegalHoldRequest): Request parameters for PutObjectLegalHold operation.
+
+        Returns:
+            PutObjectLegalHoldResult: Response result for PutObjectLegalHold operation.
+        """
+        return await operations.put_object_legal_hold(self._client, request, **kwargs)
+
+    async def get_object_legal_hold(self, request: models.GetObjectLegalHoldRequest, **kwargs
+                                    ) -> models.GetObjectLegalHoldResult:
+        """
+        Queries legal hold configuration for an object.
+
+        Args:
+            request (GetObjectLegalHoldRequest): Request parameters for GetObjectLegalHold operation.
+
+        Returns:
+            GetObjectLegalHoldResult: Response result for GetObjectLegalHold operation.
+        """
+        return await operations.get_object_legal_hold(self._client, request, **kwargs)
+
     async def head_object(self, request: models.HeadObjectRequest, **kwargs
                     ) -> models.HeadObjectResult:
         """
