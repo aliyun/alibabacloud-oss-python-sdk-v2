@@ -174,130 +174,165 @@ class TestGetBucketObjectWormConfiguration(unittest.TestCase):
         self.assertEqual('GOVERNANCE', result.object_worm_configuration.rule.default_retention.mode)
         self.assertEqual(1, result.object_worm_configuration.rule.default_retention.days)
 
-
     def test_validation(self):
-        print("Testing WORM rule validation...")
-        print("=" * 80)
-    
+        """Test WORM rule validation for days and years fields."""
         # Test 1: Both days and years are None (should fail)
-        print("\nTest 1: Both days and years are None (should fail)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE'
+        with self.assertRaises(ValueError) as context:
+            model.PutBucketObjectWormConfigurationRequest(
+                bucket='bucketexampletest',
+                object_worm_configuration=model.ObjectWormConfiguration(
+                    object_worm_enabled='Enabled',
+                    rule=model.ObjectWormConfigurationRule(
+                        default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                            mode='GOVERNANCE'
+                        ),
+                    ),
+                ),
             )
-            print("  ✗ FAILED: Should have raised ValueError")
-        except ValueError as e:
-            print(f"  ✓ PASSED: {str(e)}")
-        except Exception as e:
-            print(f"  ✗ FAILED: Unexpected error: {str(e)}")
-    
+        self.assertIn("Either 'days' or 'years' must be specified", str(context.exception))
+        
         # Test 2: days = 0 (should fail)
-        print("\nTest 2: days = 0 (should fail)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                days=0
+        with self.assertRaises(ValueError) as context:
+            model.PutBucketObjectWormConfigurationRequest(
+                bucket='bucketexampletest',
+                object_worm_configuration=model.ObjectWormConfiguration(
+                    object_worm_enabled='Enabled',
+                    rule=model.ObjectWormConfigurationRule(
+                        default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                            mode='GOVERNANCE',
+                            days=0
+                        ),
+                    ),
+                ),
             )
-            print("  ✗ FAILED: Should have raised ValueError")
-        except ValueError as e:
-            print(f"  ✓ PASSED: {str(e)}")
-        except Exception as e:
-            print(f"  ✗ FAILED: Unexpected error: {str(e)}")
-    
+        self.assertIn("'days' must be greater than 0", str(context.exception))
+        
         # Test 3: days < 0 (should fail)
-        print("\nTest 3: days < 0 (should fail)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                days=-5
+        with self.assertRaises(ValueError) as context:
+            model.PutBucketObjectWormConfigurationRequest(
+                bucket='bucketexampletest',
+                object_worm_configuration=model.ObjectWormConfiguration(
+                    object_worm_enabled='Enabled',
+                    rule=model.ObjectWormConfigurationRule(
+                        default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                            mode='GOVERNANCE',
+                            days=-5
+                        ),
+                    ),
+                ),
             )
-            print("  ✗ FAILED: Should have raised ValueError")
-        except ValueError as e:
-            print(f"  ✓ PASSED: {str(e)}")
-        except Exception as e:
-            print(f"  ✗ FAILED: Unexpected error: {str(e)}")
-    
+        self.assertIn("'days' must be greater than 0", str(context.exception))
+        
         # Test 4: years = 0 (should fail)
-        print("\nTest 4: years = 0 (should fail)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                years=0
+        with self.assertRaises(ValueError) as context:
+            model.PutBucketObjectWormConfigurationRequest(
+                bucket='bucketexampletest',
+                object_worm_configuration=model.ObjectWormConfiguration(
+                    object_worm_enabled='Enabled',
+                    rule=model.ObjectWormConfigurationRule(
+                        default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                            mode='GOVERNANCE',
+                            years=0
+                        ),
+                    ),
+                ),
             )
-            print("  ✗ FAILED: Should have raised ValueError")
-        except ValueError as e:
-            print(f"  ✓ PASSED: {str(e)}")
-        except Exception as e:
-            print(f"  ✗ FAILED: Unexpected error: {str(e)}")
-    
+        self.assertIn("'years' must be greater than 0", str(context.exception))
+        
         # Test 5: years < 0 (should fail)
-        print("\nTest 5: years < 0 (should fail)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                years=-3
+        with self.assertRaises(ValueError) as context:
+            model.PutBucketObjectWormConfigurationRequest(
+                bucket='bucketexampletest',
+                object_worm_configuration=model.ObjectWormConfiguration(
+                    object_worm_enabled='Enabled',
+                    rule=model.ObjectWormConfigurationRule(
+                        default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                            mode='GOVERNANCE',
+                            years=-3
+                        ),
+                    ),
+                ),
             )
-            print("  ✗ FAILED: Should have raised ValueError")
-        except ValueError as e:
-            print(f"  ✓ PASSED: {str(e)}")
-        except Exception as e:
-            print(f"  ✗ FAILED: Unexpected error: {str(e)}")
-    
+        self.assertIn("'years' must be greater than 0", str(context.exception))
+        
         # Test 6: Only days specified (should pass)
-        print("\nTest 6: Only days specified (should pass)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                days=30
-            )
-            print(f"  ✓ PASSED: Created with days={retention.days}, years={retention.years}")
-        except Exception as e:
-            print(f"  ✗ FAILED: {str(e)}")
-    
+        request = model.PutBucketObjectWormConfigurationRequest(
+            bucket='bucketexampletest',
+            object_worm_configuration=model.ObjectWormConfiguration(
+                object_worm_enabled='Enabled',
+                rule=model.ObjectWormConfigurationRule(
+                    default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                        mode='GOVERNANCE',
+                        days=30
+                    ),
+                ),
+            ),
+        )
+        self.assertEqual('bucketexampletest', request.bucket)
+        self.assertEqual(30, request.object_worm_configuration.rule.default_retention.days)
+        self.assertIsNone(request.object_worm_configuration.rule.default_retention.years)
+        
         # Test 7: Only years specified (should pass)
-        print("\nTest 7: Only years specified (should pass)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='COMPLIANCE',
-                years=5
-            )
-            print(f"  ✓ PASSED: Created with days={retention.days}, years={retention.years}")
-        except Exception as e:
-            print(f"  ✗ FAILED: {str(e)}")
-    
+        request = model.PutBucketObjectWormConfigurationRequest(
+            bucket='bucketexampletest',
+            object_worm_configuration=model.ObjectWormConfiguration(
+                object_worm_enabled='Enabled',
+                rule=model.ObjectWormConfigurationRule(
+                    default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                        mode='COMPLIANCE',
+                        years=5
+                    ),
+                ),
+            ),
+        )
+        self.assertEqual('bucketexampletest', request.bucket)
+        self.assertIsNone(request.object_worm_configuration.rule.default_retention.days)
+        self.assertEqual(5, request.object_worm_configuration.rule.default_retention.years)
+        
         # Test 8: Both days and years specified (should pass)
-        print("\nTest 8: Both days and years specified (should pass)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                days=365,
-                years=1
-            )
-            print(f"  ✓ PASSED: Created with days={retention.days}, years={retention.years}")
-        except Exception as e:
-            print(f"  ✗ FAILED: {str(e)}")
-    
+        request = model.PutBucketObjectWormConfigurationRequest(
+            bucket='bucketexampletest',
+            object_worm_configuration=model.ObjectWormConfiguration(
+                object_worm_enabled='Enabled',
+                rule=model.ObjectWormConfigurationRule(
+                    default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                        mode='GOVERNANCE',
+                        days=365,
+                        years=1
+                    ),
+                ),
+            ),
+        )
+        self.assertEqual('bucketexampletest', request.bucket)
+        self.assertEqual(365, request.object_worm_configuration.rule.default_retention.days)
+        self.assertEqual(1, request.object_worm_configuration.rule.default_retention.years)
+        
         # Test 9: days = 1 (boundary, should pass)
-        print("\nTest 9: days = 1 (boundary, should pass)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                days=1
-            )
-            print(f"  ✓ PASSED: Created with days={retention.days}")
-        except Exception as e:
-            print(f"  ✗ FAILED: {str(e)}")
-    
+        request = model.PutBucketObjectWormConfigurationRequest(
+            bucket='bucketexampletest',
+            object_worm_configuration=model.ObjectWormConfiguration(
+                object_worm_enabled='Enabled',
+                rule=model.ObjectWormConfigurationRule(
+                    default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                        mode='GOVERNANCE',
+                        days=1
+                    ),
+                ),
+            ),
+        )
+        self.assertEqual(1, request.object_worm_configuration.rule.default_retention.days)
+        
         # Test 10: years = 1 (boundary, should pass)
-        print("\nTest 10: years = 1 (boundary, should pass)")
-        try:
-            retention = model.ObjectWormConfigurationRuleDefaultRetention(
-                mode='GOVERNANCE',
-                years=1
-            )
-            print(f"  ✓ PASSED: Created with years={retention.years}")
-        except Exception as e:
-            print(f"  ✗ FAILED: {str(e)}")
-    
-        print("\n" + "=" * 80)
-        print("Validation tests completed!")
+        request = model.PutBucketObjectWormConfigurationRequest(
+            bucket='bucketexampletest',
+            object_worm_configuration=model.ObjectWormConfiguration(
+                object_worm_enabled='Enabled',
+                rule=model.ObjectWormConfigurationRule(
+                    default_retention=model.ObjectWormConfigurationRuleDefaultRetention(
+                        mode='GOVERNANCE',
+                        years=1
+                    ),
+                ),
+            ),
+        )
+        self.assertEqual(1, request.object_worm_configuration.rule.default_retention.years)
