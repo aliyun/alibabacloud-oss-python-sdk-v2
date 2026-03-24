@@ -41,6 +41,8 @@ class TestPutObjectRetention(unittest.TestCase):
         request = model.PutObjectRetentionRequest(
             bucket='test-bucket',
             key='test-object',
+            version_id='version123',
+            bypass_governance_retention=True,
             retention=model.Retention(
                 mode=model.ObjectRetentionModeType.GOVERNANCE,
                 retain_until_date='2025-01-01T00:00:00.000Z',
@@ -57,6 +59,8 @@ class TestPutObjectRetention(unittest.TestCase):
         self.assertEqual('PUT', op_input.method)
         self.assertEqual('test-bucket', op_input.bucket)
         self.assertEqual('test-object', op_input.key)
+        self.assertEqual('version123', op_input.parameters.get('versionId'))
+        self.assertEqual(True, bool(op_input.headers.get('x-oss-bypass-governance-retention')))
 
     def test_constructor_result(self):
         result = model.PutObjectRetentionResult()
