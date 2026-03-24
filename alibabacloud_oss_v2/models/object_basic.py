@@ -34,6 +34,10 @@ class PutObjectRequest(serde.RequestModel):
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
         "traffic_limit": {"tag": "input", "position": "header", "rename": "x-oss-traffic-limit", "type": "int"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        # Object WORM fields
+        "object_worm_retain_until_date": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-retain-until-date"},
+        "object_worm_mode": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-mode"},
+        "object_worm_legal_hold": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-legal-hold"},
         "body": {"tag": "input", "position": "body"},
         "progress_fn": {},
     }
@@ -61,6 +65,9 @@ class PutObjectRequest(serde.RequestModel):
         forbid_overwrite: Optional[Union[str, bool]] = None,
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
+        object_worm_retain_until_date: Optional[str] = None,
+        object_worm_mode: Optional[str] = None,
+        object_worm_legal_hold: Optional[str] = None,
         body: Optional[BodyType] = None,
         progress_fn: Optional[Any] = None,
         object_acl: Optional[str] = None,
@@ -95,6 +102,9 @@ class PutObjectRequest(serde.RequestModel):
             traffic_limit (int, optional): Specify the speed limit value.
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_worm_retain_until_date (str, optional): The absolute date and time for the Object-level retention policy.
+            object_worm_mode (str, optional): Object-level retention strategy pattern.
+            object_worm_legal_hold (str, optional): Object legal hold switch.
             body (BodyType,optional): Object data.
             progress_fn (Any,optional): Progress callback function.
             object_acl (str, optional): The access control list (ACL) of the object.
@@ -123,6 +133,9 @@ class PutObjectRequest(serde.RequestModel):
         self.forbid_overwrite = forbid_overwrite
         self.traffic_limit = traffic_limit
         self.request_payer = request_payer
+        self.object_worm_retain_until_date = object_worm_retain_until_date
+        self.object_worm_mode = object_worm_mode
+        self.object_worm_legal_hold = object_worm_legal_hold
         self.body = body
         self.progress_fn = progress_fn
 
@@ -253,6 +266,10 @@ class HeadObjectResult(serde.ResultModel):
         "expose_headers": {"tag": "output", "position": "header", "rename": "Access-Control-Expose-Headers"},
         'transition_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-transition-time'},
         'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time'},
+        # Object WORM fields
+        "object_worm_retain_until_date": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-retain-until-date"},
+        "object_worm_mode": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-mode"},
+        "object_worm_legal_hold": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-legal-hold"},
     }
 
     def __init__(
@@ -287,6 +304,9 @@ class HeadObjectResult(serde.ResultModel):
         expose_headers: Optional[str] = None,
         transition_time: Optional[str] = None,
         sealed_time: Optional[str] = None,
+        object_worm_retain_until_date: Optional[str] = None,
+        object_worm_mode: Optional[str] = None,
+        object_worm_legal_hold: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -334,6 +354,9 @@ class HeadObjectResult(serde.ResultModel):
             expose_headers (str, optional): The headers that can be accessed by JavaScript applications on the client.
             transition_time (str, optional): The time when the storage class of the object is converted to Cold Archive or Deep Cold Archive based on lifecycle rules.
             sealed_time (str, optional): The time when the object was sealed.
+            object_worm_retain_until_date (str, optional): The absolute date and time for the Object-level retention policy.
+            object_worm_mode (str, optional): Object-level retention strategy pattern.
+            object_worm_legal_hold (str, optional): Object legal hold switch.
         """
         super().__init__(**kwargs)
         self.content_length = content_length
@@ -366,6 +389,9 @@ class HeadObjectResult(serde.ResultModel):
         self.expose_headers = expose_headers
         self.transition_time = transition_time
         self.sealed_time = sealed_time
+        self.object_worm_retain_until_date = object_worm_retain_until_date
+        self.object_worm_mode = object_worm_mode
+        self.object_worm_legal_hold = object_worm_legal_hold
 
 class GetObjectRequest(serde.RequestModel):
     """The request for the GetObject operation."""
@@ -514,6 +540,10 @@ class GetObjectResult(serde.ResultModel):
         "process_status": {"tag": "output", "position": "header", "rename": "x-oss-process-status"},
         "delete_marker": {"tag": "output", "position": "header", "rename": "x-oss-delete-marker", "type": "bool"},
         'sealed_time': {'tag': 'output', 'position': 'header', 'rename': 'x-oss-sealed-time'},
+        # Object WORM fields
+        "object_worm_retain_until_date": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-retain-until-date"},
+        "object_worm_mode": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-mode"},
+        "object_worm_legal_hold": {"tag": "output", "position": "header", "rename": "x-oss-object-worm-legal-hold"},
         "body": {},
     }
 
@@ -544,6 +574,9 @@ class GetObjectResult(serde.ResultModel):
         process_status: Optional[str] = None,
         delete_marker: Optional[bool] = None,
         sealed_time: Optional[str] = None,
+        object_worm_retain_until_date: Optional[str] = None,
+        object_worm_mode: Optional[str] = None,
+        object_worm_legal_hold: Optional[str] = None,
         body: Optional[Union[StreamBody, AsyncStreamBody]] = None,
         **kwargs: Any
     ) -> None:
@@ -586,6 +619,9 @@ class GetObjectResult(serde.ResultModel):
             process_status (str, optional): The result of an event notification that is triggered for the object.
             delete_marker (bool, optional): Specifies whether the object retrieved was (true) or was not (false) a Delete  Marker.
             sealed_time (str, optional): The time when the object was sealed.
+            object_worm_retain_until_date (str, optional): The absolute date and time for the Object-level retention policy.
+            object_worm_mode (str, optional): Object-level retention strategy pattern.
+            object_worm_legal_hold (str, optional): Object legal hold switch.
             body (Any, optional): Object data.
         """
         super().__init__(**kwargs)
@@ -614,6 +650,9 @@ class GetObjectResult(serde.ResultModel):
         self.process_status = process_status
         self.delete_marker = delete_marker
         self.sealed_time = sealed_time
+        self.object_worm_retain_until_date = object_worm_retain_until_date
+        self.object_worm_mode = object_worm_mode
+        self.object_worm_legal_hold = object_worm_legal_hold
         self.body = body
 
 
@@ -813,6 +852,10 @@ class CopyObjectRequest(serde.RequestModel):
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
         "traffic_limit": {"tag": "input", "position": "header", "rename": "x-oss-traffic-limit", "type": "int"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        # Object WORM fields
+        "object_worm_retain_until_date": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-retain-until-date"},
+        "object_worm_mode": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-mode"},
+        "object_worm_legal_hold": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-legal-hold"},
         "progress_fn": {},
     }
 
@@ -846,6 +889,9 @@ class CopyObjectRequest(serde.RequestModel):
         forbid_overwrite: Optional[Union[str, bool]] = None,
         traffic_limit: Optional[int] = None,
         request_payer: Optional[str] = None,
+        object_worm_retain_until_date: Optional[str] = None,
+        object_worm_mode: Optional[str] = None,
+        object_worm_legal_hold: Optional[str] = None,
         progress_fn: Optional[Any] = None,
         object_acl: Optional[str] = None,
         **kwargs: Any
@@ -901,6 +947,9 @@ class CopyObjectRequest(serde.RequestModel):
             traffic_limit (int, optional): Specify the speed limit value.
                 The speed limit value ranges from 245760 to 838860800, with a unit of bit/s.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_worm_retain_until_date (str, optional): The absolute date and time for the Object-level retention policy.
+            object_worm_mode (str, optional): Object-level retention strategy pattern.
+            object_worm_legal_hold (str, optional): Object legal hold switch.
             progress_fn (Any,optional):  Progress callback function, it works in Copier.copy only.
             object_acl (str, optional): The access control list (ACL) of the object.
                 The object_acl parameter has the same functionality as the acl parameter. it is the standardized name for acl.
@@ -935,6 +984,9 @@ class CopyObjectRequest(serde.RequestModel):
         self.forbid_overwrite = forbid_overwrite
         self.traffic_limit = traffic_limit
         self.request_payer = request_payer
+        self.object_worm_retain_until_date = object_worm_retain_until_date
+        self.object_worm_mode = object_worm_mode
+        self.object_worm_legal_hold = object_worm_legal_hold
         self.progress_fn = progress_fn
 
 
@@ -997,6 +1049,8 @@ class DeleteObjectRequest(serde.RequestModel):
         "key": {"tag": "input", "position": "path", "required": True},
         "version_id": {"tag": "input", "position": "query", "rename": "versionId"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        # Object WORM field
+        "bypass_governance_retention": {"tag": "input", "position": "header", "rename": "x-oss-bypass-governance-retention", "type": "bool"},
     }
 
     def __init__(
@@ -1005,6 +1059,7 @@ class DeleteObjectRequest(serde.RequestModel):
         key: str = None,
         version_id: Optional[str] = None,
         request_payer: Optional[str] = None,
+        bypass_governance_retention: Optional[Union[str, bool]] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1013,12 +1068,14 @@ class DeleteObjectRequest(serde.RequestModel):
             key (str, required): The name of the object.
             version_id (str, optional): The version ID of the object.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            bypass_governance_retention (Union[str, bool], optional): Bypass the governance retention mode.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.key = key
         self.version_id = version_id
         self.request_payer = request_payer
+        self.bypass_governance_retention = bypass_governance_retention
 
 
 class DeleteObjectResult(serde.ResultModel):
@@ -1141,6 +1198,8 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         "quiet": {"tag": "input", "position": "nop"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
         "delete": {"tag": "input", "position": "body", "rename": "nop"},
+        # Object WORM field
+        "bypass_governance_retention": {"tag": "input", "position": "header", "rename": "x-oss-bypass-governance-retention", "type": "bool"},
     }
 
     def __init__(
@@ -1151,6 +1210,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         quiet: Optional[bool] = None,
         request_payer: Optional[str] = None,
         delete: Optional[Delete] = None,
+        bypass_governance_retention: Optional[Union[str, bool]] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -1164,6 +1224,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
                 This parameter is deprecated. Use 'delete' parameter instead.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
             delete (Delete, optional): The container that stores information about you want to delete objects.
+            bypass_governance_retention (Union[str, bool], optional): Bypass the governance retention mode.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -1172,6 +1233,7 @@ class DeleteMultipleObjectsRequest(serde.RequestModel):
         self.quiet = quiet
         self.request_payer = request_payer
         self.delete = delete
+        self.bypass_governance_retention = bypass_governance_retention
 
 
 class DeletedInfo(serde.Model):
@@ -1593,6 +1655,10 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         "tagging": {"tag": "input", "position": "header", "rename": "x-oss-tagging"},
         "forbid_overwrite": {"tag": "input", "position": "header", "rename": "x-oss-forbid-overwrite", "type": "bool"},
         "request_payer": {"tag": "input", "position": "header", "rename": "x-oss-request-payer"},
+        # Object WORM fields
+        "object_worm_retain_until_date": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-retain-until-date"},
+        "object_worm_mode": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-mode"},
+        "object_worm_legal_hold": {"tag": "input", "position": "header", "rename": "x-oss-object-worm-legal-hold"},
         "cse_data_size": {},
         "cse_part_size": {},
         "disable_auto_detect_mime_type": {},
@@ -1617,6 +1683,9 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         tagging: Optional[str] = None,
         forbid_overwrite: Optional[Union[str, bool]] = None,
         request_payer: Optional[str] = None,
+        object_worm_retain_until_date: Optional[str] = None,
+        object_worm_mode: Optional[str] = None,
+        object_worm_legal_hold: Optional[str] = None,
         cse_data_size: Optional[int] = None,
         cse_part_size: Optional[int] = None,
         disable_auto_detect_mime_type: Optional[bool] = None,
@@ -1647,6 +1716,9 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
             forbid_overwrite (Union[str, bool], optional): Specifies whether the object that is uploaded by calling the PutObject operation
                 overwrites an existing object that has the same name.
             request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs.
+            object_worm_retain_until_date (str, optional): The absolute date and time for the Object-level retention policy.
+            object_worm_mode (str, optional): Object-level retention strategy pattern.
+            object_worm_legal_hold (str, optional): Object legal hold switch.
             cse_data_size (int, optional): The total size when using client side encryption.
                 Only valid in EncryptionClient.
             cse_part_size (int, optional): The part size when using client side encryption.
@@ -1673,6 +1745,9 @@ class InitiateMultipartUploadRequest(serde.RequestModel):
         self.tagging = tagging
         self.forbid_overwrite = forbid_overwrite
         self.request_payer = request_payer
+        self.object_worm_retain_until_date = object_worm_retain_until_date
+        self.object_worm_mode = object_worm_mode
+        self.object_worm_legal_hold = object_worm_legal_hold
         self.cse_data_size = cse_data_size
         self.cse_part_size = cse_part_size
         self.disable_auto_detect_mime_type = disable_auto_detect_mime_type

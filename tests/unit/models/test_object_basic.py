@@ -68,6 +68,9 @@ class TestPutObject(unittest.TestCase):
             forbid_overwrite=True,
             traffic_limit=100*1024*8,
             request_payer='request_payer-test',
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
             body='body-test',
             progress_fn='progress_fn-test',
         )
@@ -95,6 +98,9 @@ class TestPutObject(unittest.TestCase):
         self.assertEqual(True, request.forbid_overwrite)
         self.assertEqual(100 * 1024 * 8, request.traffic_limit)
         self.assertEqual('request_payer-test', request.request_payer)
+        self.assertEqual('2025-12-01T10:00:00.000Z', request.object_worm_retain_until_date)
+        self.assertEqual('GOVERNANCE', request.object_worm_mode)
+        self.assertEqual('ON', request.object_worm_legal_hold)
         self.assertEqual('body-test', request.body)
         self.assertEqual('progress_fn-test', request.progress_fn)
 
@@ -442,6 +448,9 @@ class TestHeadObject(unittest.TestCase):
             expose_headers='{a:a1, b:b2}',
             transition_time='2024-10-12T00:00:00.000Z',
             sealed_time='2024-12-01T10:00:00.000Z',
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
         )
         self.assertEqual(1024, result.content_length)
         self.assertEqual('text/xml', result.content_type)
@@ -473,6 +482,9 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('{a:a1, b:b2}', result.expose_headers)
         self.assertEqual('2024-10-12T00:00:00.000Z', result.transition_time)
         self.assertEqual('2024-12-01T10:00:00.000Z', result.sealed_time)
+        self.assertEqual('2025-12-01T10:00:00.000Z', result.object_worm_retain_until_date)
+        self.assertEqual('GOVERNANCE', result.object_worm_mode)
+        self.assertEqual('ON', result.object_worm_legal_hold)
 
         result = model.HeadObjectResult(
             expose_headers='expose_headers-test',
@@ -495,7 +507,10 @@ class TestHeadObject(unittest.TestCase):
                     'etag': '"D41D8CD98F00B204E9800998ECF8****"',
                     'hash_crc64': '316181249502703****',
                     'version_id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
-                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT'
+                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT',
+                    'x-oss-object-worm-retain-until-date': '2025-12-01T10:00:00.000Z',
+                    'x-oss-object-worm-mode': 'GOVERNANCE',
+                    'x-oss-object-worm-legal-hold': 'ON',
                 }),
                 http_response=MockHttpResponse(
                     status_code=200,
@@ -513,6 +528,9 @@ class TestHeadObject(unittest.TestCase):
         self.assertEqual('316181249502703****', result.headers.get('hash_crc64'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('version_id'))
         self.assertEqual('Wed, 07 May 2025 23:00:00 GMT', result.headers.get('x-oss-sealed-time'))
+        self.assertEqual('2025-12-01T10:00:00.000Z', result.headers.get('x-oss-object-worm-retain-until-date'))
+        self.assertEqual('GOVERNANCE', result.headers.get('x-oss-object-worm-mode'))
+        self.assertEqual('ON', result.headers.get('x-oss-object-worm-legal-hold'))
 
 
 class TestGetObject(unittest.TestCase):
@@ -729,6 +747,9 @@ class TestGetObject(unittest.TestCase):
             process_status='process_status-test',
             delete_marker=True,
             sealed_time='2024-12-01T10:00:00.000Z',
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
         )
         self.assertEqual(1024 * 10, int(result.content_length))
         self.assertEqual('bytes 0~9/44', result.content_range)
@@ -754,6 +775,9 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual('process_status-test', result.process_status)
         self.assertEqual(True, bool(result.delete_marker))
         self.assertEqual('2024-12-01T10:00:00.000Z', result.sealed_time)
+        self.assertEqual('2025-12-01T10:00:00.000Z', result.object_worm_retain_until_date)
+        self.assertEqual('GOVERNANCE', result.object_worm_mode)
+        self.assertEqual('ON', result.object_worm_legal_hold)
 
         result = model.GetObjectResult(
             delete_marker=True,
@@ -776,7 +800,10 @@ class TestGetObject(unittest.TestCase):
                     'etag': '"D41D8CD98F00B204E9800998ECF8****"',
                     'hash_crc64': '316181249502703****',
                     'version_id': 'CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
-                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT'
+                    'x-oss-sealed-time': 'Wed, 07 May 2025 23:00:00 GMT',
+                    'x-oss-object-worm-retain-until-date': '2025-12-01T10:00:00.000Z',
+                    'x-oss-object-worm-mode': 'GOVERNANCE',
+                    'x-oss-object-worm-legal-hold': 'ON',
                 }),
                 http_response=MockHttpResponse(
                     status_code=200,
@@ -794,7 +821,9 @@ class TestGetObject(unittest.TestCase):
         self.assertEqual('316181249502703****', result.headers.get('hash_crc64'))
         self.assertEqual('CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****', result.headers.get('version_id'))
         self.assertEqual('Wed, 07 May 2025 23:00:00 GMT', result.headers.get('x-oss-sealed-time'))
-
+        self.assertEqual('2025-12-01T10:00:00.000Z', result.headers.get('x-oss-object-worm-retain-until-date'))
+        self.assertEqual('GOVERNANCE', result.headers.get('x-oss-object-worm-mode'))
+        self.assertEqual('ON', result.headers.get('x-oss-object-worm-legal-hold'))
 
 class TestAppendObject(unittest.TestCase):
     def test_constructor_request(self):
@@ -1255,6 +1284,9 @@ class TestCopyObject(unittest.TestCase):
             traffic_limit=100*1024*8,
             request_payer='requester',
             progress_fn='progress_fn-test',
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -1291,6 +1323,9 @@ class TestCopyObject(unittest.TestCase):
         self.assertEqual(True, bool(op_input.headers.get('x-oss-forbid-overwrite')))
         self.assertEqual(100*1024*8, int(op_input.headers.get('x-oss-traffic-limit')))
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+        self.assertEqual('2025-12-01T10:00:00.000Z', op_input.headers.get('x-oss-object-worm-retain-until-date'))
+        self.assertEqual('GOVERNANCE', op_input.headers.get('x-oss-object-worm-mode'))
+        self.assertEqual('ON', op_input.headers.get('x-oss-object-worm-legal-hold'))
 
     def test_constructor_result(self):
         result = model.CopyObjectResult()
@@ -1400,6 +1435,7 @@ class TestDeleteObject(unittest.TestCase):
             key='example-object-2.jpg',
             version_id='CAEQNhiBgMDJgZCA0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY0****',
             request_payer='requester',
+            bypass_governance_retention=True,
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -1411,6 +1447,7 @@ class TestDeleteObject(unittest.TestCase):
         self.assertEqual('DELETE', op_input.method)
         self.assertEqual('bucket_name', op_input.bucket)
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+        self.assertEqual(True, bool(op_input.headers.get('x-oss-bypass-governance-retention')))
 
     def test_constructor_result(self):
         result = model.DeleteObjectResult()
@@ -1489,6 +1526,7 @@ class TestDeleteMultipleObjects(unittest.TestCase):
             content_length=101,
             quiet=True,
             request_payer='requester',
+            bypass_governance_retention=True,
         )
         self.assertEqual('bucket_name', request.bucket)
         self.assertEqual('key1', request.objects[0].key)
@@ -1498,6 +1536,7 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertEqual('url', request.encoding_type)
         self.assertEqual(True, request.quiet)
         self.assertEqual('requester', request.request_payer)
+        self.assertEqual(True, request.bypass_governance_retention)
 
         request = model.DeleteMultipleObjectsRequest(
             bucket='bucket_name',
@@ -1783,6 +1822,7 @@ class TestDeleteMultipleObjects(unittest.TestCase):
             encoding_type='url',
             quiet=True,
             request_payer='requester',
+            bypass_governance_retention=True,
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -1794,6 +1834,7 @@ class TestDeleteMultipleObjects(unittest.TestCase):
         self.assertEqual('DELETE', op_input.method)
         self.assertEqual('bucket_name', op_input.bucket)
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+        self.assertEqual(True, bool(op_input.headers.get('x-oss-bypass-governance-retention')))
 
     def test_constructor_result(self):
         result = model.DeleteMultipleObjectsResult()
@@ -1975,7 +2016,9 @@ class TestGetObjectMeta(unittest.TestCase):
                     'ETag': '"1CF5A685959CA2ED8DE6E5F8ACC2****"',
                     'x-oss-last-access-time': 'Thu, 14 Oct 2021 11:49:05 GMT',
                     'Last-Modified': 'Tue, 09 Apr 2019 06:24:00 GMT',
-
+                    'x-oss-object-worm-retain-until-date': '2025-12-01T10:00:00.000Z',
+                    'x-oss-object-worm-mode': 'GOVERNANCE',
+                    'x-oss-object-worm-legal-hold': 'ON',
                 }),
                 http_response=MockHttpResponse(
                     status_code=200,
@@ -1991,6 +2034,9 @@ class TestGetObjectMeta(unittest.TestCase):
         self.assertEqual('"1CF5A685959CA2ED8DE6E5F8ACC2****"', result.headers.get('ETag'))
         self.assertEqual('Thu, 14 Oct 2021 11:49:05 GMT', result.headers.get('x-oss-last-access-time'))
         self.assertEqual('Tue, 09 Apr 2019 06:24:00 GMT', result.headers.get('Last-Modified'))
+        self.assertEqual('2025-12-01T10:00:00.000Z', result.headers.get('x-oss-object-worm-retain-until-date'))
+        self.assertEqual('GOVERNANCE', result.headers.get('x-oss-object-worm-mode'))
+        self.assertEqual('ON', result.headers.get('x-oss-object-worm-legal-hold'))
 
 
 class TestRestoreObject(unittest.TestCase):
@@ -2471,6 +2517,9 @@ class TestInitiateMultipartUpload(unittest.TestCase):
             request_payer='requester',
             cse_data_size=94472,
             cse_part_size=24210,
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
         )
         self.assertEqual('bucket_name', request.bucket)
         self.assertEqual('example-object-2.jpg', request.key)
@@ -2495,6 +2544,9 @@ class TestInitiateMultipartUpload(unittest.TestCase):
         self.assertEqual('requester', request.request_payer)
         self.assertEqual(94472, request.cse_data_size)
         self.assertEqual(24210, request.cse_part_size)
+        self.assertEqual('2025-12-01T10:00:00.000Z', request.object_worm_retain_until_date)
+        self.assertEqual('GOVERNANCE', request.object_worm_mode)
+        self.assertEqual('ON', request.object_worm_legal_hold)
 
         request = model.InitiateMultipartUploadRequest(
             bucket='bucket_name',
@@ -2558,6 +2610,9 @@ class TestInitiateMultipartUpload(unittest.TestCase):
             request_payer='requester',
             cse_data_size=26446,
             cse_part_size=6298,
+            object_worm_retain_until_date='2025-12-01T10:00:00.000Z',
+            object_worm_mode='GOVERNANCE',
+            object_worm_legal_hold='ON',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -2583,6 +2638,9 @@ class TestInitiateMultipartUpload(unittest.TestCase):
         self.assertEqual('tagging-test', op_input.headers.get('x-oss-tagging'))
         self.assertEqual(True, bool(op_input.headers.get('x-oss-forbid-overwrite')))
         self.assertEqual('requester', op_input.headers.get('x-oss-request-payer'))
+        self.assertEqual('2025-12-01T10:00:00.000Z', op_input.headers.get('x-oss-object-worm-retain-until-date'))
+        self.assertEqual('GOVERNANCE', op_input.headers.get('x-oss-object-worm-mode'))
+        self.assertEqual('ON', op_input.headers.get('x-oss-object-worm-legal-hold'))
 
     def test_constructor_result(self):
         result = model.InitiateMultipartUploadResult()

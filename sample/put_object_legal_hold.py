@@ -1,0 +1,44 @@
+import argparse
+import alibabacloud_oss_v2 as oss
+
+parser = argparse.ArgumentParser(description="put object legal hold sample")
+parser.add_argument('--region', help='The region in which the bucket is located.', required=True)
+parser.add_argument('--bucket', help='The name of the bucket.', required=True)
+parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
+parser.add_argument('--key', help='The name of the object.', required=True)
+
+
+def main():
+
+    args = parser.parse_args()
+
+    # Loading credentials values from the environment variables
+    credentials_provider = oss.credentials.EnvironmentVariableCredentialsProvider()
+
+    # Using the SDK's default configuration
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = credentials_provider
+    cfg.region = args.region
+    if args.endpoint is not None:
+        cfg.endpoint = args.endpoint
+
+    client = oss.Client(cfg)
+
+    # Create legal hold configuration
+    legal_hold_config = oss.LegalHold(
+        status=oss.ObjectLegalHoldStatusType.ON,
+    )
+
+    # Set object legal hold
+    result = client.put_object_legal_hold(oss.PutObjectLegalHoldRequest(
+        bucket=args.bucket,
+        key=args.key,
+        legal_hold=legal_hold_config,
+    ))
+
+    print(f'status code: {result.status_code},'
+          f' request id: {result.request_id}')
+
+
+if __name__ == "__main__":
+    main()
