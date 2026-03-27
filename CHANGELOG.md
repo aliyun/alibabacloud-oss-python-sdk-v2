@@ -1,5 +1,9 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.2.5 日期：2026-03-27
+### 变更内容
+- Fix: Add bucket object worm
+
 ## 版本号：1.2.4 日期：2026-02-05
 ### 变更内容
 - Fix: The reset method on writers was not called
