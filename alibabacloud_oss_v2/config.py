@@ -6,7 +6,7 @@ class Config(object):
     """Configuration for client."""
     def __init__(
         self,
-        region: str = None,
+        region: str,
         endpoint: Optional[str] = None,
         signature_version: Optional[str] = None,
         credentials_provider: Optional[CredentialsProvider] = None,
