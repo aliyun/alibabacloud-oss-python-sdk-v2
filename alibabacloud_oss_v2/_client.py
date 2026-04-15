@@ -201,10 +201,13 @@ class _ClientImplMixIn:
         if not options.endpoint:
             raise exceptions.ParamInvalidError(field="endpoint")
 
-        if (op_input.bucket is not None and
-                not validation.is_valid_bucket_name(op_input.bucket)):
-            raise exceptions.BucketNameInvalidError(
-                name=utils.safety_str(op_input.bucket))
+        if op_input.bucket is not None:
+            if op_input.op_metadata is not None and 'is_bucket_arn' in op_input.op_metadata:
+                validation.assert_validate_arn_bucket(op_input.bucket)
+            else:
+                if not validation.is_valid_bucket_name(op_input.bucket):
+                    raise exceptions.BucketNameInvalidError(
+                        name=utils.safety_str(op_input.bucket))
 
         if (op_input.key is not None and
                 not validation.is_valid_object_name(op_input.key)):
@@ -374,7 +377,10 @@ class _SyncClientImpl(_ClientImplMixIn):
                 _ = response.read()
 
             if response.headers.get('Content-Type', '') == 'application/json':
-                raise _to_service_error_json(response)
+                if 'x-oss-error-type' in response.headers:
+                    raise _to_service_error_json_v2(response)
+                else:
+                    raise _to_service_error_json(response)
             else:
                 raise _to_service_error(response)
 
@@ -740,6 +746,42 @@ def _to_service_error_json(response: HttpResponse) -> exceptions.ServiceError:
         headers=response.headers,
         error_fileds=error_fileds
     )
+
+def _to_service_error_json_v2(response: HttpResponse) -> exceptions.ServiceError:
+    # x-oss-error-type: BadRequestException
+    # {"message": "xxxx."}
+    timestamp = serde.deserialize_httptime(response.headers.get('Date'))
+    content = response.content or b''
+    response.close()
+
+    error_fileds = {}
+    code = response.headers.get('x-oss-error-type', 'BadErrorResponse')
+    message = ''
+    ec = ''
+    request_id = ''
+    err_body = b''
+    try:
+        err_body = content
+        root = json.loads(err_body)
+        message = root.get('message', '')
+    except json.JSONDecodeError as e:
+        message = f'Failed to parse json from response body due to: {str(e)}. With part response body {err_body[:256]}.'
+    except Exception as e:
+        message = f'The body of the response was not readable, due to : {str(e)}.'
+
+    return exceptions.ServiceError(
+        status_code=response.status_code,
+        code=code,
+        message=message,
+        request_id=request_id or response.headers.get('x-oss-request-id', ''),
+        ec=ec or response.headers.get('x-oss-ec', ''),
+        timestamp=timestamp,
+        request_target=f'{response.request.method} {response.request.url}',
+        snapshot=content,
+        headers=response.headers,
+        error_fileds=error_fileds
+    )
+
 
 def _build_user_agent(config: Config) -> str:
     if config.user_agent:

@@ -56,3 +56,23 @@ def is_valid_object_name(name: str) -> bool:
 def is_valid_range(value: str) -> bool:
     """Checks if the range is valid"""
     return value.startswith('bytes=')
+
+
+def assert_validate_arn_bucket(bucket: str) -> None:
+    """acs:service:region:account:resource"""
+    from .arns.arn import Arn
+
+    # Parse ARN to validate format
+    arn = Arn.from_string(bucket)
+
+    # Check if it's a bucket ARN (resource should start with "bucket/")
+    if not arn.resource or not arn.resource.startswith('bucket/'):
+        raise ValueError(f"Malformed ARN - doesn't contain bucket resource")
+
+    # Extract bucket name from resource (format: bucket/name)
+    bucket_name = arn.resource[7:]  # Remove "bucket/" prefix
+
+    # Validate bucket name
+    if not is_valid_bucket_name(bucket_name):
+        raise ValueError(f"bucket resource is invalid, got {bucket}.")
+

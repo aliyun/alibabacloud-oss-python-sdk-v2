@@ -1,0 +1,41 @@
+import argparse
+import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.tables as oss_tables
+
+parser = argparse.ArgumentParser(description="put table bucket encryption sample")
+parser.add_argument('--region', help='The region in which the table bucket is located.', required=True)
+parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS Tables.')
+parser.add_argument('--table-bucket-arn', help='The ARN of the table bucket.', required=True)
+parser.add_argument('--sse-algorithm', help='The server-side encryption algorithm.', required=True)
+parser.add_argument('--kms-key-arn', help='The KMS key ARN for encryption.')
+
+def main():
+    args = parser.parse_args()
+
+    credentials_provider = oss.credentials.EnvironmentVariableCredentialsProvider()
+
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = credentials_provider
+    cfg.region = args.region
+    if args.endpoint is not None:
+        cfg.endpoint = args.endpoint
+
+    client = oss_tables.Client(cfg)
+
+    encryption_configuration = oss_tables.models.EncryptionConfiguration(
+        sse_algorithm=args.sse_algorithm,
+        kms_key_arn=args.kms_key_arn,
+    )
+
+    result = client.put_table_bucket_encryption(oss_tables.models.PutTableBucketEncryptionRequest(
+        table_bucket_arn=args.table_bucket_arn,
+        encryption_configuration=encryption_configuration,
+    ))
+
+    print(f'status code: {result.status_code},'
+          f' request id: {result.request_id}')
+    print(f'successfully updated table bucket encryption for: {args.table_bucket_arn}')
+
+
+if __name__ == "__main__":
+    main()
