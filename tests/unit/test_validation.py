@@ -81,3 +81,96 @@ class TestValidation(unittest.TestCase):
             ]:
             self.assertFalse(validation.is_valid_range(value))
 
+    def test_assert_validate_arn_bucket_valid(self):
+        """Test valid bucket ARN formats."""
+        # Standard bucket ARN
+        validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/my-bucket")
+        validation.assert_validate_arn_bucket("acs:oss:cn-beijing:123456789012:bucket/test-bucket")
+        validation.assert_validate_arn_bucket("acs:oss:cn-shanghai:987654321098:bucket/bucket123")
+        validation.assert_validate_arn_bucket("acs:oss:us-west-1:123456789012:bucket/my-bucket")
+        validation.assert_validate_arn_bucket("acs:oss:ap-southeast-1:123456789012:bucket/my-bucket")
+        # Minimal valid bucket name (3 characters)
+        validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/abc")
+        # Maximal valid bucket name (63 characters)
+        validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/" + "a" * 63)
+
+    def test_assert_validate_arn_bucket_invalid_format(self):
+        """Test invalid ARN formats."""
+        # Doesn't start with 'acs:'
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("arn:oss:cn-hangzhou:123456789012:bucket/my-bucket")
+        self.assertIn("Malformed ARN - doesn't start with 'acs:'", str(context.exception))
+
+        # No service specified
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs::cn-hangzhou:123456789012:bucket/my-bucket")
+        self.assertIn("service cannot be empty", str(context.exception))
+
+        # No resource specified
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:")
+        self.assertIn("Malformed ARN - no resource specified", str(context.exception))
+
+        # None input
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket(None)
+        self.assertIn("ARN parsing failed", str(context.exception))
+
+        # Empty string input
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("")
+        self.assertIn("Malformed ARN", str(context.exception))
+
+    def test_assert_validate_arn_bucket_invalid_resource(self):
+        """Test invalid bucket resource formats."""
+        # Resource doesn't start with 'bucket/'
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:object/my-object")
+        self.assertIn("Malformed ARN - doesn't contain bucket resource", str(context.exception))
+
+        # Resource is 'bucket' but missing '/' separator
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucketmy-bucket")
+        self.assertIn("Malformed ARN - doesn't contain bucket resource", str(context.exception))
+
+    def test_assert_validate_arn_bucket_invalid_bucket_name(self):
+        """Test invalid bucket names in ARN."""
+        # Bucket name starts with hyphen
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/-invalid")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name ends with hyphen
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/invalid-")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name too short (less than 3 characters)
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/ab")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name too long (more than 63 characters)
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/" + "a" * 64)
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name contains uppercase letters
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/My-Bucket")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name contains underscore
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/my_bucket")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name contains special characters (dot)
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/my.bucket")
+        self.assertIn("bucket resource is invalid", str(context.exception))
+
+        # Bucket name is empty
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:123456789012:bucket/")
+        self.assertIn("bucket resource is invalid", str(context.exception))

@@ -5,11 +5,11 @@ from unittest import mock
 from typing import cast, Any, List, Iterable
 from alibabacloud_oss_v2 import (
     models,
-    config, 
-    client, 
-    credentials, 
-    exceptions, 
-    signer, 
+    config,
+    client,
+    credentials,
+    exceptions,
+    signer,
     defaults,
     retry,
     transport,
@@ -18,10 +18,10 @@ from alibabacloud_oss_v2 import (
     crc
 )
 from alibabacloud_oss_v2.types import (
-    HttpRequest, 
-    HttpResponse, 
-    HttpClient, 
-    OperationInput, 
+    HttpRequest,
+    HttpResponse,
+    HttpClient,
+    OperationInput,
     OperationOutput,
     SigningContext
 )
@@ -74,8 +74,8 @@ def _read_body(obj: Any) -> bytes:
 
 class NonSeekableFile:
     def __init__(self, reader) -> None:
-        self._reader =  reader   
-    
+        self._reader =  reader
+
     def read(self, n: int = -1):
         return self._reader.read(n)
     def readable(self) -> bool:
@@ -176,7 +176,7 @@ class TestSyncClient(unittest.TestCase):
         )
         clinet = client.Client(cfg)
         self.assertEqual('oss-cn-shenzhen.aliyuncs.com', clinet._client._options.endpoint.hostname)
-        self.assertEqual('http', clinet._client._options.endpoint.scheme)        
+        self.assertEqual('http', clinet._client._options.endpoint.scheme)
 
         cfg = config.Config(
             region='cn-shanghai',
@@ -378,7 +378,7 @@ class TestSyncClient(unittest.TestCase):
         )
         clinet = client.Client(cfg)
         flags = defaults.FF_CORRECT_CLOCK_SKEW + defaults.FF_AUTO_DETECT_MIME_TYPE + defaults.FF_ENABLE_CRC64_CHECK_DOWNLOAD
-        self.assertEqual(flags, clinet._client._options.feature_flags)                
+        self.assertEqual(flags, clinet._client._options.feature_flags)
 
     def test_config_additional_headers(self):
         cfg = config.Config(
@@ -495,7 +495,7 @@ class TestSyncClient(unittest.TestCase):
     def test_invoke_operation_user_agent(self):
         self.save_op_context: SigningContext = None
         self.save_options = None
-        
+
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
             self.save_op_context = context
             self.save_options = options
@@ -549,12 +549,12 @@ class TestSyncClient(unittest.TestCase):
         )
         clinet = client.Client(cfg)
 
- 
+
         # returns 200, no retry
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             return MockHttpResponse(
                 status_code=200,
@@ -577,7 +577,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.ServiceError(
                 status_code=500,
@@ -609,7 +609,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.RequestError(error=ValueError('Mock error'))
 
@@ -631,7 +631,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.ResponseError(error=ValueError('Mock error'))
 
@@ -654,7 +654,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.InconsistentError(client_crc='1234', server_crc='456')
 
@@ -678,7 +678,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.ServiceError(
                 status_code=403,
@@ -710,7 +710,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.CredentialsFetchError(error=ValueError('Mock Credentials error'))
 
@@ -734,7 +734,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_op_context = []
         self.save_options = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             raise exceptions.ServiceError(
                 status_code=500,
@@ -781,7 +781,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_data = []
         data = 'hello world'
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -814,13 +814,13 @@ class TestSyncClient(unittest.TestCase):
             for d in self.save_data:
                 self.assertEqual(data.encode(), d)
 
-        # bytes        
+        # bytes
         self.save_op_context = []
         self.save_options = []
         self.save_data = []
         data = b'hello world 123'
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -860,7 +860,7 @@ class TestSyncClient(unittest.TestCase):
         data = b'hello world'
         data_list = [b'h', b'e',b'l',b'l',b'o',b' ',b'w',b'o',b'r',b'l',b'd']
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -893,7 +893,7 @@ class TestSyncClient(unittest.TestCase):
             for d in self.save_data:
                 self.assertEqual(data, d)
 
-        # file        
+        # file
         self.save_op_context = []
         self.save_options = []
         self.save_data = []
@@ -903,7 +903,7 @@ class TestSyncClient(unittest.TestCase):
         self.assertGreater(len(data), 0)
 
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -940,9 +940,9 @@ class TestSyncClient(unittest.TestCase):
         # non-seekable file
         self.save_op_context = []
         self.save_options = []
-        self.save_data = []        
+        self.save_data = []
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -982,7 +982,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_data = []
         data = b'hello world'
         def _sent_http_request_once(context: SigningContext, options: Any) -> HttpResponse:
-            self.save_op_context.append(context) 
+            self.save_op_context.append(context)
             self.save_options.append(options)
             self.save_data.append(_read_body(context.request.body))
             raise exceptions.ServiceError(
@@ -1021,7 +1021,7 @@ class TestSyncClient(unittest.TestCase):
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             self.assertIsInstance(request.body, io_utils.TeeIterator)
             raise exceptions.ServiceError(
@@ -1152,7 +1152,7 @@ class TestSyncClient(unittest.TestCase):
             self.assertEqual(1, len(self.save_data))
             for d in self.save_data:
                 self.assertEqual(data, d)
-    
+
         # non-seekable file-like
         self.save_request = []
         self.save_data = []
@@ -1500,7 +1500,7 @@ class TestSyncClient(unittest.TestCase):
             region='cn-hangzhou',
             credentials_provider=credentials.AnonymousCredentialsProvider(),
         )
-        clinet = client.Client(cfg)        
+        clinet = client.Client(cfg)
 
         for bucket in ["", "12", "ABCD", "#1234"]:
             try:
@@ -1759,6 +1759,335 @@ class TestClientBase(unittest.TestCase):
             body=err_xml.encode()
         )
 
+class TestClientReturnsJsonV2(unittest.TestCase):
+    """Test cases for _to_service_error_json_v2 function (x-oss-error-type header)"""
+
+    def test_get_json_error_v2_normal(self):
+        """Test normal JSON error response with x-oss-error-type header"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            err_json = r'''
+                {
+                    "message": "Invalid table bucket operation."
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=400,
+                reason='Bad Request',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'BadRequestException',
+                    'x-oss-request-id': 'id-1234',
+                },
+                body=err_json.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("BadRequestException", serr.code)
+                self.assertEqual("Invalid table bucket operation.", serr.message)
+                self.assertEqual("id-1234", serr.request_id)
+
+    def test_get_json_error_v2_empty_message(self):
+        """Test JSON error response with empty message"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            err_json = r'''
+                {
+                    "message": ""
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=400,
+                reason='Bad Request',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'ValidationException',
+                    'x-oss-request-id': 'id-5678',
+                },
+                body=err_json.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("ValidationException", serr.code)
+                self.assertEqual("", serr.message)
+
+    def test_get_json_error_v2_invalid_json(self):
+        """Test JSON error response with invalid JSON format"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            err_json = r'''
+                { invalid json format
+                '''
+
+            resp = MockHttpResponse(
+                status_code=500,
+                reason='Internal Server Error',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'InternalServerException',
+                    'x-oss-request-id': 'id-9999',
+                },
+                body=err_json.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("InternalServerException", serr.code)
+                self.assertIn("Failed to parse json from response body due to", serr.message)
+
+    def test_get_json_error_v2_missing_message_field(self):
+        """Test JSON error response without message field"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            err_json = r'''
+                {
+                    "code": "SomeError",
+                    "requestId": "abc-123"
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=403,
+                reason='Forbidden',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'ForbiddenException',
+                    'x-oss-request-id': 'id-forbidden',
+                },
+                body=err_json.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("ForbiddenException", serr.code)
+                self.assertEqual("", serr.message)
+
+    def test_get_json_error_v2_empty_body(self):
+        """Test JSON error response with empty body"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+
+            resp = MockHttpResponse(
+                status_code=400,
+                reason='Bad Request',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'EmptyBodyException',
+                    'x-oss-request-id': 'id-empty',
+                },
+                body=b'',
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("EmptyBodyException", serr.code)
+                self.assertIn("Failed to parse json from response body due to", serr.message)
+
+    def test_get_json_error_v2_additional_fields(self):
+        """Test JSON error response with additional fields beyond message"""
+        self.save_request: List[HttpRequest] = None
+        self.save_data: List[Any] = None
+
+        def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
+            self.save_request.append(request)
+            self.save_data.append(_read_body(request.body))
+            err_json = r'''
+                {
+                    "message": "Access denied.",
+                    "errorCode": "ACCESS_DENIED",
+                    "details": {
+                        "reason": "Policy restriction",
+                        "action": "oss:PutObject"
+                    }
+                }
+                '''
+
+            resp = MockHttpResponse(
+                status_code=403,
+                reason='Forbidden',
+                headers={
+                    'Server': 'AliyunOSS',
+                    'Date': 'Tue, 23 Jul 2024 13:01:06 GMT',
+                    'Content-Type': 'application/json',
+                    'x-oss-error-type': 'AccessDeniedException',
+                    'x-oss-request-id': 'id-access-denied',
+                },
+                body=err_json.encode(),
+            )
+            resp._request = request
+            return resp
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg)
+
+        self.save_request = []
+        self.save_data = []
+        data = 'hello world'
+
+        with mock.patch.object(clinet._client._options.http_client, 'send', new= _do_sent) as _:
+            try:
+                clinet.put_object(models.PutObjectRequest(
+                    bucket='bucket',
+                    key='key',
+                    body=data
+                ))
+                self.fail('should not here')
+            except exceptions.OperationError as err:
+                serr = err.unwrap()
+                self.assertIsInstance(serr, exceptions.ServiceError)
+                serr = cast(exceptions.ServiceError, serr)
+                self.assertEqual("AccessDeniedException", serr.code)
+                self.assertEqual("Access denied.", serr.message)
+                self.assertEqual("id-access-denied", serr.request_id)
+
+
 class TestClientExtension(TestClientBase):
     def test_get_object_to_file(self):
         def response_200() -> MockHttpResponse:
@@ -1839,12 +2168,12 @@ class TestClientExtension(TestClientBase):
 
 class TestClientCRC(unittest.TestCase):
 
-    def test_put_object_crc64_flags(self):  
+    def test_put_object_crc64_flags(self):
         self.save_request: List[HttpRequest] = None
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             return MockHttpResponse(
                 status_code=200,
@@ -1974,12 +2303,12 @@ class TestClientCRC(unittest.TestCase):
             self.assertEqual(self.progress_written, len(data))
 
 
-    def test_upload_part_crc64_flags(self):  
+    def test_upload_part_crc64_flags(self):
         self.save_request: List[HttpRequest] = None
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             return MockHttpResponse(
                 status_code=200,
@@ -2050,12 +2379,12 @@ class TestClientCRC(unittest.TestCase):
 
 class TestClientReturnsJson(unittest.TestCase):
 
-    def test_get_json_error_normal(self):  
+    def test_get_json_error_normal(self):
         self.save_request: List[HttpRequest] = None
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             err_xml = r'''
                 {
@@ -2110,12 +2439,12 @@ class TestClientReturnsJson(unittest.TestCase):
                 self.assertEqual("MissingArgument", serr.code)
                 self.assertEqual("0016-00000502", serr.ec)
 
-    def test_get_json_error_invalid_foramt(self):  
+    def test_get_json_error_invalid_foramt(self):
         self.save_request: List[HttpRequest] = None
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             err_xml = r'''
                     "Error": {
@@ -2170,12 +2499,12 @@ class TestClientReturnsJson(unittest.TestCase):
                 self.assertIn("Failed to parse json from response body due to", serr.message)
 
 
-    def test_get_json_error_multi_keys(self):  
+    def test_get_json_error_multi_keys(self):
         self.save_request: List[HttpRequest] = None
         self.save_data: List[Any] = None
 
         def _do_sent(request: HttpRequest, **kwargs) -> HttpResponse:
-            self.save_request.append(request) 
+            self.save_request.append(request)
             self.save_data.append(_read_body(request.body))
             err_xml = r'''
                 {
