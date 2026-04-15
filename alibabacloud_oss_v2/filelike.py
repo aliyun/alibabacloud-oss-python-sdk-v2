@@ -884,7 +884,7 @@ class _PrefetchDelegate:
             raise error
 
         if got != size:
-            raise ValueError("expect size {size}, but got {got}")
+            raise ValueError(f"expect size {size}, but got {got}")
 
         self._data_queue.put(b'')
 
