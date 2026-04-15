@@ -270,3 +270,9 @@ def get_vector_user_agent() -> str:
     """Returns the default user agent string
     """
     return 'vector-client'
+
+
+def get_tables_user_agent() -> str:
+    """Returns the default user agent string for tables
+    """
+    return 'tables-client'
