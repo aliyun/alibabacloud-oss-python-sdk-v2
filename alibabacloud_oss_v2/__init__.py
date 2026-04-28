@@ -45,6 +45,7 @@ from .models.select_object import *
 from .models.bucket_overwrite_config import *
 from .models.object_worm import *
 from .models.bucket_object_worm_configuration import *
+from .models.data_process import *
 
 from .config import Config
 from .client import Client

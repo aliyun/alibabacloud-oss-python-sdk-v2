@@ -2374,3 +2374,29 @@ class Client:
             DeleteBucketOverwriteConfigResult: Response result for DeleteBucketOverwriteConfig operation.
         """
         return operations.delete_bucket_overwrite_config(self._client, request, **kwargs)
+
+    def do_meta_query_action(self, request: models.DoMetaQueryActionRequest, **kwargs
+                             ) -> models.DoMetaQueryActionResult:
+        """
+        DoMetaQueryAction performs actions on the metadata index library of a bucket.
+
+        Args:
+            request (DoMetaQueryActionRequest): Request parameters for DoMetaQueryAction operation.
+
+        Returns:
+            DoMetaQueryActionResult: Response result for DoMetaQueryAction operation.
+        """
+        return operations.do_meta_query_action(self._client, request, **kwargs)
+
+    def do_data_pipeline_action(self, request: models.DoDataPipelineActionRequest, **kwargs
+                                ) -> models.DoDataPipelineActionResult:
+        """
+        DoDataPipelineAction performs actions on the data pipeline.
+
+        Args:
+            request (DoDataPipelineActionRequest): Request parameters for DoDataPipelineAction operation.
+
+        Returns:
+            DoDataPipelineActionResult: Response result for DoDataPipelineAction operation.
+        """
+        return operations.do_data_pipeline_action(self._client, request, **kwargs)
