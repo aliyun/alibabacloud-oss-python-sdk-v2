@@ -332,7 +332,7 @@ class AsyncStreamBodyReader(AsyncStreamBody):
         return self
 
     async def __aexit__(self, *args: Any) -> None:
-        await self._response.__exit__(*args)
+        await self._response.__aexit__(*args)
 
     @property
     def is_closed(self) -> bool:
