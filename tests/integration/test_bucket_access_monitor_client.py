@@ -42,6 +42,43 @@ class TestBucketAccessMonitor(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(oss.AccessMonitorStatusType.ENABLED, result.access_monitor_configuration.status)
 
+    def test_bucket_access_monitor_with_allow_copy(self):
+        # create bucket
+        bucket_name = random_bucket_name()
+        result = self.client.put_bucket(oss.PutBucketRequest(
+            bucket=bucket_name,
+            acl='private',
+            create_bucket_configuration=oss.CreateBucketConfiguration(
+                storage_class='IA'
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.request_id))
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # put bucket access monitor with allow_copy
+        result = self.client.put_bucket_access_monitor(oss.PutBucketAccessMonitorRequest(
+                bucket=bucket_name,
+                access_monitor_configuration=oss.AccessMonitorConfiguration(
+                    status=oss.AccessMonitorStatusType.ENABLED,
+                    allow_copy=True
+                ),
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        # get bucket access monitor
+        result = self.client.get_bucket_access_monitor(oss.GetBucketAccessMonitorRequest(
+                bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('OK', result.status)
+        self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+        self.assertEqual(oss.AccessMonitorStatusType.ENABLED, result.access_monitor_configuration.status)
+        self.assertTrue(result.access_monitor_configuration.allow_copy)
+
     def test_bucket_access_monitor_v1(self):
         # create bucket
         bucket_name = random_bucket_name()
