@@ -479,6 +479,9 @@ class _DownloaderDelegate:
         if self._calc_crc:
             chash = Crc64(0)
 
+        _MAX_NO_PROGRESS_RETRIES = 3
+        no_progress_count = 0
+
         while True:
             request.range_header = f'bytes={start + got}-{start + size - 1}'
             request.range_behavior = 'standard'
@@ -508,10 +511,21 @@ class _DownloaderDelegate:
                 if result.content_length is not None and gotlen < result.content_length:
                     if not result.body.is_closed:
                         result.body.close()
+                    if gotlen == 0:
+                        no_progress_count += 1
+                        if no_progress_count >= _MAX_NO_PROGRESS_RETRIES:
+                            error = Exception(
+                                f'download part failed after {_MAX_NO_PROGRESS_RETRIES} retries without progress')
+                            break
+                    else:
+                        no_progress_count = 0
                     continue
                 break
-            except Exception:
-                pass
+            except Exception as err:
+                no_progress_count += 1
+                if no_progress_count >= _MAX_NO_PROGRESS_RETRIES:
+                    error = err
+                    break
 
         return start, got, error, (chash.sum64() if chash else 0)
 
