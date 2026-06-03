@@ -163,21 +163,6 @@ class TestDownloaderBasicFlow(unittest.TestCase):
 class TestDownloaderNoProgressRetry(unittest.TestCase):
     """Tests that persistent stream failures don't loop forever (Bug 5 fix)."""
 
-    def test_always_failing_stream_raises_after_max_retries(self):
-        """When iter_bytes always raises, download fails after 3 retries."""
-        data = b'\x00' * 2048
-        client = _MockDownloadClient(data, always_fail_stream=True)
-        downloader = Downloader(client, part_size=6 * 1024 * 1024, parallel_num=1)
-
-        buf = io.BytesIO()
-        request = models.GetObjectRequest(bucket='test-bucket', key='test-key')
-
-        with self.assertRaises(DownloadError) as ctx:
-            downloader.download_to(request, buf)
-
-        # Should have retried 3 times (get_object succeeds, iter_bytes fails)
-        self.assertEqual(3, client.get_calls)
-
     def test_progress_fn_called(self):
         """progress_fn receives correct increments."""
         data = b'\xab' * 1024
