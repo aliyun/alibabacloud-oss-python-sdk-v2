@@ -373,7 +373,7 @@ class _UploaderDelegate:
         part_size = self._options.part_size
 
         if total_size > 0:
-            while self._total_size/part_size >= defaults.MAX_UPLOAD_PARTS:
+            while total_size / part_size >= defaults.MAX_UPLOAD_PARTS:
                 part_size += self._options.part_size
 
         self._reader = reader
@@ -425,6 +425,10 @@ class _UploaderDelegate:
             uploaded_parts.append(models.UploadPart(part_number=part.part_number, etag=part.etag))
             if self._check_crc and part.hash_crc64 is not None:
                 ccrc = Crc64.combine(ccrc, int(part.hash_crc64), part.size)
+
+        # If upload_id was cleared during iteration (error occurred), discard partial results
+        if not self._upload_id:
+            return
 
         if len(uploaded_parts) == 0:
             return
@@ -534,8 +538,8 @@ class _UploaderDelegate:
             if not self._options.leave_parts_on_error:
                 try:
                     abort_request = models.AbortMultipartUploadRequest()
+                    copy_request(abort_request, self._request)
                     abort_request.upload_id = upload_ctx.upload_id
-                    copy_request(request, self._request)
                     self._client.abort_multipart_upload(abort_request)
                 except Exception as _:
                     pass
@@ -558,13 +562,13 @@ class _UploaderDelegate:
 
 
     def _get_upload_context(self) -> _UploadContext:
-        if self._upload_id:
+        if self._upload_id and self._part_number is not None:
             return _UploadContext(
                 upload_id=self._upload_id,
                 start_num=self._part_number - 1,
             )
 
-	    #if not exist or fail, create a new upload id
+        #if not exist or fail, create a new upload id
         request = models.InitiateMultipartUploadRequest()
         copy_request(request, self._request)
         if request.content_type is None:
