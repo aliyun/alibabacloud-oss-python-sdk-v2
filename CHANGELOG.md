@@ -1,5 +1,9 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.3.1 日期：2026-06-04
+### 变更内容
+- Fix: improve resumable upload handling in the uploader
+
 ## 版本号：1.3.0 日期：2026-04-28
 ### 变更内容
 - Feature: Add table bucket
