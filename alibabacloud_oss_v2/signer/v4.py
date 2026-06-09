@@ -52,7 +52,7 @@ class SignerV4(Signer):
         request.headers.update({'Date': datetime_now_rfc2822})
 
         # Credentials information
-        if cred.security_token is not None:
+        if cred.security_token:
             request.headers.update(
                 {'x-oss-security-token': cred.security_token})
 
