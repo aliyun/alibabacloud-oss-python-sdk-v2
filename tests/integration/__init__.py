@@ -14,6 +14,7 @@ import requests
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
 import alibabacloud_oss_v2.aio as ossaio
+import alibabacloud_oss_v2.vectors.aio as oss_vectors_aio
 
 ACCESS_ID = os.getenv("OSS_TEST_ACCESS_KEY_ID")
 ACCESS_KEY = os.getenv("OSS_TEST_ACCESS_KEY_SECRET")
@@ -107,6 +108,14 @@ def get_vectors_client() -> oss_vectors.Client:
     cfg.account_id = USER_ID
     return oss_vectors.Client(cfg)
 
+def get_vectors_async_client() -> oss_vectors_aio.AsyncClient:
+    cfg = oss.config.load_default()
+    cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
+    cfg.region = REGION
+    cfg.endpoint = VECTORS_ENDPOINT
+    cfg.account_id = USER_ID
+    return oss_vectors_aio.AsyncClient(cfg)
+
 def get_client_use_ststoken(region:str, endpoint:str) -> oss.Client:
     result = sts_assume_role(ACCESS_ID, ACCESS_KEY, RAM_ROLE_ARN)
     cfg = oss.config.load_default()
@@ -155,7 +164,8 @@ def clean_objects(client:oss.Client, bucket_name:str) -> None:
     marker = ''
     is_truncated = True
     while is_truncated:
-        result = client.list_objects(oss.ListObjectsRequest(bucket=bucket_name, marker=marker))
+        result = client.list_objects(oss.ListObjectsRequest(
+            bucket=bucket_name, marker=marker, encoding_type='url'))
         if result.contents is not None:
             delete_object = []
             for o in result.contents:
@@ -175,7 +185,8 @@ def clean_parts(client:oss.Client, bucket_name:str) -> None:
     while is_truncated:
         result = client.list_multipart_uploads(oss.ListMultipartUploadsRequest(
             bucket=bucket_name,
-            upload_id_marker=marker
+            upload_id_marker=marker,
+            encoding_type='url',
         ))
         if result.uploads is not None:
             for o in result.uploads:
@@ -189,11 +200,41 @@ def clean_parts(client:oss.Client, bucket_name:str) -> None:
         marker = result.next_upload_id_marker
 
 
+def clean_versions(client:oss.Client, bucket_name:str) -> None:
+    """Clean all object versions and delete markers in a bucket."""
+    key_marker = ''
+    version_id_marker = ''
+    is_truncated = True
+    while is_truncated:
+        result = client.list_object_versions(oss.ListObjectVersionsRequest(
+            bucket=bucket_name,
+            key_marker=key_marker,
+            version_id_marker=version_id_marker,
+            encoding_type='url',
+        ))
+        delete_objects = []
+        if result.version is not None:
+            for v in result.version:
+                delete_objects.append(oss.DeleteObject(key=v.key, version_id=v.version_id))
+        if result.delete_marker is not None:
+            for d in result.delete_marker:
+                delete_objects.append(oss.DeleteObject(key=d.key, version_id=d.version_id))
+
+        if len(delete_objects) > 0:
+            client.delete_multiple_objects(oss.DeleteMultipleObjectsRequest(
+                bucket=bucket_name,
+                objects=delete_objects))
+        is_truncated = result.is_truncated
+        key_marker = result.next_key_marker
+        version_id_marker = result.next_version_id_marker
+
+
 def clean_bucket(props:oss.BucketProperties) -> None:
     if props.intranet_endpoint == ENDPOINT or  props.extranet_endpoint == ENDPOINT:
         client = get_default_client()
     else:
         client = get_client(props.region, props.extranet_endpoint)
+    clean_versions(client, props.name)
     clean_objects(client, props.name)
     clean_parts(client, props.name)
     client.delete_bucket(oss.DeleteBucketRequest(bucket=props.name))

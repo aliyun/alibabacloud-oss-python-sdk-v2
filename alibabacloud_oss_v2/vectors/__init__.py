@@ -5,3 +5,4 @@ from . import models
 
 
 from .client import Client
+from . import aio

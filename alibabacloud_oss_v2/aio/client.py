@@ -8,6 +8,20 @@ from .. import models
 from .. import exceptions
 from ._aioclient import _AsyncClientImpl
 from . import operations
+import copy
+from .paginator import (
+    AsyncListObjectsPaginator,
+    AsyncListObjectsV2Paginator,
+    AsyncListObjectVersionsPaginator,
+    AsyncListBucketsPaginator,
+    AsyncListPartsPaginator,
+    AsyncListMultipartUploadsPaginator
+)
+from .presigner import (
+    PresignRequest,
+    PresignResult,
+    presign_inner
+)
 
 class AsyncClient:
     """AsyncClient
@@ -799,3 +813,66 @@ class AsyncClient:
             raise err
 
         return result is not None
+
+    # presigner
+    async def presign(self, request: PresignRequest, **kwargs) -> PresignResult:
+        """Generates the presigned URL. 
+        If you do not specify expires or expiration, the pre-signed URL uses 15 minutes as default.
+
+        Args:
+            request (PresignRequest): Request parameters for presign operation.
+            expires (datetime.timedelta, optional): The expiration duration for the presigned url.
+            expiration (datetime.datetime, optional):The expiration time for the presigned url.
+        Returns:
+            PresignResult: Response result for presign operation.
+        """
+        return await presign_inner(self._client, request, **kwargs)
+
+    # paginator
+    def list_objects_paginator(self, **kwargs) -> AsyncListObjectsPaginator:
+        """Creates a paginator for ListObjects
+
+        Returns:
+            AsyncListObjectsPaginator: a paginator for ListObjects
+        """
+        return AsyncListObjectsPaginator(self, **kwargs)
+
+    def list_objects_v2_paginator(self, **kwargs) -> AsyncListObjectsV2Paginator:
+        """Creates a paginator for ListObjectsV2
+
+        Returns:
+            AsyncListObjectsV2Paginator: a paginator for ListObjectsV2
+        """
+        return AsyncListObjectsV2Paginator(self, **kwargs)
+
+    def list_object_versions_paginator(self, **kwargs) -> AsyncListObjectVersionsPaginator:
+        """Creates a paginator for ListObjectVersions
+
+        Returns:
+            AsyncListObjectVersionsPaginator: a paginator for ListObjectVersions
+        """
+        return AsyncListObjectVersionsPaginator(self, **kwargs)
+
+    def list_buckets_paginator(self, **kwargs) -> AsyncListBucketsPaginator:
+        """Creates a paginator for ListBuckets
+
+        Returns:
+            AsyncListBucketsPaginator: a paginator for ListBuckets
+        """
+        return AsyncListBucketsPaginator(self, **kwargs)
+
+    def list_parts_paginator(self, **kwargs) -> AsyncListPartsPaginator:
+        """Creates a paginator for ListParts
+
+        Returns:
+            AsyncListPartsPaginator: a paginator for ListParts
+        """
+        return AsyncListPartsPaginator(self, **kwargs)
+
+    def list_multipart_uploads_paginator(self, **kwargs) -> AsyncListMultipartUploadsPaginator:
+        """Creates a paginator for ListMultipartUploads
+
+        Returns:
+            AsyncListMultipartUploadsPaginator: a paginator for ListMultipartUploads
+        """
+        return AsyncListMultipartUploadsPaginator(self, **kwargs)
