@@ -169,6 +169,54 @@ class TestSignerV1(unittest.TestCase):
         self.assertEqual('token', queries.get('security-token'))
         self.assertEqual('jzKYRrM5y6Br0dRFPaTGOsbrDhY%3D', queries.get('Signature'))
 
+    def test_auth_header_with_empty_token(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk", "")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "PUT", "http://examplebucket.oss-cn-hangzhou.aliyuncs.com")
+        request.headers.update(
+            {
+                'Content-MD5': 'eB5eJF1ptWaXm4bijSPyxw==',
+                'Content-Type': 'text/html',
+                'x-oss-meta-author': 'alice',
+                'x-oss-meta-magic': 'abracadabra',
+                'x-oss-date': 'Wed, 28 Dec 2022 10:27:41 GMT',
+            }
+        )
+
+        context = SigningContext(
+            bucket='examplebucket',
+            key='nelson',
+            request=request,
+            credentials=cred,
+            signing_time=datetime.datetime.fromtimestamp(1702743657),
+        )
+
+        signer = SignerV1()
+        signer.sign(context)
+        self.assertIsNone(context.request.headers.get('security-token'))
+
+    def test_auth_query_with_empty_token(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk", "")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "GET", "http://bucket.oss-cn-hangzhou.aliyuncs.com/key+123?versionId=versionId")
+
+        context = SigningContext(
+            bucket='bucket',
+            key='key+123',
+            request=request,
+            credentials=cred,
+        )
+        context.expiration_time = datetime.datetime.fromtimestamp(1699808204)
+        context.auth_method_query = True
+
+        signer = SignerV1()
+        signer.sign(context)
+
+        queries = _get_url_query(request.url)
+        self.assertIsNone(queries.get('security-token'))
+
     def test_auth_query_param_with_token(self) -> None:
         provider = StaticCredentialsProvider("ak", "sk", "token")
         cred = provider.get_credentials()
