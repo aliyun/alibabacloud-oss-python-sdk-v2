@@ -59,7 +59,7 @@ class VectorsSignerV4(Signer):
         request.headers.update({'Date': datetime_now_rfc2822})
 
         # Credentials information
-        if cred.security_token is not None:
+        if cred.security_token:
             request.headers.update(
                 {'x-oss-security-token': cred.security_token})
 
@@ -157,7 +157,7 @@ class VectorsSignerV4(Signer):
                 'x-oss-credential': quote(f'{cred.access_key_id}/{scope}', safe='')
             }
         )
-        if cred.security_token is not None:
+        if cred.security_token:
             encoded_pairs.update(
                 {'x-oss-security-token': quote(cred.security_token, safe='')})
 
