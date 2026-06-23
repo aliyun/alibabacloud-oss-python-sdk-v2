@@ -306,6 +306,114 @@ class TestSignerV4(unittest.TestCase):
             queries.get('x-oss-signature'))
         self.assertEqual('', queries.get('x-oss-additional-headers', ''))
 
+    def test_auth_header_with_empty_token(self) -> None:
+        provider = StaticCredentialsProvider(
+            'ak', 'sk', security_token='')
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            'PUT', 'http://bucket.oss-cn-hangzhou.aliyuncs.com')
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'text/plain',
+                'x-oss-content-sha256': 'UNSIGNED-PAYLOAD',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss',
+            region='cn-hangzhou',
+            signing_time=datetime.datetime.fromtimestamp(1702784856),
+        )
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+        signer.sign(context)
+
+        self.assertIsNone(context.request.headers.get('x-oss-security-token'))
+
+    def test_auth_query_with_empty_token(self) -> None:
+        provider = StaticCredentialsProvider("ak", "sk", "")
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            "PUT", "http://bucket.oss-cn-hangzhou.aliyuncs.com")
+        request.headers.update(
+            {
+                'x-oss-head1': 'value',
+                'abc': 'value',
+                'ZAbc': 'value',
+                'XYZ': 'value',
+                'content-type': 'application/octet-stream',
+            }
+        )
+
+        context = SigningContext(
+            bucket='bucket',
+            key='1234+-/123/1.txt',
+            request=request,
+            credentials=cred,
+            product='oss',
+            region='cn-hangzhou',
+            signing_time=datetime.datetime.fromtimestamp(1702785388),
+        )
+        context.expiration_time = datetime.datetime.fromtimestamp(1702785987)
+        context.auth_method_query = True
+
+        parameters = {
+            'param1': 'value1',
+            '+param1': 'value3',
+            '|param1': 'value4',
+            '+param2': '',
+            '|param2': '',
+            'param2': '',
+        }
+        query = urlencode(parameters, quote_via=quote)
+
+        request.url = request.url + "?" + query
+
+        signer = SignerV4()
+        signer.sign(context)
+
+        queries = _get_url_query(request.url)
+        self.assertIsNone(queries.get('x-oss-security-token'))
+
+    def test_auth_header_vector_with_empty_token(self) -> None:
+        provider = StaticCredentialsProvider(
+            'ak', 'sk', security_token='')
+        cred = provider.get_credentials()
+        request = HttpRequest(
+            'GET', 'http://example.com')
+
+        signer = VectorsSignerV4('123')
+        context = SigningContext(
+            region='cn-hangzhou',
+            bucket='bucket',
+            request=request,
+            credentials=cred,
+            product='oss',
+            signing_time=datetime.datetime.fromtimestamp(1702743657, tz=datetime.timezone.utc)
+        )
+        signer.sign(context)
+        self.assertIsNone(context.request.headers.get('x-oss-security-token'))
+
     def test_auth_query_with_additional_headers(self) -> None:
         provider = StaticCredentialsProvider("ak", "sk")
         cred = provider.get_credentials()
