@@ -1,4 +1,5 @@
 # pylint: skip-file
+import asyncio
 import io
 from typing import cast
 import unittest
@@ -28,8 +29,9 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         )
 
     async def asyncTearDown(self):
-        await self.async_client.close() 
-        await self.invalid_async_client.close() 
+        await self.async_client.close()
+        await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_object_basic(self):
         len = 1 * 1024 * 1024 + 1234

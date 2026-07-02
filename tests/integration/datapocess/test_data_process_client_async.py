@@ -1,5 +1,6 @@
 # pylint: skip-file
 
+import asyncio
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
@@ -18,6 +19,7 @@ class TestDataProcessAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await self.async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_do_meta_query_action(self):
         # null body

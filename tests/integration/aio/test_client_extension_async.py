@@ -1,4 +1,5 @@
 # pylint: skip-file
+import asyncio
 from typing import cast
 import tempfile
 import datetime
@@ -26,13 +27,13 @@ class TestExtensionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         )
 
     async def asyncTearDown(self):
-        await self.async_client.close() 
-        await self.invalid_async_client.close() 
+        await self.async_client.close()
+        await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
 
     async def test_is_bucket_exist(self):
         no_perm_client = self.invalid_async_client
-        err_client = get_async_client("", "")
 
         bucket_name_no_exist = self.bucket_name + "-no-exist"
 
@@ -48,18 +49,20 @@ class TestExtensionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         exist = await no_perm_client.is_bucket_exist(bucket_name_no_exist)
         self.assertFalse(exist)
 
+        err_client = get_async_client("", "")
         try:
             exist = await err_client.is_bucket_exist(self.bucket_name)
             self.fail("shoud not here")
         except oss.exceptions.OperationError as err:
             self.assertIn('invalid field, endpoint', str(err))
+        finally:
+            await err_client.close()
 
     async def test_is_object_exist(self):
         bucket_name_no_exist = self.bucket_name + "-no-exist"
         object_name = 'object-exist'
         object_name_no_exist = "object-no-exist"
         no_perm_client = self.invalid_async_client
-        err_client = get_async_client("", "")
 
         result = await self.async_client.put_object(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -99,9 +102,12 @@ class TestExtensionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         except oss.exceptions.OperationError as err:
             self.assertIn('NoSuchBucket', str(err))
 
+        err_client = get_async_client("", "")
         try:
             exist = await err_client.is_object_exist(self.bucket_name, object_name)
             self.fail("shoud not here")
         except oss.exceptions.OperationError as err:
             self.assertIn('invalid field, endpoint', str(err))
+        finally:
+            await err_client.close()
 

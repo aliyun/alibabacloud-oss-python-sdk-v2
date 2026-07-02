@@ -1,5 +1,6 @@
 # pylint: skip-file
 """Integration tests for presign functionality (async)."""
+import asyncio
 import datetime
 import unittest
 import aiohttp
@@ -36,6 +37,7 @@ class TestPresignAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
     async def asyncTearDown(self):
         await self.async_client.close()
         await self.async_signv1_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_presign_get_object_v1(self):
         """Test presign GET with v1 signature and actual HTTP download."""
