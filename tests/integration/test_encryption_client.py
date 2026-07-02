@@ -120,7 +120,7 @@ class TestEncryptionCLient(TestIntegration):
         # file
         example_data = b''
         key = 'object-file.bin'        
-        with open("./tests/data/example.jpg", 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'example.jpg'), 'rb') as f:
             result = eclient.put_object(oss.PutObjectRequest(
                 bucket=self.bucket_name,
                 key=key,
@@ -420,11 +420,11 @@ class TestEncryptionCLient(TestIntegration):
 
         objectname = 'enc-example.jpg'
         example_data = b''
-        with open("./tests/data/example.jpg", 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'example.jpg'), 'rb') as f:
             example_data = f.read()
         self.assertTrue(len(example_data) > 0)
 
-        with open("./tests/data/enc-example.jpg", 'rb') as f:
+        with open(os.path.join(os.path.dirname(__file__), '..', 'data', 'enc-example.jpg'), 'rb') as f:
             result = self.client.put_object(oss.PutObjectRequest(
                 bucket=self.bucket_name,
                 key=objectname,
