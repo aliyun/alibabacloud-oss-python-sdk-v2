@@ -1,4 +1,5 @@
 # pylint: skip-file
+import os
 import tempfile
 import unittest
 from unittest import mock
@@ -40,7 +41,7 @@ def _mock_client(request_fn, response_fn, **kwargs):
     return client.Client(cfg)
 
 def _get_tempfile() -> str:
-    return tempfile.gettempprefix()
+    return os.path.join(tempfile.gettempdir(), 'oss_test_tmp')
 
 progress_save_n = 0
 progress_save_written = 0
