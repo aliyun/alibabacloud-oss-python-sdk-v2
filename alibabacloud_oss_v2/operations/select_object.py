@@ -1,4 +1,5 @@
 import sys
+import zlib
 import struct
 from typing import Any, Iterator
 from ..types import OperationInput, CaseInsensitiveDict, StreamBody
@@ -6,7 +7,6 @@ from .. import serde
 from .. import serde_utils
 from .. import models
 from .._client import _SyncClientImpl
-from ..crc import Crc32
 from ..exceptions import DeserializationError
 
 """
@@ -218,9 +218,7 @@ class _SelectResponseAdapter(object):
             self._change_endianness_if_needed(checksum)
             checksum_val = struct.unpack("I", bytes(checksum))[0]
             if self.enable_crc:
-                crc32 = Crc32()
-                crc32.update(self.payload)
-                checksum_calc = crc32.crc
+                checksum_calc = zlib.crc32(self.payload)
                 if checksum_val != checksum_calc:
                     raise Exception(
                         "Incorrect checksum: Actual" + str(checksum_val) + ". Calculated:" + str(checksum_calc))
