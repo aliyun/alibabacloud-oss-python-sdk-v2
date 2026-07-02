@@ -457,6 +457,7 @@ def list_object_versions(client: _SyncClientImpl, request: models.ListObjectVers
                 'Content-Type': 'application/octet-stream',
             }),
             parameters={
+                'encoding-type': 'url',
                 'versions': '',
             },
             bucket=request.bucket,

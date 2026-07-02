@@ -445,6 +445,7 @@ async def list_object_versions(client: _AsyncClientImpl, request: models.ListObj
                 'Content-Type': 'application/octet-stream',
             }),
             parameters={
+                'encoding-type': 'url',
                 'versions': '',
             },
             bucket=request.bucket,

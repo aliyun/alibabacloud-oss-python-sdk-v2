@@ -199,7 +199,6 @@ def clean_versions(client:oss.Client, bucket_name:str) -> None:
             bucket=bucket_name,
             key_marker=key_marker,
             version_id_marker=version_id_marker,
-            encoding_type='url',
         ))
         delete_objects = []
         if result.version is not None:

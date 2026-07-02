@@ -468,3 +468,30 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
             self.assertEqual(404, serr.status_code)
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('NoSuchBucket', serr.code)
+
+    async def test_list_object_versions_encoding_type(self):
+        bucket_name = random_bucket_name()
+        await self.async_client.put_bucket(oss.PutBucketRequest(bucket=bucket_name))
+
+        result = await self.async_client.put_bucket_versioning(oss.PutBucketVersioningRequest(
+            bucket=bucket_name,
+            versioning_configuration=oss.VersioningConfiguration(
+                status='Enabled'
+            )
+        ))
+        self.assertEqual(200, result.status_code)
+
+        keys = [f'demo/url-%123-/?#:key-{i}' for i in range(3)]
+        for key in keys:
+            result = await self.async_client.put_object(oss.PutObjectRequest(bucket=bucket_name, key=key))
+            self.assertEqual(200, result.status_code)
+
+        result = await self.async_client.list_object_versions(oss.ListObjectVersionsRequest(
+            bucket=bucket_name,
+            prefix='demo/',
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('url', result.encoding_type)
+        self.assertEqual('demo/', result.prefix)
+        self.assertEqual(3, len(result.version))
+        self.assertEqual(sorted(keys), sorted(v.key for v in result.version))
