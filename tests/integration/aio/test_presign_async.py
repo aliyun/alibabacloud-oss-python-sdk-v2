@@ -4,7 +4,7 @@ import datetime
 import unittest
 import aiohttp
 import alibabacloud_oss_v2 as oss
-from . import (
+from .. import (
     TestIntegration,
     random_str,
     REGION,
