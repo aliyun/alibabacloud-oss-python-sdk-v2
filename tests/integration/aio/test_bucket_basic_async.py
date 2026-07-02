@@ -1,10 +1,12 @@
 # pylint: skip-file
+import asyncio
 from typing import cast
 import tempfile
 import datetime
 import requests
 import unittest
 import alibabacloud_oss_v2 as oss
+from alibabacloud_oss_v2 import serde_utils
 from .. import (
     TestIntegration, 
     random_bucket_name, 
@@ -26,8 +28,9 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         )
 
     async def asyncTearDown(self):
-        await self.async_client.close() 
-        await self.invalid_async_client.close() 
+        await self.async_client.close()
+        await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_put_bucket(self):
 
@@ -78,12 +81,28 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        self.client.put_bucket_public_access_block(oss.PutBucketPublicAccessBlockRequest(
-            bucket=bucket_name,
-            public_access_block_configuration=oss.PublicAccessBlockConfiguration(
-                block_public_access=False
-            )
-        ))
+        op_input = oss.serde.serialize_input(
+            request=oss.PutBucketPublicAccessBlockRequest(
+                bucket=bucket_name,
+                public_access_block_configuration=oss.PublicAccessBlockConfiguration(
+                    block_public_access=False
+                )
+            ),
+            op_input=oss.OperationInput(
+                op_name='PutBucketPublicAccessBlock',
+                method='PUT',
+                headers=oss.CaseInsensitiveDict({
+                    'Content-Type': 'application/xml',
+                }),
+                parameters={
+                    'publicAccessBlock': '',
+                },
+                bucket=bucket_name,
+                op_metadata={'sub-resource': ['publicAccessBlock']},
+            ),
+            custom_serializer=[serde_utils.add_content_md5],
+        )
+        await self.async_client.invoke_operation(op_input)
 
         # get bucket acl
         result = await self.async_client.get_bucket_acl(oss.GetBucketAclRequest(

@@ -1,5 +1,6 @@
 # pylint: skip-file
 """Integration tests for paginator and presign methods (async)."""
+import asyncio
 import unittest
 import alibabacloud_oss_v2 as oss
 from .. import (
@@ -20,6 +21,7 @@ class TestPaginatorAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
 
     async def asyncTearDown(self):
         await self.async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_list_objects_v2_paginator(self):
         """Test async list_objects_v2 paginator with real data."""
@@ -97,7 +99,7 @@ class TestPaginatorAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
 
     async def test_list_object_versions_paginator(self):
         """Test async list_object_versions paginator."""
-        self.client.put_bucket_versioning(oss.PutBucketVersioningRequest(
+        await self.async_client.put_bucket_versioning(oss.PutBucketVersioningRequest(
             bucket=self.bucket_name,
             versioning_configuration=oss.VersioningConfiguration(
                 status='Enabled'

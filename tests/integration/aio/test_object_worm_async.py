@@ -1,5 +1,5 @@
 # pylint: skip-file
-from time import sleep
+import asyncio
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
@@ -113,6 +113,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         if hasattr(self, 'signv1_async_client'):
             await self.signv1_async_client.close()
         await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_object_retention_async(self):
         # Create bucket and upload object
@@ -141,7 +142,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
 
-        sleep(1)
+        await asyncio.sleep(1)
         
         # Put bucket object worm configuration
         result = await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(
@@ -201,7 +202,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual('GOVERNANCE', result.retention.mode)
         self.assertEqual(retain_until_date, result.retention.retain_until_date)
 
-        sleep(6)
+        await asyncio.sleep(6)
 
         await delete_all_objects(self, bucket_name)
 
@@ -233,7 +234,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
 
-        sleep(1)
+        await asyncio.sleep(1)
         
         # Put bucket object worm configuration
         result = await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(
@@ -282,7 +283,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        sleep(6)
+        await asyncio.sleep(6)
 
         await delete_all_objects(self, bucket_name)
 
@@ -300,14 +301,14 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         ))
 
         # Enable versioning
-        self.client.put_bucket_versioning(oss.PutBucketVersioningRequest(
+        await self.async_client.put_bucket_versioning(oss.PutBucketVersioningRequest(
             bucket=bucket_name,
             versioning_configuration=oss.VersioningConfiguration(
                 status='Enabled'
             )
         ))
 
-        sleep(1)
+        await asyncio.sleep(1)
         
         # Put bucket object worm configuration
         await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(
@@ -369,7 +370,7 @@ class TestObjectRetentionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
             self.assertEqual(24, len(serr.request_id))
             self.assertEqual('InvalidAccessKeyId', serr.code)
 
-        sleep(6)
+        await asyncio.sleep(6)
 
         await delete_all_objects(self, bucket_name)
 
@@ -390,6 +391,7 @@ class TestObjectLegalHoldAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         if hasattr(self, 'signv1_async_client'):
             await self.signv1_async_client.close()
         await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_object_legal_hold_async(self):
         # Create bucket and upload object
@@ -418,7 +420,7 @@ class TestObjectLegalHoldAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
 
-        sleep(1)
+        await asyncio.sleep(1)
 
         # Put bucket object worm configuration
         result = await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(
@@ -525,7 +527,7 @@ class TestObjectLegalHoldAsync(TestIntegration, unittest.IsolatedAsyncioTestCase
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         
-        sleep(1)
+        await asyncio.sleep(1)
         
         # Put bucket object worm configuration
         result = await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(

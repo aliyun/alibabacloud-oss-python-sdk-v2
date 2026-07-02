@@ -1,5 +1,5 @@
 # pylint: skip-file
-import time
+import asyncio
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
@@ -30,6 +30,7 @@ class TestBucketObjectWormConfigurationAsync(TestIntegration, unittest.IsolatedA
         if hasattr(self, 'signv1_async_client'):
             await self.signv1_async_client.close()
         await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_bucket_object_worm_configuration(self):
         # create bucket
@@ -56,7 +57,7 @@ class TestBucketObjectWormConfigurationAsync(TestIntegration, unittest.IsolatedA
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
 
-        time.sleep(1)
+        await asyncio.sleep(1)
 
         # put bucket object worm configuration with GOVERNANCE mode and 1 day
         result = await self.async_client.put_bucket_object_worm_configuration(oss.PutBucketObjectWormConfigurationRequest(
@@ -76,7 +77,7 @@ class TestBucketObjectWormConfigurationAsync(TestIntegration, unittest.IsolatedA
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
-        time.sleep(1)
+        await asyncio.sleep(1)
 
         # get bucket object worm configuration
         result = await self.async_client.get_bucket_object_worm_configuration(oss.GetBucketObjectWormConfigurationRequest(
@@ -110,7 +111,7 @@ class TestBucketObjectWormConfigurationAsync(TestIntegration, unittest.IsolatedA
             )
         ))
 
-        time.sleep(1)
+        await asyncio.sleep(1)
 
         # put bucket object worm configuration
         try:

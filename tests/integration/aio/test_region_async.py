@@ -1,4 +1,5 @@
 # pylint: skip-file
+import asyncio
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
@@ -23,8 +24,9 @@ class TestRegionAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         )
 
     async def asyncTearDown(self):
-        await self.async_client.close() 
-        await self.invalid_async_client.close() 
+        await self.async_client.close()
+        await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_describe_regions(self):
         result = await self.async_client.describe_regions(oss.DescribeRegionsRequest(

@@ -1,4 +1,5 @@
 # pylint: skip-file
+import asyncio
 from typing import cast
 import tempfile
 import datetime
@@ -25,8 +26,9 @@ class TestMultipartUpload(TestIntegration, unittest.IsolatedAsyncioTestCase):
         )
 
     async def asyncTearDown(self):
-        await self.async_client.close() 
-        await self.invalid_async_client.close() 
+        await self.async_client.close()
+        await self.invalid_async_client.close()
+        await asyncio.sleep(0.25)
 
     async def test_multipart_upload_object(self):
         length1 = 100*1024
