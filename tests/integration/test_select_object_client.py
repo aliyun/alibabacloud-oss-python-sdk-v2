@@ -2,6 +2,7 @@
 import base64
 import csv
 import json
+import os
 import re
 
 import alibabacloud_oss_v2 as oss
@@ -105,7 +106,7 @@ class TestSelectObject(TestIntegration):
     def test_select_object_csv_file_concat(self):
         key = 'sample_data_concat.csv'
         expression = "select Year,StateAbbr, CityName, Short_Question_Text from ossobject where (data_value || data_value_unit) = '14.8%'"
-        file_path = './tests/data/sample_data.csv'
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_data.csv')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -207,7 +208,7 @@ class TestSelectObject(TestIntegration):
     def test_select_object_csv_file_complicate_condition(self):
         key = 'sample_data_complicate_condition.csv'
         expression = "select Year,StateAbbr, CityName, Short_Question_Text, data_value, data_value_unit, category, high_confidence_limit from ossobject where data_value > 14.8 and data_value_unit = '%' or Measure like '%18 Years' and Category = 'Unhealthy Behaviors' or high_confidence_limit > 70.0 "
-        file_path = './tests/data/sample_data.csv'
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_data.csv')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -272,7 +273,7 @@ class TestSelectObject(TestIntegration):
     def test_select_object_csv_file_complicate_condition_iter_bytes(self):
         key = 'sample_data_complicate_condition.csv'
         expression = "select Year,StateAbbr, CityName, Short_Question_Text, data_value, data_value_unit, category, high_confidence_limit from ossobject where data_value > 14.8 and data_value_unit = '%' or Measure like '%18 Years' and Category = 'Unhealthy Behaviors' or high_confidence_limit > 70.0 "
-        file_path = './tests/data/sample_data.csv'
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_data.csv')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -340,7 +341,7 @@ class TestSelectObject(TestIntegration):
     def test_select_object_csv_file_complicate_condition_raw(self):
         key = 'sample_data_complicate_condition.csv'
         expression = "select Year,StateAbbr, CityName, Short_Question_Text, data_value, data_value_unit, category, high_confidence_limit from ossobject where data_value > 14.8 and data_value_unit = '%' or Measure like '%18 Years' and Category = 'Unhealthy Behaviors' or high_confidence_limit > 70.0 "
-        file_path = './tests/data/sample_data.csv'
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_data.csv')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -408,7 +409,7 @@ class TestSelectObject(TestIntegration):
     def test_select_object_csv_file_complicate_condition_iter_bytes_raw(self):
         key = 'sample_data_complicate_condition.csv'
         expression = "select Year,StateAbbr, CityName, Short_Question_Text, data_value, data_value_unit, category, high_confidence_limit from ossobject where data_value > 14.8 and data_value_unit = '%' or Measure like '%18 Years' and Category = 'Unhealthy Behaviors' or high_confidence_limit > 70.0 "
-        file_path = './tests/data/sample_data.csv'
+        file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_data.csv')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -582,8 +583,8 @@ class TestSelectObject(TestIntegration):
     def test_select_object_json_file_line_range(self):
         key = 'sample_json_lines_line_range.json'
         expression = "select person.firstname as aaa as firstname, person.lastname, extra from ossobject'"
-        json_file_path = './tests/data/sample_json.json'
-        json_lines_path = './tests/data/sample_json_lines.json'
+        json_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json.json')
+        json_lines_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json_lines.json')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -656,8 +657,8 @@ class TestSelectObject(TestIntegration):
     def test_select_object_json_file_complicate_condition(self):
         key = 'sample_json_linesz_complicate_condition.json'
         expression = "select person.firstname, person.lastname, congress_numbers from ossobject where startdate > '2017-01-01' and senator_rank = 'junior' or state = 'CA' and party = 'Republican'"
-        json_file_path = './tests/data/sample_json.json'
-        json_lines_path = './tests/data/sample_json_lines.json'
+        json_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json.json')
+        json_lines_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json_lines.json')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -722,8 +723,8 @@ class TestSelectObject(TestIntegration):
     def test_select_object_json_file_complicate_condition_iter_bytes(self):
         key = 'sample_json_linesz_complicate_condition.json'
         expression = "select person.firstname, person.lastname, congress_numbers from ossobject where startdate > '2017-01-01' and senator_rank = 'junior' or state = 'CA' and party = 'Republican'"
-        json_file_path = './tests/data/sample_json.json'
-        json_lines_path = './tests/data/sample_json_lines.json'
+        json_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json.json')
+        json_lines_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json_lines.json')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -791,8 +792,8 @@ class TestSelectObject(TestIntegration):
     def test_select_object_json_file_complicate_condition_raw(self):
         key = 'sample_json_linesz_complicate_condition.json'
         expression = "select person.firstname, person.lastname, congress_numbers from ossobject where startdate > '2017-01-01' and senator_rank = 'junior' or state = 'CA' and party = 'Republican'"
-        json_file_path = './tests/data/sample_json.json'
-        json_lines_path = './tests/data/sample_json_lines.json'
+        json_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json.json')
+        json_lines_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json_lines.json')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
@@ -857,8 +858,8 @@ class TestSelectObject(TestIntegration):
     def test_select_object_json_file_complicate_condition_iter_bytes_raw(self):
         key = 'sample_json_linesz_complicate_condition.json'
         expression = "select person.firstname, person.lastname, congress_numbers from ossobject where startdate > '2017-01-01' and senator_rank = 'junior' or state = 'CA' and party = 'Republican'"
-        json_file_path = './tests/data/sample_json.json'
-        json_lines_path = './tests/data/sample_json_lines.json'
+        json_file_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json.json')
+        json_lines_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'sample_json_lines.json')
 
         result = self.client.put_object_from_file(oss.PutObjectRequest(
             bucket=self.bucket_name,
