@@ -4,6 +4,7 @@ import xml.etree.ElementTree as ET
 from alibabacloud_oss_v2 import exceptions
 from alibabacloud_oss_v2.models import bucket_basic as model
 from alibabacloud_oss_v2.aio.operations import bucket_basic as operations
+from ... import MockAsyncHttpResponse
 from . import TestOperations
 
 class TestBucketBasic(TestOperations):
@@ -390,7 +391,7 @@ class TestBucketBasic(TestOperations):
         )
 
         result = await operations.list_object_versions(self.client, request)
-        self.assertEqual('https://example-bucket.oss-cn-hangzhou.aliyuncs.com/?versions=&delimiter=%2F&key-marker=ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA&version-id-marker=CAEQMxiBgICbof2D0BYiIGRhZjgwMzJiMjA3MjQ0ODE5MWYxZDYwMzJlZjU1&max-keys=10&prefix=aaa&encoding-type=url', self.request_dump.url)
+        self.assertEqual('https://example-bucket.oss-cn-hangzhou.aliyuncs.com/?encoding-type=url&versions=&delimiter=%2F&key-marker=ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA&version-id-marker=CAEQMxiBgICbof2D0BYiIGRhZjgwMzJiMjA3MjQ0ODE5MWYxZDYwMzJlZjU1&max-keys=10&prefix=aaa', self.request_dump.url)
         self.assertEqual('GET', self.request_dump.method)
 
         self.assertEqual(200, result.status_code)
@@ -419,5 +420,53 @@ class TestBucketBasic(TestOperations):
             self.assertEqual('id-1234', serr.request_id)
             self.assertEqual('InvalidAccessKeyId', serr.code)
 
-        self.assertEqual('https://example-bucket.oss-cn-hangzhou.aliyuncs.com/?versions=&delimiter=%2F&key-marker=ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA&version-id-marker=CAEQMxiBgICbof2D0BYiIGRhZjgwMzJiMjA3MjQ0ODE5MWYxZDYwMzJlZjU1&max-keys=10&prefix=aaa&encoding-type=url', self.request_dump.url)
+        self.assertEqual('https://example-bucket.oss-cn-hangzhou.aliyuncs.com/?encoding-type=url&versions=&delimiter=%2F&key-marker=ChR1c2VyL2VyaWMvZGVtbzMuanNvbhAA&version-id-marker=CAEQMxiBgICbof2D0BYiIGRhZjgwMzJiMjA3MjQ0ODE5MWYxZDYwMzJlZjU1&max-keys=10&prefix=aaa', self.request_dump.url)
         self.assertEqual('GET', self.request_dump.method)
+
+    async def test_list_object_versions_encoding_type(self):
+        xml_data = r'''<?xml version="1.0" encoding="UTF-8"?>
+<ListVersionsResult>
+  <Name>demo-bucket</Name>
+  <Prefix>demo%2F</Prefix>
+  <KeyMarker>demo%2Fkey-marker</KeyMarker>
+  <MaxKeys>20</MaxKeys>
+  <Delimiter>%2F</Delimiter>
+  <EncodingType>url</EncodingType>
+  <IsTruncated>true</IsTruncated>
+  <NextKeyMarker>demo%2FREADME-CN.md</NextKeyMarker>
+  <Version>
+    <Key>demo%2FREADME-CN.md</Key>
+    <VersionId>id-1</VersionId>
+  </Version>
+  <DeleteMarker>
+    <Key>demo%2FLICENSE</Key>
+    <VersionId>id-2</VersionId>
+  </DeleteMarker>
+  <CommonPrefixes>
+    <Prefix>demo%2F.git%2F</Prefix>
+  </CommonPrefixes>
+</ListVersionsResult>'''
+
+        def response_func():
+            return MockAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={'x-oss-request-id': 'id-1234', 'Content-Type': 'application/xml'},
+                body=xml_data.encode(),
+            )
+        self.set_responseFunc(response_func)
+
+        request = model.ListObjectVersionsRequest(
+            bucket='bucket',
+        )
+
+        result = await operations.list_object_versions(self.client, request)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('url', result.encoding_type)
+        self.assertEqual('demo/', result.prefix)
+        self.assertEqual('demo/key-marker', result.key_marker)
+        self.assertEqual('/', result.delimiter)
+        self.assertEqual('demo/README-CN.md', result.next_key_marker)
+        self.assertEqual('demo/README-CN.md', result.version[0].key)
+        self.assertEqual('demo/LICENSE', result.delete_marker[0].key)
+        self.assertEqual('demo/.git/', result.common_prefixes[0].prefix)
