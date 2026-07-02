@@ -249,7 +249,8 @@ class _AsyncClientImpl(_ClientImplMixIn):
         )
 
         # save other info by Metadata filed
-        # output.op_metadata
+        if context.auth_method_query:
+            output.op_metadata['expiration_time'] = context.expiration_time
 
         # update clock offset
 
