@@ -13,7 +13,6 @@ from . import io_utils
 from . import defaults
 from .serde import copy_request
 from .checkpoint import DownloadCheckpoint
-from .crc import Crc64
 
 class DownloadAPIClient(abc.ABC):
     """Abstract base class for downloader client."""
@@ -475,8 +474,9 @@ class _DownloaderDelegate:
         got = 0
         error: Exception = None
 
-        chash: Crc64 = None
+        chash: "Crc64" = None
         if self._calc_crc:
+            from .crc import Crc64  # lazy import to avoid loading crcmod unless crc check is enabled
             chash = Crc64(0)
 
         while True:
@@ -561,6 +561,7 @@ class _DownloaderDelegate:
         self._next_offset = start + size
 
         if self._check_crc:
+            from .crc import Crc64  # lazy import to avoid loading crcmod unless crc check is enabled
             self._ccrc = Crc64.combine(self._ccrc, crc, size)
 
         if self._checkpoint:

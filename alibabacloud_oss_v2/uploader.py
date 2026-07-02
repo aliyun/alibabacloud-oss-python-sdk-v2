@@ -14,7 +14,6 @@ from . import io_utils
 from . import defaults
 from .serde import copy_request
 from .checkpoint import UploadCheckpoint
-from .crc import Crc64
 from .paginator import ListPartsPaginator
 
 class UploadAPIClient(abc.ABC):
@@ -424,6 +423,7 @@ class _UploaderDelegate:
         for part in self._iter_uploaded_part():
             uploaded_parts.append(models.UploadPart(part_number=part.part_number, etag=part.etag))
             if self._check_crc and part.hash_crc64 is not None:
+                from .crc import Crc64  # lazy import to avoid loading crcmod unless crc check is enabled
                 ccrc = Crc64.combine(ccrc, int(part.hash_crc64), part.size)
 
         # If upload_id was cleared during iteration (error occurred), discard partial results
@@ -694,6 +694,7 @@ class _UploaderDelegate:
         self._uploaded_parts.append(models.UploadPart(part_number=part_number, etag=etag))
 
         if self._check_crc and hash_crc64 is not None:
+            from .crc import Crc64  # lazy import to avoid loading crcmod unless crc check is enabled
             self._ccrc = Crc64.combine(self._ccrc, int(hash_crc64), size)
 
         self._transferred += size

@@ -13,7 +13,6 @@ from .downloader import Downloader
 from .uploader import Uploader
 from .copier import Copier
 from .progress import Progress
-from .crc import Crc64
 from .paginator import (
     ListObjectsPaginator,
     ListObjectsV2Paginator,
@@ -962,6 +961,7 @@ class Client:
 
         chash = None
         if self._client.has_feature(FF_ENABLE_CRC64_CHECK_DOWNLOAD):
+            from .crc import Crc64  # lazy import to avoid loading crcmod unless crc check is enabled
             chash = Crc64(0)
 
         def _crc_checker(headers):
