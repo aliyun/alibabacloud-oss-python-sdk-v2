@@ -10,7 +10,6 @@ from . import serde
 from . import utils
 from . import exceptions
 from . import progress
-from . import crc
 from .models import (
     ListObjectsResult,
     ListObjectsV2Result,
@@ -89,6 +88,7 @@ def add_crc_checker(_: serde.Model, op_input: OperationInput) -> OperationInput:
     Add crc writer and crc checker.
     """
 
+    from . import crc  # lazy import to avoid loading crcmod unless crc check is enabled
     trackers = cast(List, op_input.op_metadata.get(
         'opm-request-body-tracker', []))
     p = crc.Crc64(init_crc=0)

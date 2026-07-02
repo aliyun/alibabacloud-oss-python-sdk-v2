@@ -29,3 +29,21 @@ jobs:
     - name: Run tests
       run: |
         python -m unittest discover -t . -v tests/unit
+
+  unittest-no-crcmod:
+    name: UnitTest (without crcmod)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - name: Set up Python
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies (no crcmod)
+      run: |
+        pip install requests pycryptodome aiohttp
+
+    - name: Run no-crcmod tests
+      run: |
+        python -m unittest tests.unit.test_no_crcmod -v

@@ -7,7 +7,12 @@ import hashlib
 from .models import GetObjectRequest, PutObjectRequest
 from .utils import safety_str, parse_http_range
 from .io_utils import LimitReader
-from .crc import Crc64
+try:
+    # Keep eager import so the common (crcmod installed) case behaves as before,
+    # while a missing crcmod no longer breaks `import alibabacloud_oss_v2`.
+    from .crc import Crc64
+except ImportError:
+    Crc64 = None
 from .defaults import (
     CHECKPOINT_FILE_SUFFIX_DOWNLOADER,
     CHECKPOINT_FILE_SUFFIX_UPLOADER,
