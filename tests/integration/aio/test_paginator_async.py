@@ -2,7 +2,7 @@
 """Integration tests for paginator and presign methods (async)."""
 import unittest
 import alibabacloud_oss_v2 as oss
-from . import (
+from .. import (
     TestIntegration,
     random_str,
     REGION,

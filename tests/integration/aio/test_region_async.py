@@ -2,7 +2,7 @@
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
-from . import (
+from .. import (
     TestIntegration, 
     random_bucket_name, 
     random_str, 

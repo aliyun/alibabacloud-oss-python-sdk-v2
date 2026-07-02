@@ -6,7 +6,7 @@ import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.crc as osscrc
 from alibabacloud_oss_v2.aio.client import AsyncClient
 
-from . import (
+from .. import (
     TestIntegration, 
     random_bucket_name, 
     random_str, 

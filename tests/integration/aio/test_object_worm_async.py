@@ -3,7 +3,7 @@ from time import sleep
 from typing import cast
 import unittest
 import alibabacloud_oss_v2 as oss
-from . import (
+from .. import (
     TestIntegration, 
     random_bucket_name,
     random_str,
@@ -77,23 +77,23 @@ async def delete_all_objects(self, bucket_name):
                 break
 
         if total_deleted > 0:
-            print(f"  ✓ Successfully deleted {total_deleted} objects/versions from {bucket_name}")
+            print(f"  [OK] Successfully deleted {total_deleted} objects/versions from {bucket_name}")
         else:
-            print(f"  ✓ No objects found in {bucket_name}")
+            print(f"  [OK] No objects found in {bucket_name}")
 
         # After deleting all objects, delete the bucket
         try:
             result = await self.async_client.delete_bucket(oss.DeleteBucketRequest(
                 bucket=bucket_name,
             ))
-            print(f"  ✓ Successfully deleted bucket: {bucket_name} (request_id: {result.request_id})")
+            print(f"  [OK] Successfully deleted bucket: {bucket_name} (request_id: {result.request_id})")
             return True, total_deleted
         except Exception as e:
-            print(f"  ✗ Error deleting bucket {bucket_name}: {str(e)}")
+            print(f"  [ERROR] Error deleting bucket {bucket_name}: {str(e)}")
             return False, total_deleted
 
     except Exception as e:
-        print(f"  ✗ Error deleting objects from {bucket_name}: {str(e)}")
+        print(f"  [ERROR] Error deleting objects from {bucket_name}: {str(e)}")
         return False, 0
 
 
