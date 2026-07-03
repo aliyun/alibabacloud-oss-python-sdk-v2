@@ -240,6 +240,99 @@ class TestPutBucketInventory(unittest.TestCase):
         self.assertEqual(xml_str, op_input.body.decode())
 
 
+    def test_serialize_request_with_monthly_schedule(self):
+        """Test serialization of PutBucketInventoryRequest with Monthly frequency and DayOfMonth."""
+        xml_str = '<InventoryConfiguration><IncludedObjectVersions>All</IncludedObjectVersions><OptionalFields><Field>Size</Field><Field>LastModifiedDate</Field></OptionalFields><Id>monthly-report</Id><IsEnabled>true</IsEnabled><Destination><OSSBucketDestination><Format>CSV</Format><AccountId>100000000000000</AccountId><RoleArn>acs:ram::100000000000000:role/AliyunOSSRole</RoleArn><Bucket>bucketexampletest</Bucket><Prefix>monthly-inventory/</Prefix></OSSBucketDestination></Destination><Schedule><Frequency>Monthly</Frequency><DayOfMonth>3</DayOfMonth></Schedule><Filter><Prefix>logs/</Prefix></Filter></InventoryConfiguration>'
+
+        request = model.PutBucketInventoryRequest(
+            bucket='bucketexampletest',
+            inventory_id='monthly-report',
+            inventory_configuration=model.InventoryConfiguration(
+                included_object_versions='All',
+                optional_fields=model.OptionalFields(
+                    fields=[model.InventoryOptionalFieldType.SIZE, model.InventoryOptionalFieldType.LAST_MODIFIED_DATE],
+                ),
+                id='monthly-report',
+                is_enabled=True,
+                destination=model.InventoryDestination(
+                    oss_bucket_destination=model.InventoryOSSBucketDestination(
+                        format=model.InventoryFormatType.CSV,
+                        account_id='100000000000000',
+                        role_arn='acs:ram::100000000000000:role/AliyunOSSRole',
+                        bucket='bucketexampletest',
+                        prefix='monthly-inventory/',
+                    ),
+                ),
+                schedule=model.InventorySchedule(
+                    frequency=model.InventoryFrequencyType.MONTHLY,
+                    day_of_month=3,
+                ),
+                filter=model.InventoryFilter(
+                    prefix='logs/',
+                ),
+            ),
+        )
+
+        self.assertEqual('Monthly', request.inventory_configuration.schedule.frequency)
+        self.assertEqual(3, request.inventory_configuration.schedule.day_of_month)
+        self.assertIsNone(request.inventory_configuration.schedule.auto_delete)
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucketInventory',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutBucketInventory', op_input.op_name)
+        self.assertEqual('monthly-report', op_input.parameters.get('inventoryId'))
+        self.assertEqual(xml_str, op_input.body.decode())
+
+    def test_serialize_request_with_once_schedule(self):
+        """Test serialization of PutBucketInventoryRequest with Once frequency and AutoDelete."""
+        xml_str = '<InventoryConfiguration><IncludedObjectVersions>All</IncludedObjectVersions><OptionalFields><Field>Size</Field><Field>LastModifiedDate</Field></OptionalFields><Id>once-report</Id><IsEnabled>true</IsEnabled><Destination><OSSBucketDestination><Format>CSV</Format><AccountId>100000000000000</AccountId><RoleArn>acs:ram::100000000000000:role/AliyunOSSRole</RoleArn><Bucket>bucketexampletest</Bucket><Prefix>once-inventory/</Prefix></OSSBucketDestination></Destination><Schedule><Frequency>Once</Frequency><AutoDelete>true</AutoDelete></Schedule><Filter><Prefix>log/</Prefix></Filter></InventoryConfiguration>'
+
+        request = model.PutBucketInventoryRequest(
+            bucket='bucketexampletest',
+            inventory_id='once-report',
+            inventory_configuration=model.InventoryConfiguration(
+                included_object_versions='All',
+                optional_fields=model.OptionalFields(
+                    fields=[model.InventoryOptionalFieldType.SIZE, model.InventoryOptionalFieldType.LAST_MODIFIED_DATE],
+                ),
+                id='once-report',
+                is_enabled=True,
+                destination=model.InventoryDestination(
+                    oss_bucket_destination=model.InventoryOSSBucketDestination(
+                        format=model.InventoryFormatType.CSV,
+                        account_id='100000000000000',
+                        role_arn='acs:ram::100000000000000:role/AliyunOSSRole',
+                        bucket='bucketexampletest',
+                        prefix='once-inventory/',
+                    ),
+                ),
+                schedule=model.InventorySchedule(
+                    frequency=model.InventoryFrequencyType.ONCE,
+                    auto_delete=True,
+                ),
+                filter=model.InventoryFilter(
+                    prefix='log/',
+                ),
+            ),
+        )
+
+        self.assertEqual('Once', request.inventory_configuration.schedule.frequency)
+        self.assertIsNone(request.inventory_configuration.schedule.day_of_month)
+        self.assertEqual(True, request.inventory_configuration.schedule.auto_delete)
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucketInventory',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('PutBucketInventory', op_input.op_name)
+        self.assertEqual('once-report', op_input.parameters.get('inventoryId'))
+        self.assertEqual(xml_str, op_input.body.decode())
+
+
 class TestGetBucketInventory(unittest.TestCase):
     def test_constructor_request(self):
         request = model.GetBucketInventoryRequest(
@@ -412,6 +505,95 @@ class TestGetBucketInventory(unittest.TestCase):
         self.assertEqual(InventoryOptionalFieldType.IS_MULTIPART_UPLOADED, result.inventory_configuration.optional_fields.fields[4])
         self.assertEqual(InventoryOptionalFieldType.ENCRYPTION_STATUS, result.inventory_configuration.optional_fields.fields[5])
         self.assertEqual(InventoryOptionalFieldType.TRANSITION_TIME, result.inventory_configuration.optional_fields.fields[6])
+
+
+    def test_deserialize_result_with_monthly_schedule(self):
+        xml_data = r'''
+          <InventoryConfiguration>
+             <Id>monthly-report</Id>
+             <IsEnabled>true</IsEnabled>
+             <Destination>
+                <OSSBucketDestination>
+                   <Format>CSV</Format>
+                   <AccountId>100000000000000</AccountId>
+                   <RoleArn>acs:ram::100000000000000:role/AliyunOSSRole</RoleArn>
+                   <Bucket>acs:oss:::destbucket</Bucket>
+                   <Prefix>monthly-inventory/</Prefix>
+                </OSSBucketDestination>
+             </Destination>
+             <Schedule>
+                <Frequency>Monthly</Frequency>
+                <DayOfMonth>3</DayOfMonth>
+             </Schedule>
+             <Filter>
+               <Prefix>logs/</Prefix>
+             </Filter>
+             <IncludedObjectVersions>All</IncludedObjectVersions>
+             <OptionalFields>
+                <Field>Size</Field>
+                <Field>LastModifiedDate</Field>
+             </OptionalFields>
+          </InventoryConfiguration>
+        '''
+
+        result = model.GetBucketInventoryResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=xml_data,
+            )
+        )
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('monthly-report', result.inventory_configuration.id)
+        self.assertEqual('Monthly', result.inventory_configuration.schedule.frequency)
+        self.assertEqual(3, result.inventory_configuration.schedule.day_of_month)
+        self.assertIsNone(result.inventory_configuration.schedule.auto_delete)
+
+    def test_deserialize_result_with_once_schedule(self):
+        xml_data = r'''
+          <InventoryConfiguration>
+             <Id>once-report</Id>
+             <IsEnabled>true</IsEnabled>
+             <Destination>
+                <OSSBucketDestination>
+                   <Format>CSV</Format>
+                   <AccountId>100000000000000</AccountId>
+                   <RoleArn>acs:ram::100000000000000:role/AliyunOSSRole</RoleArn>
+                   <Bucket>acs:oss:::destbucket</Bucket>
+                   <Prefix>once-inventory/</Prefix>
+                </OSSBucketDestination>
+             </Destination>
+             <Schedule>
+                <Frequency>Once</Frequency>
+                <AutoDelete>true</AutoDelete>
+             </Schedule>
+             <Filter>
+               <Prefix>log/</Prefix>
+             </Filter>
+             <IncludedObjectVersions>All</IncludedObjectVersions>
+             <OptionalFields>
+                <Field>Size</Field>
+                <Field>LastModifiedDate</Field>
+             </OptionalFields>
+          </InventoryConfiguration>
+        '''
+
+        result = model.GetBucketInventoryResult()
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=xml_data,
+            )
+        )
+        deserializer = [serde.deserialize_output_xmlbody]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+        self.assertEqual('once-report', result.inventory_configuration.id)
+        self.assertEqual('Once', result.inventory_configuration.schedule.frequency)
+        self.assertIsNone(result.inventory_configuration.schedule.day_of_month)
+        self.assertEqual(True, result.inventory_configuration.schedule.auto_delete)
 
 
 class TestListBucketInventory(unittest.TestCase):
