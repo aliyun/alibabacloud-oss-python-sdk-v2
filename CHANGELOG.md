@@ -1,5 +1,13 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.3.2 日期：2026-07-06
+### 变更内容
+- Feature: Add async (aio) presigner and paginator
+- Feature: Add day_of_month and auto_delete fields to inventory schedule (Monthly/Once frequency)
+- Feature: Add default encoding-type url to list_object_versions
+- Change: Make crcmod optional and use zlib.crc32 for select object crc check
+- Fix: Handle empty security_token in credentials
+
 ## 版本号：1.3.1 日期：2026-06-04
 ### 变更内容
 - Fix: improve resumable upload handling in the uploader
