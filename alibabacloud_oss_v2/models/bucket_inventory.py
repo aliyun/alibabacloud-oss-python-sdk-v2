@@ -18,6 +18,8 @@ class InventoryFrequencyType(str, Enum):
 
     DAILY = 'Daily'
     WEEKLY = 'Weekly'
+    MONTHLY = 'Monthly'
+    ONCE = 'Once'
 
 
 class InventoryOptionalFieldType(str, Enum):
@@ -199,6 +201,8 @@ class InventorySchedule(serde.Model):
 
     _attribute_map = { 
         'frequency': {'tag': 'xml', 'rename': 'Frequency', 'type': 'str'},
+        'day_of_month': {'tag': 'xml', 'rename': 'DayOfMonth', 'type': 'int'},
+        'auto_delete': {'tag': 'xml', 'rename': 'AutoDelete', 'type': 'bool'},
     }
 
     _xml_map = {
@@ -209,14 +213,20 @@ class InventorySchedule(serde.Model):
     def __init__(
         self,
         frequency: Optional[Union[str, InventoryFrequencyType]] = None,
+        day_of_month: Optional[int] = None,
+        auto_delete: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            frequency (str | InventoryFrequencyType, optional): The frequency at which the inventory list is exported. Valid values:- Daily: The inventory list is exported on a daily basis. - Weekly: The inventory list is exported on a weekly basis.
+            frequency (str | InventoryFrequencyType, optional): The frequency at which the inventory list is exported. Valid values:- Daily: The inventory list is exported on a daily basis. - Weekly: The inventory list is exported on a weekly basis. - Monthly: The inventory list is exported on a monthly basis. - Once: The inventory list is exported once.
+            day_of_month (int, optional): The day of the month on which the inventory list is exported. Valid values: 1 to 31. Only applicable when Frequency is set to Monthly.
+            auto_delete (bool, optional): Whether to automatically delete the inventory configuration after the once inventory is executed. Only applicable when Frequency is set to Once. Valid values: true, false.
         """
         super().__init__(**kwargs)
         self.frequency = frequency
+        self.day_of_month = day_of_month
+        self.auto_delete = auto_delete
 
 
 class InventoryFilter(serde.Model):
