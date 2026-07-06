@@ -12,6 +12,7 @@ from . import io_utils
 from .crypto import MasterCipher, Envelope, ContentCipherBuilder, ContentCipher, CipherData
 from .crypto.aes_ctr_cipher import AESCtrCipherBuilder
 from .crypto.aes_ctr import _BLOCK_SIZE_LEN
+from .filelike import ReadOnlyFile
 
 class EncryptionMultiPartContext:
     """EncryptionMultiPartContext save encryption or decryption information
@@ -179,6 +180,30 @@ class EncryptionClient:
         """
 
         return self._client.list_parts(request, **kwargs)
+
+    def open_file(self, bucket: str, key: str,
+                    version_id: Optional[str] = None,
+                    request_payer: Optional[str] = None,
+                    **kwargs) -> ReadOnlyFile:
+        """OpenFile opens the named file for reading.
+
+        Args:
+            bucket (str, required): The name of the bucket.
+            key (str, required): The name of the object.
+            version_id (str, optional): The version ID of the object.
+            request_payer (str, optional): To indicate that the requester is aware that the request and data download will incur costs
+
+        Returns:
+            ReadOnlyFile: _description_
+        """
+        return ReadOnlyFile(
+            self,
+            bucket=bucket,
+            key=key,
+            version_id=version_id,
+            request_payer=request_payer,
+            **kwargs
+        )
 
     def _get_ccbuilder(self, envelope: Envelope ) -> ContentCipherBuilder:
         return self._ccbuilders.get(envelope.mat_desc or '', self._defualt_ccbuilder)
