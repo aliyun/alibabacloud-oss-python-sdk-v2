@@ -359,7 +359,7 @@ class SelectObjectResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            body (StreamBody, optional): <no value>
+            body (StreamBody, optional): The response body that contains the SelectObject results.
         """
         super().__init__(**kwargs)
         self.body = body

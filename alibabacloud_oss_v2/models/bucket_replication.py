@@ -702,7 +702,7 @@ class PutBucketReplicationResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            replication_rule_id (str, optional): <no value>
+            replication_rule_id (str, optional): The ID of the data replication rule.
         """
         super().__init__(**kwargs)
         self.replication_rule_id = replication_rule_id
