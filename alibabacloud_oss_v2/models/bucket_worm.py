@@ -149,7 +149,7 @@ class InitiateBucketWormResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            worm_id (str, optional): <no value>
+            worm_id (str, optional): The ID of the retention policy.
         """
         super().__init__(**kwargs)
         self.worm_id = worm_id

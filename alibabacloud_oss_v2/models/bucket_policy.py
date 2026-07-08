@@ -99,7 +99,7 @@ class GetBucketPolicyResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            body (str, optional): <no value>
+            body (str, optional): The configurations of the bucket policy.
         """
         super().__init__(**kwargs)
         self.body = body

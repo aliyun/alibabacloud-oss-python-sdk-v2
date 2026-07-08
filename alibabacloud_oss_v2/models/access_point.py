@@ -517,7 +517,7 @@ class GetAccessPointPolicyResult(serde.ResultModel):
     ) -> None:
         """
         Args:
-            body (io.ReadCloser, optional): <no value>
+            body (io.ReadCloser, optional): The configurations of the access point policy.
         """
         super().__init__(**kwargs)
         self.body = body
