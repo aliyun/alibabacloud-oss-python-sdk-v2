@@ -121,6 +121,18 @@ class TestValidation(unittest.TestCase):
             validation.assert_validate_arn_bucket("")
         self.assertIn("Malformed ARN", str(context.exception))
 
+    def test_assert_validate_arn_bucket_invalid_account_id(self):
+        """Test missing/invalid account id in ARN."""
+        # Missing account id
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou::bucket/my-bucket")
+        self.assertIn("input.bucket does not contain account id", str(context.exception))
+
+        # Non-digit account id
+        with self.assertRaises(ValueError) as context:
+            validation.assert_validate_arn_bucket("acs:oss:cn-hangzhou:abc123:bucket/my-bucket")
+        self.assertIn("input.bucket contains invalid account id: abc123", str(context.exception))
+
     def test_assert_validate_arn_bucket_invalid_resource(self):
         """Test invalid bucket resource formats."""
         # Resource doesn't start with 'bucket/'

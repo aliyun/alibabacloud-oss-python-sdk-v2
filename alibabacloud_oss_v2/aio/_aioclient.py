@@ -109,6 +109,9 @@ class _AsyncClientImpl(_ClientImplMixIn):
             OperationOutput: _description_
         """
 
+        if self._inner.init_error is not None:
+            raise self._inner.init_error
+
         options = copy.copy(self._options)
         self.resolve_operation_kwargs(options, **kwargs)
         self.apply_operation(options, op_input)

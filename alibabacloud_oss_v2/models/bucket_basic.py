@@ -43,6 +43,7 @@ class PutBucketRequest(serde.RequestModel):
         "resource_group_id": {"tag": "input", "position": "header", "rename": "x-oss-resource-group-id"},
         "create_bucket_configuration": {"tag": "input", "position": "body", "rename": "CreateBucketConfiguration", "type": "xml"},
         "bucket_tagging": {"tag": "input", "position": "header", "rename": "x-oss-bucket-tagging"},
+        "agentic_bucket": {"tag": "input", "position": "header", "rename": "x-oss-agentic-bucket"},
     }
 
     def __init__(
@@ -52,6 +53,7 @@ class PutBucketRequest(serde.RequestModel):
         resource_group_id: Optional[str] = None,
         create_bucket_configuration: Optional["CreateBucketConfiguration"] = None,
         bucket_tagging: Optional[str] = None,
+        agentic_bucket: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -59,9 +61,10 @@ class PutBucketRequest(serde.RequestModel):
             bucket (str, required): The name of the bucket to create.
             acl (str, optional): The access control list (ACL) of the bucket.
             resource_group_id (str, optional): The ID of the resource group.
-            create_bucket_configuration (CreateBucketConfiguration, optional): 
+            create_bucket_configuration (CreateBucketConfiguration, optional):
                 The configuration information for the bucket.
             bucket_tagging (str, optional): The tagging information for the bucket.
+            agentic_bucket (str, optional): The name of the AgenticBucket that a BucketSpace belongs to.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -69,6 +72,7 @@ class PutBucketRequest(serde.RequestModel):
         self.resource_group_id = resource_group_id
         self.create_bucket_configuration = create_bucket_configuration
         self.bucket_tagging = bucket_tagging
+        self.agentic_bucket = agentic_bucket
 
 
 class PutBucketResult(serde.ResultModel):
@@ -823,6 +827,8 @@ class BucketInfo(serde.Model):
         "bucket_policy": {"tag": "xml", "rename": "BucketPolicy", "type": "BucketPolicy"},
         "comment": {"tag": "xml", "rename": "Comment"},
         "block_public_access": {"tag": "xml", "rename": "BlockPublicAccess", "type": "bool"},
+        "bucket_resource_type": {"tag": "xml", "rename": "BucketResourceType"},
+        "agentic_bucket_name": {"tag": "xml", "rename": "AgenticBucketName"},
     }
 
     _dependency_map = {
@@ -855,6 +861,8 @@ class BucketInfo(serde.Model):
         bucket_policy: Optional[BucketPolicy] = None,
         comment: Optional[str] = None,
         block_public_access: Optional[bool] = None,
+        bucket_resource_type: Optional[str] = None,
+        agentic_bucket_name: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -898,6 +906,8 @@ class BucketInfo(serde.Model):
         self.bucket_policy = bucket_policy
         self.comment = comment
         self.block_public_access = block_public_access
+        self.bucket_resource_type = bucket_resource_type
+        self.agentic_bucket_name = agentic_bucket_name
 
 class GetBucketInfoRequest(serde.RequestModel):
     """The request for the GetBucketInfoRequest operation."""

@@ -30,6 +30,7 @@ from .types import (
     OperationInput,
     OperationOutput,
     EndpointProvider,
+    BucketNameResolver,
 )
 
 
@@ -112,6 +113,7 @@ class _Options:
         additional_headers: Optional[List[str]] = None,
         operation_timeout: Optional[Union[int, float]] = None,
         endpoint_provider: Optional[EndpointProvider] = None,
+        bucket_name_resolver: Optional[BucketNameResolver] = None,
     ) -> None:
         self.product = product
         self.region = region
@@ -130,14 +132,17 @@ class _Options:
         self.additional_headers = additional_headers
         self.operation_timeout = operation_timeout
         self.endpoint_provider = endpoint_provider
+        self.bucket_name_resolver = bucket_name_resolver
 
 class _InnerOptions:
     """client runtime's information."""
     def __init__(
         self,
         user_agent: str = None,
+        init_error: Optional[Exception] = None,
     ) -> None:
         self.user_agent = user_agent
+        self.init_error = init_error
 
 
 class _ClientImplMixIn:
@@ -159,6 +164,8 @@ class _ClientImplMixIn:
         inner = _InnerOptions()
         #UserAgent
         inner.user_agent = _build_user_agent(config)
+        #Deferred init error
+        inner.init_error = _resolve_init_error(config)
 
         return options, inner
 
@@ -259,11 +266,18 @@ class _ClientImplMixIn:
 
         request.body = body
 
+        # resolve bucket name for signing only; keep op_input.bucket as the logical name
+        sign_bucket = op_input.bucket
+        if options.bucket_name_resolver is not None:
+            resolved = options.bucket_name_resolver.build_bucket_name(op_input)
+            if resolved is not None:
+                sign_bucket = resolved
+
         # signing context
         context = SigningContext(
             product=options.product,
             region=options.region,
-            bucket=op_input.bucket,
+            bucket=sign_bucket,
             key=op_input.key,
             request=request,
         )
@@ -323,6 +337,9 @@ class _SyncClientImpl(_ClientImplMixIn):
         Returns:
             OperationOutput: _description_
         """
+
+        if self._inner.init_error is not None:
+            raise self._inner.init_error
 
         options = copy.copy(self._options)
         self.resolve_operation_kwargs(options, **kwargs)
@@ -788,3 +805,10 @@ def _build_user_agent(config: Config) -> str:
         return f'{utils.get_default_user_agent()}/{config.user_agent}'
 
     return utils.get_default_user_agent()
+
+
+def _resolve_init_error(config: Config) -> Optional[Exception]:
+    account_id = config.account_id or ""
+    if account_id != "" and not (account_id.isascii() and account_id.isdigit()):
+        return ValueError(f"invalid account id: {account_id}, must be pure digits")
+    return None
