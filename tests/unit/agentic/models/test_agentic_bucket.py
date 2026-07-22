@@ -129,11 +129,12 @@ class TestPutAgenticBucketStatus(unittest.TestCase):
 class TestListBucketSpaces(unittest.TestCase):
     def test_serialize_query(self):
         request = models.ListBucketSpacesRequest(
-            bucket='b', prefix='p', continuation_token='t', max_keys=10)
+            bucket='b', prefix='p', continuation_token='t', start_after='s0', max_keys=10)
         op_input = serde.serialize_input(request, OperationInput(
             op_name='ListBucketSpaces', method='GET', bucket=request.bucket))
         self.assertEqual('p', op_input.parameters['prefix'])
         self.assertEqual('t', op_input.parameters['continuation-token'])
+        self.assertEqual('s0', op_input.parameters['start-after'])
         self.assertEqual('10', op_input.parameters['max-keys'])
 
     def test_deserialize_result(self):
@@ -146,6 +147,7 @@ class TestListBucketSpaces(unittest.TestCase):
             b'</BucketSpaces>'
             b'<Prefix>p</Prefix><MaxKeys>100</MaxKeys>'
             b'<IsTruncated>true</IsTruncated><NextContinuationToken>tok</NextContinuationToken>'
+            b'<StartAfter>s0</StartAfter>'
             b'</ListBucketSpacesResult>'
         )
         result = serde.deserialize_output(
@@ -159,6 +161,7 @@ class TestListBucketSpaces(unittest.TestCase):
         self.assertEqual(100, result.max_keys)
         self.assertTrue(result.is_truncated)
         self.assertEqual('tok', result.next_continuation_token)
+        self.assertEqual('s0', result.start_after)
 
 
 class TestAgenticBucketAttributes(unittest.TestCase):

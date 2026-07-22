@@ -252,14 +252,16 @@ class ListBucketSpacesRequest(serde.RequestModel):
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'prefix': {'tag': 'input', 'position': 'query', 'rename': 'prefix', 'type': 'str'},
         'continuation_token': {'tag': 'input', 'position': 'query', 'rename': 'continuation-token', 'type': 'str'},
+        'start_after': {'tag': 'input', 'position': 'query', 'rename': 'start-after', 'type': 'str'},
         'max_keys': {'tag': 'input', 'position': 'query', 'rename': 'max-keys', 'type': 'int'},
     }
 
-    def __init__(self, bucket=None, prefix=None, continuation_token=None, max_keys=None, **kwargs):
+    def __init__(self, bucket=None, prefix=None, continuation_token=None, start_after=None, max_keys=None, **kwargs):
         super().__init__(**kwargs)
         self.bucket = bucket
         self.prefix = prefix
         self.continuation_token = continuation_token
+        self.start_after = start_after
         self.max_keys = max_keys
 
 
@@ -292,6 +294,7 @@ class ListBucketSpacesResult(serde.ResultModel):
         'max_keys': {'tag': 'xml', 'rename': 'MaxKeys', 'type': 'int'},
         'continuation_token': {'tag': 'xml', 'rename': 'ContinuationToken', 'type': 'str'},
         'next_continuation_token': {'tag': 'xml', 'rename': 'NextContinuationToken', 'type': 'str'},
+        'start_after': {'tag': 'xml', 'rename': 'StartAfter', 'type': 'str'},
         'is_truncated': {'tag': 'xml', 'rename': 'IsTruncated', 'type': 'bool'},
     }
     _dependency_map = {
@@ -301,7 +304,7 @@ class ListBucketSpacesResult(serde.ResultModel):
     _xml_map = {'name': 'ListBucketSpacesResult'}
 
     def __init__(self, owner=None, bucket_spaces=None, prefix=None, max_keys=None,
-                 continuation_token=None, next_continuation_token=None, is_truncated=None, **kwargs):
+                 continuation_token=None, next_continuation_token=None, start_after=None, is_truncated=None, **kwargs):
         super().__init__(**kwargs)
         self.owner = owner
         self.bucket_spaces = bucket_spaces
@@ -309,4 +312,5 @@ class ListBucketSpacesResult(serde.ResultModel):
         self.max_keys = max_keys
         self.continuation_token = continuation_token
         self.next_continuation_token = next_continuation_token
+        self.start_after = start_after
         self.is_truncated = is_truncated
