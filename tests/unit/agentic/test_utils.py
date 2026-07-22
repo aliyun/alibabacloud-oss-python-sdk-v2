@@ -4,6 +4,7 @@ from urllib.parse import urlparse
 from alibabacloud_oss_v2.agentic.utils import AgenticProvider, BucketSpaceHelper
 from alibabacloud_oss_v2.config import Config
 from alibabacloud_oss_v2.types import OperationInput
+from alibabacloud_oss_v2._client import AddressStyle
 
 
 class TestAgenticProvider(unittest.TestCase):
@@ -79,6 +80,53 @@ class TestAgenticProvider(unittest.TestCase):
         )
         self.assertEqual(
             "https://my-agentic-1234567890123456-cn-hangzhou-ab-apsr.oss-cn-hangzhou.aliyuncs.com/dir/obj%20key%2Bvalue",
+            provider.build_url(op_input),
+        )
+
+
+    def test_build_url_path_style_with_bucket(self):
+        endpoint = urlparse("https://oss-cn-hangzhou.aliyuncs.com")
+        provider = AgenticProvider(
+            endpoint=endpoint,
+            account_id="1234567890123456",
+            region="cn-hangzhou",
+            suffix="ab-apsr",
+            address_style=AddressStyle.Path,
+        )
+        op_input = OperationInput(op_name="GetAgenticBucket", method="GET", bucket="my-agentic")
+        self.assertEqual(
+            "https://oss-cn-hangzhou.aliyuncs.com/my-agentic-1234567890123456-cn-hangzhou-ab-apsr/",
+            provider.build_url(op_input),
+        )
+
+    def test_build_url_path_style_with_key(self):
+        endpoint = urlparse("https://oss-cn-hangzhou.aliyuncs.com")
+        provider = AgenticProvider(
+            endpoint=endpoint,
+            account_id="1234567890123456",
+            region="cn-hangzhou",
+            suffix="bs-apsr",
+            address_style=AddressStyle.Path,
+        )
+        op_input = OperationInput(
+            op_name="GetObject", method="GET", bucket="my-space", key="dir/obj key+value")
+        self.assertEqual(
+            "https://oss-cn-hangzhou.aliyuncs.com/my-space-1234567890123456-cn-hangzhou-bs-apsr/dir/obj%20key%2Bvalue",
+            provider.build_url(op_input),
+        )
+
+    def test_build_url_path_style_no_bucket(self):
+        endpoint = urlparse("https://oss-cn-hangzhou.aliyuncs.com")
+        provider = AgenticProvider(
+            endpoint=endpoint,
+            account_id="1234567890123456",
+            region="cn-hangzhou",
+            suffix="ab-apsr",
+            address_style=AddressStyle.Path,
+        )
+        op_input = OperationInput(op_name="ListAgenticBuckets", method="GET")
+        self.assertEqual(
+            "https://oss-cn-hangzhou.aliyuncs.com/",
             provider.build_url(op_input),
         )
 

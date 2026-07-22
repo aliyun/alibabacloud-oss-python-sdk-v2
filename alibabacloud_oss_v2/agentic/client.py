@@ -48,6 +48,7 @@ class AgenticBucketClient:
             account_id=account_id,
             region=region,
             suffix="ab-apsr",
+            address_style=self._client._options.address_style,
         )
         self._client._options.endpoint_provider = provider
         self._client._options.bucket_name_resolver = provider
@@ -394,6 +395,7 @@ class BucketSpaceClient:
             account_id=account_id,
             region=region,
             suffix="bs-apsr",
+            address_style=client._client._options.address_style,
         )
         client._client._options.endpoint_provider = provider
         client._client._options.bucket_name_resolver = provider

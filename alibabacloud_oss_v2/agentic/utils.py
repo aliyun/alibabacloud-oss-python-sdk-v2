@@ -2,6 +2,7 @@
 from urllib.parse import ParseResult, quote
 from alibabacloud_oss_v2.types import EndpointProvider, BucketNameResolver, OperationInput
 from alibabacloud_oss_v2.config import Config
+from alibabacloud_oss_v2._client import AddressStyle
 
 
 class AgenticProvider(EndpointProvider, BucketNameResolver):
@@ -9,15 +10,20 @@ class AgenticProvider(EndpointProvider, BucketNameResolver):
 
     - BucketNameResolver: prefix -> {prefix}-{account_id}-{region}-{suffix}
     - EndpointProvider:
-      - with bucket: {fullname}.{endpoint.netloc}/{key}
-      - without bucket: {endpoint.netloc}/ (only used by ListAgenticBuckets)
+      - virtual-hosted (default):
+        - with bucket: {fullname}.{endpoint.netloc}/{key}
+        - without bucket: {endpoint.netloc}/ (only used by ListAgenticBuckets)
+      - path-style (address_style=AddressStyle.Path):
+        - with bucket: {endpoint.netloc}/{fullname}/{key}
     """
 
-    def __init__(self, endpoint: ParseResult, account_id: str, region: str, suffix: str) -> None:
+    def __init__(self, endpoint: ParseResult, account_id: str, region: str, suffix: str,
+                 address_style: int = AddressStyle.Virtual) -> None:
         self._endpoint = endpoint
         self._account_id = account_id or ""
         self._region = region or ""
         self._suffix = suffix
+        self._address_style = address_style
 
     def build_bucket_name(self, op_input: OperationInput) -> str:
         if op_input.bucket is None:
@@ -25,9 +31,15 @@ class AgenticProvider(EndpointProvider, BucketNameResolver):
         return f'{op_input.bucket}-{self._account_id}-{self._region}-{self._suffix}'
 
     def build_url(self, op_input: OperationInput) -> str:
+        host = ""
         paths = []
         if op_input.bucket is None:
             host = self._endpoint.netloc
+        elif self._address_style == AddressStyle.Path:
+            host = self._endpoint.netloc
+            paths.append(self.build_bucket_name(op_input))
+            if op_input.key is None:
+                paths.append('')
         else:
             host = f'{self.build_bucket_name(op_input)}.{self._endpoint.netloc}'
 

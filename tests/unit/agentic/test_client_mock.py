@@ -198,6 +198,61 @@ class TestAgenticClientMockURL(unittest.TestCase):
         self.assertTrue(client._client._inner.user_agent.endswith('/agentic-client'))
 
 
+class TestAgenticClientMockPathStyle(unittest.TestCase):
+    def _ok_response(self, body=None):
+        return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)
+
+    def _client(self, http_client, account_id="1234567890123456", region="cn-hangzhou"):
+        cfg = config.load_default()
+        cfg.region = region
+        cfg.account_id = account_id
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = http_client
+        cfg.use_path_style = True
+        return AgenticBucketClient(cfg)
+
+    def test_get_agentic_bucket_path_style(self):
+        http = RecordingHttpClient(self._ok_response(
+            b'<AgenticBucketInfo><Name>my-agentic-1234567890123456-cn-hangzhou-ab-apsr</Name></AgenticBucketInfo>'))
+        client = self._client(http)
+        client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('GET', http.last_request.method)
+        self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/my-agentic-1234567890123456-cn-hangzhou-ab-apsr/', u.path)
+        self.assertIn('agenticBucket', parse_qs(u.query, keep_blank_values=True))
+
+    def test_list_agentic_buckets_path_style_region_host(self):
+        http = RecordingHttpClient(self._ok_response(
+            b'<ListAgenticBucketsResult><IsTruncated>false</IsTruncated></ListAgenticBucketsResult>'))
+        client = self._client(http)
+        client.list_agentic_buckets(models.ListAgenticBucketsRequest())
+        u = urlparse(http.last_request.url)
+        self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/', u.path)
+        self.assertIn('agenticBucket', parse_qs(u.query, keep_blank_values=True))
+
+
+class TestBucketSpaceClientMockPathStyle(unittest.TestCase):
+    def _ok_response(self, body=None):
+        return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)
+
+    def test_bucket_space_client_path_style(self):
+        from alibabacloud_oss_v2 import models as oss_models
+        http = RecordingHttpClient(self._ok_response())
+        cfg = config.load_default()
+        cfg.region = 'cn-hangzhou'
+        cfg.account_id = '1234567890123456'
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = http
+        cfg.use_path_style = True
+        client = BucketSpaceClient.create(cfg)
+        client.put_object(oss_models.PutObjectRequest(bucket='my-agent', key='test.txt', body=b'hello'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/my-agent-1234567890123456-cn-hangzhou-bs-apsr/test.txt', u.path)
+
+
 class TestBucketSpaceClientMockURL(unittest.TestCase):
     def _ok_response(self, body=None):
         return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)
