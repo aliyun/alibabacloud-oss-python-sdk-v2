@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import ParseResult, quote
+from alibabacloud_oss_v2 import exceptions
 from alibabacloud_oss_v2.types import EndpointProvider, BucketNameResolver, OperationInput
 from alibabacloud_oss_v2.config import Config
 from alibabacloud_oss_v2._client import AddressStyle
@@ -28,20 +29,26 @@ class AgenticProvider(EndpointProvider, BucketNameResolver):
     def build_bucket_name(self, op_input: OperationInput) -> str:
         if op_input.bucket is None:
             return None
+        if not self._account_id:
+            raise exceptions.ParamRequiredError(field='AccountId')
+        if not self._region:
+            raise exceptions.ParamRequiredError(field='Region')
         return f'{op_input.bucket}-{self._account_id}-{self._region}-{self._suffix}'
 
     def build_url(self, op_input: OperationInput) -> str:
-        host = ""
+        host = self._endpoint.netloc
         paths = []
-        if op_input.bucket is None:
-            host = self._endpoint.netloc
-        elif self._address_style == AddressStyle.Path:
-            host = self._endpoint.netloc
-            paths.append(self.build_bucket_name(op_input))
-            if op_input.key is None:
-                paths.append('')
-        else:
-            host = f'{self.build_bucket_name(op_input)}.{self._endpoint.netloc}'
+        if op_input.bucket is not None:
+            if self._address_style == AddressStyle.Path:
+                paths.append(self.build_bucket_name(op_input))
+                if op_input.key is None:
+                    paths.append('')
+            else:
+                full_name = self.build_bucket_name(op_input)
+                if len(full_name) > 63:
+                    raise ValueError(
+                        f'the host label "{full_name}" exceeds the maximum length of 63 characters')
+                host = f'{full_name}.{self._endpoint.netloc}'
 
         if op_input.key is not None:
             paths.append(quote(op_input.key))

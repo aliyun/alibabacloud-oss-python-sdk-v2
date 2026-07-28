@@ -1,6 +1,7 @@
 # pylint: skip-file
 import unittest
 from urllib.parse import urlparse
+from alibabacloud_oss_v2 import exceptions
 from alibabacloud_oss_v2.agentic.utils import AgenticProvider, BucketSpaceHelper
 from alibabacloud_oss_v2.config import Config
 from alibabacloud_oss_v2.types import OperationInput
@@ -128,6 +129,63 @@ class TestAgenticProvider(unittest.TestCase):
         self.assertEqual(
             "https://oss-cn-hangzhou.aliyuncs.com/",
             provider.build_url(op_input),
+        )
+
+    def test_missing_required_fields(self):
+        endpoint = urlparse("https://oss-cn-hangzhou.aliyuncs.com")
+        op_input = OperationInput(op_name="GetAgenticBucket", method="GET", bucket="my-agentic")
+
+        # Missing account_id
+        p = AgenticProvider(endpoint=endpoint, account_id="", region="cn-hangzhou", suffix="ab-apsr")
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            p.build_url(op_input)
+        self.assertIn("AccountId", str(ctx.exception))
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            p.build_bucket_name(op_input)
+        self.assertIn("AccountId", str(ctx.exception))
+
+        # Missing region
+        p = AgenticProvider(endpoint=endpoint, account_id="1234567890123456", region="", suffix="ab-apsr")
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            p.build_url(op_input)
+        self.assertIn("Region", str(ctx.exception))
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            p.build_bucket_name(op_input)
+        self.assertIn("Region", str(ctx.exception))
+
+        # No bucket: validation is skipped, no error
+        self.assertIsNone(
+            p.build_bucket_name(OperationInput(op_name="ListAgenticBuckets", method="GET")))
+
+    def test_host_label_too_long(self):
+        endpoint = urlparse("https://oss-cn-hangzhou.aliyuncs.com")
+        # full name = "{bucket}-1234567890123456-cn-hangzhou-ab-apsr" -> len(bucket) + 37
+        suffix_part = "-1234567890123456-cn-hangzhou-ab-apsr"
+        p = AgenticProvider(
+            endpoint=endpoint, account_id="1234567890123456", region="cn-hangzhou", suffix="ab-apsr")
+
+        # Boundary: full name == 63 (bucket 26) is allowed in virtual-hosted style
+        ok_name = "a" * 26
+        self.assertEqual(63, len(ok_name + suffix_part))
+        self.assertEqual(
+            f"https://{ok_name}{suffix_part}.oss-cn-hangzhou.aliyuncs.com/",
+            p.build_url(OperationInput(op_name="GetAgenticBucket", method="GET", bucket=ok_name)),
+        )
+
+        # Over limit: full name == 64 (bucket 27) is rejected in virtual-hosted style
+        long_name = "a" * 27
+        self.assertEqual(64, len(long_name + suffix_part))
+        with self.assertRaises(ValueError) as ctx:
+            p.build_url(OperationInput(op_name="GetAgenticBucket", method="GET", bucket=long_name))
+        self.assertIn("exceeds the maximum length of 63 characters", str(ctx.exception))
+
+        # Path style has no DNS label limit, so the same long name is fine
+        path_p = AgenticProvider(
+            endpoint=endpoint, account_id="1234567890123456", region="cn-hangzhou",
+            suffix="ab-apsr", address_style=AddressStyle.Path)
+        self.assertEqual(
+            f"https://oss-cn-hangzhou.aliyuncs.com/{long_name}{suffix_part}/",
+            path_p.build_url(OperationInput(op_name="GetAgenticBucket", method="GET", bucket=long_name)),
         )
 
 
