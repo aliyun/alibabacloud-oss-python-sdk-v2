@@ -23,6 +23,7 @@ class Config(object):
         enabled_redirect: Optional[bool] = None,
         use_cname: Optional[bool] = None,
         use_path_style: Optional[bool] = None,
+        use_virtual_hosted_alias: Optional[bool] = None,
         proxy_host: Optional[Union[str, dict]] = None,
         disable_upload_crc64_check: Optional[bool] = None,
         disable_download_crc64_check: Optional[bool] = None,
@@ -48,6 +49,7 @@ class Config(object):
             use_cname (bool, optional): If the endpoint is s CName, set this flag to true
             use_path_style (bool, optional): Allows you to enable the client to use path-style addressing, 
                 i.e., https://oss-cn-hangzhou.aliyuncs.com/bucket/key.
+            use_virtual_hosted_alias (bool, optional): If the endpoint is a short-alias host, set this flag to true
             signature_version (str, optional): The signature version when signing requests. Valid values v4, v1
             disable_ssl (bool, optional): Forces the endpoint to be resolved as HTTP.
             insecure_skip_verify (bool, optional): Skip server certificate verification.
@@ -93,6 +95,7 @@ class Config(object):
         self.enabled_redirect = enabled_redirect
         self.use_cname = use_cname
         self.use_path_style = use_path_style
+        self.use_virtual_hosted_alias = use_virtual_hosted_alias
         self.proxy_host = proxy_host
         self.disable_upload_crc64_check = disable_upload_crc64_check
         self.disable_download_crc64_check = disable_download_crc64_check

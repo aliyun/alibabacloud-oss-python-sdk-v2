@@ -214,6 +214,24 @@ class TestSyncClient(unittest.TestCase):
         clinet = client.Client(cfg)
         self.assertEqual(2, clinet._client._options.address_style)
 
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+            use_virtual_hosted_alias=True
+        )
+        clinet = client.Client(cfg)
+        self.assertEqual(4, clinet._client._options.address_style)
+
+        # path-style takes precedence over the alias style
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+            use_path_style=True,
+            use_virtual_hosted_alias=True
+        )
+        clinet = client.Client(cfg)
+        self.assertEqual(2, clinet._client._options.address_style)
+
     def test_config_auth_method(self):
         cfg = config.Config(
             region='cn-hangzhou',

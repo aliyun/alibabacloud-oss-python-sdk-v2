@@ -298,6 +298,58 @@ class TestAgenticClientMockAliasStyle(unittest.TestCase):
         self.assertEqual('/test.txt', u.path)
 
 
+class TestAgenticClientMockAliasStyleFromConfig(unittest.TestCase):
+    def _ok_response(self, body=None):
+        return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)
+
+    def _cfg(self, http_client, account_id="1234567890123456", region="cn-hangzhou"):
+        cfg = config.load_default()
+        cfg.region = region
+        cfg.account_id = account_id
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = http_client
+        cfg.use_virtual_hosted_alias = True
+        return cfg
+
+    def test_get_agentic_bucket_alias_host(self):
+        http = RecordingHttpClient(self._ok_response(
+            b'<AgenticBucketInfo><Name>my-agentic-1234567890123456-cn-hangzhou-ab-apsr</Name></AgenticBucketInfo>'))
+        client = AgenticBucketClient(self._cfg(http))
+        client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('GET', http.last_request.method)
+        self.assertEqual('my-agentic-alias-ab-apsr.oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertIn('agenticBucket', parse_qs(u.query, keep_blank_values=True))
+
+    def test_agentic_bucket_client_alias_still_requires_account_id(self):
+        http = RecordingHttpClient(self._ok_response())
+        client = AgenticBucketClient(self._cfg(http, account_id=''))
+        with self.assertRaises(Exception) as ctx:
+            client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        self.assertIn('AccountId', str(ctx.exception))
+        self.assertIsNone(http.last_request)
+
+    def test_bucket_space_client_alias_host(self):
+        from alibabacloud_oss_v2 import models as oss_models
+        http = RecordingHttpClient(self._ok_response())
+        client = BucketSpaceClient.create(self._cfg(http))
+        client.put_object(oss_models.PutObjectRequest(bucket='my-space', key='test.txt', body=b'hello'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('PUT', http.last_request.method)
+        self.assertEqual('my-space-alias-bs-apsr.oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/test.txt', u.path)
+
+    def test_path_style_wins_over_alias(self):
+        http = RecordingHttpClient(self._ok_response(b'<AgenticBucketInfo></AgenticBucketInfo>'))
+        cfg = self._cfg(http)
+        cfg.use_path_style = True
+        client = AgenticBucketClient(cfg)
+        client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/my-agentic-1234567890123456-cn-hangzhou-ab-apsr/', u.path)
+
+
 class TestBucketSpaceClientMockPathStyle(unittest.TestCase):
     def _ok_response(self, body=None):
         return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)

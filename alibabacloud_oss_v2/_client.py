@@ -591,6 +591,8 @@ def _resolve_address_style(config: Config, options: _Options) -> None:
         style = AddressStyle.CName
     elif bool(config.use_path_style):
         style = AddressStyle.Path
+    elif bool(config.use_virtual_hosted_alias):
+        style = AddressStyle.VirtualAlias
     else:
         style = AddressStyle.Virtual
 
