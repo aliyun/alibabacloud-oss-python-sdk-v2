@@ -93,7 +93,7 @@ class DeleteBucketRequest(serde.RequestModel):
     ) -> None:
         """
         Args:
-            bucket (str, required): The name of the bucket to create.
+            bucket (str, required): The name of the bucket to delete.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
