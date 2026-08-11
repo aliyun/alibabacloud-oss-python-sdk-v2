@@ -96,6 +96,17 @@ class TestAgenticBucketAttribute(TestIntegrationAgentic):
                  '"Action":["oss:GetObject"],"Principal":["' + USER_ID + '"],' \
                  '"Resource":["acs:oss:*:' + USER_ID + ':*"]}]}'
 
+        # The service refuses a policy while public access is blocked, and the sibling
+        # PublicAccessBlock scenario may have run first: unittest orders methods by name.
+        client.put_agentic_bucket_public_access_block(
+            oss_agentic.models.PutAgenticBucketPublicAccessBlockRequest(
+                bucket=bucket,
+                public_access_block_configuration=oss.models.PublicAccessBlockConfiguration(
+                    block_public_access=False
+                ),
+            )
+        )
+
         # Put policy
         result = client.put_agentic_bucket_policy(
             oss_agentic.models.PutAgenticBucketPolicyRequest(
