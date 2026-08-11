@@ -5,6 +5,8 @@ from alibabacloud_oss_v2.types import EndpointProvider, BucketNameResolver, Oper
 from alibabacloud_oss_v2.config import Config
 from alibabacloud_oss_v2._client import AddressStyle
 
+_ALIAS_TOKEN = 'alias'
+
 
 class AgenticProvider(EndpointProvider, BucketNameResolver):
     """Merged EndpointProvider + BucketNameResolver for AgenticBucket/BucketSpace.
@@ -16,6 +18,10 @@ class AgenticProvider(EndpointProvider, BucketNameResolver):
         - without bucket: {endpoint.netloc}/ (only used by ListAgenticBuckets)
       - path-style (address_style=AddressStyle.Path):
         - with bucket: {endpoint.netloc}/{fullname}/{key}
+      - virtual-hosted-alias (address_style=AddressStyle.VirtualAlias):
+        - with bucket: {prefix}-alias-{suffix}.{endpoint.netloc}/{key}, the short host label
+          keeps the leftmost DNS label within its 63 character limit while signing still
+          uses the full name
     """
 
     def __init__(self, endpoint: ParseResult, account_id: str, region: str, suffix: str,
@@ -43,6 +49,12 @@ class AgenticProvider(EndpointProvider, BucketNameResolver):
                 paths.append(self.build_bucket_name(op_input))
                 if op_input.key is None:
                     paths.append('')
+            elif self._address_style == AddressStyle.VirtualAlias:
+                label = f'{op_input.bucket}-{_ALIAS_TOKEN}-{self._suffix}'
+                if len(label) > 63:
+                    raise ValueError(
+                        f'the host label "{label}" exceeds the maximum length of 63 characters')
+                host = f'{label}.{self._endpoint.netloc}'
             else:
                 full_name = self.build_bucket_name(op_input)
                 if len(full_name) > 63:

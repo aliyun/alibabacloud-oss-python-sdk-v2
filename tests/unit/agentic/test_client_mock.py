@@ -6,6 +6,7 @@ from alibabacloud_oss_v2 import config, credentials
 from alibabacloud_oss_v2.agentic import AgenticBucketClient, BucketSpaceClient
 from alibabacloud_oss_v2.agentic import models
 from alibabacloud_oss_v2.types import HttpRequest, HttpResponse, HttpClient
+from alibabacloud_oss_v2._client import AddressStyle
 from .. import MockHttpResponse
 
 
@@ -231,6 +232,70 @@ class TestAgenticClientMockPathStyle(unittest.TestCase):
         self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
         self.assertEqual('/', u.path)
         self.assertIn('agenticBucket', parse_qs(u.query, keep_blank_values=True))
+
+
+class TestAgenticClientMockAliasStyle(unittest.TestCase):
+    def _ok_response(self, body=None):
+        return MockHttpResponse(status_code=200, reason='OK', headers={'x-oss-request-id': 'r1'}, body=body)
+
+    def _client(self, http_client, account_id="1234567890123456", region="cn-hangzhou"):
+        cfg = config.load_default()
+        cfg.region = region
+        cfg.account_id = account_id
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = http_client
+        return AgenticBucketClient(cfg, address_style=AddressStyle.VirtualAlias)
+
+    def test_get_agentic_bucket_alias_host(self):
+        http = RecordingHttpClient(self._ok_response(
+            b'<AgenticBucketInfo><Name>my-agentic-1234567890123456-cn-hangzhou-ab-apsr</Name></AgenticBucketInfo>'))
+        client = self._client(http)
+        client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('my-agentic-alias-ab-apsr.oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertIn('agenticBucket', parse_qs(u.query, keep_blank_values=True))
+
+    def test_list_agentic_buckets_alias_region_host(self):
+        http = RecordingHttpClient(self._ok_response(
+            b'<ListAgenticBucketsResult><IsTruncated>false</IsTruncated></ListAgenticBucketsResult>'))
+        client = self._client(http)
+        client.list_agentic_buckets(models.ListAgenticBucketsRequest())
+        u = urlparse(http.last_request.url)
+        self.assertEqual('oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/', u.path)
+
+    def test_alias_style_still_requires_account_id(self):
+        # The short label drops account_id from the host, but signing keeps the full
+        # name, so a missing account_id must still fail before the request is sent.
+        http = RecordingHttpClient(self._ok_response())
+        client = self._client(http, account_id='')
+        with self.assertRaises(Exception) as ctx:
+            client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket='my-agentic'))
+        self.assertIn('AccountId', str(ctx.exception))
+        self.assertIsNone(http.last_request)
+
+    def test_alias_style_long_prefix_fits(self):
+        # 49 characters + "-alias-ab-apsr" == 63, whereas the full name would be 86.
+        prefix = 'a' * 49
+        http = RecordingHttpClient(self._ok_response(b'<AgenticBucketInfo></AgenticBucketInfo>'))
+        client = self._client(http)
+        client.get_agentic_bucket(models.GetAgenticBucketRequest(bucket=prefix))
+        u = urlparse(http.last_request.url)
+        self.assertEqual(f'{prefix}-alias-ab-apsr.oss-cn-hangzhou.aliyuncs.com', u.netloc)
+
+    def test_bucket_space_client_alias_host(self):
+        from alibabacloud_oss_v2 import models as oss_models
+        http = RecordingHttpClient(self._ok_response())
+        cfg = config.load_default()
+        cfg.region = 'cn-hangzhou'
+        cfg.account_id = '1234567890123456'
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = http
+        client = BucketSpaceClient.create(cfg, address_style=AddressStyle.VirtualAlias)
+        client.put_object(oss_models.PutObjectRequest(bucket='my-space', key='test.txt', body=b'hello'))
+        u = urlparse(http.last_request.url)
+        self.assertEqual('my-space-alias-bs-apsr.oss-cn-hangzhou.aliyuncs.com', u.netloc)
+        self.assertEqual('/test.txt', u.path)
 
 
 class TestBucketSpaceClientMockPathStyle(unittest.TestCase):

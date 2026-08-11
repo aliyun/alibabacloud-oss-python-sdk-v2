@@ -40,6 +40,7 @@ class AddressStyle():
     Virtual = 1
     Path = 2
     CName = 3
+    VirtualAlias = 4
 
 
 class _MarkedBody:

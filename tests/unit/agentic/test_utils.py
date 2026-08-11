@@ -189,6 +189,82 @@ class TestAgenticProvider(unittest.TestCase):
         )
 
 
+    def _alias_provider(self, suffix="ab-apsr", account_id="1234567890123456", region="cn-hangzhou"):
+        return AgenticProvider(
+            endpoint=urlparse("https://oss-cn-hangzhou.aliyuncs.com"),
+            account_id=account_id,
+            region=region,
+            suffix=suffix,
+            address_style=AddressStyle.VirtualAlias,
+        )
+
+    def test_build_url_alias_style_with_bucket(self):
+        provider = self._alias_provider()
+        op_input = OperationInput(op_name="GetAgenticBucket", method="GET", bucket="my-agentic")
+        self.assertEqual(
+            "https://my-agentic-alias-ab-apsr.oss-cn-hangzhou.aliyuncs.com/",
+            provider.build_url(op_input),
+        )
+
+    def test_build_url_alias_style_with_key(self):
+        provider = self._alias_provider(suffix="bs-apsr")
+        op_input = OperationInput(
+            op_name="GetObject", method="GET", bucket="my-space", key="dir/obj key+value")
+        self.assertEqual(
+            "https://my-space-alias-bs-apsr.oss-cn-hangzhou.aliyuncs.com/dir/obj%20key%2Bvalue",
+            provider.build_url(op_input),
+        )
+
+    def test_build_url_alias_style_no_bucket(self):
+        provider = self._alias_provider()
+        op_input = OperationInput(op_name="ListAgenticBuckets", method="GET")
+        self.assertEqual(
+            "https://oss-cn-hangzhou.aliyuncs.com/",
+            provider.build_url(op_input),
+        )
+
+    def test_alias_style_signs_with_full_name(self):
+        provider = self._alias_provider()
+        op_input = OperationInput(op_name="GetAgenticBucket", method="GET", bucket="my-agentic")
+        # The short label only shows up in the host; signing keeps the full name.
+        self.assertEqual(
+            "my-agentic-1234567890123456-cn-hangzhou-ab-apsr",
+            provider.build_bucket_name(op_input),
+        )
+
+        # So account_id / region stay required: the resolver still rejects a missing one.
+        no_account = self._alias_provider(account_id="")
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            no_account.build_bucket_name(op_input)
+        self.assertIn("AccountId", str(ctx.exception))
+
+        no_region = self._alias_provider(region="")
+        with self.assertRaises(exceptions.ParamRequiredError) as ctx:
+            no_region.build_bucket_name(op_input)
+        self.assertIn("Region", str(ctx.exception))
+
+    def test_alias_host_label_too_long(self):
+        # alias label = "{bucket}-alias-ab-apsr" -> len(bucket) + 14
+        suffix_part = "-alias-ab-apsr"
+        provider = self._alias_provider()
+
+        # Boundary: label == 63 (bucket 49) is allowed, well past what the full name
+        # would fit (the full name is 37 characters longer than the bucket prefix).
+        ok_name = "a" * 49
+        self.assertEqual(63, len(ok_name + suffix_part))
+        self.assertEqual(
+            f"https://{ok_name}{suffix_part}.oss-cn-hangzhou.aliyuncs.com/",
+            provider.build_url(OperationInput(op_name="GetAgenticBucket", method="GET", bucket=ok_name)),
+        )
+
+        # Over limit: label == 64 (bucket 50) is rejected
+        long_name = "a" * 50
+        self.assertEqual(64, len(long_name + suffix_part))
+        with self.assertRaises(ValueError) as ctx:
+            provider.build_url(OperationInput(op_name="GetAgenticBucket", method="GET", bucket=long_name))
+        self.assertIn("exceeds the maximum length of 63 characters", str(ctx.exception))
+
+
 class TestBucketSpaceHelper(unittest.TestCase):
     def test_to_bucket_name(self):
         cfg = Config(account_id="1234567890123456", region="cn-hangzhou")

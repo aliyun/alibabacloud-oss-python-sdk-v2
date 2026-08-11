@@ -26,6 +26,7 @@ from alibabacloud_oss_v2.types import (
     OperationOutput,
     SigningContext
 )
+from alibabacloud_oss_v2._client import AddressStyle
 from . import MockHttpResponse, MockHttpClient, random_lowstr
 
 
@@ -1494,6 +1495,20 @@ class TestSyncClient(unittest.TestCase):
             ))
             self.assertEqual('https://bucket.www.endpoint-example.com:3182/%2B123', self.save_op_context.request.url)
 
+        # virtual-alias is agentic-only: the plain client falls back to virtual-hosted
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg, address_style=AddressStyle.VirtualAlias)
+        with mock.patch.object(clinet._client, '_sent_http_request_once', new= _sent_http_request_once) as _:
+            clinet.invoke_operation(
+                OperationInput(
+                    op_name='InvokeOperation',
+                    method='GET',
+                    bucket='bucket',
+            ))
+            self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/', self.save_op_context.request.url)
 
 
     def test_invoke_operation_verify(self):
