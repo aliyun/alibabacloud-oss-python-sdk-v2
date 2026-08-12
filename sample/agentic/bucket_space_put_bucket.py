@@ -7,6 +7,7 @@ parser.add_argument('--region', help='The region in which the bucket is located.
 parser.add_argument('--bucket', help='The bucket space prefix name.', required=True)
 parser.add_argument('--endpoint', help='The domain names that other services can use to access OSS')
 parser.add_argument('--account_id', help='The account id.', required=True)
+parser.add_argument('--agentic_bucket', help='The agentic bucket that the bucket space belongs to.', required=True)
 
 def main():
     args = parser.parse_args()
@@ -26,8 +27,11 @@ def main():
     # name and reuses the standard OSS bucket/object operations.
     client = oss_agentic.BucketSpaceClient.create(cfg)
 
+    # The bucket space must be created under an agentic bucket, identified by its
+    # full name '{bucket}-{account_id}-{region}-ab-apsr'.
     result = client.put_bucket(oss.models.PutBucketRequest(
         bucket=args.bucket,
+        agentic_bucket=f'{args.agentic_bucket}-{args.account_id}-{args.region}-ab-apsr',
     ))
 
     print(f'status code: {result.status_code},'
