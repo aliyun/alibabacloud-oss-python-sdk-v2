@@ -24,13 +24,18 @@ RAM_ROLE_ARN = os.getenv("OSS_TEST_RAM_ROLE_ARN")
 SIGNATURE_VERSION = os.getenv("OSS_TEST_SIGNATURE_VERSION")
 USER_ID = os.getenv("OSS_TEST_USER_ID")
 RAM_ROLE_NAME = RAM_ROLE_ARN[str.find(RAM_ROLE_ARN, ':role/') + 6:] if RAM_ROLE_ARN is not None else os.getenv("RAM_ROLE_NAME")
+API_KEY = os.getenv("API_KEY")
+MODEL_TYPE = os.getenv("MODEL_TYPE")
+DIMENSION = os.getenv("DIMENSION")
+ROLE_NAME = os.getenv("ROLE_NAME")
+
 
 PAYER_ACCESS_ID = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_ID")
 PAYER_ACCESS_KEY = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_SECRET")
 PAYER_UID = os.getenv("OSS_TEST_PAYER_UID")
 
-BUCKETNAME_PREFIX = "python-sdk-test-bucket-"
-OBJECTNAME_PREFIX = "python-sdk-test-object-"
+# BUCKETNAME_PREFIX = "python-sdk-test-bucket-"
+# OBJECTNAME_PREFIX = "python-sdk-test-object-"
 
 _defaultClient :oss.Client = None
 _invalidAkClient :oss.Client = None
