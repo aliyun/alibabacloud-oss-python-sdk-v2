@@ -5,23 +5,7 @@ import json
 from typing import Optional, List, Any
 from ... import serde
 from ...serde import RequestModel
-
-
-def _model_to_dict(obj):
-    """Recursively convert a Model instance to a JSON-serializable dict using API field names."""
-    if obj is None:
-        return None
-    if isinstance(obj, list):
-        return [_model_to_dict(item) for item in obj]
-    if isinstance(obj, serde.Model):
-        result = {}
-        attribute_map = getattr(obj, '_attribute_map', {})
-        for key, value in obj.__dict__.items():
-            if value is not None:
-                field_name = attribute_map.get(key, {}).get('rename', key)
-                result[field_name] = _model_to_dict(value)
-        return result
-    return obj
+from ._json_util import compact, to_obj, to_list
 
 
 class WorkflowParameter(serde.Model):
@@ -51,6 +35,12 @@ class WorkflowParameter(serde.Model):
         self.name = name
         self.value = value
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Name': self.name,
+            'Value': self.value,
+        })
+
 
 class WorkflowParameters(serde.Model):
     """A list of workflow parameters."""
@@ -75,6 +65,13 @@ class WorkflowParameters(serde.Model):
         super().__init__(**kwargs)
         self.workflow_parameters = workflow_parameters
 
+    def _to_json_obj(self) -> list:
+        return to_list(self.workflow_parameters) or []
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the workflowParameters query parameter."""
+        return json.dumps(self._to_json_obj())
+
 
 class EnableConfig(serde.Model):
     """A generic configuration model containing a single Enable field."""
@@ -98,6 +95,9 @@ class EnableConfig(serde.Model):
         """
         super().__init__(**kwargs)
         self.enable = enable
+
+    def _to_json_obj(self) -> dict:
+        return compact({'Enable': self.enable})
 
 
 class InsightsLabelItem(serde.Model):
@@ -128,6 +128,12 @@ class InsightsLabelItem(serde.Model):
         self.name = name
         self.description = description
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Name': self.name,
+            'Description': self.description,
+        })
+
 
 class InsightsLabels(serde.Model):
     """The list of insights label items."""
@@ -151,6 +157,10 @@ class InsightsLabels(serde.Model):
         """
         super().__init__(**kwargs)
         self.label = label
+
+    # The <Label> wrapper element exists only in XML; JSON carries a flat array.
+    def _to_json_obj(self) -> list:
+        return to_list(self.label) or []
 
 
 class InsightsCaptionConfig(serde.Model):
@@ -180,6 +190,12 @@ class InsightsCaptionConfig(serde.Model):
         self.enable = enable
         self.prompt = prompt
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Enable': self.enable,
+            'Prompt': self.prompt,
+        })
+
 
 class InsightsImageConfig(serde.Model):
     """Insights.Image configuration within InsightsConfig."""
@@ -203,6 +219,9 @@ class InsightsImageConfig(serde.Model):
         """
         super().__init__(**kwargs)
         self.caption = caption
+
+    def _to_json_obj(self) -> dict:
+        return compact({'Caption': to_obj(self.caption)})
 
 
 class InsightsVideoCaptionConfig(serde.Model):
@@ -236,6 +255,13 @@ class InsightsVideoCaptionConfig(serde.Model):
         self.prompt = prompt
         self.person_reference = person_reference
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Enable': self.enable,
+            'Prompt': self.prompt,
+            'PersonReference': to_obj(self.person_reference),
+        })
+
 
 class InsightsLabelUserDefinedConfig(serde.Model):
     """User defined label configuration."""
@@ -268,6 +294,13 @@ class InsightsLabelUserDefinedConfig(serde.Model):
         self.mode = mode
         self.labels = labels
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Enable': self.enable,
+            'Mode': self.mode,
+            'Labels': to_obj(self.labels),
+        })
+
 
 class InsightsLabelHighlightConfig(serde.Model):
     """Highlight label configuration within Insights.Video.Label."""
@@ -295,6 +328,12 @@ class InsightsLabelHighlightConfig(serde.Model):
         super().__init__(**kwargs)
         self.enable = enable
         self.labels = labels
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Enable': self.enable,
+            'Labels': to_obj(self.labels),
+        })
 
 
 class InsightsVideoLabelConfig(serde.Model):
@@ -328,6 +367,13 @@ class InsightsVideoLabelConfig(serde.Model):
         self.user_defined = user_defined
         self.highlight = highlight
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'System': to_obj(self.system),
+            'UserDefined': to_obj(self.user_defined),
+            'Highlight': to_obj(self.highlight),
+        })
+
 
 class InsightsVideoConfig(serde.Model):
     """Insights.Video configuration within InsightsConfig."""
@@ -360,6 +406,13 @@ class InsightsVideoConfig(serde.Model):
         self.label = label
         self.multi_stream = multi_stream
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Caption': to_obj(self.caption),
+            'Label': to_obj(self.label),
+            'MultiStream': to_obj(self.multi_stream),
+        })
+
 
 class ReverseImageConfig(serde.Model):
     """ReverseImage configuration within DatasetConfig."""
@@ -387,6 +440,12 @@ class ReverseImageConfig(serde.Model):
         super().__init__(**kwargs)
         self.image = image
         self.video = video
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Image': to_obj(self.image),
+            'Video': to_obj(self.video),
+        })
 
 
 class InsightsConfig(serde.Model):
@@ -419,6 +478,13 @@ class InsightsConfig(serde.Model):
         self.language = language
         self.image = image
         self.video = video
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Language': self.language,
+            'Image': to_obj(self.image),
+            'Video': to_obj(self.video),
+        })
 
 
 class SmartClusterFigureConfig(serde.Model):
@@ -456,6 +522,14 @@ class SmartClusterFigureConfig(serde.Model):
         self.min_entity_count = min_entity_count
         self.enabled_features = enabled_features
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'AutoGenerate': self.auto_generate,
+            'AutoClustering': self.auto_clustering,
+            'MinEntityCount': self.min_entity_count,
+            'EnabledFeatures': self.enabled_features,
+        })
+
 
 class SmartClusterConfig(serde.Model):
     """SmartCluster configuration within DatasetConfig."""
@@ -479,6 +553,9 @@ class SmartClusterConfig(serde.Model):
         """
         super().__init__(**kwargs)
         self.figure = figure
+
+    def _to_json_obj(self) -> dict:
+        return compact({'Figure': to_obj(self.figure)})
 
 
 class DatasetConfig(serde.Model):
@@ -511,6 +588,17 @@ class DatasetConfig(serde.Model):
         self.reverse_image = reverse_image
         self.insights = insights
         self.smart_cluster = smart_cluster
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Insights': to_obj(self.insights),
+            'SmartCluster': to_obj(self.smart_cluster),
+            'ReverseImage': to_obj(self.reverse_image),
+        })
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the datasetConfig query parameter."""
+        return json.dumps(self._to_json_obj())
 
 
 class Dataset(serde.Model):
@@ -625,8 +713,8 @@ class CreateDatasetRequest(RequestModel):
             bucket: Optional[str] = None,
             dataset_name: Optional[str] = None,
             description: Optional[str] = None,
-            workflow_parameters: Any = None,
-            dataset_config: Any = None,
+            workflow_parameters: Optional[str] = None,
+            dataset_config: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -634,23 +722,17 @@ class CreateDatasetRequest(RequestModel):
             bucket (str, optional): The name of the bucket.
             dataset_name (str, optional): The name of the dataset.
             description (str, optional): The description of the dataset.
-            workflow_parameters: The workflow parameters. Can be a list of WorkflowParameter or a JSON string.
-            dataset_config: The dataset configuration. Can be a DatasetConfig or a JSON string.
+            workflow_parameters (str, optional): The workflow parameters.
+                The value can be built through WorkflowParameters.to_parameter_value().
+            dataset_config (str, optional): The dataset configuration.
+                The value can be built through DatasetConfig.to_parameter_value().
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.dataset_name = dataset_name
         self.description = description
-        if isinstance(workflow_parameters, list):
-            self.workflow_parameters = json.dumps(
-                [{'Name': wp.name, 'Value': wp.value} for wp in workflow_parameters if wp.name is not None]
-            )
-        else:
-            self.workflow_parameters = workflow_parameters
-        if isinstance(dataset_config, DatasetConfig):
-            self.dataset_config = json.dumps(_model_to_dict(dataset_config))
-        else:
-            self.dataset_config = dataset_config
+        self.workflow_parameters = workflow_parameters
+        self.dataset_config = dataset_config
 
 
 class CreateDatasetResponseBody(serde.Model):
@@ -793,8 +875,8 @@ class UpdateDatasetRequest(RequestModel):
             bucket: Optional[str] = None,
             dataset_name: Optional[str] = None,
             description: Optional[str] = None,
-            workflow_parameters: Any = None,
-            dataset_config: Any = None,
+            workflow_parameters: Optional[str] = None,
+            dataset_config: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -802,23 +884,17 @@ class UpdateDatasetRequest(RequestModel):
             bucket (str, optional): The name of the bucket.
             dataset_name (str, optional): The name of the dataset.
             description (str, optional): The description of the dataset.
-            workflow_parameters: The workflow parameters. Can be a list of WorkflowParameter or a JSON string.
-            dataset_config: The dataset configuration. Can be a DatasetConfig or a JSON string.
+            workflow_parameters (str, optional): The workflow parameters.
+                The value can be built through WorkflowParameters.to_parameter_value().
+            dataset_config (str, optional): The dataset configuration.
+                The value can be built through DatasetConfig.to_parameter_value().
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.dataset_name = dataset_name
         self.description = description
-        if isinstance(workflow_parameters, list):
-            self.workflow_parameters = json.dumps(
-                [{'Name': wp.name, 'Value': wp.value} for wp in workflow_parameters if wp.name is not None]
-            )
-        else:
-            self.workflow_parameters = workflow_parameters
-        if isinstance(dataset_config, DatasetConfig):
-            self.dataset_config = json.dumps(_model_to_dict(dataset_config))
-        else:
-            self.dataset_config = dataset_config
+        self.workflow_parameters = workflow_parameters
+        self.dataset_config = dataset_config
 
 
 class UpdateDatasetResponseBody(serde.Model):

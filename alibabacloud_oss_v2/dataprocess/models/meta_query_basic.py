@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 """MetaQuery models for OSS DataProcess module."""
 
+import json
 from typing import Optional, List, Any
 from ... import serde
 from ...serde import RequestModel
 from .dataset_basic import DatasetConfig, WorkflowParameters
 from .query_basic import Aggregation, Aggregations
 from .file import Files
+from ._json_util import to_list
 
 
 class IgnoreEvents(serde.Model):
@@ -56,6 +58,10 @@ class WithFields(serde.Model):
         super().__init__(**kwargs)
         self.with_field = with_field
 
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the withFields query parameter."""
+        return json.dumps(self.with_field or [])
+
 
 class Filters(serde.Model):
     """The list of filters for meta query."""
@@ -104,6 +110,10 @@ class MediaTypes(serde.Model):
         super().__init__(**kwargs)
         self.media_type = media_type
 
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the mediaTypes query parameter."""
+        return json.dumps(self.media_type or [])
+
 
 class SmartClusterIds(serde.Model):
     """The list of smart cluster IDs to filter."""
@@ -151,6 +161,10 @@ class MetaQueryAggregations(serde.Model):
         """
         super().__init__(**kwargs)
         self.aggregation = aggregation
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the aggregations query parameter."""
+        return json.dumps(to_list(self.aggregation) or [])
 
 
 class IndexOptions(serde.Model):

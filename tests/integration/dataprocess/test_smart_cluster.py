@@ -101,7 +101,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 dataset_name=self.sc_ds_name,
                 name=sc_name,
                 cluster_type='figure',
-                rules=[rule],
+                rules=oss_dataprocess.models.Rules(rule=[rule]).to_parameter_value(),
                 description='integration test figure cluster',
             )
         )
@@ -230,7 +230,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 dataset_name=self.sc_ds_name,
                 name=sc_name,
                 cluster_type='knowledge',
-                rules=[rule],
+                rules=oss_dataprocess.models.Rules(rule=[rule]).to_parameter_value(),
                 description='integration test knowledge cluster',
             )
         )
@@ -296,7 +296,7 @@ class TestSmartCluster(TestBaseDataProcess):
                     dataset_name=self.sc_ds_name,
                     name='test-sc-toomany-' + str(int(time.time() * 1000)),
                     cluster_type='figure',
-                    rules=[rule],
+                    rules=oss_dataprocess.models.Rules(rule=[rule]).to_parameter_value(),
                 )
             )
             self.fail('Expected failure when BaseURIs exceeds 3 entries')
@@ -373,7 +373,7 @@ class TestSmartCluster(TestBaseDataProcess):
             oss_dataprocess.models.ListSmartClustersRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.sc_ds_name,
-                rule_types=['keywords'],
+                rule_types='["keywords"]',
                 max_results=50,
             )
         )
@@ -381,13 +381,13 @@ class TestSmartCluster(TestBaseDataProcess):
         self.assertEqual(200, by_rule_types.status_code)
 
     def test_figure_cluster_using_rules_array_lifecycle(self):
-        """Recommended way: use rules(List[SmartClusterRule]) (the JSON-array form).
+        """Recommended way: use Rules.to_parameter_value() (the JSON-array form).
         Covers the full lifecycle entirely through the array form:
         Create with rules -> Get (verify Rules array echoed) -> Update with rules -> Delete."""
         client = self.dp_client
         sc_name = 'test-sc-rules-array-' + str(int(time.time() * 1000))
 
-        # 1. Create with rules(List[SmartClusterRule]) - recommended array form
+        # 1. Create with Rules.to_parameter_value() - recommended array form
         base_uris = [
             'oss://' + self.dp_bucket + '/refs/arr-face1.jpg',
             'oss://' + self.dp_bucket + '/refs/arr-face2.jpg',
@@ -397,7 +397,7 @@ class TestSmartCluster(TestBaseDataProcess):
             base_uris=base_uris,
             sensitivity=0.6,
         )
-        rules_array = [face_rule]
+        rules_array = oss_dataprocess.models.Rules(rule=[face_rule])
 
         create_result = client.create_smart_cluster(
             oss_dataprocess.models.CreateSmartClusterRequest(
@@ -405,7 +405,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 dataset_name=self.sc_ds_name,
                 name=sc_name,
                 cluster_type='figure',
-                rules=rules_array,
+                rules=rules_array.to_parameter_value(),
                 description='integration test rules-array form',
             )
         )
@@ -440,7 +440,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 self.assertTrue(uri.startswith('oss://'),
                                 'baseURI must be ossFileURI: ' + uri)
 
-            # 3. Update via rules(List[SmartClusterRule])
+            # 3. Update via Rules.to_parameter_value()
             updated_face_rule = oss_dataprocess.models.SmartClusterRule(
                 rule_type='face',
                 base_uris=['oss://' + self.dp_bucket + '/refs/arr-face-updated.jpg'],
@@ -451,7 +451,7 @@ class TestSmartCluster(TestBaseDataProcess):
                     bucket=self.dp_bucket,
                     dataset_name=self.sc_ds_name,
                     object_id=object_id,
-                    rules=[updated_face_rule],
+                    rules=oss_dataprocess.models.Rules(rule=[updated_face_rule]).to_parameter_value(),
                 )
             )
             self.assertIsNotNone(update_result)
@@ -470,7 +470,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 pass
 
     def test_knowledge_cluster_using_rules_array_with_multiple_rules(self):
-        """Demonstrates rules(List[SmartClusterRule]) carrying TRULY MULTIPLE rules,
+        """Demonstrates Rules.to_parameter_value() carrying TRULY MULTIPLE rules,
         not just a single-element list. Two keywords rules are passed for a knowledge
         cluster. The server is expected to echo all rules back; some backends may
         restrict a single SmartCluster to one rule, in which case the rejection is
@@ -487,8 +487,8 @@ class TestSmartCluster(TestBaseDataProcess):
             rule_type='keywords',
             keywords=['动物', '风景'],
         )
-        two_rules = [rule1, rule2]
-        self.assertEqual(2, len(two_rules), 'rules array should carry 2 rules')
+        two_rules = oss_dataprocess.models.Rules(rule=[rule1, rule2])
+        self.assertEqual(2, len(two_rules.rule), 'rules array should carry 2 rules')
 
         try:
             create_result = client.create_smart_cluster(
@@ -497,13 +497,13 @@ class TestSmartCluster(TestBaseDataProcess):
                     dataset_name=self.sc_ds_name,
                     name=sc_name,
                     cluster_type='knowledge',
-                    rules=two_rules,
+                    rules=two_rules.to_parameter_value(),
                     description='integration test multi-rules array form',
                 )
             )
         except Exception as e:
             # Some backends may restrict a single SmartCluster to one rule. In that
-            # case the SDK contract (rules accepts List[SmartClusterRule]) is still
+            # case the SDK contract (rules accepts a Rules JSON array) is still
             # verified; surface a clear marker and skip the post-check.
             self.assertIsNotNone(
                 str(e),
@@ -539,7 +539,7 @@ class TestSmartCluster(TestBaseDataProcess):
                 self.assertIsNotNone(echo.keywords, 'keywords should be echoed')
                 self.assertTrue(len(echo.keywords) > 0, 'keywords should not be empty')
 
-            # 3. Update via rules(List) carrying TWO updated rules as well
+            # 3. Update via Rules.to_parameter_value() carrying TWO updated rules as well
             updated1 = oss_dataprocess.models.SmartClusterRule(
                 rule_type='keywords',
                 keywords=['建筑', '食物'],
@@ -553,7 +553,7 @@ class TestSmartCluster(TestBaseDataProcess):
                     bucket=self.dp_bucket,
                     dataset_name=self.sc_ds_name,
                     object_id=object_id,
-                    rules=[updated1, updated2],
+                    rules=oss_dataprocess.models.Rules(rule=[updated1, updated2]).to_parameter_value(),
                 )
             )
             self.assertIsNotNone(update_result)

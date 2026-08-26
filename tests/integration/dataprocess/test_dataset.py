@@ -22,12 +22,14 @@ class TestDataset(TestBaseDataProcess):
             oss_dataprocess.models.CreateDatasetRequest(
                 bucket=self.dp_bucket,
                 dataset_name=ds_name,
-                workflow_parameters=[
-                    oss_dataprocess.models.WorkflowParameter(
-                        name='ImageInsightEnable',
-                        value='True',
-                    ),
-                ],
+                workflow_parameters=oss_dataprocess.models.WorkflowParameters(
+                    workflow_parameters=[
+                        oss_dataprocess.models.WorkflowParameter(
+                            name='ImageInsightEnable',
+                            value='True',
+                        ),
+                    ],
+                ).to_parameter_value(),
                 description='integration test dataset',
             )
         )
@@ -195,7 +197,7 @@ class TestDataset(TestBaseDataProcess):
                 oss_dataprocess.models.UpdateDatasetRequest(
                     bucket=self.dp_bucket,
                     dataset_name=ds_name,
-                    dataset_config=config,
+                    dataset_config=config.to_parameter_value(),
                 )
             )
 
@@ -240,7 +242,7 @@ class TestDataset(TestBaseDataProcess):
             oss_dataprocess.models.CreateDatasetRequest(
                 bucket=self.dp_bucket,
                 dataset_name=ds_name,
-                dataset_config=config,
+                dataset_config=config.to_parameter_value(),
             )
         )
 
@@ -276,19 +278,21 @@ class TestDataset(TestBaseDataProcess):
         client = self.dp_client
         ds_name = gen_dataset_name()
 
-        workflow_params = [
-            oss_dataprocess.models.WorkflowParameter(
-                name='VideoInsightEnable',
-                value='true',
-            ),
-        ]
+        workflow_params = oss_dataprocess.models.WorkflowParameters(
+            workflow_parameters=[
+                oss_dataprocess.models.WorkflowParameter(
+                    name='VideoInsightEnable',
+                    value='true',
+                ),
+            ],
+        )
 
         create_result = client.create_dataset(
             oss_dataprocess.models.CreateDatasetRequest(
                 bucket=self.dp_bucket,
                 dataset_name=ds_name,
                 description='test with workflow parameters',
-                workflow_parameters=workflow_params,
+                workflow_parameters=workflow_params.to_parameter_value(),
             )
         )
 
@@ -345,18 +349,20 @@ class TestDataset(TestBaseDataProcess):
 
         try:
             # Update with workflow parameters
-            workflow_params = [
-                oss_dataprocess.models.WorkflowParameter(
-                    name='VideoInsightEnable',
-                    value='true',
-                ),
-            ]
+            workflow_params = oss_dataprocess.models.WorkflowParameters(
+                workflow_parameters=[
+                    oss_dataprocess.models.WorkflowParameter(
+                        name='VideoInsightEnable',
+                        value='true',
+                    ),
+                ],
+            )
 
             update_result = client.update_dataset(
                 oss_dataprocess.models.UpdateDatasetRequest(
                     bucket=self.dp_bucket,
                     dataset_name=ds_name,
-                    workflow_parameters=workflow_params,
+                    workflow_parameters=workflow_params.to_parameter_value(),
                 )
             )
 

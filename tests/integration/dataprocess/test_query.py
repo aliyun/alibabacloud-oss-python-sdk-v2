@@ -34,7 +34,7 @@ class TestQuery(TestBaseDataProcess):
             oss_dataprocess.models.SimpleQueryRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.query_dataset_name,
-                query=query,
+                query=query.to_parameter_value(),
                 max_results=10,
             )
         )
@@ -82,8 +82,10 @@ class TestQuery(TestBaseDataProcess):
             oss_dataprocess.models.SimpleQueryRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.query_dataset_name,
-                query=query,
-                aggregations=[aggregation],
+                query=query.to_parameter_value(),
+                aggregations=oss_dataprocess.models.MetaQueryAggregations(
+                    aggregation=[aggregation],
+                ).to_parameter_value(),
                 max_results=10,
             )
         )
@@ -115,7 +117,7 @@ class TestQuery(TestBaseDataProcess):
             oss_dataprocess.models.SimpleQueryRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.query_dataset_name,
-                query=query,
+                query=query.to_parameter_value(),
                 sort='Filename',
                 order='asc',
                 max_results=10,
@@ -151,8 +153,10 @@ class TestQuery(TestBaseDataProcess):
             oss_dataprocess.models.SimpleQueryRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.query_dataset_name,
-                query=query,
-                with_fields=['Filename', 'Size', 'ContentType'],
+                query=query.to_parameter_value(),
+                with_fields=oss_dataprocess.models.WithFields(
+                    with_field=['Filename', 'Size', 'ContentType'],
+                ).to_parameter_value(),
                 max_results=10,
             )
         )
@@ -207,8 +211,12 @@ class TestQuery(TestBaseDataProcess):
     #             bucket=self.dp_bucket,
     #             dataset_name=self.query_dataset_name,
     #             query='雪景',
-    #             media_types=['image'],
-    #             with_fields=['Filename', 'Size', 'MediaType'],
+    #             media_types=oss_dataprocess.models.MediaTypes(
+    #                 media_type=['image'],
+    #             ).to_parameter_value(),
+    #             with_fields=oss_dataprocess.models.WithFields(
+    #                 with_field=['Filename', 'Size', 'MediaType'],
+    #             ).to_parameter_value(),
     #             max_results=10,
     #         )
     #     )
@@ -306,7 +314,7 @@ class TestQuery(TestBaseDataProcess):
             oss_dataprocess.models.SimpleQueryRequest(
                 bucket=self.dp_bucket,
                 dataset_name=self.query_dataset_name,
-                query=query,
+                query=query.to_parameter_value(),
                 max_results=10,
             )
         )
