@@ -41,6 +41,21 @@ class TestSmartClusterRule(unittest.TestCase):
         self.assertEqual(2, len(rule.keywords))
         self.assertEqual(0.7, rule.sensitivity)
 
+    def test_to_parameter_value(self):
+        rule = model.SmartClusterRule(
+            rule_type='face',
+            base_uris=['oss://examplebucket/refs/face1.jpg'],
+            keywords=['人物'],
+            sensitivity=0.7,
+        )
+        self.assertEqual({
+            'RuleType': 'face',
+            'BaseURIs': ['oss://examplebucket/refs/face1.jpg'],
+            'Keywords': ['人物'],
+            'Sensitivity': 0.7,
+        }, json.loads(rule.to_parameter_value()))
+        self.assertEqual('{}', model.SmartClusterRule().to_parameter_value())
+
 
 class TestSmartClusterMNS(unittest.TestCase):
     def test_empty_constructor(self):
@@ -63,6 +78,13 @@ class TestSmartClusterNotificationInfo(unittest.TestCase):
         )
         self.assertEqual('my-topic', notif.mns.topic_name)
 
+    def test_to_parameter_value(self):
+        notif = model.SmartClusterNotificationInfo(
+            mns=model.SmartClusterMNS(topic_name='my-topic'),
+        )
+        self.assertEqual('{"MNS": {"TopicName": "my-topic"}}', notif.to_parameter_value())
+        self.assertEqual('{}', model.SmartClusterNotificationInfo().to_parameter_value())
+
 
 class TestRules(unittest.TestCase):
     def test_empty_constructor(self):
@@ -77,6 +99,18 @@ class TestRules(unittest.TestCase):
         self.assertEqual(2, len(rules.rule))
         self.assertEqual('face', rules.rule[0].rule_type)
         self.assertEqual('keywords', rules.rule[1].rule_type)
+
+    def test_to_parameter_value(self):
+        """The <Rule> wrapper is XML-only: JSON is a flat array."""
+        rules = model.Rules(rule=[
+            model.SmartClusterRule(rule_type='face', sensitivity=0.7),
+            model.SmartClusterRule(rule_type='keywords'),
+        ])
+        self.assertEqual(
+            '[{"RuleType": "face", "Sensitivity": 0.7}, {"RuleType": "keywords"}]',
+            rules.to_parameter_value(),
+        )
+        self.assertEqual('[]', model.Rules().to_parameter_value())
 
 
 class TestSmartClusterInfo(unittest.TestCase):
@@ -131,15 +165,17 @@ class TestCreateSmartClusterRequest(unittest.TestCase):
             name='my-cluster',
             cluster_type='keyword',
             description='test cluster',
-            rules=[rule],
-            notification='{"Topic":"arn:acs:..."}',
+            rules=model.Rules(rule=[rule]).to_parameter_value(),
+            notification=model.SmartClusterNotificationInfo(
+                mns=model.SmartClusterMNS(topic_name='my-topic')
+            ).to_parameter_value(),
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual('my-dataset', request.dataset_name)
         self.assertEqual('my-cluster', request.name)
         self.assertEqual('keyword', request.cluster_type)
-        self.assertIsNotNone(request.rules)
-        self.assertIsNotNone(request.notification)
+        self.assertEqual('[{"RuleType": "Keyword"}]', request.rules)
+        self.assertEqual('{"MNS": {"TopicName": "my-topic"}}', request.notification)
 
     def test_xml_builder(self):
         """Reference: Java CreateSmartClusterRequestTest.xmlBuilder()"""
@@ -154,7 +190,7 @@ class TestCreateSmartClusterRequest(unittest.TestCase):
             name='face-cluster-alice',
             cluster_type='figure',
             description='Face cluster for alice',
-            rules=[rule],
+            rules=model.Rules(rule=[rule]).to_parameter_value(),
         )
         op_input = serde.serialize_input(request, OperationInput(
             op_name='CreateSmartCluster',
@@ -352,8 +388,8 @@ class TestUpdateSmartClusterRequest(unittest.TestCase):
             dataset_name='photos-2026',
             object_id='cluster-abc123',
             name='updated-cluster',
-            rules=[rule],
-            rule=rule,
+            rules=model.Rules(rule=[rule]).to_parameter_value(),
+            rule=rule.to_parameter_value(),
         )
         op_input = serde.serialize_input(request, OperationInput(
             op_name='UpdateSmartCluster',
@@ -476,7 +512,7 @@ class TestListSmartClustersRequest(unittest.TestCase):
             dataset_name='photos-2026',
             max_results=10,
             cluster_type='figure',
-            rule_types=['face', 'keywords'],
+            rule_types='["face", "keywords"]',
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual(10, request.max_results)

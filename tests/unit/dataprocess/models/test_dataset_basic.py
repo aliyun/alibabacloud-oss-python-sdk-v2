@@ -41,6 +41,20 @@ class TestWorkflowParameters(unittest.TestCase):
         self.assertEqual('k1', wps.workflow_parameters[0].name)
         self.assertEqual('v1', wps.workflow_parameters[0].value)
 
+    def test_to_parameter_value(self):
+        """The <WorkflowParameter> wrapper is XML-only: JSON is a flat array."""
+        wps = model.WorkflowParameters(workflow_parameters=[
+            model.WorkflowParameter(name='k1', value='v1'),
+            model.WorkflowParameter(name='k2'),
+        ])
+        self.assertEqual(
+            '[{"Name": "k1", "Value": "v1"}, {"Name": "k2"}]',
+            wps.to_parameter_value(),
+        )
+
+    def test_to_parameter_value_empty(self):
+        self.assertEqual('[]', model.WorkflowParameters().to_parameter_value())
+
 
 class TestEnableConfig(unittest.TestCase):
     def test_empty_constructor(self):
@@ -343,6 +357,92 @@ class TestDatasetConfig(unittest.TestCase):
         self.assertEqual('true', cfg.smart_cluster.figure.auto_generate)
         self.assertEqual(5, cfg.smart_cluster.figure.min_entity_count)
 
+    def test_to_parameter_value(self):
+        """The JSON value must match the Go/Java SDKs: Labels is a flat array."""
+        cfg = model.DatasetConfig(
+            reverse_image=model.ReverseImageConfig(
+                image=model.EnableConfig(enable='true'),
+                video=model.EnableConfig(enable='false'),
+            ),
+            insights=model.InsightsConfig(
+                language='en',
+                image=model.InsightsImageConfig(
+                    caption=model.InsightsCaptionConfig(enable='true', prompt='describe'),
+                ),
+                video=model.InsightsVideoConfig(
+                    caption=model.InsightsVideoCaptionConfig(
+                        enable='true',
+                        person_reference=model.EnableConfig(enable='true'),
+                    ),
+                    label=model.InsightsVideoLabelConfig(
+                        system=model.EnableConfig(enable='true'),
+                        user_defined=model.InsightsLabelUserDefinedConfig(
+                            enable='true',
+                            mode='append',
+                            labels=model.InsightsLabels(label=[
+                                model.InsightsLabelItem(name='cat', description='a cat'),
+                            ]),
+                        ),
+                        highlight=model.InsightsLabelHighlightConfig(
+                            enable='true',
+                            labels=model.InsightsLabels(label=[
+                                model.InsightsLabelItem(name='goal'),
+                            ]),
+                        ),
+                    ),
+                    multi_stream=model.EnableConfig(enable='false'),
+                ),
+            ),
+            smart_cluster=model.SmartClusterConfig(
+                figure=model.SmartClusterFigureConfig(
+                    auto_generate='true',
+                    auto_clustering='false',
+                    min_entity_count=5,
+                    enabled_features=['face'],
+                ),
+            ),
+        )
+        self.assertEqual({
+            'Insights': {
+                'Language': 'en',
+                'Image': {'Caption': {'Enable': 'true', 'Prompt': 'describe'}},
+                'Video': {
+                    'Caption': {
+                        'Enable': 'true',
+                        'PersonReference': {'Enable': 'true'},
+                    },
+                    'Label': {
+                        'System': {'Enable': 'true'},
+                        'UserDefined': {
+                            'Enable': 'true',
+                            'Mode': 'append',
+                            'Labels': [{'Name': 'cat', 'Description': 'a cat'}],
+                        },
+                        'Highlight': {
+                            'Enable': 'true',
+                            'Labels': [{'Name': 'goal'}],
+                        },
+                    },
+                    'MultiStream': {'Enable': 'false'},
+                },
+            },
+            'SmartCluster': {
+                'Figure': {
+                    'AutoGenerate': 'true',
+                    'AutoClustering': 'false',
+                    'MinEntityCount': 5,
+                    'EnabledFeatures': ['face'],
+                },
+            },
+            'ReverseImage': {
+                'Image': {'Enable': 'true'},
+                'Video': {'Enable': 'false'},
+            },
+        }, json.loads(cfg.to_parameter_value()))
+
+    def test_to_parameter_value_empty(self):
+        self.assertEqual('{}', model.DatasetConfig().to_parameter_value())
+
 
 class TestDataset(unittest.TestCase):
     def test_empty_constructor(self):
@@ -428,14 +528,14 @@ class TestCreateDatasetRequest(unittest.TestCase):
             bucket='examplebucket',
             dataset_name='photos-2026',
             description='Photo collection for year 2026',
-            workflow_parameters=[wp],
-            dataset_config=config,
+            workflow_parameters=model.WorkflowParameters(workflow_parameters=[wp]).to_parameter_value(),
+            dataset_config=config.to_parameter_value(),
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual('photos-2026', request.dataset_name)
         self.assertEqual('Photo collection for year 2026', request.description)
-        self.assertIsNotNone(request.workflow_parameters)
-        self.assertIsNotNone(request.dataset_config)
+        self.assertEqual('[{"Name": "ImageInsightEnable", "Value": "True"}]', request.workflow_parameters)
+        self.assertEqual('{"Insights": {"Language": "en"}}', request.dataset_config)
 
     def test_constructor_with_string_parameters(self):
         request = model.CreateDatasetRequest(
@@ -458,8 +558,8 @@ class TestCreateDatasetRequest(unittest.TestCase):
             bucket='examplebucket',
             dataset_name='photos-2026',
             description='Photo collection for year 2026',
-            workflow_parameters=[wp],
-            dataset_config=config,
+            workflow_parameters=model.WorkflowParameters(workflow_parameters=[wp]).to_parameter_value(),
+            dataset_config=config.to_parameter_value(),
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -690,12 +790,12 @@ class TestUpdateDatasetRequest(unittest.TestCase):
             bucket='examplebucket',
             dataset_name='photos-2026',
             description='Updated photo collection for year 2026',
-            dataset_config=config,
+            dataset_config=config.to_parameter_value(),
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual('photos-2026', request.dataset_name)
         self.assertEqual('Updated photo collection for year 2026', request.description)
-        self.assertIsNotNone(request.dataset_config)
+        self.assertEqual('{"Insights": {"Language": "en"}}', request.dataset_config)
 
     def test_xml_builder(self):
         # Reference: Java UpdateDatasetRequestTest.xmlBuilder

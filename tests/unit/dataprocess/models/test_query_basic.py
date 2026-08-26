@@ -14,6 +14,7 @@ import json
 import unittest
 from alibabacloud_oss_v2 import serde
 from alibabacloud_oss_v2.dataprocess.models import query_basic as model
+from alibabacloud_oss_v2.dataprocess.models import meta_query_basic
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict
 from tests.unit import MockHttpResponse
 
@@ -89,6 +90,53 @@ class TestSimpleQuery(unittest.TestCase):
         self.assertEqual(1, len(sq.sub_queries))
         self.assertEqual('Size', sq.sub_queries[0].field)
 
+    def test_to_parameter_value(self):
+        """Nested queries use the SubQueries key, not the XML SimpleQuery name."""
+        sq = model.SimpleQuery(operation='and', sub_queries=[
+            model.SimpleQuery(field='Size', value='1048576', operation='gt'),
+            model.SimpleQuery(field='MediaType', value='image', operation='eq'),
+        ])
+        self.assertEqual({
+            'Operation': 'and',
+            'SubQueries': [
+                {'Field': 'Size', 'Value': '1048576', 'Operation': 'gt'},
+                {'Field': 'MediaType', 'Value': 'image', 'Operation': 'eq'},
+            ],
+        }, json.loads(sq.to_parameter_value()))
+
+    def test_to_parameter_value_recursive(self):
+        """SubQueries nests to arbitrary depth."""
+        sq = model.SimpleQuery(operation='and', sub_queries=[
+            model.SimpleQuery(field='Size', value='1048576', operation='gt'),
+            model.SimpleQuery(operation='or', sub_queries=[
+                model.SimpleQuery(field='MediaType', value='image', operation='eq'),
+                model.SimpleQuery(operation='and', sub_queries=[
+                    model.SimpleQuery(field='Filename', value='a', operation='prefix'),
+                ]),
+            ]),
+        ])
+        self.assertEqual({
+            'Operation': 'and',
+            'SubQueries': [
+                {'Field': 'Size', 'Value': '1048576', 'Operation': 'gt'},
+                {
+                    'Operation': 'or',
+                    'SubQueries': [
+                        {'Field': 'MediaType', 'Value': 'image', 'Operation': 'eq'},
+                        {
+                            'Operation': 'and',
+                            'SubQueries': [
+                                {'Field': 'Filename', 'Value': 'a', 'Operation': 'prefix'},
+                            ],
+                        },
+                    ],
+                },
+            ],
+        }, json.loads(sq.to_parameter_value()))
+
+    def test_to_parameter_value_empty(self):
+        self.assertEqual('{}', model.SimpleQuery().to_parameter_value())
+
 
 # ==================== SimpleQuery ====================
 
@@ -115,25 +163,25 @@ class TestSimpleQueryRequest(unittest.TestCase):
         request = model.SimpleQueryRequest(
             bucket='examplebucket',
             dataset_name='my-dataset',
-            query=sq,
+            query=sq.to_parameter_value(),
             next_token='token-123',
             max_results=10,
             sort='Filename',
             order='asc',
-            aggregations=[agg],
-            with_fields=['Filename', 'Size'],
+            aggregations=meta_query_basic.MetaQueryAggregations(aggregation=[agg]).to_parameter_value(),
+            with_fields=meta_query_basic.WithFields(with_field=['Filename', 'Size']).to_parameter_value(),
             without_total_hits=False,
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual('my-dataset', request.dataset_name)
-        self.assertIsNotNone(request.query)
+        self.assertEqual('{"Field": "Filename", "Value": "test", "Operation": "prefix"}', request.query)
         self.assertEqual('token-123', request.next_token)
         self.assertEqual(10, request.max_results)
         self.assertEqual('Filename', request.sort)
         self.assertEqual('asc', request.order)
-        self.assertIsNotNone(request.aggregations)
-        self.assertIsNotNone(request.with_fields)
-        self.assertEqual('false', request.without_total_hits)
+        self.assertEqual('[{"Field": "Size", "Operation": "sum"}]', request.aggregations)
+        self.assertEqual('["Filename", "Size"]', request.with_fields)
+        self.assertFalse(request.without_total_hits)
 
     def test_xml_builder(self):
         """Reference: Java SimpleQueryRequestTest.xmlBuilder()"""
@@ -142,12 +190,12 @@ class TestSimpleQueryRequest(unittest.TestCase):
         request = model.SimpleQueryRequest(
             bucket='examplebucket',
             dataset_name='photos-2026',
-            query=sq,
+            query=sq.to_parameter_value(),
             max_results=100,
             sort='Size',
             order='desc',
-            aggregations=[agg],
-            with_fields=['OSSURI', 'Size', 'FileHash'],
+            aggregations=meta_query_basic.MetaQueryAggregations(aggregation=[agg]).to_parameter_value(),
+            with_fields=meta_query_basic.WithFields(with_field=['OSSURI', 'Size', 'FileHash']).to_parameter_value(),
             without_total_hits=False,
         )
         op_input = serde.serialize_input(request, OperationInput(
@@ -274,10 +322,10 @@ class TestSemanticQueryRequest(unittest.TestCase):
             dataset_name='test-dataset',
             max_results=10,
             query='blue shirt man walking to table',
-            with_fields=['Filename', 'Size', 'MediaType'],
-            media_types=['video', 'image'],
+            with_fields=meta_query_basic.WithFields(with_field=['Filename', 'Size', 'MediaType']).to_parameter_value(),
+            media_types=meta_query_basic.MediaTypes(media_type=['video', 'image']).to_parameter_value(),
             source_uri='oss://bucket/prefix/',
-            simple_query=sq,
+            simple_query=sq.to_parameter_value(),
         )
         self.assertEqual('examplebucket', request.bucket)
         self.assertEqual('test-dataset', request.dataset_name)
@@ -300,9 +348,9 @@ class TestSemanticQueryRequest(unittest.TestCase):
             bucket='examplebucket',
             dataset_name='photos-2026',
             query='客厅里的猫',
-            media_types=['image', 'video'],
+            media_types=meta_query_basic.MediaTypes(media_type=['image', 'video']).to_parameter_value(),
             simple_query='{"Field":"Size","Value":"102400","Operation":"gt"}',
-            with_fields=['OSSURI', 'Insights'],
+            with_fields=meta_query_basic.WithFields(with_field=['OSSURI', 'Insights']).to_parameter_value(),
             max_results=20,
         )
         op_input = serde.serialize_input(request, OperationInput(
@@ -327,7 +375,7 @@ class TestSemanticQueryRequest(unittest.TestCase):
             bucket='examplebucket',
             dataset_name='photos-2026',
             source_uri='oss://examplebucket/photos/cat.jpg',
-            media_types=['image'],
+            media_types=meta_query_basic.MediaTypes(media_type=['image']).to_parameter_value(),
             max_results=10,
         )
         op_input = serde.serialize_input(request, OperationInput(

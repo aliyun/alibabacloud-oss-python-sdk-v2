@@ -6,6 +6,7 @@ from typing import Optional, List, Any
 from ... import serde
 from ...serde import RequestModel
 from .file import Files
+from ._json_util import compact, to_list
 
 
 class Aggregation(serde.Model):
@@ -34,6 +35,12 @@ class Aggregation(serde.Model):
         super().__init__(**kwargs)
         self.field = field
         self.operation = operation
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Field': self.field,
+            'Operation': self.operation,
+        })
 
 
 class AggregationGroup(serde.Model):
@@ -183,19 +190,17 @@ class SimpleQuery(serde.Model):
         self.operation = operation
         self.sub_queries = sub_queries
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'Field': self.field,
+            'Value': self.value,
+            'Operation': self.operation,
+            'SubQueries': to_list(self.sub_queries),
+        })
 
-def _simple_query_to_dict(query):
-    """Recursively convert a SimpleQuery instance to a JSON-serializable dict."""
-    result = {}
-    if query.field is not None:
-        result['Field'] = query.field
-    if query.value is not None:
-        result['Value'] = query.value
-    if query.operation is not None:
-        result['Operation'] = query.operation
-    if query.sub_queries is not None:
-        result['SubQueries'] = [_simple_query_to_dict(sub) for sub in query.sub_queries]
-    return result
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the query or simpleQuery query parameter."""
+        return json.dumps(self._to_json_obj())
 
 
 class SimpleQueryRequest(RequestModel):
@@ -211,7 +216,7 @@ class SimpleQueryRequest(RequestModel):
         'with_fields': {'tag': 'input', 'position': 'query', 'rename': 'withFields', 'type': 'str'},
         'aggregations': {'tag': 'input', 'position': 'query', 'rename': 'aggregations', 'type': 'str'},
         'query': {'tag': 'input', 'position': 'query', 'rename': 'query', 'type': 'str'},
-        'without_total_hits': {'tag': 'input', 'position': 'query', 'rename': 'withoutTotalHits', 'type': 'str'},
+        'without_total_hits': {'tag': 'input', 'position': 'query', 'rename': 'withoutTotalHits', 'type': 'bool'},
     }
 
     def __init__(
@@ -222,10 +227,10 @@ class SimpleQueryRequest(RequestModel):
             next_token: Optional[str] = None,
             sort: Optional[str] = None,
             order: Optional[str] = None,
-            with_fields: Any = None,
-            aggregations: Any = None,
-            query: Any = None,
-            without_total_hits: Any = None,
+            with_fields: Optional[str] = None,
+            aggregations: Optional[str] = None,
+            query: Optional[str] = None,
+            without_total_hits: Optional[bool] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -236,10 +241,13 @@ class SimpleQueryRequest(RequestModel):
             next_token (str, optional): The token for the next page of results.
             sort (str, optional): The field to sort by.
             order (str, optional): The sort order (asc or desc).
-            with_fields: The fields to include in the response. Can be a list of strings or a JSON string.
-            aggregations: The aggregation definitions. Can be a list of Aggregation or a JSON string.
-            query: The query definition. Can be a SimpleQuery or a JSON string.
-            without_total_hits: Whether to skip computing total hits. Can be a bool or a string.
+            with_fields (str, optional): The fields to include in the response.
+                The value can be built through WithFields.to_parameter_value().
+            aggregations (str, optional): The aggregation definitions.
+                The value can be built through MetaQueryAggregations.to_parameter_value().
+            query (str, optional): The query definition.
+                The value can be built through SimpleQuery.to_parameter_value().
+            without_total_hits (bool, optional): Whether to skip computing total hits.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -248,24 +256,10 @@ class SimpleQueryRequest(RequestModel):
         self.next_token = next_token
         self.sort = sort
         self.order = order
-        if isinstance(with_fields, list):
-            self.with_fields = json.dumps(with_fields)
-        else:
-            self.with_fields = with_fields
-        if isinstance(aggregations, list):
-            self.aggregations = json.dumps(
-                [{'Field': a.field, 'Operation': a.operation} for a in aggregations if a.field is not None]
-            )
-        else:
-            self.aggregations = aggregations
-        if isinstance(query, SimpleQuery):
-            self.query = json.dumps(_simple_query_to_dict(query))
-        else:
-            self.query = query
-        if isinstance(without_total_hits, bool):
-            self.without_total_hits = str(without_total_hits).lower()
-        else:
-            self.without_total_hits = without_total_hits
+        self.with_fields = with_fields
+        self.aggregations = aggregations
+        self.query = query
+        self.without_total_hits = without_total_hits
 
 
 class SimpleQueryResponseBody(serde.Model):
@@ -360,10 +354,10 @@ class SemanticQueryRequest(RequestModel):
             dataset_name: Optional[str] = None,
             max_results: Optional[int] = None,
             query: Optional[str] = None,
-            with_fields: Any = None,
-            media_types: Any = None,
+            with_fields: Optional[str] = None,
+            media_types: Optional[str] = None,
             source_uri: Optional[str] = None,
-            simple_query: Any = None,
+            simple_query: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -372,29 +366,23 @@ class SemanticQueryRequest(RequestModel):
             dataset_name (str, optional): The name of the dataset.
             max_results (int, optional): The maximum number of results to return.
             query (str, optional): The semantic query string.
-            with_fields: The fields to include in the response. Can be a list of strings or a JSON string.
-            media_types: The media type filters. Can be a list of strings or a JSON string.
+            with_fields (str, optional): The fields to include in the response.
+                The value can be built through WithFields.to_parameter_value().
+            media_types (str, optional): The media type filters.
+                The value can be built through MediaTypes.to_parameter_value().
             source_uri (str, optional): The source URI filter.
-            simple_query: The simple query definition. Can be a SimpleQuery or a JSON string.
+            simple_query (str, optional): The simple query definition.
+                The value can be built through SimpleQuery.to_parameter_value().
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.dataset_name = dataset_name
         self.max_results = max_results
         self.query = query
-        if isinstance(with_fields, list):
-            self.with_fields = json.dumps(with_fields)
-        else:
-            self.with_fields = with_fields
-        if isinstance(media_types, list):
-            self.media_types = json.dumps(media_types)
-        else:
-            self.media_types = media_types
+        self.with_fields = with_fields
+        self.media_types = media_types
         self.source_uri = source_uri
-        if isinstance(simple_query, SimpleQuery):
-            self.simple_query = json.dumps(_simple_query_to_dict(simple_query))
-        else:
-            self.simple_query = simple_query
+        self.simple_query = simple_query
 
 
 class SemanticQueryResponseBody(serde.Model):

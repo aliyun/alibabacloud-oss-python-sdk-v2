@@ -85,6 +85,35 @@ class TestNotificationAttributes(unittest.TestCase):
         self.assertEqual(2, len(attrs.with_fields.with_field))
 
 
+class TestQueryParameterJson(unittest.TestCase):
+    """The XML wrapper elements are dropped: JSON carries flat arrays."""
+
+    def test_with_fields(self):
+        self.assertEqual(
+            '["Filename", "Size"]',
+            model.WithFields(with_field=['Filename', 'Size']).to_parameter_value(),
+        )
+        self.assertEqual('[]', model.WithFields().to_parameter_value())
+
+    def test_media_types(self):
+        self.assertEqual(
+            '["image", "video"]',
+            model.MediaTypes(media_type=['image', 'video']).to_parameter_value(),
+        )
+        self.assertEqual('[]', model.MediaTypes().to_parameter_value())
+
+    def test_aggregations(self):
+        aggregations = model.MetaQueryAggregations(aggregation=[
+            q_model.Aggregation(field='Size', operation='sum'),
+            q_model.Aggregation(field='Size', operation='max'),
+        ])
+        self.assertEqual(
+            '[{"Field": "Size", "Operation": "sum"}, {"Field": "Size", "Operation": "max"}]',
+            aggregations.to_parameter_value(),
+        )
+        self.assertEqual('[]', model.MetaQueryAggregations().to_parameter_value())
+
+
 class TestMetaQueryStatus(unittest.TestCase):
     def test_empty_constructor(self):
         status = model.MetaQueryStatus()

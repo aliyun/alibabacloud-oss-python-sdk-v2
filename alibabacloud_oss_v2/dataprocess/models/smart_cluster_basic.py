@@ -5,6 +5,7 @@ import json
 from typing import Optional, List, Any
 from ... import serde
 from ...serde import RequestModel
+from ._json_util import compact, to_obj, to_list
 
 
 class SmartClusterRule(serde.Model):
@@ -42,6 +43,18 @@ class SmartClusterRule(serde.Model):
         self.keywords = keywords
         self.sensitivity = sensitivity
 
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'RuleType': self.rule_type,
+            'BaseURIs': self.base_uris,
+            'Keywords': self.keywords,
+            'Sensitivity': self.sensitivity,
+        })
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the rule query parameter."""
+        return json.dumps(self._to_json_obj())
+
 
 class SmartClusterMNS(serde.Model):
     """MNS configuration for SmartCluster notification."""
@@ -65,6 +78,9 @@ class SmartClusterMNS(serde.Model):
         """
         super().__init__(**kwargs)
         self.topic_name = topic_name
+
+    def _to_json_obj(self) -> dict:
+        return compact({'TopicName': self.topic_name})
 
 
 class SmartClusterNotificationInfo(serde.Model):
@@ -90,6 +106,13 @@ class SmartClusterNotificationInfo(serde.Model):
         super().__init__(**kwargs)
         self.mns = mns
 
+    def _to_json_obj(self) -> dict:
+        return compact({'MNS': to_obj(self.mns)})
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the notification query parameter."""
+        return json.dumps(self._to_json_obj())
+
 
 class Rules(serde.Model):
     """The list of smart cluster rules."""
@@ -113,6 +136,13 @@ class Rules(serde.Model):
         """
         super().__init__(**kwargs)
         self.rule = rule
+
+    def _to_json_obj(self) -> list:
+        return to_list(self.rule) or []
+
+    def to_parameter_value(self) -> str:
+        """Serializes to the JSON value of the rules query parameter."""
+        return json.dumps(self._to_json_obj())
 
 
 class SmartClusterInfo(serde.Model):
@@ -191,8 +221,8 @@ class CreateSmartClusterRequest(RequestModel):
             name: Optional[str] = None,
             description: Optional[str] = None,
             cluster_type: Optional[str] = None,
-            rules: Any = None,
-            notification: Any = None,
+            rules: Optional[str] = None,
+            notification: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -202,8 +232,10 @@ class CreateSmartClusterRequest(RequestModel):
             name (str, optional): The name of the smart cluster.
             description (str, optional): The description of the smart cluster.
             cluster_type (str, optional): The type of the smart cluster.
-            rules: The rules for the smart cluster. Can be a list of SmartClusterRule or a JSON string.
-            notification: The notification configuration. Can be a SmartClusterNotificationInfo or a JSON string.
+            rules (str, optional): The rules for the smart cluster.
+                The value can be built through Rules.to_parameter_value().
+            notification (str, optional): The notification configuration.
+                The value can be built through SmartClusterNotificationInfo.to_parameter_value().
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -211,19 +243,8 @@ class CreateSmartClusterRequest(RequestModel):
         self.name = name
         self.description = description
         self.cluster_type = cluster_type
-        if isinstance(rules, list):
-            self.rules = json.dumps(
-                [_smart_cluster_rule_to_dict(r) for r in rules]
-            )
-        else:
-            self.rules = rules
-        if isinstance(notification, SmartClusterNotificationInfo):
-            mns_dict = {}
-            if notification.mns is not None and notification.mns.topic_name is not None:
-                mns_dict = {'TopicName': notification.mns.topic_name}
-            self.notification = json.dumps({'MNS': mns_dict} if mns_dict else {})
-        else:
-            self.notification = notification
+        self.rules = rules
+        self.notification = notification
 
 
 class CreateSmartClusterResponseBody(serde.Model):
@@ -371,9 +392,9 @@ class UpdateSmartClusterRequest(RequestModel):
             object_id: Optional[str] = None,
             name: Optional[str] = None,
             description: Optional[str] = None,
-            rules: Any = None,
-            rule: Any = None,
-            notification: Any = None,
+            rules: Optional[str] = None,
+            rule: Optional[str] = None,
+            notification: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -383,9 +404,12 @@ class UpdateSmartClusterRequest(RequestModel):
             object_id (str, optional): The object ID of the smart cluster.
             name (str, optional): The new name of the smart cluster.
             description (str, optional): The new description of the smart cluster.
-            rules: The new rules for the smart cluster. Can be a list of SmartClusterRule or a JSON string.
-            rule: A single rule for the smart cluster. Can be a SmartClusterRule or a JSON string.
-            notification: The notification configuration. Can be a SmartClusterNotificationInfo or a JSON string.
+            rules (str, optional): The new rules for the smart cluster.
+                The value can be built through Rules.to_parameter_value().
+            rule (str, optional): A single rule for the smart cluster.
+                The value can be built through SmartClusterRule.to_parameter_value().
+            notification (str, optional): The notification configuration.
+                The value can be built through SmartClusterNotificationInfo.to_parameter_value().
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -393,23 +417,9 @@ class UpdateSmartClusterRequest(RequestModel):
         self.object_id = object_id
         self.name = name
         self.description = description
-        if isinstance(rules, list):
-            self.rules = json.dumps(
-                [_smart_cluster_rule_to_dict(r) for r in rules]
-            )
-        else:
-            self.rules = rules
-        if isinstance(rule, SmartClusterRule):
-            self.rule = json.dumps(_smart_cluster_rule_to_dict(rule))
-        else:
-            self.rule = rule
-        if isinstance(notification, SmartClusterNotificationInfo):
-            mns_dict = {}
-            if notification.mns is not None and notification.mns.topic_name is not None:
-                mns_dict = {'TopicName': notification.mns.topic_name}
-            self.notification = json.dumps({'MNS': mns_dict} if mns_dict else {})
-        else:
-            self.notification = notification
+        self.rules = rules
+        self.rule = rule
+        self.notification = notification
 
 
 class UpdateSmartClusterResponseBody(serde.Model):
@@ -512,7 +522,7 @@ class ListSmartClustersRequest(RequestModel):
             max_results: Optional[int] = None,
             next_token: Optional[str] = None,
             cluster_type: Optional[str] = None,
-            rule_types: Any = None,
+            rule_types: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -522,7 +532,7 @@ class ListSmartClustersRequest(RequestModel):
             max_results (int, optional): The maximum number of results to return.
             next_token (str, optional): The token for the next page of results.
             cluster_type (str, optional): The type of smart clusters to filter.
-            rule_types: The rule types to filter. Can be a list of strings or a JSON array string.
+            rule_types (str, optional): The rule types to filter, as a JSON array string.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
@@ -530,10 +540,7 @@ class ListSmartClustersRequest(RequestModel):
         self.max_results = max_results
         self.next_token = next_token
         self.cluster_type = cluster_type
-        if isinstance(rule_types, list):
-            self.rule_types = json.dumps(rule_types)
-        else:
-            self.rule_types = rule_types
+        self.rule_types = rule_types
 
 
 class SmartClusters(serde.Model):
@@ -614,17 +621,3 @@ class ListSmartClustersResult(serde.ResultModel):
         super().__init__(**kwargs)
         self.smart_clusters = smart_clusters
         self.next_token = next_token
-
-
-def _smart_cluster_rule_to_dict(rule: SmartClusterRule) -> dict:
-    """Helper to convert SmartClusterRule to a dictionary for JSON serialization."""
-    result = {}
-    if rule.rule_type is not None:
-        result['RuleType'] = rule.rule_type
-    if rule.base_uris is not None:
-        result['BaseURIs'] = rule.base_uris
-    if rule.keywords is not None:
-        result['Keywords'] = rule.keywords
-    if rule.sensitivity is not None:
-        result['Sensitivity'] = rule.sensitivity
-    return result
