@@ -23,7 +23,6 @@ class Config(object):
         enabled_redirect: Optional[bool] = None,
         use_cname: Optional[bool] = None,
         use_path_style: Optional[bool] = None,
-        use_virtual_hosted_alias: Optional[bool] = None,
         proxy_host: Optional[Union[str, dict]] = None,
         disable_upload_crc64_check: Optional[bool] = None,
         disable_download_crc64_check: Optional[bool] = None,
@@ -31,7 +30,8 @@ class Config(object):
         user_agent: Optional[str] = None,
         cloud_box_id: Optional[str] = None,
         enable_auto_detect_cloud_box_id: Optional[bool] = None,
-        account_id: Optional[str] = None
+        account_id: Optional[str] = None,
+        use_virtual_hosted_alias: Optional[bool] = None
     ) -> None:
         """
         Args:
@@ -95,7 +95,6 @@ class Config(object):
         self.enabled_redirect = enabled_redirect
         self.use_cname = use_cname
         self.use_path_style = use_path_style
-        self.use_virtual_hosted_alias = use_virtual_hosted_alias
         self.proxy_host = proxy_host
         self.disable_upload_crc64_check = disable_upload_crc64_check
         self.disable_download_crc64_check = disable_download_crc64_check
@@ -104,6 +103,7 @@ class Config(object):
         self.cloud_box_id = cloud_box_id
         self.enable_auto_detect_cloud_box_id = enable_auto_detect_cloud_box_id
         self.account_id = account_id
+        self.use_virtual_hosted_alias = use_virtual_hosted_alias
 
 def load_default() -> Config:
     """Using the SDK's default configuration"""
