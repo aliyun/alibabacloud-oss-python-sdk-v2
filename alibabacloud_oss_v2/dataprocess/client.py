@@ -21,17 +21,17 @@ class Client:
             config (Config): The configuration for the client.
         """
         _config = copy.copy(config)
-        self._build_dataprocess_user_agent(_config)
+        _config.user_agent = self._build_dataprocess_user_agent(_config)
         self._client = _SyncClientImpl(_config, **kwargs)
 
     def __repr__(self) -> str:
         return "<OssDataProcessClient>"
 
     def _build_dataprocess_user_agent(self, config: Config) -> str:
-        base_agent = f'{utils.get_default_user_agent()};dataprocess-client'
         if config.user_agent:
-            return f'{base_agent}/{config.user_agent}'
-        return base_agent
+            return f'{utils.get_dataprocess_user_agent()}/{config.user_agent}'
+
+        return utils.get_dataprocess_user_agent()
 
     def invoke_operation(self, op_input: OperationInput, **kwargs) -> OperationOutput:
         """invoke operation

@@ -288,3 +288,9 @@ def get_bucket_space_user_agent() -> str:
     """Returns the default user agent string for bucket space
     """
     return 'bucketspace-client'
+
+
+def get_dataprocess_user_agent() -> str:
+    """Returns the default user agent string for dataprocess
+    """
+    return 'dataprocess-client'

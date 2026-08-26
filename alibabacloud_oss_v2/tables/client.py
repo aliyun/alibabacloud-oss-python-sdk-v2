@@ -31,7 +31,7 @@ class Client:
 
         _config = copy.copy(config)
         self._resolve_tables_endpoint(_config)
-        self._build_tables_user_agent(_config)
+        _config.user_agent = self._build_tables_user_agent(_config)
         self._client = _SyncClientImpl(_config, **kwargs)
         self._client._options.signer = TablesSignerV4()
 
