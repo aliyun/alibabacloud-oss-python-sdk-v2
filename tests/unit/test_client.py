@@ -26,6 +26,7 @@ from alibabacloud_oss_v2.types import (
     OperationOutput,
     SigningContext
 )
+from alibabacloud_oss_v2._client import AddressStyle
 from . import MockHttpResponse, MockHttpClient, random_lowstr
 
 
@@ -209,6 +210,24 @@ class TestSyncClient(unittest.TestCase):
             region='cn-hangzhou',
             credentials_provider=credentials.AnonymousCredentialsProvider(),
             use_path_style=True
+        )
+        clinet = client.Client(cfg)
+        self.assertEqual(2, clinet._client._options.address_style)
+
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+            use_virtual_hosted_alias=True
+        )
+        clinet = client.Client(cfg)
+        self.assertEqual(4, clinet._client._options.address_style)
+
+        # path-style takes precedence over the alias style
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+            use_path_style=True,
+            use_virtual_hosted_alias=True
         )
         clinet = client.Client(cfg)
         self.assertEqual(2, clinet._client._options.address_style)
@@ -1494,6 +1513,20 @@ class TestSyncClient(unittest.TestCase):
             ))
             self.assertEqual('https://bucket.www.endpoint-example.com:3182/%2B123', self.save_op_context.request.url)
 
+        # virtual-alias is agentic-only: the plain client falls back to virtual-hosted
+        cfg = config.Config(
+            region='cn-hangzhou',
+            credentials_provider=credentials.AnonymousCredentialsProvider(),
+        )
+        clinet = client.Client(cfg, address_style=AddressStyle.VirtualAlias)
+        with mock.patch.object(clinet._client, '_sent_http_request_once', new= _sent_http_request_once) as _:
+            clinet.invoke_operation(
+                OperationInput(
+                    op_name='InvokeOperation',
+                    method='GET',
+                    bucket='bucket',
+            ))
+            self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/', self.save_op_context.request.url)
 
 
     def test_invoke_operation_verify(self):
@@ -1688,6 +1721,38 @@ class TestSyncClient(unittest.TestCase):
         self.assertEqual("test-region", c13._client._options.region)
         self.assertIsNotNone(c13._client._options.endpoint)
         self.assertEqual("cb-123.oss-cloudbox.aliyuncs.com", c13._client._options.endpoint.hostname)
+
+class TestClientInitError(unittest.TestCase):
+    def _client(self, account_id):
+        cfg = config.load_default()
+        cfg.region = 'cn-hangzhou'
+        cfg.account_id = account_id
+        cfg.credentials_provider = credentials.AnonymousCredentialsProvider()
+        cfg.http_client = MockHttpClient(request_fn=None, response_fn=None, kwargs={})
+        return client.Client(cfg)
+
+    def test_valid_account_id_no_error(self):
+        c = self._client('1234567890123456')
+        self.assertIsNone(c._client._inner.init_error)
+
+    def test_empty_account_id_no_error(self):
+        c = self._client(None)
+        self.assertIsNone(c._client._inner.init_error)
+
+    def test_invalid_account_id_raises(self):
+        c = self._client('not-numeric')
+        self.assertIsNotNone(c._client._inner.init_error)
+        with self.assertRaises(ValueError) as ctx:
+            c.get_bucket_info(models.GetBucketInfoRequest(bucket='my-bucket'))
+        self.assertIn('invalid account id', str(ctx.exception))
+
+    def test_non_ascii_digit_account_id_raises(self):
+        # Unicode digits (e.g. Arabic-Indic) are rejected; only ASCII 0-9 allowed.
+        c = self._client('١٢٣')
+        with self.assertRaises(ValueError) as ctx:
+            c.get_bucket_info(models.GetBucketInfoRequest(bucket='my-bucket'))
+        self.assertIn('invalid account id', str(ctx.exception))
+
 
 class TestClientBase(unittest.TestCase):
     def setUp(self):

@@ -30,7 +30,8 @@ class Config(object):
         user_agent: Optional[str] = None,
         cloud_box_id: Optional[str] = None,
         enable_auto_detect_cloud_box_id: Optional[bool] = None,
-        account_id: Optional[str] = None
+        account_id: Optional[str] = None,
+        use_virtual_hosted_alias: Optional[bool] = None
     ) -> None:
         """
         Args:
@@ -48,6 +49,7 @@ class Config(object):
             use_cname (bool, optional): If the endpoint is s CName, set this flag to true
             use_path_style (bool, optional): Allows you to enable the client to use path-style addressing, 
                 i.e., https://oss-cn-hangzhou.aliyuncs.com/bucket/key.
+            use_virtual_hosted_alias (bool, optional): If the endpoint is a short-alias host, set this flag to true
             signature_version (str, optional): The signature version when signing requests. Valid values v4, v1
             disable_ssl (bool, optional): Forces the endpoint to be resolved as HTTP.
             insecure_skip_verify (bool, optional): Skip server certificate verification.
@@ -101,6 +103,7 @@ class Config(object):
         self.cloud_box_id = cloud_box_id
         self.enable_auto_detect_cloud_box_id = enable_auto_detect_cloud_box_id
         self.account_id = account_id
+        self.use_virtual_hosted_alias = use_virtual_hosted_alias
 
 def load_default() -> Config:
     """Using the SDK's default configuration"""

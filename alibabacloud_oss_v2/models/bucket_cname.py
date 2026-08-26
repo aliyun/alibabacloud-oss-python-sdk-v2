@@ -144,6 +144,7 @@ class Cname(serde.Model):
     _attribute_map = {
         'domain': {'tag': 'xml', 'rename': 'Domain', 'type': 'str'},
         'certificate_configuration': {'tag': 'xml', 'rename': 'CertificateConfiguration', 'type': 'CertificateConfiguration'},
+        'is_wild_card': {'tag': 'xml', 'rename': 'IsWildCard', 'type': 'bool'},
     }
 
     _xml_map = {
@@ -158,16 +159,19 @@ class Cname(serde.Model):
         self,
         domain: Optional[str] = None,
         certificate_configuration: Optional[CertificateConfiguration] = None,
+        is_wild_card: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             domain (str, optional): The custom domain name.
             certificate_configuration (CertificateConfiguration, optional): The container for which the certificate is configured.
+            is_wild_card (bool, optional): Specifies whether the custom domain name is a wildcard domain name.
         """
         super().__init__(**kwargs)
         self.domain = domain
         self.certificate_configuration = certificate_configuration
+        self.is_wild_card = is_wild_card
 
 
 class BucketCnameConfiguration(serde.Model):
@@ -210,6 +214,7 @@ class CnameInfo(serde.Model):
         'last_modified': {'tag': 'xml', 'rename': 'LastModified', 'type': 'str'},
         'status': {'tag': 'xml', 'rename': 'Status', 'type': 'str'},
         'certificate': {'tag': 'xml', 'rename': 'Certificate', 'type': 'CnameCertificate'},
+        'is_wild_card': {'tag': 'xml', 'rename': 'IsWildCard', 'type': 'bool'},
     }
 
     _xml_map = {
@@ -226,6 +231,7 @@ class CnameInfo(serde.Model):
         last_modified: Optional[str] = None,
         status: Optional[str] = None,
         certificate: Optional[CnameCertificate] = None,
+        is_wild_card: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -234,12 +240,14 @@ class CnameInfo(serde.Model):
             last_modified (str, optional): The time when the custom domain name was mapped.
             status (str, optional): The status of the domain name. Valid values:*   Enabled*   Disabled
             certificate (CnameCertificate, optional): The container in which the certificate information is stored.
+            is_wild_card (bool, optional): Specifies whether the custom domain name is a wildcard domain name.
         """
         super().__init__(**kwargs)
         self.domain = domain
         self.last_modified = last_modified
         self.status = status
         self.certificate = certificate
+        self.is_wild_card = is_wild_card
 
 
 class PutCnameRequest(serde.RequestModel):
@@ -367,22 +375,26 @@ class GetCnameTokenRequest(serde.RequestModel):
     _attribute_map = { 
         'bucket': {'tag': 'input', 'position': 'host', 'rename': 'bucket', 'type': 'str', 'required': True},
         'cname': {'tag': 'input', 'position': 'query', 'rename': 'cname', 'type': 'str', 'required': True},
+        'wildcard': {'tag': 'input', 'position': 'query', 'rename': 'wildcard', 'type': 'bool'},
     }
 
     def __init__(
         self,
         bucket: str = None,
         cname: str = None,
+        wildcard: Optional[bool] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
             bucket (str, required): The name of the bucket.
             cname (str, required): The name of the CNAME record that is mapped to the bucket.
+            wildcard (bool, optional): Specifies whether the CNAME record is a wildcard domain name.
         """
         super().__init__(**kwargs)
         self.bucket = bucket
         self.cname = cname
+        self.wildcard = wildcard
 
 
 class GetCnameTokenResult(serde.ResultModel):
