@@ -109,6 +109,34 @@ class TestPutBucket(unittest.TestCase):
         self.assertDictEqual({'parm1': 'value1'}, request.parameters)
         self.assertEqual('hello world', request.payload)
 
+        # with agentic_bucket (keyword argument)
+        request = model.PutBucketRequest(
+            bucket='bucket',
+            acl='acl',
+            agentic_bucket='my-agentic-bucket',
+        )
+        self.assertEqual('bucket', request.bucket)
+        self.assertEqual('acl', request.acl)
+        self.assertEqual('my-agentic-bucket', request.agentic_bucket)
+        self.assertIsNone(request.create_bucket_configuration)
+
+        # positional arguments backward compatibility:
+        # PutBucketRequest(bucket, acl, resource_group_id, create_bucket_configuration, bucket_tagging)
+        # agentic_bucket must be at the end so existing positional calls still work
+        request = model.PutBucketRequest(
+            'bucket',
+            'acl',
+            'rg-id',
+            model.CreateBucketConfiguration(storage_class='Standard'),
+            'k=v',
+        )
+        self.assertEqual('bucket', request.bucket)
+        self.assertEqual('acl', request.acl)
+        self.assertEqual('rg-id', request.resource_group_id)
+        self.assertEqual('Standard', request.create_bucket_configuration.storage_class)
+        self.assertEqual('k=v', request.bucket_tagging)
+        self.assertIsNone(request.agentic_bucket)
+
     def test_serialize_request(self):
         request = model.PutBucketRequest(
             bucket='bucket',
@@ -138,6 +166,20 @@ class TestPutBucket(unittest.TestCase):
         self.assertEqual('CreateBucketConfiguration', root.tag)
         self.assertEqual('Standard', root.findtext('StorageClass'))
         self.assertEqual(None, root.findtext('DataRedundancyType'))
+
+        # with agentic_bucket header
+        request = model.PutBucketRequest(
+            bucket='bucket',
+            agentic_bucket='my-agentic-bucket',
+        )
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutBucket',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+
+        self.assertEqual('my-agentic-bucket', op_input.headers.get('x-oss-agentic-bucket'))
 
     def test_constructor_result(self):
         result = model.PutBucketResult()
@@ -1071,6 +1113,8 @@ class TestGetBucketInfo(unittest.TestCase):
     <Comment>test</Comment>
     <Versioning>Enabled</Versioning>
     <BlockPublicAccess>true</BlockPublicAccess>
+    <BucketResourceType>AgenticBucketSpace</BucketResourceType>
+    <AgenticBucketName>my-agentic-1234567890-cn-hangzhou-ab-apsr</AgenticBucketName>
   </Bucket>
 </BucketInfo>'''
 
@@ -1101,6 +1145,8 @@ class TestGetBucketInfo(unittest.TestCase):
         self.assertEqual('log/', result.bucket_info.bucket_policy.log_prefix)
         self.assertEqual('test', result.bucket_info.comment)
         self.assertEqual(True, result.bucket_info.block_public_access)
+        self.assertEqual('AgenticBucketSpace', result.bucket_info.bucket_resource_type)
+        self.assertEqual('my-agentic-1234567890-cn-hangzhou-ab-apsr', result.bucket_info.agentic_bucket_name)
 
 
 class TestGetBucketLocation(unittest.TestCase):

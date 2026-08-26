@@ -457,8 +457,19 @@ class EndpointProvider(abc.ABC):
     """Abstract base class for a EndpointProvider."""
 
     @abc.abstractmethod
-    def build_url(self, op_input: OperationInput) -> None:
+    def build_url(self, op_input: OperationInput) -> str:
         """build the request url"""
+
+
+class BucketNameResolver(abc.ABC):
+    """Abstract base class for a BucketNameResolver."""
+
+    @abc.abstractmethod
+    def build_bucket_name(self, op_input: OperationInput) -> str:
+        """Build the full bucket name from the request's bucket prefix.
+
+        Returns None when the operation has no bucket (e.g. region-level APIs).
+        """
 
 class AsyncStreamBody(abc.ABC):
     """Abstract base class for a AsyncStreamBody."""

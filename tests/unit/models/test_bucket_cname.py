@@ -57,6 +57,7 @@ class TestCreateCnameToken(unittest.TestCase):
                     ),
                 ),
             ),
+            parameters={'wildcard': 'true'},
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -67,6 +68,7 @@ class TestCreateCnameToken(unittest.TestCase):
         self.assertEqual('CreateCnameToken', op_input.op_name)
         self.assertEqual('POST', op_input.method)
         self.assertEqual('bucket-name-test', op_input.bucket)
+        self.assertEqual('true', op_input.parameters.get('wildcard'))
 
     def test_constructor_result(self):
         result = model.CreateCnameTokenResult()
@@ -126,6 +128,7 @@ class TestGetCnameToken(unittest.TestCase):
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.cname)
+        self.assertIsNone(request.wildcard)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
         self.assertFalse(hasattr(request, 'payload'))
@@ -153,6 +156,22 @@ class TestGetCnameToken(unittest.TestCase):
         self.assertEqual('GET', op_input.method)
         self.assertEqual('bucketexampletest', op_input.bucket)
         self.assertEqual('example.com', op_input.parameters.get('cname'))
+
+    def test_serialize_request_with_wildcard(self):
+        request = model.GetCnameTokenRequest(
+            bucket='bucketexampletest',
+            cname='example.com',
+            wildcard=False,
+        )
+        self.assertEqual(False, request.wildcard)
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='GetCnameToken',
+            method='GET',
+            bucket=request.bucket,
+        ))
+        self.assertEqual('example.com', op_input.parameters.get('cname'))
+        self.assertEqual('false', op_input.parameters.get('wildcard'))
 
     def test_constructor_result(self):
         result = model.GetCnameTokenResult()
@@ -270,6 +289,28 @@ class TestPutCname(unittest.TestCase):
         self.assertEqual('PutCname', op_input.op_name)
         self.assertEqual('PUT', op_input.method)
         self.assertEqual('bucketexampletest', op_input.bucket)
+
+    def test_serialize_request_with_wildcard(self):
+        request = model.PutCnameRequest(
+            bucket='bucketexampletest',
+            bucket_cname_configuration=model.BucketCnameConfiguration(
+                cname=model.Cname(
+                    domain='example.com',
+                    is_wild_card=True,
+                ),
+            ),
+        )
+        self.assertEqual(True, request.bucket_cname_configuration.cname.is_wild_card)
+
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutCname',
+            method='PUT',
+            bucket=request.bucket,
+        ))
+        self.assertEqual(
+            '<BucketCnameConfiguration><Cname><Domain>example.com</Domain>'
+            '<IsWildCard>true</IsWildCard></Cname></BucketCnameConfiguration>',
+            op_input.body.decode())
 
     def test_constructor_result(self):
         result = model.PutCnameResult()
@@ -430,6 +471,12 @@ class TestListCname(unittest.TestCase):
             <LastModified>2021-09-15T02:50:34.000Z</LastModified>
             <Status>Enabled</Status>
           </Cname>
+          <Cname>
+            <Domain>example.net</Domain>
+            <LastModified>2021-09-15T02:50:34.000Z</LastModified>
+            <Status>Enabled</Status>
+            <IsWildCard>true</IsWildCard>
+          </Cname>
         </ListCnameResult>
         '''
 
@@ -462,6 +509,11 @@ class TestListCname(unittest.TestCase):
         self.assertEqual('example.edu', result.cnames[2].domain)
         self.assertEqual('2021-09-15T02:50:34.000Z', result.cnames[2].last_modified)
         self.assertEqual('Enabled', result.cnames[2].status)
+        self.assertIsNone(result.cnames[2].is_wild_card)
+        self.assertEqual('example.net', result.cnames[3].domain)
+        self.assertEqual('2021-09-15T02:50:34.000Z', result.cnames[3].last_modified)
+        self.assertEqual('Enabled', result.cnames[3].status)
+        self.assertEqual(True, result.cnames[3].is_wild_card)
 
 
 class TestDeleteCname(unittest.TestCase):
@@ -495,6 +547,7 @@ class TestDeleteCname(unittest.TestCase):
                     domain='example.com',
                 ),
             ),
+            parameters={'wildcard': 'true'},
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -505,6 +558,7 @@ class TestDeleteCname(unittest.TestCase):
         self.assertEqual('DeleteCname', op_input.op_name)
         self.assertEqual('DELETE', op_input.method)
         self.assertEqual('bucketexampletest', op_input.bucket)
+        self.assertEqual('true', op_input.parameters.get('wildcard'))
 
     def test_constructor_result(self):
         result = model.DeleteCnameResult()

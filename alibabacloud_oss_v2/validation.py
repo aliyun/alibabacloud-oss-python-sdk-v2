@@ -65,6 +65,15 @@ def assert_validate_arn_bucket(bucket: str) -> None:
     # Parse ARN to validate format
     arn = Arn.from_string(bucket)
 
+    # must have account id
+    account_id = arn.account_id
+    if not account_id:
+        raise ValueError("input.bucket does not contain account id")
+
+    # account id must be valid (pure digits)
+    if not (account_id.isascii() and account_id.isdigit()):
+        raise ValueError(f"input.bucket contains invalid account id: {account_id}")
+
     # Check if it's a bucket ARN (resource should start with "bucket/")
     if not arn.resource or not arn.resource.startswith('bucket/'):
         raise ValueError(f"Malformed ARN - doesn't contain bucket resource")
