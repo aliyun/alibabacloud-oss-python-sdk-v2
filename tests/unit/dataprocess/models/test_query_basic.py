@@ -253,6 +253,17 @@ class TestSimpleQueryResult(unittest.TestCase):
             '          <LabelConfidence>0.98</LabelConfidence>'
             '        </Label>'
             '      </Labels>'
+            '      <CustomId>album-2026</CustomId>'
+            '      <CustomLabels>'
+            '        <Item>'
+            '          <Key>project</Key>'
+            '          <Value>demo</Value>'
+            '        </Item>'
+            '        <Item>'
+            '          <Key>owner</Key>'
+            '          <Value>alice</Value>'
+            '        </Item>'
+            '      </CustomLabels>'
             '    </File>'
             '  </Files>'
             '</MetaQuery>'
@@ -296,6 +307,15 @@ class TestSimpleQueryResult(unittest.TestCase):
         self.assertEqual(1, len(file.labels.label))
         self.assertEqual('夕阳', file.labels.label[0].label_name)
         self.assertEqual(0.98, file.labels.label[0].label_confidence)
+
+        # Verify custom labels
+        self.assertEqual('album-2026', file.custom_id)
+        self.assertIsNotNone(file.custom_labels)
+        self.assertEqual(2, len(file.custom_labels.item))
+        self.assertEqual('project', file.custom_labels.item[0].key)
+        self.assertEqual('demo', file.custom_labels.item[0].value)
+        self.assertEqual('owner', file.custom_labels.item[1].key)
+        self.assertEqual('alice', file.custom_labels.item[1].value)
 
 
 # ==================== SemanticQuery ====================

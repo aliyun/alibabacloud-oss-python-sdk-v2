@@ -501,6 +501,58 @@ class OSSTagging(serde.Model):
         self.tagging = tagging
 
 
+class CustomLabel(serde.Model):
+    """A key-value custom label entry."""
+
+    _attribute_map = {
+        'key': {'tag': 'xml', 'rename': 'Key', 'type': 'str'},
+        'value': {'tag': 'xml', 'rename': 'Value', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'Item'
+    }
+
+    def __init__(
+            self,
+            key: Optional[str] = None,
+            value: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            key (str, optional): The custom label key.
+            value (str, optional): The custom label value.
+        """
+        super().__init__(**kwargs)
+        self.key = key
+        self.value = value
+
+
+class CustomLabels(serde.Model):
+    """Custom label entries container."""
+
+    _attribute_map = {
+        'item': {'tag': 'xml', 'rename': 'Item', 'type': '[CustomLabel]'},
+    }
+
+    _xml_map = {
+        'name': 'CustomLabels'
+    }
+
+    def __init__(
+            self,
+            item: Optional[List[CustomLabel]] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            item (List[CustomLabel], optional): The list of custom label entries.
+        """
+        super().__init__(**kwargs)
+        self.item = item
+
+
 class UserMeta(serde.Model):
     """A key-value user metadata entry."""
 
@@ -1182,6 +1234,7 @@ class File(serde.Model):
         'oss_delete_marker': {'tag': 'xml', 'rename': 'OSSDeleteMarker', 'type': 'str'},
         'oss_object_type': {'tag': 'xml', 'rename': 'OSSObjectType', 'type': 'str'},
         'custom_id': {'tag': 'xml', 'rename': 'CustomId', 'type': 'str'},
+        'custom_labels': {'tag': 'xml', 'rename': 'CustomLabels', 'type': 'CustomLabels'},
         'stream_count': {'tag': 'xml', 'rename': 'StreamCount', 'type': 'int'},
         'program_count': {'tag': 'xml', 'rename': 'ProgramCount', 'type': 'int'},
         'format_name': {'tag': 'xml', 'rename': 'FormatName', 'type': 'str'},
@@ -1272,6 +1325,7 @@ class File(serde.Model):
             oss_delete_marker: Optional[str] = None,
             oss_object_type: Optional[str] = None,
             custom_id: Optional[str] = None,
+            custom_labels: Optional[CustomLabels] = None,
             stream_count: Optional[int] = None,
             program_count: Optional[int] = None,
             format_name: Optional[str] = None,
@@ -1358,6 +1412,7 @@ class File(serde.Model):
             oss_delete_marker (str, optional): The OSS delete marker.
             oss_object_type (str, optional): The OSS object type.
             custom_id (str, optional): The custom ID.
+            custom_labels (CustomLabels, optional): The custom labels.
             stream_count (int, optional): The stream count.
             program_count (int, optional): The program count.
             format_name (str, optional): The format name.
@@ -1442,6 +1497,7 @@ class File(serde.Model):
         self.oss_delete_marker = oss_delete_marker
         self.oss_object_type = oss_object_type
         self.custom_id = custom_id
+        self.custom_labels = custom_labels
         self.stream_count = stream_count
         self.program_count = program_count
         self.format_name = format_name
