@@ -109,14 +109,17 @@ class TestInsightsImageConfig(unittest.TestCase):
     def test_empty_constructor(self):
         cfg = model.InsightsImageConfig()
         self.assertIsNone(cfg.caption)
+        self.assertIsNone(cfg.label)
 
     def test_full_constructor(self):
         cfg = model.InsightsImageConfig(
-            caption=model.InsightsCaptionConfig(enable='true', prompt='describe')
+            caption=model.InsightsCaptionConfig(enable='true', prompt='describe'),
+            label=model.InsightsImageLabelConfig(system=model.EnableConfig(enable='true')),
         )
         self.assertIsNotNone(cfg.caption)
         self.assertEqual('true', cfg.caption.enable)
         self.assertEqual('describe', cfg.caption.prompt)
+        self.assertEqual('true', cfg.label.system.enable)
 
 
 class TestInsightsVideoCaptionConfig(unittest.TestCase):
@@ -192,6 +195,39 @@ class TestInsightsLabelHighlightConfig(unittest.TestCase):
         self.assertEqual('true', cfg.enable)
         self.assertEqual(1, len(cfg.labels.label))
         self.assertEqual('dog', cfg.labels.label[0].name)
+
+
+class TestInsightsImageLabelConfig(unittest.TestCase):
+    def test_empty_constructor(self):
+        cfg = model.InsightsImageLabelConfig()
+        self.assertIsNone(cfg.system)
+        self.assertIsNone(cfg.user_defined)
+
+    def test_full_constructor(self):
+        cfg = model.InsightsImageLabelConfig(
+            system=model.EnableConfig(enable='true'),
+            user_defined=model.InsightsLabelUserDefinedConfig(enable='true', mode='custom'),
+        )
+        self.assertEqual('true', cfg.system.enable)
+        self.assertEqual('custom', cfg.user_defined.mode)
+
+    def test_xml_builder(self):
+        xml_data = (
+            b'<?xml version="1.0" encoding="UTF-8"?>'
+            b'<Label>'
+            b'<System><Enable>true</Enable></System>'
+            b'<UserDefined>'
+            b'<Enable>true</Enable>'
+            b'<Mode>tagging</Mode>'
+            b'<Labels><Label><Name>dog</Name></Label></Labels>'
+            b'</UserDefined>'
+            b'</Label>'
+        )
+        cfg = model.InsightsImageLabelConfig()
+        serde.deserialize_xml(xml_data=xml_data, obj=cfg)
+        self.assertEqual('true', cfg.system.enable)
+        self.assertEqual('tagging', cfg.user_defined.mode)
+        self.assertEqual('dog', cfg.user_defined.labels.label[0].name)
 
 
 class TestInsightsVideoLabelConfig(unittest.TestCase):
@@ -368,6 +404,16 @@ class TestDatasetConfig(unittest.TestCase):
                 language='en',
                 image=model.InsightsImageConfig(
                     caption=model.InsightsCaptionConfig(enable='true', prompt='describe'),
+                    label=model.InsightsImageLabelConfig(
+                        system=model.EnableConfig(enable='true'),
+                        user_defined=model.InsightsLabelUserDefinedConfig(
+                            enable='true',
+                            mode='overwrite',
+                            labels=model.InsightsLabels(label=[
+                                model.InsightsLabelItem(name='dog'),
+                            ]),
+                        ),
+                    ),
                 ),
                 video=model.InsightsVideoConfig(
                     caption=model.InsightsVideoCaptionConfig(
@@ -405,7 +451,17 @@ class TestDatasetConfig(unittest.TestCase):
         self.assertEqual({
             'Insights': {
                 'Language': 'en',
-                'Image': {'Caption': {'Enable': 'true', 'Prompt': 'describe'}},
+                'Image': {
+                    'Caption': {'Enable': 'true', 'Prompt': 'describe'},
+                    'Label': {
+                        'System': {'Enable': 'true'},
+                        'UserDefined': {
+                            'Enable': 'true',
+                            'Mode': 'overwrite',
+                            'Labels': [{'Name': 'dog'}],
+                        },
+                    },
+                },
                 'Video': {
                     'Caption': {
                         'Enable': 'true',

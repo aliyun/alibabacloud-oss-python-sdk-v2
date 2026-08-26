@@ -202,6 +202,7 @@ class InsightsImageConfig(serde.Model):
 
     _attribute_map = {
         'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'InsightsCaptionConfig'},
+        'label': {'tag': 'xml', 'rename': 'Label', 'type': 'InsightsImageLabelConfig'},
     }
 
     _xml_map = {
@@ -211,17 +212,23 @@ class InsightsImageConfig(serde.Model):
     def __init__(
             self,
             caption: Optional[InsightsCaptionConfig] = None,
+            label: Optional['InsightsImageLabelConfig'] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
             caption (InsightsCaptionConfig, optional): The caption configuration for image insights.
+            label (InsightsImageLabelConfig, optional): The label configuration for image insights.
         """
         super().__init__(**kwargs)
         self.caption = caption
+        self.label = label
 
     def _to_json_obj(self) -> dict:
-        return compact({'Caption': to_obj(self.caption)})
+        return compact({
+            'Caption': to_obj(self.caption),
+            'Label': to_obj(self.label),
+        })
 
 
 class InsightsVideoCaptionConfig(serde.Model):
@@ -333,6 +340,40 @@ class InsightsLabelHighlightConfig(serde.Model):
         return compact({
             'Enable': self.enable,
             'Labels': to_obj(self.labels),
+        })
+
+
+class InsightsImageLabelConfig(serde.Model):
+    """Image Label configuration within InsightsConfig."""
+
+    _attribute_map = {
+        'system': {'tag': 'xml', 'rename': 'System', 'type': 'EnableConfig'},
+        'user_defined': {'tag': 'xml', 'rename': 'UserDefined', 'type': 'InsightsLabelUserDefinedConfig'},
+    }
+
+    _xml_map = {
+        'name': 'Label'
+    }
+
+    def __init__(
+            self,
+            system: Optional[EnableConfig] = None,
+            user_defined: Optional[InsightsLabelUserDefinedConfig] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            system (EnableConfig, optional): The system label configuration.
+            user_defined (InsightsLabelUserDefinedConfig, optional): The user defined label configuration.
+        """
+        super().__init__(**kwargs)
+        self.system = system
+        self.user_defined = user_defined
+
+    def _to_json_obj(self) -> dict:
+        return compact({
+            'System': to_obj(self.system),
+            'UserDefined': to_obj(self.user_defined),
         })
 
 
