@@ -29,8 +29,8 @@ PAYER_ACCESS_ID = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_ID")
 PAYER_ACCESS_KEY = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_SECRET")
 PAYER_UID = os.getenv("OSS_TEST_PAYER_UID")
 
-BUCKETNAME_PREFIX = "python-sdk-test-bucket-"
-OBJECTNAME_PREFIX = "python-sdk-test-object-"
+BUCKETNAME_PREFIX = "oss-sdk-test-python-bucket-"
+OBJECTNAME_PREFIX = "oss-sdk-test-python-object-"
 
 _defaultClient :oss.Client = None
 _invalidAkClient :oss.Client = None

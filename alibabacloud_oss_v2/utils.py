@@ -276,3 +276,15 @@ def get_tables_user_agent() -> str:
     """Returns the default user agent string for tables
     """
     return 'tables-client'
+
+
+def get_agentic_user_agent() -> str:
+    """Returns the default user agent string for agentic bucket
+    """
+    return 'agentic-client'
+
+
+def get_bucket_space_user_agent() -> str:
+    """Returns the default user agent string for bucket space
+    """
+    return 'bucketspace-client'
