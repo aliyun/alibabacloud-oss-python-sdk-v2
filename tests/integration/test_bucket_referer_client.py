@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketReferer(TestIntegration):
@@ -43,6 +43,7 @@ class TestBucketReferer(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket referer
+        wait_after_put()
         result = self.client.get_bucket_referer(oss.GetBucketRefererRequest(
             bucket=bucket_name,
         ))
@@ -93,6 +94,7 @@ class TestBucketReferer(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket referer
+        wait_after_put()
         result = self.signv1_client.get_bucket_referer(oss.GetBucketRefererRequest(
             bucket=bucket_name,
         ))

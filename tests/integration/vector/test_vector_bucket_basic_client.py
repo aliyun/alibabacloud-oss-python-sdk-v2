@@ -1,14 +1,14 @@
 # pylint: skip-file
 
 import alibabacloud_oss_v2.vectors as oss_vectors
-from .. import TestIntegrationVectors, random_short_bucket_name, REGION, USER_ID
+from .. import TestIntegrationVectors, random_vector_bucket_name, REGION, USER_ID
 
 
 class TestVectorBucketBasic(TestIntegrationVectors):
 
     def test_vector_bucket_basic(self):
         # create bucket
-        bucket_name = random_short_bucket_name()
+        bucket_name = random_vector_bucket_name()
         result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(
             bucket=bucket_name,
             acl='private',

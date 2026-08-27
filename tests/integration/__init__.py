@@ -3,6 +3,7 @@
 import os
 import random
 import string
+import time
 import datetime
 import hmac
 import hashlib
@@ -34,7 +35,24 @@ PAYER_ACCESS_ID = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_ID")
 PAYER_ACCESS_KEY = os.getenv("OSS_TEST_PAYER_ACCESS_KEY_SECRET")
 PAYER_UID = os.getenv("OSS_TEST_PAYER_UID")
 
-BUCKETNAME_PREFIX = "oss-sdk-test-python-bucket-"
+def get_bucket_name_prefix() -> str:
+    val = os.getenv("OSS_TEST_BUCKET_PREFIX")
+    if val:
+        return val + "py-bucket-"
+    return "sdk-oss-test-py-bucket-"
+
+
+# Vector and table bucket names are capped at 32 characters, and some vector tests append a short
+# suffix to a generated name, so the vector prefix is kept shorter than the general one.
+def get_vector_bucket_name_prefix() -> str:
+    val = os.getenv("OSS_TEST_BUCKET_PREFIX")
+    if val:
+        return val + "py-"
+    return "sdk-oss-test-py-"
+
+
+BUCKETNAME_PREFIX = get_bucket_name_prefix()
+VECTOR_BUCKETNAME_PREFIX = get_vector_bucket_name_prefix()
 OBJECTNAME_PREFIX = "oss-sdk-test-python-object-"
 
 _defaultClient :oss.Client = None
@@ -108,7 +126,8 @@ def get_vectors_client() -> oss_vectors.Client:
     cfg = oss.config.load_default()
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
-    cfg.endpoint = VECTORS_ENDPOINT
+    if VECTORS_ENDPOINT:
+        cfg.endpoint = VECTORS_ENDPOINT
     cfg.account_id = USER_ID
     return oss_vectors.Client(cfg)
 
@@ -155,6 +174,16 @@ def random_bucket_name():
 
 def random_short_bucket_name():
     return BUCKETNAME_PREFIX + random_lowstr(7)
+
+def random_vector_bucket_name():
+    return VECTOR_BUCKETNAME_PREFIX + random_lowstr(7)
+
+# A bucket configuration written by a put is not always visible to an immediately following get,
+# which makes read-back assertions fail intermittently. Tests wait here before reading back.
+WAIT_AFTER_PUT_SECONDS = 5
+
+def wait_after_put():
+    time.sleep(WAIT_AFTER_PUT_SECONDS)
 
 def clean_objects(client:oss.Client, bucket_name:str) -> None:
     marker = ''
@@ -373,7 +402,7 @@ class TestIntegrationVectors(TestIntegration):
         TestIntegration.setUpClass()
         cls.vector_client = get_vectors_client()
 
-        vector_bucket_name = random_short_bucket_name()
+        vector_bucket_name = random_vector_bucket_name()
         result = cls.vector_client.put_vector_bucket(
             oss_vectors.models.PutVectorBucketRequest(
                 bucket=vector_bucket_name,
@@ -384,5 +413,5 @@ class TestIntegrationVectors(TestIntegration):
     @classmethod
     def tearDownClass(cls):
         TestIntegration.tearDownClass()
-        clean_vector_buckets(BUCKETNAME_PREFIX)
+        clean_vector_buckets(VECTOR_BUCKETNAME_PREFIX)
 

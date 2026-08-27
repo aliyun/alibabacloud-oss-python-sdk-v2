@@ -1,12 +1,12 @@
 # pylint: skip-file
 
 import alibabacloud_oss_v2.vectors as oss_vectors
-from .. import TestIntegrationVectors, random_short_bucket_name
+from .. import TestIntegrationVectors, random_vector_bucket_name
 
 class TestPaginatorBasic(TestIntegrationVectors):
     def test_list_vector_buckets_paginator(self):
         # Create test vector buckets with a common prefix
-        bucket_name_prefix = random_short_bucket_name()
+        bucket_name_prefix = random_vector_bucket_name()
         bucket_name1 = bucket_name_prefix + '-1'
         self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name1))
         bucket_name2 = bucket_name_prefix + '-2'
@@ -57,7 +57,7 @@ class TestPaginatorBasic(TestIntegrationVectors):
 
     def test_list_vector_index_paginator(self):
         # Create a test vector bucket
-        bucket_name = random_short_bucket_name()
+        bucket_name = random_vector_bucket_name()
         result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name))
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
@@ -133,7 +133,7 @@ class TestPaginatorBasic(TestIntegrationVectors):
 
     def test_list_vectors_paginator(self):
         # Create a test vector bucket
-        bucket_name = random_short_bucket_name()
+        bucket_name = random_vector_bucket_name()
         self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(bucket=bucket_name))
 
         # Create test vectors using put_vectors

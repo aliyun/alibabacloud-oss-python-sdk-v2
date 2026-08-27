@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketPolicy(TestIntegration):
@@ -49,6 +49,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket policy
+        wait_after_put()
         result = self.client.get_bucket_policy(oss.GetBucketPolicyRequest(
             bucket=bucket_name,
         ))
@@ -59,6 +60,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(policy_text, result.body)
 
         # get bucket policy status
+        wait_after_put()
         result = self.client.get_bucket_policy_status(oss.GetBucketPolicyStatusRequest(
             bucket=bucket_name,
         ))
@@ -77,6 +79,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket policy status
+        wait_after_put()
         result = self.client.get_bucket_policy_status(oss.GetBucketPolicyStatusRequest(
             bucket=bucket_name,
         ))
@@ -128,6 +131,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket policy
+        wait_after_put()
         result = self.signv1_client.get_bucket_policy(oss.GetBucketPolicyRequest(
             bucket=bucket_name,
         ))
@@ -138,6 +142,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(policy_text, result.body)
 
         # get bucket policy status
+        wait_after_put()
         result = self.signv1_client.get_bucket_policy_status(oss.GetBucketPolicyStatusRequest(
             bucket=bucket_name,
         ))
@@ -156,6 +161,7 @@ class TestBucketPolicy(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket policy status
+        wait_after_put()
         result = self.client.get_bucket_policy_status(oss.GetBucketPolicyStatusRequest(
             bucket=bucket_name,
         ))

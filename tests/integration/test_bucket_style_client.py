@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestStyle(TestIntegration):
@@ -40,6 +40,7 @@ class TestStyle(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get style
+        wait_after_put()
         result = self.client.get_style(oss.GetStyleRequest(
             bucket=bucket_name,
             style_name=style_name,
@@ -131,6 +132,7 @@ class TestStyle(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get style
+        wait_after_put()
         result = self.signv1_client.get_style(oss.GetStyleRequest(
             bucket=bucket_name,
             style_name=style_name,

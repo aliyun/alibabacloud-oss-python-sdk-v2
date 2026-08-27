@@ -1,6 +1,6 @@
 # pylint: skip-file
 import alibabacloud_oss_v2.vectors as oss_vectors
-from .. import TestIntegrationVectors, random_short_bucket_name
+from .. import TestIntegrationVectors, random_vector_bucket_name
 
 
 class TestVectorIndex(TestIntegrationVectors):
@@ -9,7 +9,7 @@ class TestVectorIndex(TestIntegrationVectors):
     def test_vector_index_lifecycle(self):
         """Test the full lifecycle of a vector index: create (put), get, list, and delete."""
         # 1. Create bucket for testing
-        bucket_name = random_short_bucket_name()
+        bucket_name = random_vector_bucket_name()
         create_bucket_result = self.vector_client.put_vector_bucket(
             oss_vectors.models.PutVectorBucketRequest(
                 bucket=bucket_name,

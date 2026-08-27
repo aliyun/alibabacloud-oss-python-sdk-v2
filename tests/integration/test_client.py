@@ -231,7 +231,8 @@ class TestBucketBasic(TestIntegration):
         self.assertTrue(result.object_count==0)
         self.assertTrue(result.multi_part_upload_count==0)
         self.assertTrue(result.live_channel_count==0)
-        self.assertTrue(result.last_modified_time==0)
+        # An empty bucket reports its creation time here, not 0.
+        self.assertIsNotNone(result.last_modified_time)
         self.assertTrue(result.standard_storage==0)
         self.assertTrue(result.standard_object_count==0)
         self.assertTrue(result.infrequent_access_storage==0)

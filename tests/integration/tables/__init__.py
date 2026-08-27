@@ -2,7 +2,7 @@
 """Tables integration tests."""
 
 import os
-from .. import TestIntegration, get_default_client, random_short_bucket_name
+from .. import TestIntegration, get_default_client, random_short_bucket_name, BUCKETNAME_PREFIX
 
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.tables as oss_tables
@@ -17,7 +17,8 @@ def get_tables_client() -> oss_tables.Client:
     cfg = oss.config.load_default()
     cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ACCESS_ID, ACCESS_KEY)
     cfg.region = REGION
-    cfg.endpoint = TABLES_ENDPOINT
+    if TABLES_ENDPOINT:
+        cfg.endpoint = TABLES_ENDPOINT
     return oss_tables.Client(cfg)
 
 
@@ -40,7 +41,7 @@ class TestIntegrationTables(TestIntegration):
     @classmethod
     def tearDownClass(cls):
         TestIntegration.tearDownClass()
-        clean_table_buckets("python-sdk-test-bucket-")
+        clean_table_buckets(BUCKETNAME_PREFIX)
 
 
 def clean_table_buckets(prefix: str) -> None:
