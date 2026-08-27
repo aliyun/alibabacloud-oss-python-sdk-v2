@@ -739,7 +739,52 @@ class TestSerdeXml(unittest.TestCase):
         model = ModelOne()
         serde.deserialize_xml(xml_data, model)
         self.assertEqual("123", model.str_root)
- 
+
+    def test_deserialize_xml_namespaced_root(self):
+
+        class VersioningConfiguration(serde.Model):
+            _attribute_map = {
+                "status": {"tag": "xml", "rename": "Status"},
+            }
+            _xml_map = {
+                "name": "VersioningConfiguration"
+            }
+
+            def __init__(
+                self,
+                status: Optional[str] = None,
+                **kwargs,
+            ) -> None:
+                super().__init__(**kwargs)
+                self.status = status
+
+        # OSS reports an unset configuration as an empty element carrying a default xmlns
+        xml_data = '<VersioningConfiguration xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com"/>'
+        model = VersioningConfiguration()
+        serde.deserialize_xml(xml_data, model, 'VersioningConfiguration')
+        self.assertIsNone(model.status)
+
+        # the same document written with an explicit namespace prefix
+        xml_data = '<oss:VersioningConfiguration xmlns:oss="http://doc.oss-cn-hangzhou.aliyuncs.com"/>'
+        model = VersioningConfiguration()
+        serde.deserialize_xml(xml_data, model, 'VersioningConfiguration')
+        self.assertIsNone(model.status)
+
+        # a configured bucket returns the same tag without any namespace
+        xml_data = '<VersioningConfiguration><Status>Enabled</Status></VersioningConfiguration>'
+        model = VersioningConfiguration()
+        serde.deserialize_xml(xml_data, model, 'VersioningConfiguration')
+        self.assertEqual('Enabled', model.status)
+
+        # a genuinely different root tag is still rejected
+        xml_data = '<AccessControlPolicy xmlns="http://doc.oss-cn-hangzhou.aliyuncs.com"/>'
+        model = VersioningConfiguration()
+        try:
+            serde.deserialize_xml(xml_data, model, 'VersioningConfiguration')
+            self.fail("should not here")
+        except exceptions.DeserializationError:
+            pass
+
 
 class TestSerdeOperation(unittest.TestCase):
     def test_serialize_input(self):

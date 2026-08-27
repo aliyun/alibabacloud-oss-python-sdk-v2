@@ -463,6 +463,8 @@ def deserialize_xml(xml_data: Any, obj: Any, expect_tag: Optional[str] = None) -
         return
 
     root = ET.fromstring(xml_data)
+    if root.tag.startswith('{'):
+        root.tag = root.tag.rpartition('}')[2]
     if expect_tag is not None and len(expect_tag) > 0:
         if root.tag != expect_tag:
             raise exceptions.DeserializationError(

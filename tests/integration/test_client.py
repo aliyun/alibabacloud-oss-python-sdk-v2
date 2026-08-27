@@ -16,7 +16,8 @@ from . import (
     ENDPOINT,
     ACCESS_ID,
     ACCESS_KEY,
-    get_client
+    get_client,
+    wait_after_put
 )
 from urllib.parse import quote, unquote
 
@@ -371,6 +372,13 @@ class TestBucketBasic(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        # get bucket versioning, not configured yet
+        result = self.client.get_bucket_versioning(oss.GetBucketVersioningRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertIsNone(result.version_status)
+
         # put bucket versioning
         result = self.client.put_bucket_versioning(oss.PutBucketVersioningRequest(
             bucket=bucket_name,
@@ -382,6 +390,7 @@ class TestBucketBasic(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket versioning
+        wait_after_put()
         result = self.client.get_bucket_versioning(oss.GetBucketVersioningRequest(
             bucket=bucket_name,
         ))
