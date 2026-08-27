@@ -67,6 +67,7 @@ class TestStyle(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # list style
+        wait_after_put()
         result = self.client.list_style(oss.ListStyleRequest(
             bucket=bucket_name,
         ))
@@ -159,6 +160,7 @@ class TestStyle(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # list style
+        wait_after_put()
         result = self.signv1_client.list_style(oss.ListStyleRequest(
             bucket=bucket_name,
         ))

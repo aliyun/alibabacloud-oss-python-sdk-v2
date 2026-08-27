@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketArchiveDirectRead(TestIntegration):
@@ -36,6 +36,7 @@ class TestBucketArchiveDirectRead(TestIntegration):
 
 
         # get bucket archive direct read
+        wait_after_put()
         result = self.client.get_bucket_archive_direct_read(oss.GetBucketArchiveDirectReadRequest(
             bucket=bucket_name,
         ))
@@ -74,6 +75,7 @@ class TestBucketArchiveDirectRead(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket archive direct read
+        wait_after_put()
         result = self.signv1_client.get_bucket_archive_direct_read(oss.GetBucketArchiveDirectReadRequest(
             bucket=bucket_name,
         ))

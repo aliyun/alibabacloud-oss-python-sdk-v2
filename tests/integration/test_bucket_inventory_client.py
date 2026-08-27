@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name, USER_ID, RAM_ROLE_ARN, random_lowstr
+from . import TestIntegration, random_bucket_name, USER_ID, RAM_ROLE_ARN, random_lowstr, wait_after_put
 
 
 class TestBucketInventory(TestIntegration):
@@ -67,6 +67,7 @@ class TestBucketInventory(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket inventory
+        wait_after_put()
         result = self.client.get_bucket_inventory(oss.GetBucketInventoryRequest(
             bucket=bucket_name,
             inventory_id=inventory_id,
@@ -93,6 +94,7 @@ class TestBucketInventory(TestIntegration):
         self.assertEqual(1638347592, result.inventory_configuration.filter.last_modify_end_time_stamp)
 
         # list bucket inventory
+        wait_after_put()
         result = self.client.list_bucket_inventory(oss.ListBucketInventoryRequest(
             bucket=bucket_name,
         ))
@@ -187,6 +189,7 @@ class TestBucketInventory(TestIntegration):
 
 
         # get bucket inventory
+        wait_after_put()
         result = self.signv1_client.get_bucket_inventory(oss.GetBucketInventoryRequest(
             bucket=bucket_name,
             inventory_id=inventory_id,
@@ -213,6 +216,7 @@ class TestBucketInventory(TestIntegration):
         self.assertEqual(1638347592, result.inventory_configuration.filter.last_modify_end_time_stamp)
 
         # list bucket inventory
+        wait_after_put()
         result = self.signv1_client.list_bucket_inventory(oss.ListBucketInventoryRequest(
             bucket=bucket_name,
             continuation_token='',
@@ -432,6 +436,7 @@ class TestBucketInventory(TestIntegration):
             self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
             # get bucket inventory
+            wait_after_put()
             result = self.client.get_bucket_inventory(oss.GetBucketInventoryRequest(
                 bucket=bucket_name,
                 inventory_id=inventory_id,

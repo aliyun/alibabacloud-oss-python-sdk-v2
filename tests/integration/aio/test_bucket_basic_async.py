@@ -13,8 +13,9 @@ from .. import (
     random_str, 
     REGION,
     ENDPOINT, 
-    OBJECTNAME_PREFIX, 
+    OBJECTNAME_PREFIX,
     get_async_client,
+    wait_after_put,
 )
 
 class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
@@ -398,6 +399,13 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        # get bucket versioning, not configured yet
+        result = await self.async_client.get_bucket_versioning(oss.GetBucketVersioningRequest(
+            bucket=bucket_name,
+        ))
+        self.assertEqual(200, result.status_code)
+        self.assertIsNone(result.version_status)
+
         # put bucket versioning
         result = await self.async_client.put_bucket_versioning(oss.PutBucketVersioningRequest(
             bucket=bucket_name,
@@ -409,6 +417,7 @@ class TestBucketBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket versioning
+        wait_after_put()
         result = await self.async_client.get_bucket_versioning(oss.GetBucketVersioningRequest(
             bucket=bucket_name,
         ))
