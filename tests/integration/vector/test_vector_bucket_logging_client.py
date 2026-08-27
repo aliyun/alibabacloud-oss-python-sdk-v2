@@ -2,7 +2,7 @@
 
 import alibabacloud_oss_v2 as oss
 import alibabacloud_oss_v2.vectors as oss_vectors
-from .. import TestIntegrationVectors, random_short_bucket_name, random_bucket_name
+from .. import TestIntegrationVectors, random_vector_bucket_name, random_bucket_name, wait_after_put
 
 
 class TestVectorBucketLogging(TestIntegrationVectors):
@@ -10,7 +10,7 @@ class TestVectorBucketLogging(TestIntegrationVectors):
 
     def test_vector_bucket_logging(self):
         # 1. Create buckets: source bucket and target bucket
-        source_bucket_name = random_short_bucket_name()
+        source_bucket_name = random_vector_bucket_name()
         target_bucket_name = random_bucket_name()
 
         # Create source bucket
@@ -60,6 +60,7 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         self.assertEqual(24, len(put_result.headers.get('x-oss-request-id')))
 
         # 3. Get bucket logging (verify logging configuration)
+        wait_after_put()
         get_result = self.vector_client.get_bucket_logging(
             oss_vectors.models.GetBucketLoggingRequest(
                 bucket=source_bucket_name
@@ -86,6 +87,7 @@ class TestVectorBucketLogging(TestIntegrationVectors):
         self.assertEqual(24, len(delete_result.headers.get('x-oss-request-id')))
 
         # 5. Verify logging is disabled by getting the configuration again
+        wait_after_put()
         get_result_after_delete = self.vector_client.get_bucket_logging(
             oss_vectors.models.GetBucketLoggingRequest(
                 bucket=source_bucket_name

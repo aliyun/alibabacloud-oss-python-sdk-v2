@@ -2,7 +2,7 @@
 import datetime
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketLifecycle(TestIntegration):
@@ -46,6 +46,7 @@ class TestBucketLifecycle(TestIntegration):
 
 
         # get bucket lifecycle
+        wait_after_put()
         result = self.client.get_bucket_lifecycle(oss.GetBucketLifecycleRequest(
             bucket=bucket_name,
         ))
@@ -102,6 +103,7 @@ class TestBucketLifecycle(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket lifecycle
+        wait_after_put()
         result = self.signv1_client.get_bucket_lifecycle(oss.GetBucketLifecycleRequest(
             bucket=bucket_name,
         ))

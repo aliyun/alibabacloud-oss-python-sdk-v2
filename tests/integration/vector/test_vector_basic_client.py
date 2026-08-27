@@ -2,7 +2,7 @@
 
 from ast import literal_eval
 import alibabacloud_oss_v2.vectors as oss_vectors
-from .. import TestIntegrationVectors, random_short_bucket_name
+from .. import TestIntegrationVectors, random_vector_bucket_name
 
 
 class TestVectorBasic(TestIntegrationVectors):
@@ -10,7 +10,7 @@ class TestVectorBasic(TestIntegrationVectors):
 
     def test_vector_basic(self):
         # 1. Create bucket
-        bucket_name = random_short_bucket_name()
+        bucket_name = random_vector_bucket_name()
         vector_key = "vector-key-1"
 
         result = self.vector_client.put_vector_bucket(oss_vectors.models.PutVectorBucketRequest(

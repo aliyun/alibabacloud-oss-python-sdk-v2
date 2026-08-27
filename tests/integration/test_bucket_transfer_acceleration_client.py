@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketTransferAcceleration(TestIntegration):
@@ -35,6 +35,7 @@ class TestBucketTransferAcceleration(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket transfer acceleration
+        wait_after_put()
         result = self.client.get_bucket_transfer_acceleration(oss.GetBucketTransferAccelerationRequest(
             bucket=bucket_name,
         ))
@@ -72,6 +73,7 @@ class TestBucketTransferAcceleration(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket transfer acceleration
+        wait_after_put()
         result = self.signv1_client.get_bucket_transfer_acceleration(oss.GetBucketTransferAccelerationRequest(
             bucket=bucket_name,
         ))

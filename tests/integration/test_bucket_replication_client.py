@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name, RAM_ROLE_NAME, REGION
+from . import TestIntegration, random_bucket_name, RAM_ROLE_NAME, REGION, wait_after_put
 
 
 class TestBucketReplication(TestIntegration):
@@ -59,6 +59,7 @@ class TestBucketReplication(TestIntegration):
 
 
         # get bucket replication
+        wait_after_put()
         result = self.client.get_bucket_replication(oss.GetBucketReplicationRequest(
             bucket=bucket_name,
         ))
@@ -95,6 +96,7 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket replication location
+        wait_after_put()
         result = self.client.get_bucket_replication_location(oss.GetBucketReplicationLocationRequest(
             bucket=bucket_name,
         ))
@@ -107,6 +109,7 @@ class TestBucketReplication(TestIntegration):
 
 
         # get bucket replication progress
+        wait_after_put()
         result = self.client.get_bucket_replication_progress(oss.GetBucketReplicationProgressRequest(
             bucket=bucket_name,
             rule_id=id,
@@ -188,6 +191,7 @@ class TestBucketReplication(TestIntegration):
 
 
         # get bucket replication
+        wait_after_put()
         result = self.signv1_client.get_bucket_replication(oss.GetBucketReplicationRequest(
             bucket=bucket_name,
         ))
@@ -224,6 +228,7 @@ class TestBucketReplication(TestIntegration):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
         # get bucket replication location
+        wait_after_put()
         result = self.signv1_client.get_bucket_replication_location(oss.GetBucketReplicationLocationRequest(
             bucket=bucket_name,
         ))
@@ -236,6 +241,7 @@ class TestBucketReplication(TestIntegration):
 
 
         # get bucket replication progress
+        wait_after_put()
         result = self.signv1_client.get_bucket_replication_progress(oss.GetBucketReplicationProgressRequest(
             bucket=bucket_name,
             rule_id=id,
