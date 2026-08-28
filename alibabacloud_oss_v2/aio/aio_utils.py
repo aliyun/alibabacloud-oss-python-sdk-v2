@@ -1,9 +1,10 @@
 """utils for stream wrapper"""
 import os
-from typing import Optional, IO, List, AsyncIterable, Any, AsyncIterator
+from typing import Optional, IO, List, AsyncIterable, Any, AsyncIterator, Awaitable, Callable
 from .. import utils
 from ..types import AsyncStreamBody, AsyncHttpResponse
-from ..exceptions import ResponseNotReadError
+from ..exceptions import ResponseNotReadError, StreamConsumedError, StreamClosedError
+from ..filelike import _check_object_same
 
 # pylint: disable=no-member
 # pylint: disable=protected-access
@@ -302,7 +303,7 @@ class _TeeAsyncIteratorIter(TeeAsyncIterator):
     async def anext(self):
         """Next data
         """
-        return self._to_bytes(await anext(self._iter))
+        return self._to_bytes(await self._iter.__anext__())
 
     def _to_bytes(self, d) -> bytes:
         if  d is None:
@@ -356,3 +357,109 @@ class AsyncStreamBodyReader(AsyncStreamBody):
 
     async def iter_bytes(self, **kwargs: Any) -> AsyncIterator[bytes]:
         return self._response.iter_bytes(**kwargs)
+
+
+class AsyncResumableStreamBodyReader(AsyncStreamBody):
+    """
+    A AsyncStreamBody that streams the object's data and transparently resumes
+    from the last consumed offset with a ranged GET when the connection breaks.
+    """
+
+    def __init__(
+        self,
+        result: Any,
+        resume_fn: Callable[[int, Optional[int]], Awaitable[Any]],
+    ) -> None:
+        self._resume_fn = resume_fn
+        self._body: Optional[AsyncStreamBody] = result.body
+        self._iter: Optional[AsyncIterator[bytes]] = None
+        self._iter_kwargs: dict = {}
+        self._src_etag = result.etag
+        self._src_modtime = result.last_modified
+        self._start = 0
+        self._end = None
+        if (crange := (result.headers or {}).get('Content-Range', None)):
+            self._start, self._end, _ = utils.parse_content_range(crange)
+        self._expected = result.content_length
+        self._consumed = 0
+        self._content: Optional[bytes] = None
+        self._closed = False
+        self._stream_consumed = False
+
+    async def __aenter__(self) -> "AsyncResumableStreamBodyReader":
+        return self
+
+    async def __aexit__(self, *args: Any) -> None:
+        await self.close()
+
+    @property
+    def is_closed(self) -> bool:
+        return self._closed
+
+    @property
+    def is_stream_consumed(self) -> bool:
+        return self._stream_consumed
+
+    @property
+    def content(self) -> bytes:
+        if self._content is None:
+            raise ResponseNotReadError()
+        return self._content
+
+    async def read(self) -> bytes:
+        if self._content is None:
+            chunks = []
+            async for chunk in await self.iter_bytes():
+                chunks.append(chunk)
+            self._content = b''.join(chunks)
+        return self._content
+
+    async def close(self) -> None:
+        self._closed = True
+        await self._drop_stream()
+
+    async def iter_bytes(self, **kwargs: Any) -> AsyncIterator[bytes]:
+        if self._stream_consumed:
+            raise StreamConsumedError()
+        if self._closed:
+            raise StreamClosedError()
+        self._iter_kwargs = kwargs
+        return self._iter_bytes()
+
+    async def _iter_bytes(self) -> AsyncIterator[bytes]:
+        while True:
+            if self._iter is None:
+                # not guarded: a permanent failure must propagate instead of looping forever
+                await self._open_stream()
+
+            try:
+                chunk = await self._iter.__anext__()
+            except StopAsyncIteration:
+                if self._expected is not None and self._consumed < self._expected:
+                    await self._drop_stream()
+                    continue
+                self._stream_consumed = True
+                return
+            except Exception:  # pylint: disable=broad-except
+                await self._drop_stream()
+                continue
+
+            self._consumed += len(chunk)
+            yield chunk
+
+    async def _open_stream(self) -> None:
+        if self._body is None:
+            offset = self._start + self._consumed
+            result = await self._resume_fn(offset, self._end)
+            if (err := _check_object_same(self._src_modtime, self._src_etag, offset, result)):
+                await result.body.close()
+                raise err
+            self._body = result.body
+
+        self._iter = await self._body.iter_bytes(**self._iter_kwargs)
+
+    async def _drop_stream(self) -> None:
+        if self._body is not None:
+            await self._body.close()
+        self._body = None
+        self._iter = None

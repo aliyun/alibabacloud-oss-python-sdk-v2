@@ -178,6 +178,10 @@ class _AsyncClientImpl(_ClientImplMixIn):
         if handlers is not None:
             options.response_handlers.extend(handlers)
 
+        stream = op_input.op_metadata.get('response-stream', None)
+        if stream is not None:
+            options.response_stream = stream
+
 
     def _build_request_context(self, op_input: OperationInput, options: _Options, inner: _InnerOptions
                               ) -> SigningContext:
@@ -334,8 +338,8 @@ class _AsyncClientImpl(_ClientImplMixIn):
 
         # send
         send_kwargs = {}
-        #if options.response_stream is not None:
-        #    send_kwargs['stream'] = options.response_stream
+        if options.response_stream is not None:
+            send_kwargs['stream'] = options.response_stream
 
         response = await options.http_client.send(context.request, **send_kwargs)
 

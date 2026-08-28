@@ -1,13 +1,16 @@
 """APIs for bucket basic operation."""
 # pylint: disable=line-too-long
 
+import copy
+from typing import Optional
 from ...types import OperationInput, CaseInsensitiveDict
 from ... import serde
 from ... import serde_utils
 from ... import models
 from ... import defaults
+from ... import exceptions
 from .._aioclient import _AsyncClientImpl
-from ..aio_utils import AsyncStreamBodyReader
+from ..aio_utils import AsyncStreamBodyReader, AsyncResumableStreamBodyReader
 
 
 async def put_object(client: _AsyncClientImpl, request: models.PutObjectRequest, **kwargs) -> models.PutObjectResult:
@@ -94,6 +97,9 @@ async def get_object(client: _AsyncClientImpl, request: models.GetObjectRequest,
     """
     get object asynchronously
 
+    The response is read into memory before returning, so the result's body exposes
+    the data through `content`. See `get_object_as_stream` for the streaming variant.
+
     Args:
         client (_AsyncClientImpl): A agent that sends the request.
         request (GetObjectRequest): The request for the GetObject operation.
@@ -109,7 +115,6 @@ async def get_object(client: _AsyncClientImpl, request: models.GetObjectRequest,
             method='GET',
             bucket=request.bucket,
             key=request.key,
-            op_metadata={'response-stream':True}
         ),
     )
 
@@ -124,6 +129,66 @@ async def get_object(client: _AsyncClientImpl, request: models.GetObjectRequest,
             serde.deserialize_output_headers
         ],
     )
+
+
+async def _get_object_stream_once(client: _AsyncClientImpl, request: models.GetObjectRequest, **kwargs) -> models.GetObjectResult:
+    op_input = serde.serialize_input(
+        request=request,
+        op_input=OperationInput(
+            op_name='GetObject',
+            method='GET',
+            bucket=request.bucket,
+            key=request.key,
+            op_metadata={'response-stream': True}
+        ),
+    )
+
+    op_output = await client.invoke_operation(op_input, **kwargs)
+
+    return serde.deserialize_output(
+        result=models.GetObjectResult(
+            body=AsyncStreamBodyReader(op_output.http_response)
+        ),
+        op_output=op_output,
+        custom_deserializer=[
+            serde.deserialize_output_headers
+        ],
+    )
+
+
+async def get_object_as_stream(client: _AsyncClientImpl, request: models.GetObjectRequest, **kwargs) -> models.GetObjectResult:
+    """
+    get object as a stream asynchronously
+
+    The object's data is not buffered in memory: the result's body must be consumed
+    through `iter_bytes` or `read`, and closed when done. A broken connection is
+    resumed with a ranged GET from the last consumed offset.
+
+    `request.range_header` must hold at most one range: resuming a multi-range
+    response cannot be expressed as a single offset.
+
+    Args:
+        client (_AsyncClientImpl): A agent that sends the request.
+        request (GetObjectRequest): The request for the GetObject operation.
+
+    Returns:
+        GetObjectResult: The result for the GetObject operation.
+    """
+
+    if request.range_header and ',' in request.range_header:
+        raise exceptions.ParamInvalidError(field='request.range_header')
+
+    result = await _get_object_stream_once(client, request, **kwargs)
+
+    async def resume_fn(offset: int, end: Optional[int]) -> models.GetObjectResult:
+        resume_request = copy.copy(request)
+        resume_request.range_header = f'bytes={offset}-' if end is None else f'bytes={offset}-{end}'
+        resume_request.range_behavior = 'standard'
+        return await _get_object_stream_once(client, resume_request, **kwargs)
+
+    result.body = AsyncResumableStreamBodyReader(result, resume_fn)
+
+    return result
 
 
 async def append_object(client: _AsyncClientImpl, request: models.AppendObjectRequest, **kwargs) -> models.AppendObjectResult:

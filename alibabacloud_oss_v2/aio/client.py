@@ -289,6 +289,15 @@ class AsyncClient:
         """
         Queries an object. To call this operation, you must have read permissions on the object.
 
+        The object's data is fully read into memory before this call returns, so
+        `result.body.content` is available right away and the connection is already
+        released. `result.body.iter_bytes()` only re-slices that in-memory data into
+        chunks, it does not reduce peak memory. A connection broken while the data is
+        being received is retried transparently by the request-level retryer.
+
+        Use `get_object_as_stream` instead when the object is too large to hold in
+        memory.
+
         Args:
             request (GetObjectRequest): Request parameters for GetObject operation.
 
@@ -297,6 +306,40 @@ class AsyncClient:
         """
 
         return await operations.get_object(self._client, request, **kwargs)
+
+    async def get_object_as_stream(self, request: models.GetObjectRequest, **kwargs
+                   ) -> models.GetObjectResult:
+        """
+        Queries an object without buffering its data in memory, unlike `get_object`.
+
+        Only the response headers have arrived when this call returns; the data is
+        fetched as it is consumed, so peak memory stays at one chunk:
+
+            async with result.body as body:
+                async for chunk in await body.iter_bytes():
+                    ...
+
+        `result.body.content` raises `ResponseNotReadError` until `await body.read()`
+        has pulled and cached the whole object. The body holds a live connection, so
+        it must be closed when done, either with `async with` or `await body.close()`.
+
+        A connection broken mid-transfer is resumed from the last consumed offset with
+        a ranged GET, retried without limit; a permanent failure (such as the object
+        being deleted) propagates instead, and `ValueError` is raised if the object was
+        overwritten while being read.
+
+        `request.range_header` must hold at most one range, otherwise
+        `ParamInvalidError` is raised: resuming a multi-range response cannot be
+        expressed as a single offset.
+
+        Args:
+            request (GetObjectRequest): Request parameters for GetObject operation.
+
+        Returns:
+            GetObjectResult: Response result for GetObject operation.
+        """
+
+        return await operations.get_object_as_stream(self._client, request, **kwargs)
 
     async def copy_object(self, request: models.CopyObjectRequest, **kwargs
                     ) -> models.CopyObjectResult:
