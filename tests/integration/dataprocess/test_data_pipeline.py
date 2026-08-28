@@ -50,7 +50,7 @@ class TestDataPipeline(TestBaseDataProcess):
         )
 
         vectors_client = get_vectors_client()
-        vector_bucket_name = 'test-vector-' + str(int(time.time() * 1000)) + '-' + str(random.randint(0, 9999))
+        vector_bucket_name = 'sdk-oss-python-test-' + str(int(time.time() * 1000)) + '-' + str(random.randint(0, 9999))
 
         # Put vector bucket
         put_vector_result = vectors_client.put_vector_bucket(
