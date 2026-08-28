@@ -7,10 +7,24 @@ from alibabacloud_oss_v2 import exceptions, crc
 from alibabacloud_oss_v2.models import object_basic as model
 from alibabacloud_oss_v2.aio.operations import object_basic as operations
 from alibabacloud_oss_v2.types import HttpRequest
+from alibabacloud_oss_v2.aio.aio_utils import AsyncResumableStreamBodyReader
 from . import TestOperations, MockAsyncHttpResponse
 
 def random_lowstr(n):
     return ''.join(random.choice(string.ascii_lowercase) for i in range(n))
+
+
+STREAM_DATA = b'0123456789abcdef'
+STREAM_ETAG = '"D41D8CD98F00B204E9800998ECF8****"'
+STREAM_MODTIME = 'Fri, 13 Nov 2023 14:47:53 GMT'
+
+
+class BreakingAsyncHttpResponse(MockAsyncHttpResponse):
+    """Serves the first 4 bytes, then drops the connection."""
+
+    async def iter_bytes(self, **kwargs):
+        yield self._body[:4]
+        raise OSError('connection reset by peer')
 
 class TestObjectBasic(TestOperations):
 
@@ -204,6 +218,334 @@ class TestObjectBasic(TestOperations):
 
         self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/key-test', self.request_dump.url)
         self.assertEqual('GET', self.request_dump.method)
+
+    async def test_get_object_stream_flag(self):
+        sent_kwargs = []
+        http_client = self.client._options.http_client
+        original_send = http_client.send
+
+        async def capture_send(request, **kwargs):
+            sent_kwargs.append(kwargs)
+            return await original_send(request, **kwargs)
+
+        http_client.send = capture_send
+        try:
+            await operations.get_object(self.client, model.GetObjectRequest(bucket='bucket', key='key-test'))
+            await operations.get_object_as_stream(self.client, model.GetObjectRequest(bucket='bucket', key='key-test'))
+        finally:
+            http_client.send = original_send
+
+        self.assertNotIn('stream', sent_kwargs[0])
+        self.assertTrue(sent_kwargs[1]['stream'])
+
+    async def test_get_object_as_stream(self):
+        self.set_responseFunc(lambda: MockAsyncHttpResponse(
+            status_code=206,
+            reason='Partial Content',
+            headers={
+                'x-oss-request-id': 'id-1234',
+                'Content-Range': 'bytes 10-20/44',
+                'Content-Length': '11',
+                'ETag': '"D41D8CD98F00B204E9800998ECF8****"',
+                'Last-Modified': 'Fri, 13 Nov 2023 14:47:53 GMT',
+            },
+            body=b'hello world',
+        ))
+
+        request = model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+            range_header='bytes=10-20',
+            range_behavior='standard',
+            version_id='CAEQNhiBgM0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY*****',
+            request_payer='request_payer-test',
+        )
+
+        result = await operations.get_object_as_stream(self.client, request)
+        self.assertEqual('https://bucket.oss-cn-hangzhou.aliyuncs.com/key-test?versionId=CAEQNhiBgM0BYiIDc4MGZjZGI2OTBjOTRmNTE5NmU5NmFhZjhjYmY%2A%2A%2A%2A%2A', self.request_dump.url)
+        self.assertEqual('GET', self.request_dump.method)
+        self.assertEqual('bytes=10-20', self.request_dump.headers.get('Range'))
+        self.assertEqual('standard', self.request_dump.headers.get('x-oss-range-behavior'))
+        self.assertEqual('request_payer-test', self.request_dump.headers.get('x-oss-request-payer'))
+
+        self.assertEqual(206, result.status_code)
+        self.assertIsInstance(result.body, AsyncResumableStreamBodyReader)
+
+        got = b''
+        async for chunk in await result.body.iter_bytes():
+            got += chunk
+        self.assertEqual(b'hello world', got)
+
+    async def test_get_object_as_stream_resume(self):
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Length': '16',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA,
+            ),
+            MockAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 4-15/{len(STREAM_DATA)}',
+                    'Content-Length': '12',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[4:],
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+        ))
+
+        got = b''
+        async for chunk in await result.body.iter_bytes():
+            got += chunk
+
+        self.assertEqual(STREAM_DATA, got)
+        self.assertEqual([], responses)
+        # the resume request continues from the last consumed offset
+        self.assertEqual('bytes=4-', self.request_dump.headers.get('Range'))
+        self.assertEqual('standard', self.request_dump.headers.get('x-oss-range-behavior'))
+
+    async def test_get_object_as_stream_resume_within_range(self):
+        # a ranged request resumes relative to the range start, and keeps its end
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 4-15/{len(STREAM_DATA)}',
+                    'Content-Length': '12',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[4:],
+            ),
+            MockAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 8-15/{len(STREAM_DATA)}',
+                    'Content-Length': '8',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[8:],
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+            range_header='bytes=4-15',
+            range_behavior='standard',
+        ))
+
+        got = b''
+        async for chunk in await result.body.iter_bytes():
+            got += chunk
+
+        self.assertEqual(STREAM_DATA[4:], got)
+        self.assertEqual([], responses)
+        self.assertEqual('bytes=8-15', self.request_dump.headers.get('Range'))
+        self.assertEqual('standard', self.request_dump.headers.get('x-oss-range-behavior'))
+
+    async def test_get_object_as_stream_resume_suffix_range(self):
+        # a suffix range is resolved by OSS into a concrete Content-Range, so the
+        # resume offset comes from the response and never from 'bytes=-12'
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 4-15/{len(STREAM_DATA)}',
+                    'Content-Length': '12',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[4:],
+            ),
+            MockAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 8-15/{len(STREAM_DATA)}',
+                    'Content-Length': '8',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[8:],
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+            range_header='bytes=-12',
+        ))
+
+        got = b''
+        async for chunk in await result.body.iter_bytes():
+            got += chunk
+
+        self.assertEqual(STREAM_DATA[4:], got)
+        self.assertEqual([], responses)
+        self.assertEqual('bytes=8-15', self.request_dump.headers.get('Range'))
+
+    async def test_get_object_as_stream_multi_range(self):
+        try:
+            await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+                bucket='bucket',
+                key='key-test',
+                range_header='bytes=0-9,20-29',
+            ))
+            self.fail('should not here')
+        except exceptions.ParamInvalidError as e:
+            self.assertIn('request.range_header', str(e))
+
+    async def test_get_object_as_stream_etag_changed(self):
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Length': '16',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA,
+            ),
+            MockAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 4-15/{len(STREAM_DATA)}',
+                    'Content-Length': '12',
+                    'ETag': '"CHANGED8CD98F00B204E9800998ECF8****"',
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA[4:],
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+        ))
+
+        got = b''
+        try:
+            async for chunk in await result.body.iter_bytes():
+                got += chunk
+            self.fail('should not here')
+        except ValueError as err:
+            self.assertIn('Source file is changed', str(err))
+            self.assertIn(STREAM_ETAG, str(err))
+            self.assertIn('CHANGED8CD98F00B204E9800998ECF8****', str(err))
+
+        self.assertEqual(STREAM_DATA[:4], got)
+
+    async def test_get_object_as_stream_modtime_changed(self):
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Length': '16',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA,
+            ),
+            MockAsyncHttpResponse(
+                status_code=206,
+                reason='Partial Content',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Range': f'bytes 4-15/{len(STREAM_DATA)}',
+                    'Content-Length': '12',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': 'Sat, 14 Nov 2023 14:47:53 GMT',
+                },
+                body=STREAM_DATA[4:],
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+        ))
+
+        try:
+            async for _ in await result.body.iter_bytes():
+                pass
+            self.fail('should not here')
+        except ValueError as err:
+            self.assertIn('Source file is changed', str(err))
+
+    async def test_get_object_as_stream_resume_offset_mismatch(self):
+        responses = [
+            BreakingAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Length': '16',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA,
+            ),
+            # the server ignored the Range header and restarted from 0
+            MockAsyncHttpResponse(
+                status_code=200,
+                reason='OK',
+                headers={
+                    'x-oss-request-id': 'id-1234',
+                    'Content-Length': '16',
+                    'ETag': STREAM_ETAG,
+                    'Last-Modified': STREAM_MODTIME,
+                },
+                body=STREAM_DATA,
+            ),
+        ]
+        self.set_responseFunc(lambda: responses.pop(0))
+
+        result = await operations.get_object_as_stream(self.client, model.GetObjectRequest(
+            bucket='bucket',
+            key='key-test',
+        ))
+
+        try:
+            async for _ in await result.body.iter_bytes():
+                pass
+            self.fail('should not here')
+        except ValueError as err:
+            self.assertIn('Range get fail', str(err))
+            self.assertIn('expect offset:4', str(err))
 
     async def test_append_object(self):
         request = model.AppendObjectRequest(

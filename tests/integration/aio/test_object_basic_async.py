@@ -178,6 +178,290 @@ class TestObjectBasicAsync(TestIntegration, unittest.IsolatedAsyncioTestCase):
         self.assertEqual(data.encode(), rdata)
         await gresult.body.close()
 
+    async def test_get_object_as_stream(self):
+        len = 1 * 1024 * 1024 + 1234
+        data = random_str(len)
+        key = 'test-key-as-stream'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertIsNotNone(gresult)
+        self.assertIsInstance(gresult, oss.GetObjectResult)
+        self.assertEqual(200, gresult.status_code)
+        self.assertEqual(len, gresult.content_length)
+
+        # the body is not buffered until it is iterated
+        try:
+            _ = gresult.body.content
+            self.fail('should not here')
+        except oss.exceptions.ResponseNotReadError:
+            pass
+
+        got = b''
+        async with gresult.body as body:
+            async for chunk in await body.iter_bytes(block_size=64 * 1024):
+                got += chunk
+        self.assertEqual(data.encode(), got)
+
+        # ranged stream
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            range_header='bytes=100-199',
+            range_behavior='standard',
+        ))
+        self.assertEqual(206, gresult.status_code)
+        self.assertEqual(100, gresult.content_length)
+        self.assertEqual(data.encode()[100:200], await gresult.body.read())
+        self.assertEqual(data.encode()[100:200], gresult.body.content)
+        await gresult.body.close()
+
+        try:
+            await gresult.body.iter_bytes()
+            self.fail('should not here')
+        except oss.exceptions.StreamConsumedError:
+            pass
+
+    async def test_get_object_as_stream_resume(self):
+        size = 8 * 1024 * 1024
+        data = random_str(size).encode()
+        key = 'test-key-as-stream-resume'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        self.assertEqual(size, gresult.content_length)
+
+        reader = gresult.body
+        got = b''
+        broken = 0
+        async for chunk in await reader.iter_bytes(block_size=64 * 1024):
+            got += chunk
+            # drop the connection under the reader, twice
+            if broken < 2 and len(got) > (broken + 1) * 1024 * 1024:
+                await reader._body._response.close()
+                broken += 1
+
+        self.assertEqual(2, broken)
+        self.assertEqual(data, got)
+        await reader.close()
+
+    async def test_get_object_as_stream_resume_suffix_range(self):
+        size = 8 * 1024 * 1024
+        data = random_str(size).encode()
+        key = 'test-key-as-stream-suffix'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        # OSS resolves a suffix range into a concrete Content-Range, which is what the
+        # resume offset is derived from -- 'bytes=-N' itself carries no usable start
+        suffix = 4 * 1024 * 1024
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            range_header=f'bytes=-{suffix}',
+        ))
+        self.assertEqual(206, gresult.status_code)
+        self.assertEqual(suffix, gresult.content_length)
+        self.assertEqual(f'bytes {size - suffix}-{size - 1}/{size}',
+                         gresult.headers.get('Content-Range'))
+
+        reader = gresult.body
+        got = b''
+        broken = 0
+        async for chunk in await reader.iter_bytes(block_size=64 * 1024):
+            got += chunk
+            if broken < 2 and len(got) > (broken + 1) * 1024 * 1024:
+                await reader._body._response.close()
+                broken += 1
+
+        self.assertEqual(2, broken)
+        self.assertEqual(data[size - suffix:], got)
+        await reader.close()
+
+    async def test_get_object_as_stream_range_edge_cases(self):
+        size = 1024
+        data = random_str(size).encode()
+        key = 'test-key-as-stream-range-edge'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        # multi-range is rejected before the request is sent
+        try:
+            await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+                range_header='bytes=0-9,20-29',
+            ))
+            self.fail('should not here')
+        except oss.exceptions.ParamInvalidError as e:
+            self.assertIn('request.range_header', str(e))
+
+        # an open-ended range is resolved into a concrete Content-Range
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            range_header='bytes=100-',
+        ))
+        self.assertEqual(206, gresult.status_code)
+        self.assertEqual(f'bytes 100-{size - 1}/{size}', gresult.headers.get('Content-Range'))
+        self.assertEqual(data[100:], await gresult.body.read())
+        await gresult.body.close()
+
+        # an unsatisfiable range without range_behavior yields the whole object, and
+        # no Content-Range -- this is the only real way the reader's offset falls back to 0
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            range_header=f'bytes={size * 5}-{size * 6}',
+        ))
+        self.assertEqual(200, gresult.status_code)
+        self.assertIsNone(gresult.headers.get('Content-Range'))
+        self.assertEqual(data, await gresult.body.read())
+        await gresult.body.close()
+
+        # the same range with range_behavior='standard' fails instead
+        try:
+            await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=key,
+                range_header=f'bytes={size * 5}-{size * 6}',
+                range_behavior='standard',
+            ))
+            self.fail('should not here')
+        except oss.exceptions.OperationError as e:
+            serr = cast(oss.exceptions.ServiceError, e.unwrap())
+            self.assertEqual(416, serr.status_code)
+            self.assertEqual('InvalidRange', serr.code)
+
+    async def test_get_object_as_stream_fail(self):
+        try:
+            await self.invalid_async_client.get_object_as_stream(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key='invalid-key',
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual(24, len(serr.request_id))
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+            self.assertIn('GetObject', str(e))
+            self.assertIn('Endpoint: GET', str(e))
+
+        try:
+            await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key='key-not-exist',
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(404, serr.status_code)
+            self.assertEqual('NoSuchKey', serr.code)
+
+    async def test_get_object_as_stream_deleted_while_reading(self):
+        size = 8 * 1024 * 1024
+        data = random_str(size).encode()
+        key = 'test-key-as-stream-deleted'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        reader = gresult.body
+
+        # a permanent failure on resume must propagate instead of retrying forever
+        try:
+            got = b''
+            async for chunk in await reader.iter_bytes(block_size=64 * 1024):
+                got += chunk
+                if len(got) > 1024 * 1024:
+                    await self.async_client.delete_object(oss.DeleteObjectRequest(
+                        bucket=self.bucket_name,
+                        key=key,
+                    ))
+                    await reader._body._response.close()
+            self.fail('should not here')
+        except oss.exceptions.OperationError as e:
+            serr = cast(oss.exceptions.ServiceError, e.unwrap())
+            self.assertEqual(404, serr.status_code)
+            self.assertEqual('NoSuchKey', serr.code)
+
+        await reader.close()
+
+    async def test_get_object_as_stream_modified_while_reading(self):
+        size = 8 * 1024 * 1024
+        data = random_str(size).encode()
+        key = 'test-key-as-stream-modified'
+        result = await self.async_client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+            body=data,
+        ))
+        self.assertEqual(200, result.status_code)
+
+        gresult = await self.async_client.get_object_as_stream(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=key,
+        ))
+        reader = gresult.body
+
+        # the object is overwritten mid-download, so the resumed range serves other
+        # content and must be rejected instead of being stitched in silently.
+        # the replacement keeps the same size, otherwise the resumed range would fail
+        # with InvalidRange before the identity check gets a chance to run.
+        try:
+            got = b''
+            async for chunk in await reader.iter_bytes(block_size=64 * 1024):
+                got += chunk
+                if len(got) > 1024 * 1024:
+                    await self.async_client.put_object(oss.PutObjectRequest(
+                        bucket=self.bucket_name,
+                        key=key,
+                        body=random_str(size).encode(),
+                    ))
+                    await reader._body._response.close()
+            self.fail('should not here')
+        except ValueError as e:
+            self.assertIn('Source file is changed', str(e))
+            self.assertIn(gresult.etag, str(e))
+
+        await reader.close()
+
     async def test_append_object(self):
         data1 = b'hello'
         data2 = b' world'
