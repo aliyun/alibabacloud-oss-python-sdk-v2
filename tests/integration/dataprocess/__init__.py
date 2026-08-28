@@ -26,7 +26,7 @@ DATASET_NAME_PREFIX = 'test-dp-dataset-'
 # If TEST_DATAPROCESS_BUCKET is set, data process tests run against that
 # existing bucket; otherwise the bucket created by the integration base
 # class is used.
-TEST_DATAPROCESS_BUCKET = 'new-examplebucket-zxl-test'
+TEST_DATAPROCESS_BUCKET = 'examplebucket-test'
 
 ROLE = 'AliyunMetaQueryDefaultRole'
 
