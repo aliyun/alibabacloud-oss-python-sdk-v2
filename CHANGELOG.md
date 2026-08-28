@@ -1,5 +1,14 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.4.0 日期：2026-08-28
+### 变更内容
+- Feature: Add agentic bucket
+- Feature: Add dataprocess
+- Feature: Add async (aio) get_object_as_stream with ranged resume
+- Fix: Drop xml namespace from root tag when deserializing
+- Fix: Correct __aexit__ of the async stream body reader
+- Fix: Keep the user-agent marker in dataprocess, tables and vectors clients
+
 ## 版本号：1.3.2 日期：2026-07-06
 ### 变更内容
 - Feature: Add async (aio) presigner and paginator
