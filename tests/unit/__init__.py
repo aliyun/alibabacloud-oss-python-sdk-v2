@@ -67,7 +67,10 @@ class MockHttpResponse(HttpResponse):
             self._is_closed = True
 
     def read(self) -> bytes:
-        return self.content
+        data = self.content
+        self._is_stream_consumed = True
+        self.close()
+        return data
 
     def iter_bytes(self, **kwargs):
         data = b''
@@ -183,7 +186,10 @@ class MockAsyncHttpResponse(AsyncHttpResponse):
             self._is_closed = True
 
     async def read(self) -> bytes:
-        return self.content
+        data = self.content
+        self._is_stream_consumed = True
+        await self.close()
+        return data
 
     async def iter_bytes(self, **kwargs):
         data = b''
