@@ -894,12 +894,45 @@ class SubtitleStream(serde.Model):
 
 
 
+class MultilingualContent(serde.Model):
+    """Localized insight content."""
+
+    _attribute_map = {
+        'language': {'tag': 'xml', 'rename': 'Language', 'type': 'str'},
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'str'},
+        'description': {'tag': 'xml', 'rename': 'Description', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'Content'
+    }
+
+    def __init__(
+            self,
+            language: Optional[str] = None,
+            caption: Optional[str] = None,
+            description: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            language (str, optional): The language of the content.
+            caption (str, optional): The localized caption.
+            description (str, optional): The localized description.
+        """
+        super().__init__(**kwargs)
+        self.language = language
+        self.caption = caption
+        self.description = description
+
+
 class VideoInsight(serde.Model):
     """Video insight information."""
 
     _attribute_map = {
         'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'str'},
         'description': {'tag': 'xml', 'rename': 'Description', 'type': 'str'},
+        'multilingual_content': {'tag': 'xml', 'rename': 'MultilingualContent/Content', 'type': '[MultilingualContent]'},
     }
 
     _xml_map = {
@@ -910,16 +943,19 @@ class VideoInsight(serde.Model):
             self,
             caption: Optional[str] = None,
             description: Optional[str] = None,
+            multilingual_content: Optional[List[MultilingualContent]] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
             caption (str, optional): The video caption.
             description (str, optional): The video description.
+            multilingual_content (List[MultilingualContent], optional): The localized video contents.
         """
         super().__init__(**kwargs)
         self.caption = caption
         self.description = description
+        self.multilingual_content = multilingual_content
 
 
 class ImageInsight(serde.Model):
@@ -928,6 +964,7 @@ class ImageInsight(serde.Model):
     _attribute_map = {
         'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'str'},
         'description': {'tag': 'xml', 'rename': 'Description', 'type': 'str'},
+        'multilingual_content': {'tag': 'xml', 'rename': 'MultilingualContent/Content', 'type': '[MultilingualContent]'},
     }
 
     _xml_map = {
@@ -938,16 +975,19 @@ class ImageInsight(serde.Model):
             self,
             caption: Optional[str] = None,
             description: Optional[str] = None,
+            multilingual_content: Optional[List[MultilingualContent]] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
             caption (str, optional): The image caption.
             description (str, optional): The image description.
+            multilingual_content (List[MultilingualContent], optional): The localized image contents.
         """
         super().__init__(**kwargs)
         self.caption = caption
         self.description = description
+        self.multilingual_content = multilingual_content
 
 
 class Insights(serde.Model):

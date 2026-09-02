@@ -60,6 +60,7 @@ from .file import (
     AudioStream,
     VideoStream,
     SubtitleStream,
+    MultilingualContent,
     VideoInsight,
     ImageInsight,
     Insights,
