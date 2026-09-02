@@ -112,6 +112,7 @@ class _Options:
         auth_method: Optional[str] = None,
         feature_flags: Optional[int] = None,
         additional_headers: Optional[List[str]] = None,
+        default_request_headers: Optional[Dict[str, str]] = None,
         operation_timeout: Optional[Union[int, float]] = None,
         endpoint_provider: Optional[EndpointProvider] = None,
         bucket_name_resolver: Optional[BucketNameResolver] = None,
@@ -131,6 +132,7 @@ class _Options:
         self.auth_method = auth_method
         self.feature_flags = feature_flags or defaults.FF_DEFAULT
         self.additional_headers = additional_headers
+        self.default_request_headers = default_request_headers
         self.operation_timeout = operation_timeout
         self.endpoint_provider = endpoint_provider
         self.bucket_name_resolver = bucket_name_resolver
@@ -160,6 +162,7 @@ class _ClientImplMixIn:
         _resolve_address_style(config, options)
         _resolve_feature_flags(config, options)
         _resolve_cloud_box(config, options)
+        _resolve_default_request_headers(config, options)
         self._resolve_httpclient(config, options) # pylint: disable=no-member
 
         inner = _InnerOptions()
@@ -188,6 +191,7 @@ class _ClientImplMixIn:
         options.readwrite_timeout = kwargs.get("readwrite_timeout", options.readwrite_timeout)
         options.auth_method = kwargs.get("auth_method", None)
         options.additional_headers = kwargs.get("additional_headers", options.additional_headers)
+        options.default_request_headers = kwargs.get("default_request_headers", options.default_request_headers)
 
 
     def resolve_operation_kwargs(self, options: _Options, **kwargs):
@@ -248,6 +252,12 @@ class _ClientImplMixIn:
 
         # headers
         request.headers.update(op_input.headers or {})
+
+        # default request headers, only fill in what the operation left unset
+        if options.default_request_headers is not None:
+            for k, v in options.default_request_headers.items():
+                if request.headers.get(k) in (None, ''):
+                    request.headers[k] = v
 
         request.headers.update({'User-Agent': inner.user_agent})
 
@@ -538,6 +548,21 @@ def _default_options(config: Config) -> _Options:
         http_client=cast(HttpClient, config.http_client),
         additional_headers=config.additional_headers
     )
+
+
+def _resolve_default_request_headers(config: Config, options: _Options) -> None:
+    """default request headers"""
+    if not config.default_request_headers:
+        return
+
+    # Copy it, so that mutating the config's dict after creating the client
+    # can not race with the requests reading it.
+    headers = {}
+    for k, v in config.default_request_headers.items():
+        if len(k) > 0 and len(v) > 0:
+            headers[k] = v
+
+    options.default_request_headers = headers
 
 
 def _resolve_endpoint(config: Config, options: _Options) -> None:
