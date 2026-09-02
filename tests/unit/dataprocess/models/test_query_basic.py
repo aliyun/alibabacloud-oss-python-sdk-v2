@@ -15,6 +15,7 @@ import unittest
 from alibabacloud_oss_v2 import serde
 from alibabacloud_oss_v2.dataprocess.models import query_basic as model
 from alibabacloud_oss_v2.dataprocess.models import meta_query_basic
+from alibabacloud_oss_v2.dataprocess.models import file as file_model
 from alibabacloud_oss_v2.types import OperationInput, OperationOutput, CaseInsensitiveDict
 from tests.unit import MockHttpResponse
 
@@ -765,6 +766,214 @@ class TestSemanticQueryResult(unittest.TestCase):
         self.assertEqual([6000], scene_element.frame_times)
         self.assertEqual(0, scene_element.video_stream_index)
         self.assertEqual([4133, 8533], scene_element.time_range)
+
+
+# ==================== Insights ====================
+
+
+class TestMultilingualContent(unittest.TestCase):
+    def test_empty_constructor(self):
+        content = file_model.MultilingualContent()
+        self.assertIsNone(content.language)
+        self.assertIsNone(content.caption)
+        self.assertIsNone(content.description)
+
+    def test_full_constructor(self):
+        content = file_model.MultilingualContent(
+            language='zh-Hans',
+            caption='中文视频标题',
+            description='中文视频描述',
+        )
+        self.assertEqual('zh-Hans', content.language)
+        self.assertEqual('中文视频标题', content.caption)
+        self.assertEqual('中文视频描述', content.description)
+
+
+class TestVideoInsight(unittest.TestCase):
+    def test_empty_constructor(self):
+        insight = file_model.VideoInsight()
+        self.assertIsNone(insight.caption)
+        self.assertIsNone(insight.description)
+        self.assertIsNone(insight.multilingual_content)
+
+    def test_full_constructor(self):
+        insight = file_model.VideoInsight(
+            caption='English video caption',
+            description='English video description',
+            multilingual_content=[
+                file_model.MultilingualContent(language='en', caption='English video caption'),
+            ],
+        )
+        self.assertEqual('English video caption', insight.caption)
+        self.assertEqual('English video description', insight.description)
+        self.assertEqual(1, len(insight.multilingual_content))
+        self.assertEqual('en', insight.multilingual_content[0].language)
+
+
+class TestImageInsight(unittest.TestCase):
+    def test_empty_constructor(self):
+        insight = file_model.ImageInsight()
+        self.assertIsNone(insight.caption)
+        self.assertIsNone(insight.description)
+        self.assertIsNone(insight.multilingual_content)
+
+    def test_full_constructor(self):
+        insight = file_model.ImageInsight(
+            caption='English image caption',
+            description='English image description',
+            multilingual_content=[
+                file_model.MultilingualContent(language='ja', caption='日本語の画像タイトル'),
+            ],
+        )
+        self.assertEqual('English image caption', insight.caption)
+        self.assertEqual('English image description', insight.description)
+        self.assertEqual(1, len(insight.multilingual_content))
+        self.assertEqual('日本語の画像タイトル', insight.multilingual_content[0].caption)
+
+
+class TestInsights(unittest.TestCase):
+    def test_empty_constructor(self):
+        insights = file_model.Insights()
+        self.assertIsNone(insights.video)
+        self.assertIsNone(insights.image)
+
+    def test_xml_builder_preserves_multilingual_content(self):
+        """Reference: Go TestInsightsPreservesMultilingualContent()"""
+        body = (
+            '<Insights>'
+            '<Video>'
+            '<Caption>English video caption</Caption>'
+            '<Description>English video description</Description>'
+            '<MultilingualContent>'
+            '<Content>'
+            '<Language>en</Language>'
+            '<Caption>English video caption</Caption>'
+            '<Description>English video description</Description>'
+            '</Content>'
+            '<Content>'
+            '<Language>zh-Hans</Language>'
+            '<Caption>中文视频标题</Caption>'
+            '<Description>中文视频描述</Description>'
+            '</Content>'
+            '</MultilingualContent>'
+            '</Video>'
+            '<Image>'
+            '<Caption>English image caption</Caption>'
+            '<Description>English image description</Description>'
+            '<MultilingualContent>'
+            '<Content>'
+            '<Language>en</Language>'
+            '<Caption>English image caption</Caption>'
+            '<Description>English image description</Description>'
+            '</Content>'
+            '<Content>'
+            '<Language>ja</Language>'
+            '<Caption>日本語の画像タイトル</Caption>'
+            '<Description>日本語の画像説明</Description>'
+            '</Content>'
+            '</MultilingualContent>'
+            '</Image>'
+            '</Insights>'
+        ).encode('utf-8')
+
+        insights = file_model.Insights()
+        serde.deserialize_xml(xml_data=body, obj=insights, expect_tag='Insights')
+
+        # Video
+        self.assertIsNotNone(insights.video)
+        self.assertEqual('English video caption', insights.video.caption)
+        self.assertEqual('English video description', insights.video.description)
+        self.assertEqual(2, len(insights.video.multilingual_content))
+        self.assertEqual('en', insights.video.multilingual_content[0].language)
+        self.assertEqual('English video caption', insights.video.multilingual_content[0].caption)
+        self.assertEqual('English video description', insights.video.multilingual_content[0].description)
+        self.assertEqual('zh-Hans', insights.video.multilingual_content[1].language)
+        self.assertEqual('中文视频标题', insights.video.multilingual_content[1].caption)
+        self.assertEqual('中文视频描述', insights.video.multilingual_content[1].description)
+
+        # Image
+        self.assertIsNotNone(insights.image)
+        self.assertEqual('English image caption', insights.image.caption)
+        self.assertEqual('English image description', insights.image.description)
+        self.assertEqual(2, len(insights.image.multilingual_content))
+        self.assertEqual('en', insights.image.multilingual_content[0].language)
+        self.assertEqual('English image caption', insights.image.multilingual_content[0].caption)
+        self.assertEqual('ja', insights.image.multilingual_content[1].language)
+        self.assertEqual('日本語の画像タイトル', insights.image.multilingual_content[1].caption)
+        self.assertEqual('日本語の画像説明', insights.image.multilingual_content[1].description)
+
+    def test_xml_builder_without_multilingual_content(self):
+        """The multilingual content stays optional."""
+        body = (
+            '<Insights>'
+            '<Video><Caption>video caption</Caption></Video>'
+            '<Image><Description>image description</Description></Image>'
+            '</Insights>'
+        ).encode('utf-8')
+
+        insights = file_model.Insights()
+        serde.deserialize_xml(xml_data=body, obj=insights, expect_tag='Insights')
+        self.assertEqual('video caption', insights.video.caption)
+        self.assertIsNone(insights.video.description)
+        self.assertIsNone(insights.video.multilingual_content)
+        self.assertEqual('image description', insights.image.description)
+        self.assertIsNone(insights.image.multilingual_content)
+
+    def test_deserialize_from_simple_query_result(self):
+        """MultilingualContent survives the full MetaQuery response deserialization."""
+        xml_data = (
+            '<?xml version="1.0" encoding="UTF-8"?>'
+            '<MetaQuery>'
+            '  <NextToken>next-page-token-xyz</NextToken>'
+            '  <TotalHits>1</TotalHits>'
+            '  <Files>'
+            '    <File>'
+            '      <Filename>photos/sunset.jpg</Filename>'
+            '      <Insights>'
+            '        <Image>'
+            '          <Caption>English image caption</Caption>'
+            '          <Description>English image description</Description>'
+            '          <MultilingualContent>'
+            '            <Content>'
+            '              <Language>zh-Hans</Language>'
+            '              <Caption>中文图片标题</Caption>'
+            '              <Description>中文图片描述</Description>'
+            '            </Content>'
+            '          </MultilingualContent>'
+            '        </Image>'
+            '      </Insights>'
+            '    </File>'
+            '  </Files>'
+            '</MetaQuery>'
+        ).encode('utf-8')
+        result = model.SimpleQueryResult()
+        serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK',
+                status_code=200,
+                headers=CaseInsensitiveDict({'x-oss-request-id': 'req-insights'}),
+                http_response=MockHttpResponse(
+                    status_code=200,
+                    headers={'x-oss-request-id': 'req-insights'},
+                    body=xml_data,
+                ),
+            ),
+            custom_deserializer=[serde.deserialize_output_xmlbody],
+        )
+        self.assertEqual(200, result.status_code)
+        self.assertIsNotNone(result.files)
+        self.assertEqual(1, len(result.files.file))
+
+        file = result.files.file[0]
+        self.assertEqual('photos/sunset.jpg', file.filename)
+        self.assertIsNotNone(file.insights)
+        self.assertEqual('English image caption', file.insights.image.caption)
+        self.assertEqual(1, len(file.insights.image.multilingual_content))
+        content = file.insights.image.multilingual_content[0]
+        self.assertEqual('zh-Hans', content.language)
+        self.assertEqual('中文图片标题', content.caption)
+        self.assertEqual('中文图片描述', content.description)
 
 
 if __name__ == '__main__':
