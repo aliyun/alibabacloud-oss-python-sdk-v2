@@ -46,6 +46,7 @@ from .models.bucket_overwrite_config import *
 from .models.object_worm import *
 from .models.bucket_object_worm_configuration import *
 from .models.data_process import *
+from .models.bucket_object_fc_access_point import *
 
 from .config import Config
 from .client import Client
