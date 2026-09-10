@@ -7,6 +7,7 @@ creates; it only marks them Disabled and reclaims the ones left behind by earlie
 readiness window has elapsed.
 """
 
+import os
 import time
 from .. import (
     TestIntegration,
@@ -28,8 +29,22 @@ import alibabacloud_oss_v2.agentic as oss_agentic
 # the resolved name {bucket}-{account_id}-{region}-ab-apsr becomes a DNS host label and must stay
 # within 63 characters, which leaves 23 characters for prefix plus random part
 # (63 - 1 - 16 for the account id - 1 - 14 for the longest region - 8 for '-ab-apsr').
-AGENTIC_BUCKET_NAME_PREFIX = "python-test-ab-"
-BUCKETSPACE_PREFIX = "python-test-bs-"
+def get_agentic_bucket_name_prefix() -> str:
+    val = os.getenv("OSS_TEST_BUCKET_PREFIX")
+    if val:
+        return val + "ab-"
+    return "oss-sdk-test-ab-"
+
+
+def get_bucket_space_prefix() -> str:
+    val = os.getenv("OSS_TEST_BUCKET_PREFIX")
+    if val:
+        return val + "bs-"
+    return "oss-sdk-test-bs-"
+
+
+AGENTIC_BUCKET_NAME_PREFIX = get_agentic_bucket_name_prefix()
+BUCKETSPACE_PREFIX = get_bucket_space_prefix()
 
 # The tails the service appends to an agentic bucket / bucket space name.
 AGENTIC_BUCKET_SUFFIX = "ab-apsr"
