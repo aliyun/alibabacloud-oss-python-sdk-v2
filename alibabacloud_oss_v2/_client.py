@@ -112,10 +112,10 @@ class _Options:
         auth_method: Optional[str] = None,
         feature_flags: Optional[int] = None,
         additional_headers: Optional[List[str]] = None,
-        default_request_headers: Optional[Dict[str, str]] = None,
         operation_timeout: Optional[Union[int, float]] = None,
         endpoint_provider: Optional[EndpointProvider] = None,
         bucket_name_resolver: Optional[BucketNameResolver] = None,
+        default_request_headers: Optional[Dict[str, str]] = None,
     ) -> None:
         self.product = product
         self.region = region
@@ -132,10 +132,10 @@ class _Options:
         self.auth_method = auth_method
         self.feature_flags = feature_flags or defaults.FF_DEFAULT
         self.additional_headers = additional_headers
-        self.default_request_headers = default_request_headers
         self.operation_timeout = operation_timeout
         self.endpoint_provider = endpoint_provider
         self.bucket_name_resolver = bucket_name_resolver
+        self.default_request_headers = default_request_headers
 
 class _InnerOptions:
     """client runtime's information."""
