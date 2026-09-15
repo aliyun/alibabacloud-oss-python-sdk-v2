@@ -202,6 +202,12 @@ class _AsyncClientImpl(_ClientImplMixIn):
         # headers
         request.headers.update(op_input.headers or {})
 
+        # default request headers, only fill in what the operation left unset
+        if options.default_request_headers is not None:
+            for k, v in options.default_request_headers.items():
+                if request.headers.get(k) in (None, ''):
+                    request.headers[k] = v
+
         request.headers.update({'User-Agent': inner.user_agent})
 
         # body

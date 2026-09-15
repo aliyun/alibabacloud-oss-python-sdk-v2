@@ -1,4 +1,4 @@
-from typing import Optional, Union, List
+from typing import Optional, Union, List, Dict
 from .types import CredentialsProvider, HttpClient, Retryer
 from . import defaults
 
@@ -31,7 +31,8 @@ class Config(object):
         cloud_box_id: Optional[str] = None,
         enable_auto_detect_cloud_box_id: Optional[bool] = None,
         account_id: Optional[str] = None,
-        use_virtual_hosted_alias: Optional[bool] = None
+        use_virtual_hosted_alias: Optional[bool] = None,
+        default_request_headers: Optional[Dict[str, str]] = None
     ) -> None:
         """
         Args:
@@ -77,6 +78,9 @@ class Config(object):
             cloud_box_id: (str, optional): The cloud box id.
             enable_auto_detect_cloud_box_id: (bool, optional): The cloud box id is automatically extracted from endpoint.
             account_id: (str, optional): The account id, must be required in vectors options.
+            default_request_headers: (Dict[str, str], optional): Default http headers, automatically added to
+                every request sent by the client. A header set by the request itself takes precedence over the
+                default one. The User-Agent header can not be changed this way, use user_agent instead.
         """
         self.region = region
         self.endpoint = endpoint
@@ -104,6 +108,7 @@ class Config(object):
         self.enable_auto_detect_cloud_box_id = enable_auto_detect_cloud_box_id
         self.account_id = account_id
         self.use_virtual_hosted_alias = use_virtual_hosted_alias
+        self.default_request_headers = default_request_headers
 
 def load_default() -> Config:
     """Using the SDK's default configuration"""

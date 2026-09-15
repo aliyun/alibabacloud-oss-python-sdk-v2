@@ -4756,3 +4756,141 @@ class TestUploader(TestIntegration):
         ))
         self.assertEqual("Multipart", hresult.object_type)
         self.assertEqual(length, hresult.content_length)
+
+
+class TestDefaultRequestHeaders(TestIntegration):
+
+    def _new_client(self, headers, ak=ACCESS_ID, sk=ACCESS_KEY):
+        cfg = oss.config.load_default()
+        cfg.credentials_provider = oss.credentials.StaticCredentialsProvider(ak, sk)
+        cfg.region = REGION
+        cfg.endpoint = ENDPOINT
+        cfg.default_request_headers = headers
+        return oss.Client(cfg)
+
+    def test_default_request_headers(self):
+        object_name = OBJECTNAME_PREFIX + random_str(6)
+
+        # normal case, a signable x-oss-* default header must take part in the
+        # signature and reach the server
+        client = self._new_client({
+            'x-oss-meta-app': 'sdk-default-headers',
+            'x-my-trace-id': 'trace-' + random_str(6),
+        })
+
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name,
+            body='hello default headers',
+        ))
+        self.assertEqual(200, result.status_code)
+
+        hresult = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name,
+        ))
+        self.assertEqual(200, hresult.status_code)
+        self.assertEqual('sdk-default-headers', hresult.headers.get('x-oss-meta-app'))
+
+        gresult = client.get_object(oss.GetObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name,
+        ))
+        self.assertEqual(200, gresult.status_code)
+        gresult.body.read()
+        data = gresult.body.content
+        self.assertEqual(b'hello default headers', data)
+        self.assertEqual('sdk-default-headers', gresult.headers.get('x-oss-meta-app'))
+
+        # the request wins over the default on conflict
+        object_name_override = object_name + '-override'
+        result = client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name_override,
+            metadata={'app': 'from-request'},
+            body='hi',
+        ))
+        self.assertEqual(200, result.status_code)
+
+        hresult = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name_override,
+        ))
+        self.assertEqual(200, hresult.status_code)
+        self.assertEqual('from-request', hresult.headers.get('x-oss-meta-app'))
+
+        # a default header rejected by the server surfaces as a service error
+        forbid_client = self._new_client({
+            'x-oss-forbid-overwrite': 'true',
+        })
+        try:
+            forbid_client.put_object(oss.PutObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name,
+                body='overwrite me',
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(409, serr.status_code)
+            self.assertEqual('FileAlreadyExists', serr.code)
+            self.assertEqual(24, len(serr.request_id))
+
+        # default headers do not disturb the not-found path
+        try:
+            client.get_object(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name + '-not-exist',
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(404, serr.status_code)
+            self.assertEqual('NoSuchKey', serr.code)
+
+        # nor the invalid credentials path
+        no_perm_client = self._new_client({
+            'x-oss-meta-app': 'sdk-default-headers',
+        }, ak='invalid-ak', sk='invalid-sk')
+        try:
+            no_perm_client.get_object(oss.GetObjectRequest(
+                bucket=self.bucket_name,
+                key=object_name,
+            ))
+            self.fail("should not here")
+        except Exception as e:
+            ope = cast(oss.exceptions.OperationError, e)
+            self.assertIsInstance(ope.unwrap(), oss.exceptions.ServiceError)
+            serr = cast(oss.exceptions.ServiceError, ope.unwrap())
+            self.assertEqual(403, serr.status_code)
+            self.assertEqual('InvalidAccessKeyId', serr.code)
+            self.assertEqual(24, len(serr.request_id))
+
+    def test_presign_with_default_request_headers(self):
+        object_name = OBJECTNAME_PREFIX + random_str(6)
+
+        # the default x-oss-* header must be signed into the presigned url
+        client = self._new_client({
+            'x-oss-meta-app': 'sdk-default-headers',
+        })
+
+        preresult = client.presign(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name,
+        ))
+        self.assertEqual('sdk-default-headers', preresult.signed_headers.get('x-oss-meta-app'))
+
+        with requests.put(preresult.url, headers=preresult.signed_headers,
+                          data='presigned with default headers') as resp:
+            self.assertEqual(200, resp.status_code)
+
+        hresult = client.head_object(oss.HeadObjectRequest(
+            bucket=self.bucket_name,
+            key=object_name,
+        ))
+        self.assertEqual(200, hresult.status_code)
+        self.assertEqual('sdk-default-headers', hresult.headers.get('x-oss-meta-app'))
