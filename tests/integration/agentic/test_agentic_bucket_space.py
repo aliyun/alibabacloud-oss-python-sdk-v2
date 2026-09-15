@@ -183,7 +183,8 @@ class TestAgenticBucketSpace(TestIntegrationAgentic):
                     )
                 )
                 self.assertEqual(200, result.status_code)
-                self.assertEqual(body, result.body.content.read())
+                result.body.read()
+                self.assertEqual(body, result.body.content)
             except oss.exceptions.OperationError as e:
                 if 'SecondLevelDomainForbidden' in str(e):
                     print(f'get_object path-style not supported: {e}')
