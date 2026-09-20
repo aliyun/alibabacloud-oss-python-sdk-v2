@@ -425,6 +425,67 @@ class Client:
         """
         return operations.get_bucket_object_worm_configuration(self._client, request, **kwargs)
 
+    # bucket metadata table configuration
+    def create_bucket_metadata_configuration(self, request: models.CreateBucketMetadataConfigurationRequest, **kwargs
+                                             ) -> models.CreateBucketMetadataConfigurationResult:
+        """Creates the metadata table configuration of a bucket.
+
+        Args:
+            request (CreateBucketMetadataConfigurationRequest): Request parameters for CreateBucketMetadataConfiguration operation.
+
+        Returns:
+            CreateBucketMetadataConfigurationResult: Response result for CreateBucketMetadataConfiguration operation.
+        """
+        return operations.create_bucket_metadata_configuration(self._client, request, **kwargs)
+
+    def get_bucket_metadata_configuration(self, request: models.GetBucketMetadataConfigurationRequest, **kwargs
+                                          ) -> models.GetBucketMetadataConfigurationResult:
+        """Gets the metadata table configuration of a bucket.
+
+        Args:
+            request (GetBucketMetadataConfigurationRequest): Request parameters for GetBucketMetadataConfiguration operation.
+
+        Returns:
+            GetBucketMetadataConfigurationResult: Response result for GetBucketMetadataConfiguration operation.
+        """
+        return operations.get_bucket_metadata_configuration(self._client, request, **kwargs)
+
+    def delete_bucket_metadata_configuration(self, request: models.DeleteBucketMetadataConfigurationRequest, **kwargs
+                                             ) -> models.DeleteBucketMetadataConfigurationResult:
+        """Deletes the metadata table configuration of a bucket.
+
+        Args:
+            request (DeleteBucketMetadataConfigurationRequest): Request parameters for DeleteBucketMetadataConfiguration operation.
+
+        Returns:
+            DeleteBucketMetadataConfigurationResult: Response result for DeleteBucketMetadataConfiguration operation.
+        """
+        return operations.delete_bucket_metadata_configuration(self._client, request, **kwargs)
+
+    def update_bucket_metadata_inventory_table_configuration(self, request: models.UpdateBucketMetadataInventoryTableConfigurationRequest, **kwargs
+                                                             ) -> models.UpdateBucketMetadataInventoryTableConfigurationResult:
+        """Updates the inventory metadata table configuration of a bucket.
+
+        Args:
+            request (UpdateBucketMetadataInventoryTableConfigurationRequest): Request parameters for UpdateBucketMetadataInventoryTableConfiguration operation.
+
+        Returns:
+            UpdateBucketMetadataInventoryTableConfigurationResult: Response result for UpdateBucketMetadataInventoryTableConfiguration operation.
+        """
+        return operations.update_bucket_metadata_inventory_table_configuration(self._client, request, **kwargs)
+
+    def update_bucket_metadata_journal_table_configuration(self, request: models.UpdateBucketMetadataJournalTableConfigurationRequest, **kwargs
+                                                           ) -> models.UpdateBucketMetadataJournalTableConfigurationResult:
+        """Updates the journal metadata table configuration of a bucket.
+
+        Args:
+            request (UpdateBucketMetadataJournalTableConfigurationRequest): Request parameters for UpdateBucketMetadataJournalTableConfiguration operation.
+
+        Returns:
+            UpdateBucketMetadataJournalTableConfigurationResult: Response result for UpdateBucketMetadataJournalTableConfiguration operation.
+        """
+        return operations.update_bucket_metadata_journal_table_configuration(self._client, request, **kwargs)
+
     def head_object(self, request: models.HeadObjectRequest, **kwargs
                     ) -> models.HeadObjectResult:
         """
