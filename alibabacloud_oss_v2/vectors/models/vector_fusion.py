@@ -64,9 +64,11 @@ class QueryVectorsFusionRequest(serde.RequestModel):
                 results.
             partition_keys (List[str], optional): The partition keys to
                 restrict the query to.
-            query (Dict, optional): The scalar or full text query expression,
-                for example {"$and": [{"type": {"$nin": ["comedy"]}}]} or
-                {"title": {"$textMatch": "cloud storage"}}.
+            query (Dict, optional): The scalar or full text query expression.
+                A logical operator takes the object form {"$and": {"clauses":
+                [...]}}, for example {"$and": {"clauses": [{"category":
+                {"$in": {"value": ["phone", "audio"]}}}]}} or {"title":
+                {"$textMatch": {"value": "cloud storage"}}}.
             retriever (Dict, optional): A retriever tree. Exactly one of the
                 "simple", "knn", "rrf" and "weight" keys is set per node. The
                 combining nodes hold a list of components, and each component
@@ -82,7 +84,7 @@ class QueryVectorsFusionRequest(serde.RequestModel):
                 expressible and only those two states exist here.
             sort (List[Dict], optional): The sort order. The list order is the
                 priority and every entry holds a single field, for example
-                [{"score": {"order": "desc"}}, {"title": {"order": "asc"}}].
+                [{"_score": {"order": "desc"}}, {"title": {"order": "asc"}}].
         """
         super().__init__(**kwargs)
         self.bucket = bucket

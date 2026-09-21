@@ -25,44 +25,98 @@ def main():
 
     vector_client = oss_vectors.Client(cfg)
 
-    # QueryVectorsFusion accepts three shapes of query, and they can be mixed:
+    # QueryVectorsFusion accepts three shapes of query:
     #
-    #   knn        a single dict for one nearest neighbour clause, or a list of
-    #              dicts for several of them. Both encode correctly, an object
-    #              and an array on the wire.
-    #   query      a scalar or full text expression. The field names and the
-    #              operator names are dynamic, so this stays a plain dict.
-    #   retriever  a tree that combines several retrievers into one ranked
-    #              result, for example an rrf node holding knn and text
-    #              components.
+    #   knn        nearest neighbour search. A single dict for one vector
+    #              field, or a list of dicts for up to three of them. knn and
+    #              query can share one request, and their scores add up.
+    #   query      scalar, full text and geo conditions. A logical operator
+    #              takes the object form {"$and": {"clauses": [...]}}, and a
+    #              full text match takes {"$textMatch": {"value": "..."}}. The
+    #              field and operator names are dynamic, so this stays a dict.
+    #   retriever  combines several retrievers into one ranked result, for
+    #              example an rrf node holding a knn leaf and a text leaf. It
+    #              is mutually exclusive with knn, query and sort, so it goes
+    #              in a request of its own.
     #
-    # Every hit of the result carries a score. That score belongs to this
+    # The request below mixes knn and query on the e-commerce productindex:
+    # two vector recalls plus a brand and title boost, sorted by _score, which
+    # only accepts desc. Every hit carries a score. That score belongs to this
     # operation only, the standard QueryVectors result keeps reporting
     # distance and the two are never mixed.
     result = vector_client.query_vectors_fusion(oss_vectors.models.QueryVectorsFusionRequest(
         bucket=args.bucket,
         index_name=args.index_name,
-        knn={
-            "field": "text_vector",
-            "queryVector": [0.1] * 4,
-            "topK": 10,
-            "numCandidates": 100
-        },
+        knn=[
+            {
+                "field": "text_vector",
+                "queryVector": [0.1] * 768,
+                "topK": 100,
+                "boost": 2.0
+            },
+            {
+                "field": "image_vector",
+                "queryVector": [0.1] * 512,
+                "topK": 100,
+                "boost": 0.5
+            }
+        ],
         query={
-            "$and": [{
-                "title": {
-                    "$textMatch": "cloud storage"
-                }
-            }]
+            "$or": {
+                "clauses": [
+                    {"brand": {"$in": {"value": ["AliBrand"], "boost": 1.0}}},
+                    {"title": {"$textMatch": {"value": "耳机", "boost": 4.0}}}
+                ]
+            }
         },
         return_metadata=True,
+        return_metadata_fields=["title", "brand", "price"],
         sort=[{
-            "score": {
+            "_score": {
                 "order": "desc"
             }
         }],
-        limit=10
+        limit=20
     ))
+
+    # The third shape, retriever, cannot be mixed with knn, query or sort. An
+    # rrf fusion of a vector leaf and a full text leaf looks like this:
+    #
+    # result = vector_client.query_vectors_fusion(oss_vectors.models.QueryVectorsFusionRequest(
+    #     bucket=args.bucket,
+    #     index_name=args.index_name,
+    #     retriever={
+    #         "rrf": {
+    #             "k": 50,
+    #             "windowSize": 100,
+    #             "retrievers": [
+    #                 {
+    #                     "retriever": {
+    #                         "knn": {
+    #                             "field": "text_vector",
+    #                             "queryVector": [0.1] * 768,
+    #                             "topK": 100
+    #                         }
+    #                     },
+    #                     "weight": 2.0
+    #                 },
+    #                 {
+    #                     "retriever": {
+    #                         "simple": {
+    #                             "query": {
+    #                                 "title": {"$textMatch": {"value": "无线 耳机"}}
+    #                             }
+    #                         }
+    #                     },
+    #                     "weight": 0.5
+    #                 }
+    #             ]
+    #         }
+    #     },
+    #     limit=10,
+    #     return_metadata=True,
+    #     return_metadata_fields=["title", "brand"]
+    # ))
 
     print(f'status code: {result.status_code},'
           f' request id: {result.request_id},'

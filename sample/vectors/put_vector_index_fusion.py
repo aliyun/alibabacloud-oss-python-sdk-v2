@@ -26,43 +26,62 @@ def main():
     vector_client = oss_vectors.Client(cfg)
 
     # A fusion index is described by a schema listing every field, instead of
-    # the single vector field that put_vector_index configures. Two vector
-    # fields are allowed, which is what makes a fusion index different from a
-    # standard one.
+    # the single vector field that put_vector_index configures. This is the
+    # typical e-commerce product schema: two vector fields for text and image
+    # dual recall, scalar fields for filtering and sorting, and a tokenized
+    # title for full text search.
     #
     # The schema is a plain dict, so any field type or property the service
-    # supports travels through unchanged. Write a boolean out explicitly when
-    # false is what you mean, an omitted property and a property set to false
-    # are not the same thing to the service.
+    # supports travels through unchanged. A text field defaults to the
+    # "standard" analyzer, English by word and Chinese by single character.
+    # Write a boolean out explicitly when false is what you mean, an omitted
+    # property and a property set to false are not the same thing to the
+    # service. mode defaults to "fusion", so it is left out here.
     schema_configuration = {
         "fields": [
             {
                 "name": "text_vector",
                 "type": "vector",
                 "dataType": "float32",
-                "dimension": 4,
-                "distanceMetric": "cosine"
+                "dimension": 768,
+                "distanceMetric": "euclidean"
             },
             {
                 "name": "image_vector",
                 "type": "vector",
                 "dataType": "float32",
-                "dimension": 4,
-                "distanceMetric": "cosine"
+                "dimension": 512,
+                "distanceMetric": "euclidean"
             },
             {
                 "name": "title",
-                "type": "text",
-                "exactMatch": False,
+                "type": "string",
+                "exactMatch": True,
                 "text": {
                     "enabled": True,
-                    "analyzer": "single_word",
-                    "analyzerParameters": {
-                        "caseSensitive": False,
-                        "delimitWord": False,
-                        "delimiter": ""
-                    }
+                    "analyzer": "standard"
                 }
+            },
+            {
+                "name": "brand",
+                "type": "string"
+            },
+            {
+                "name": "category",
+                "type": "string",
+                "isArray": True
+            },
+            {
+                "name": "price",
+                "type": "double"
+            },
+            {
+                "name": "stock",
+                "type": "long"
+            },
+            {
+                "name": "on_sale",
+                "type": "bool"
             }
         ]
     }

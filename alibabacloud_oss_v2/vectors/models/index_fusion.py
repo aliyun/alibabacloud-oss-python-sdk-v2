@@ -21,7 +21,8 @@ class PutVectorIndexFusionRequest(serde.RequestModel):
     - a dict also carries properties a future service version adds, without
       waiting for an SDK release.
 
-    The wire format looks like this::
+    The wire format looks like this, an e-commerce product index carrying two
+    vector fields, scalar filter fields and a tokenized title::
 
         {
             "fields": [
@@ -29,30 +30,47 @@ class PutVectorIndexFusionRequest(serde.RequestModel):
                     "name": "text_vector",
                     "type": "vector",
                     "dataType": "float32",
-                    "dimension": 4,
-                    "distanceMetric": "cosine"
+                    "dimension": 768,
+                    "distanceMetric": "euclidean"
+                },
+                {
+                    "name": "image_vector",
+                    "type": "vector",
+                    "dataType": "float32",
+                    "dimension": 512,
+                    "distanceMetric": "euclidean"
                 },
                 {
                     "name": "title",
-                    "type": "text",
-                    "exactMatch": False,
+                    "type": "string",
+                    "exactMatch": True,
                     "text": {
                         "enabled": True,
-                        "analyzer": "single_word",
-                        "analyzerParameters": {
-                            "caseSensitive": False,
-                            "delimitWord": False,
-                            "delimiter": ""
-                        }
+                        "analyzer": "standard"
                     }
+                },
+                {
+                    "name": "brand",
+                    "type": "string"
+                },
+                {
+                    "name": "price",
+                    "type": "double"
+                },
+                {
+                    "name": "on_sale",
+                    "type": "bool"
                 }
             ]
         }
 
-    Write booleans out explicitly whenever false is what you mean. An omitted
-    property and a property set to false are not the same thing to the
-    service, so exactMatch=false and text.enabled=false both have to appear in
-    the dict to take effect.
+    A text field defaults to the "standard" analyzer, English by word and
+    Chinese by single character. The other built-in analyzer is "split", which
+    cuts on a business delimiter and requires a "delimiter" inside
+    "analyzerParameters". Write booleans out explicitly whenever false is what
+    you mean. An omitted property and a property set to false are not the same
+    thing to the service, so exactMatch=False and text.enabled=False both have
+    to appear in the dict to take effect.
     """
 
     _attribute_map = {
@@ -66,7 +84,7 @@ class PutVectorIndexFusionRequest(serde.RequestModel):
         self,
         bucket: str = None,
         index_name: Optional[str] = None,
-        mode: Optional[str] = None,
+        mode: Optional[str] = 'fusion',
         schema_configuration: Optional[Dict] = None,
         **kwargs: Any
     ) -> None:
@@ -74,7 +92,7 @@ class PutVectorIndexFusionRequest(serde.RequestModel):
         Args:
             bucket (str, required): The name of the bucket.
             index_name (str, required): The name of the fusion index.
-            mode (str, optional): The mode of the index.
+            mode (str, optional): The mode of the index. Defaults to "fusion".
             schema_configuration (Dict, required): The schema of the fusion
                 index, a dict holding a "fields" list. See the class
                 docstring for the shape of every field entry.

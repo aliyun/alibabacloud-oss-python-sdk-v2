@@ -16,7 +16,7 @@ class TestPutVectorIndexFusion(unittest.TestCase):
         )
         self.assertIsNone(request.bucket)
         self.assertIsNone(request.index_name)
-        self.assertIsNone(request.mode)
+        self.assertEqual(request.mode, 'fusion')
         self.assertIsNone(request.schema_configuration)
         self.assertFalse(hasattr(request, 'headers'))
         self.assertFalse(hasattr(request, 'parameters'))
@@ -63,11 +63,11 @@ class TestPutVectorIndexFusion(unittest.TestCase):
                 },
                 {
                     'name': 'title',
-                    'type': 'text',
+                    'type': 'string',
                     'exactMatch': False,
                     'text': {
                         'enabled': True,
-                        'analyzer': 'single_word',
+                        'analyzer': 'standard',
                         'analyzerParameters': {
                             'caseSensitive': False,
                             'delimitWord': False,
@@ -89,8 +89,8 @@ class TestPutVectorIndexFusion(unittest.TestCase):
             '{"indexName": "test-fusion-index", "mode": "fusion", "schemaConfiguration": {"fields": ['
             '{"name": "text_vector", "type": "vector", "dataType": "float32", "dimension": 4, "distanceMetric": "cosine"}, '
             '{"name": "image_vector", "type": "vector", "dataType": "float32", "dimension": 2, "distanceMetric": "cosine"}, '
-            '{"name": "title", "type": "text", "exactMatch": false, '
-            '"text": {"enabled": true, "analyzer": "single_word", '
+            '{"name": "title", "type": "string", "exactMatch": false, '
+            '"text": {"enabled": true, "analyzer": "standard", '
             '"analyzerParameters": {"caseSensitive": false, "delimitWord": false, "delimiter": ""}}}'
             ']}}'
         )
@@ -118,9 +118,9 @@ class TestPutVectorIndexFusion(unittest.TestCase):
         self.assertNotIn('bucket', json.loads(op_input.body.decode()))
 
     def test_serialize_request_without_mode(self):
-        # mode is optional: an omitted property stays out of the body instead
-        # of being sent as null, which is what lets the service apply its own
-        # default.
+        # mode defaults to "fusion"; passing None explicitly keeps the property
+        # out of the body instead of sending it as null, which is what lets the
+        # service apply its own default.
         schema = {
             'fields': [
                 {'name': 'text_vector', 'type': 'vector', 'dataType': 'float32', 'dimension': 4}
@@ -130,6 +130,7 @@ class TestPutVectorIndexFusion(unittest.TestCase):
         request = model.PutVectorIndexFusionRequest(
             bucket='test-bucket',
             index_name='test-fusion-index',
+            mode=None,
             schema_configuration=schema
         )
 
@@ -165,7 +166,7 @@ class TestPutVectorIndexFusion(unittest.TestCase):
                 },
                 {
                     'name': 'title',
-                    'type': 'text',
+                    'type': 'string',
                     'exactMatch': False,
                     'text': {
                         'enabled': False,
