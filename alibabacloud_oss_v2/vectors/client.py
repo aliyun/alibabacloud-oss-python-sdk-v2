@@ -188,6 +188,18 @@ class Client:
         """
         return operations.put_vector_index(self._client, request, **kwargs)
 
+    def put_vector_index_fusion(self, request: models.PutVectorIndexFusionRequest, **kwargs) -> models.PutVectorIndexFusionResult:
+        """
+        Create or update a fusion vector index described by a schema.
+
+        Args:
+            request (PutVectorIndexFusionRequest): The request for the PutVectorIndexFusion operation.
+
+        Returns:
+            PutVectorIndexFusionResult: The result for the PutVectorIndexFusion operation.
+        """
+        return operations.put_vector_index_fusion(self._client, request, **kwargs)
+
     def get_vector_index(self, request: models.GetVectorIndexRequest, **kwargs) -> models.GetVectorIndexResult:
         """
         Get information about a specific vector index.
@@ -284,6 +296,19 @@ class Client:
             QueryVectorsResult: The result for the QueryVectors operation.
         """
         return operations.query_vectors(self._client, request, **kwargs)
+
+    def query_vectors_fusion(self, request: models.QueryVectorsFusionRequest, **kwargs) -> models.QueryVectorsFusionResult:
+        """
+        Query a fusion index, with nearest neighbour, scalar and full text
+        clauses, retrievers and an explicit sort order.
+
+        Args:
+            request (QueryVectorsFusionRequest): The request for the QueryVectorsFusion operation.
+
+        Returns:
+            QueryVectorsFusionResult: The result for the QueryVectorsFusion operation.
+        """
+        return operations.query_vectors_fusion(self._client, request, **kwargs)
 
     # bucket logging
     def put_bucket_logging(self, request: models.PutBucketLoggingRequest, **kwargs
