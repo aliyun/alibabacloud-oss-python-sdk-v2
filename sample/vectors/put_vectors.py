@@ -25,6 +25,9 @@ def main():
 
     vector_client = oss_vectors.Client(cfg)
 
+    # Standard index: one vector field keyed by its data type. This is the
+    # shape put_vector_index.py creates, and it stays the default so this
+    # sample keeps working against a standard index exactly as before.
     vectors = [
         {
             "data": {"float32":  [0.1] * 128},
@@ -37,6 +40,30 @@ def main():
             "metadata": {"metadata3": "value3", "metadata4": "value4"}
         }
     ]
+
+    # Fusion index: PutVectors keeps a dynamic data shape, so the very same
+    # call also writes several named vector fields declared by a fusion schema.
+    # To target a fusion index, comment out the block above and uncomment the
+    # one below. The field names match the text_vector and image_vector
+    # declared by put_vector_index_fusion.py.
+    # vectors = [
+    #     {
+    #         "data": {
+    #             "text_vector": [0.1] * 4,
+    #             "image_vector": [0.2] * 4
+    #         },
+    #         "key": "key1",
+    #         "metadata": {"metadata1": "value1", "metadata2": "value2"}
+    #     },
+    #     {
+    #         "data": {
+    #             "text_vector": [0.3] * 4,
+    #             "image_vector": [0.4] * 4
+    #         },
+    #         "key": "key2",
+    #         "metadata": {"metadata3": "value3", "metadata4": "value4"}
+    #     }
+    # ]
 
     result = vector_client.put_vectors(oss_vectors.models.PutVectorsRequest(
         bucket=args.bucket,

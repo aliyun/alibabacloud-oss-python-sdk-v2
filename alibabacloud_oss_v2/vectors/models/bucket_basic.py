@@ -11,6 +11,7 @@ class BucketInfo(serde.Model):
         "creation_date": {"tag": "xml", "rename": "CreationDate", "type": "datetime"},
         "extranet_endpoint": {"tag": "xml", "rename": "ExtranetEndpoint"},
         "intranet_endpoint": {"tag": "xml", "rename": "IntranetEndpoint"},
+        "region": {"tag": "xml", "rename": "Region"},
         "resource_group_id": {"tag": "xml", "rename": "ResourceGroupId"},
     }
 
@@ -30,6 +31,7 @@ class BucketInfo(serde.Model):
         extranet_endpoint: Optional[str] = None,
         intranet_endpoint: Optional[str] = None,
         resource_group_id: Optional[str] = None,
+        region: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -40,6 +42,7 @@ class BucketInfo(serde.Model):
             extranet_endpoint (str, optional): The public endpoint that is used to access the bucket over the Internet.
             intranet_endpoint (str, optional): The internal endpoint that is used to access the bucket from Elastic
             resource_group_id (str, optional): The ID of the resource group to which the bucket belongs.
+            region (str, optional): The Alibaba Cloud region ID of the bucket.
         """
         super().__init__(**kwargs)
         self.name = name
@@ -48,6 +51,7 @@ class BucketInfo(serde.Model):
         self.extranet_endpoint = extranet_endpoint
         self.intranet_endpoint = intranet_endpoint
         self.resource_group_id = resource_group_id
+        self.region = region
 
 
 class PutVectorBucketRequest(serde.RequestModel):
@@ -171,8 +175,8 @@ class BucketProperties(serde.Model):
         creation_date: Optional[datetime.datetime] = None,
         extranet_endpoint: Optional[str] = None,
         intranet_endpoint: Optional[str] = None,
-        region: Optional[str] = None,
         resource_group_id: Optional[str] = None,
+        region: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -183,8 +187,8 @@ class BucketProperties(serde.Model):
             extranet_endpoint (str, optional): The public endpoint used to access the bucket over the Internet.
             intranet_endpoint (str, optional): The internal endpoint that is used to access the bucket from ECS instances
                 that reside in the same region as the bucket.
-            region (str, optional): The region in which the bucket is located.
             resource_group_id (str, optional): The ID of the resource group to which the bucket belongs.
+            region (str, optional): The Alibaba Cloud region ID of the bucket.
         """
         super().__init__(**kwargs)
         self.name = name
@@ -192,8 +196,8 @@ class BucketProperties(serde.Model):
         self.creation_date = creation_date
         self.extranet_endpoint = extranet_endpoint
         self.intranet_endpoint = intranet_endpoint
-        self.region = region
         self.resource_group_id = resource_group_id
+        self.region = region
 
 
 class ListVectorBucketsRequest(serde.RequestModel):
@@ -220,8 +224,8 @@ class ListVectorBucketsRequest(serde.RequestModel):
             max_keys (int, optional): The maximum number of buckets that can be returned in the single query.
                 Valid values: 1 to 1000.
             prefix (str, optional): The prefix that the names of returned buckets must contain.
-                Limits the response to keys that begin with the specified prefix
-            request_payer (str, optional): The ID of the resource group.
+                Limits the response to keys that begin with the specified prefix.
+            resource_group_id (str, optional): The ID of the resource group.
         """
         super().__init__(**kwargs)
         self.marker = marker

@@ -563,3 +563,191 @@ class TestQueryVectors(unittest.TestCase):
         self.assertIsNotNone(result.vectors[0].get('metadata'))
         self.assertEqual(result.vectors[0].get('metadata').get('key1'), 'value1')
         self.assertEqual(result.vectors[0].get('metadata').get('key2'), 'value2')
+
+
+class TestDynamicVectorFields(unittest.TestCase):
+    """Vector field names are chosen by the schema, not by the SDK.
+
+    vectors is a list of dict, so an arbitrary field name and several vector
+    fields per record both work without touching these three operations. That
+    is the compatibility proof section 2.4 asks for, and it is the reason
+    PutVectors, GetVectors and ListVectors keep their public types.
+    """
+
+    def test_put_vectors_multiple_named_fields(self):
+        vectors = [
+            {
+                'key': 'vector-1',
+                'data': {
+                    'text_vector': [0.1, 0.2],
+                    'image_vector': [0.3, 0.4]
+                },
+                'metadata': {'title': 'cloud storage'}
+            },
+            {
+                'key': 'vector-2',
+                'data': {
+                    'text_vector': [0.5, 0.6]
+                }
+            }
+        ]
+
+        request = model.PutVectorsRequest(
+            bucket='test-bucket',
+            index_name='test-fusion-index',
+            vectors=vectors
+        )
+
+        json_str = (
+            '{"indexName": "test-fusion-index", "vectors": ['
+            '{"key": "vector-1", '
+            '"data": {"text_vector": [0.1, 0.2], "image_vector": [0.3, 0.4]}, '
+            '"metadata": {"title": "cloud storage"}}, '
+            '{"key": "vector-2", "data": {"text_vector": [0.5, 0.6]}}'
+            ']}'
+        )
+
+        op_input = _serde.serialize_input_vector_json_model(request, OperationInput(
+            op_name='PutVectors',
+            method='POST',
+            bucket=request.bucket
+        ))
+
+        self.assertEqual(op_input.op_name, 'PutVectors')
+        self.assertEqual(op_input.method, 'POST')
+        self.assertEqual(op_input.bucket, 'test-bucket')
+        self.assertEqual(json_str, op_input.body.decode())
+
+    def test_get_vectors_multiple_named_fields(self):
+        json_data = '''
+        {
+           "vectors": [
+              {
+                 "key": "vector-1",
+                 "data": {
+                    "text_vector": [0.1, 0.2],
+                    "image_vector": [0.3, 0.4]
+                 },
+                 "metadata": {"title": "cloud storage"}
+              }
+           ]
+        }
+        '''
+
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=json_data,
+            )
+        )
+
+        result = model.GetVectorsResult()
+        deserializer = [_serde.deserialize_output_vector_json_model]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(len(result.vectors), 1)
+        data = result.vectors[0].get('data')
+        self.assertEqual(data.get('text_vector'), [0.1, 0.2])
+        self.assertEqual(data.get('image_vector'), [0.3, 0.4])
+        self.assertEqual(result.vectors[0].get('metadata').get('title'), 'cloud storage')
+
+    def test_list_vectors_multiple_named_fields(self):
+        json_data = '''
+        {
+           "vectors": [
+              {
+                 "key": "vector-1",
+                 "data": {
+                    "text_vector": [0.1, 0.2],
+                    "image_vector": [0.3, 0.4]
+                 }
+              },
+              {
+                 "key": "vector-2",
+                 "data": {
+                    "text_vector": [0.5, 0.6]
+                 }
+              }
+           ],
+           "nextToken": "next-token"
+        }
+        '''
+
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=json_data,
+            )
+        )
+
+        result = model.ListVectorsResult()
+        deserializer = [_serde.deserialize_output_vector_json_model]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.next_token, 'next-token')
+        self.assertEqual(len(result.vectors), 2)
+        self.assertEqual(result.vectors[0].get('data').get('text_vector'), [0.1, 0.2])
+        self.assertEqual(result.vectors[0].get('data').get('image_vector'), [0.3, 0.4])
+        # a record that only fills one of the vector fields is fine too
+        self.assertEqual(result.vectors[1].get('data').get('text_vector'), [0.5, 0.6])
+        self.assertIsNone(result.vectors[1].get('data').get('image_vector'))
+
+    def test_query_vectors_single_float32_field_on_fusion_index(self):
+        # The compatibility path of the acceptance criteria: a fusion index
+        # whose only vector field is named float32 stays reachable through the
+        # old QueryVectors, and the old request body does not change.
+        request = model.QueryVectorsRequest(
+            bucket='test-bucket',
+            index_name='test-fusion-index',
+            query_vector={'float32': [0.1, 0.2, 0.3]},
+            return_distance=True,
+            top_k=10
+        )
+
+        json_str = (
+            '{"indexName": "test-fusion-index", '
+            '"queryVector": {"float32": [0.1, 0.2, 0.3]}, '
+            '"returnDistance": true, "topK": 10}'
+        )
+
+        op_input = _serde.serialize_input_vector_json_model(request, OperationInput(
+            op_name='QueryVectors',
+            method='POST',
+            bucket=request.bucket
+        ))
+
+        self.assertEqual(json_str, op_input.body.decode())
+
+        # the old result keeps reporting distance, never score
+        json_data = '''
+        {
+           "vectors": [
+              {
+                 "key": "vector-1",
+                 "data": {"float32": [0.1, 0.2, 0.3]},
+                 "distance": 0.5
+              }
+           ]
+        }
+        '''
+
+        op_output = OperationOutput(
+            status='OK',
+            status_code=200,
+            http_response=MockHttpResponse(
+                body=json_data,
+            )
+        )
+
+        result = model.QueryVectorsResult()
+        deserializer = [_serde.deserialize_output_vector_json_model]
+        serde.deserialize_output(result, op_output, custom_deserializer=deserializer)
+
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.vectors[0].get('distance'), 0.5)
+        self.assertEqual(result.vectors[0].get('data').get('float32'), [0.1, 0.2, 0.3])
+        self.assertIsNone(result.vectors[0].get('score'))

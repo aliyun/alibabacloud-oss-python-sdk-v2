@@ -28,6 +28,7 @@ class TestVectorBucketBasic(TestIntegrationVectors):
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
         self.assertEqual(f'acs:ossvector:{REGION}:{USER_ID}:{bucket_name}', result.bucket_info.name)
         self.assertIsNotNone(result.bucket_info.location)
+        self.assertEqual(REGION, result.bucket_info.region)
         self.assertIsNotNone(result.bucket_info.creation_date)
 
         # list buckets
