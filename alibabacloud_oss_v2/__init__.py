@@ -47,6 +47,7 @@ from .models.object_worm import *
 from .models.bucket_object_worm_configuration import *
 from .models.bucket_metadata_configuration import *
 from .models.data_process import *
+from .models.bucket_storage_quota import *
 
 from .config import Config
 from .client import Client
