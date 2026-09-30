@@ -2461,3 +2461,43 @@ class Client:
             DoDataPipelineActionResult: Response result for DoDataPipelineAction operation.
         """
         return operations.do_data_pipeline_action(self._client, request, **kwargs)
+
+    # bucket storage quota
+    def put_bucket_storage_quota(self, request: models.PutBucketStorageQuotaRequest, **kwargs
+                                 ) -> models.PutBucketStorageQuotaResult:
+        """
+        Configures the storage capacity quota of a bucket (or an Agent Bucket's bucket space).
+
+        Args:
+            request (PutBucketStorageQuotaRequest): Request parameters for PutBucketStorageQuota operation.
+
+        Returns:
+            PutBucketStorageQuotaResult: Response result for PutBucketStorageQuota operation.
+        """
+        return operations.put_bucket_storage_quota(self._client, request, **kwargs)
+
+    def get_bucket_storage_quota(self, request: models.GetBucketStorageQuotaRequest, **kwargs
+                                 ) -> models.GetBucketStorageQuotaResult:
+        """
+        Queries the storage capacity quota of a bucket (or an Agent Bucket's bucket space).
+
+        Args:
+            request (GetBucketStorageQuotaRequest): Request parameters for GetBucketStorageQuota operation.
+
+        Returns:
+            GetBucketStorageQuotaResult: Response result for GetBucketStorageQuota operation.
+        """
+        return operations.get_bucket_storage_quota(self._client, request, **kwargs)
+
+    def delete_bucket_storage_quota(self, request: models.DeleteBucketStorageQuotaRequest, **kwargs
+                                    ) -> models.DeleteBucketStorageQuotaResult:
+        """
+        Deletes the storage capacity quota of a bucket (or an Agent Bucket's bucket space).
+
+        Args:
+            request (DeleteBucketStorageQuotaRequest): Request parameters for DeleteBucketStorageQuota operation.
+
+        Returns:
+            DeleteBucketStorageQuotaResult: Response result for DeleteBucketStorageQuota operation.
+        """
+        return operations.delete_bucket_storage_quota(self._client, request, **kwargs)

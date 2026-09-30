@@ -337,6 +337,51 @@ class AgenticBucketClient:
 
         return operations.delete_agentic_bucket_public_access_block(self._client, request, **kwargs)
 
+    # --- storage quota ---
+    def put_agentic_bucket_storage_quota(self, request: models.PutAgenticBucketStorageQuotaRequest, **kwargs
+                                         ) -> models.PutAgenticBucketStorageQuotaResult:
+        """
+        Configures the default storage quota of an AgenticBucket. The quota is applied to
+        bucket spaces created afterwards; it does not change existing bucket spaces.
+        ``request.bucket`` is the prefix.
+
+        Args:
+            request (PutAgenticBucketStorageQuotaRequest): Request parameters for PutAgenticBucketStorageQuota operation.
+
+        Returns:
+            PutAgenticBucketStorageQuotaResult: Response result for PutAgenticBucketStorageQuota operation.
+        """
+
+        return operations.put_agentic_bucket_storage_quota(self._client, request, **kwargs)
+
+    def get_agentic_bucket_storage_quota(self, request: models.GetAgenticBucketStorageQuotaRequest, **kwargs
+                                         ) -> models.GetAgenticBucketStorageQuotaResult:
+        """
+        Queries the default storage quota of an AgenticBucket. ``request.bucket`` is the prefix.
+
+        Args:
+            request (GetAgenticBucketStorageQuotaRequest): Request parameters for GetAgenticBucketStorageQuota operation.
+
+        Returns:
+            GetAgenticBucketStorageQuotaResult: Response result for GetAgenticBucketStorageQuota operation.
+        """
+
+        return operations.get_agentic_bucket_storage_quota(self._client, request, **kwargs)
+
+    def delete_agentic_bucket_storage_quota(self, request: models.DeleteAgenticBucketStorageQuotaRequest, **kwargs
+                                            ) -> models.DeleteAgenticBucketStorageQuotaResult:
+        """
+        Deletes the default storage quota of an AgenticBucket. ``request.bucket`` is the prefix.
+
+        Args:
+            request (DeleteAgenticBucketStorageQuotaRequest): Request parameters for DeleteAgenticBucketStorageQuota operation.
+
+        Returns:
+            DeleteAgenticBucketStorageQuotaResult: Response result for DeleteAgenticBucketStorageQuota operation.
+        """
+
+        return operations.delete_agentic_bucket_storage_quota(self._client, request, **kwargs)
+
     # --- paginators ---
     def list_agentic_buckets_paginator(self, **kwargs) -> ListAgenticBucketsPaginator:
         """
