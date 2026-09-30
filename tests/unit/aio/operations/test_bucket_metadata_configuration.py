@@ -34,7 +34,7 @@ class TestBucketMetadataConfigurationOperations(TestOperations):
                 bucket='bucketexampletest',
                 metadata_configuration=model.MetadataConfiguration(
                     journal_table_configuration=model.JournalTableConfiguration(
-                        record_expiration=model.RecordExpiration(expiration='ENABLED', days=7),
+                        record_expiration=model.MetadataTableRecordExpiration(expiration='ENABLED', days=7),
                     ),
                 ),
             ),
@@ -60,7 +60,7 @@ class TestBucketMetadataConfigurationOperations(TestOperations):
                     bucket='bucketexampletest',
                     metadata_configuration=model.MetadataConfiguration(
                         journal_table_configuration=model.JournalTableConfiguration(
-                            record_expiration=model.RecordExpiration(expiration='ENABLED', days=7),
+                            record_expiration=model.MetadataTableRecordExpiration(expiration='ENABLED', days=7),
                         ),
                     ),
                 ),
@@ -188,7 +188,7 @@ class TestBucketMetadataConfigurationOperations(TestOperations):
             model.UpdateBucketMetadataJournalTableConfigurationRequest(
                 bucket='bucketexampletest',
                 journal_table_configuration=model.JournalTableConfiguration(
-                    record_expiration=model.RecordExpiration(expiration='DISABLED'),
+                    record_expiration=model.MetadataTableRecordExpiration(expiration='DISABLED'),
                 ),
             ),
         )
@@ -211,7 +211,7 @@ class TestBucketMetadataConfigurationOperations(TestOperations):
                 model.UpdateBucketMetadataJournalTableConfigurationRequest(
                     bucket='bucketexampletest',
                     journal_table_configuration=model.JournalTableConfiguration(
-                        record_expiration=model.RecordExpiration(expiration='DISABLED'),
+                        record_expiration=model.MetadataTableRecordExpiration(expiration='DISABLED'),
                     ),
                 ),
             )

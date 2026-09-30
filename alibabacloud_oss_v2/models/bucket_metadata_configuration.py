@@ -1,40 +1,9 @@
-from enum import Enum
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from .. import serde
 
 
-class ConfigurationStateType(str, Enum):
-    """The state of the inventory metadata table."""
-
-    ENABLED = 'ENABLED'
-    DISABLED = 'DISABLED'
-
-
-class RecordExpirationType(str, Enum):
-    """The expiration state of journal table records."""
-
-    ENABLED = 'ENABLED'
-    DISABLED = 'DISABLED'
-
-
-class TableStatusType(str, Enum):
-    """The creation state of a metadata table."""
-
-    CREATING = 'CREATING'
-    BACKFILLING = 'BACKFILLING'
-    ACTIVE = 'ACTIVE'
-    FAILED = 'FAILED'
-
-
-class SseAlgorithmType(str, Enum):
-    """The server-side encryption algorithm of a metadata table."""
-
-    AES256 = 'AES256'
-    OSS_KMS = 'oss:kms'
-
-
-class RecordExpiration(serde.Model):
+class MetadataTableRecordExpiration(serde.Model):
     """The container that stores the journal record expiration settings."""
 
     _attribute_map = {
@@ -48,13 +17,13 @@ class RecordExpiration(serde.Model):
 
     def __init__(
         self,
-        expiration: Optional[Union[str, RecordExpirationType]] = None,
+        expiration: Optional[str] = None,
         days: Optional[int] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            expiration (str | RecordExpirationType, optional): Whether record expiration is enabled.
+            expiration (str, optional): Whether record expiration is enabled. Valid values: ENABLED, DISABLED.
             days (int, optional): The number of days to retain records. The minimum value is 7.
         """
         super().__init__(**kwargs)
@@ -76,13 +45,13 @@ class MetadataTableEncryptionConfiguration(serde.Model):
 
     def __init__(
         self,
-        sse_algorithm: Optional[Union[str, SseAlgorithmType]] = None,
+        sse_algorithm: Optional[str] = None,
         kms_key_arn: Optional[str] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            sse_algorithm (str | SseAlgorithmType, optional): The server-side encryption algorithm.
+            sse_algorithm (str, optional): The server-side encryption algorithm. Valid values: AES256, oss:kms.
             kms_key_arn (str, optional): The ARN of the KMS key used for encryption.
         """
         super().__init__(**kwargs)
@@ -94,7 +63,7 @@ class JournalTableConfiguration(serde.Model):
     """The container that stores journal metadata table settings."""
 
     _attribute_map = {
-        'record_expiration': {'tag': 'xml', 'rename': 'RecordExpiration', 'type': 'RecordExpiration,xml'},
+        'record_expiration': {'tag': 'xml', 'rename': 'RecordExpiration', 'type': 'MetadataTableRecordExpiration,xml'},
         'encryption_configuration': {'tag': 'xml', 'rename': 'EncryptionConfiguration', 'type': 'MetadataTableEncryptionConfiguration,xml'},
     }
 
@@ -103,19 +72,19 @@ class JournalTableConfiguration(serde.Model):
     }
 
     _dependency_map = {
-        'RecordExpiration': {'new': lambda: RecordExpiration()},
+        'MetadataTableRecordExpiration': {'new': lambda: MetadataTableRecordExpiration()},
         'MetadataTableEncryptionConfiguration': {'new': lambda: MetadataTableEncryptionConfiguration()},
     }
 
     def __init__(
         self,
-        record_expiration: Optional[RecordExpiration] = None,
+        record_expiration: Optional[MetadataTableRecordExpiration] = None,
         encryption_configuration: Optional[MetadataTableEncryptionConfiguration] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            record_expiration (RecordExpiration, optional): The journal record expiration settings.
+            record_expiration (MetadataTableRecordExpiration, optional): The journal record expiration settings.
             encryption_configuration (MetadataTableEncryptionConfiguration, optional): The journal table encryption settings.
         """
         super().__init__(**kwargs)
@@ -141,13 +110,13 @@ class InventoryTableConfiguration(serde.Model):
 
     def __init__(
         self,
-        configuration_state: Optional[Union[str, ConfigurationStateType]] = None,
+        configuration_state: Optional[str] = None,
         encryption_configuration: Optional[MetadataTableEncryptionConfiguration] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            configuration_state (str | ConfigurationStateType, optional): Whether the inventory table is enabled.
+            configuration_state (str, optional): Whether the inventory table is enabled. Valid values: ENABLED, DISABLED.
             encryption_configuration (MetadataTableEncryptionConfiguration, optional): The inventory table encryption settings.
         """
         super().__init__(**kwargs)
@@ -216,7 +185,7 @@ class MetadataTableError(serde.Model):
         self.error_message = error_message
 
 
-class DestinationResult(serde.Model):
+class MetadataTableDestinationResult(serde.Model):
     """The container that stores the metadata table destination."""
 
     _attribute_map = {
@@ -255,7 +224,7 @@ class JournalTableConfigurationResult(serde.Model):
         'table_status': {'tag': 'xml', 'rename': 'TableStatus', 'type': 'str'},
         'table_name': {'tag': 'xml', 'rename': 'TableName', 'type': 'str'},
         'table_arn': {'tag': 'xml', 'rename': 'TableArn', 'type': 'str'},
-        'record_expiration': {'tag': 'xml', 'rename': 'RecordExpiration', 'type': 'RecordExpiration,xml'},
+        'record_expiration': {'tag': 'xml', 'rename': 'RecordExpiration', 'type': 'MetadataTableRecordExpiration,xml'},
         'encryption_configuration': {'tag': 'xml', 'rename': 'EncryptionConfiguration', 'type': 'MetadataTableEncryptionConfiguration,xml'},
         'error': {'tag': 'xml', 'rename': 'Error', 'type': 'MetadataTableError,xml'},
     }
@@ -265,27 +234,27 @@ class JournalTableConfigurationResult(serde.Model):
     }
 
     _dependency_map = {
-        'RecordExpiration': {'new': lambda: RecordExpiration()},
+        'MetadataTableRecordExpiration': {'new': lambda: MetadataTableRecordExpiration()},
         'MetadataTableEncryptionConfiguration': {'new': lambda: MetadataTableEncryptionConfiguration()},
         'MetadataTableError': {'new': lambda: MetadataTableError()},
     }
 
     def __init__(
         self,
-        table_status: Optional[Union[str, TableStatusType]] = None,
+        table_status: Optional[str] = None,
         table_name: Optional[str] = None,
         table_arn: Optional[str] = None,
-        record_expiration: Optional[RecordExpiration] = None,
+        record_expiration: Optional[MetadataTableRecordExpiration] = None,
         encryption_configuration: Optional[MetadataTableEncryptionConfiguration] = None,
         error: Optional[MetadataTableError] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            table_status (str | TableStatusType, optional): The creation state of the journal table.
+            table_status (str, optional): The creation state of the journal table. Valid values: CREATING, BACKFILLING, ACTIVE, FAILED.
             table_name (str, optional): The journal table name.
             table_arn (str, optional): The ARN of the journal table.
-            record_expiration (RecordExpiration, optional): The journal record expiration settings.
+            record_expiration (MetadataTableRecordExpiration, optional): The journal record expiration settings.
             encryption_configuration (MetadataTableEncryptionConfiguration, optional): The journal table encryption settings.
             error (MetadataTableError, optional): The error returned when table creation fails.
         """
@@ -321,8 +290,8 @@ class InventoryTableConfigurationResult(serde.Model):
 
     def __init__(
         self,
-        configuration_state: Optional[Union[str, ConfigurationStateType]] = None,
-        table_status: Optional[Union[str, TableStatusType]] = None,
+        configuration_state: Optional[str] = None,
+        table_status: Optional[str] = None,
         table_name: Optional[str] = None,
         table_arn: Optional[str] = None,
         encryption_configuration: Optional[MetadataTableEncryptionConfiguration] = None,
@@ -331,8 +300,8 @@ class InventoryTableConfigurationResult(serde.Model):
     ) -> None:
         """
         Args:
-            configuration_state (str | ConfigurationStateType, optional): Whether the inventory table is enabled.
-            table_status (str | TableStatusType, optional): The creation state of the inventory table.
+            configuration_state (str, optional): Whether the inventory table is enabled. Valid values: ENABLED, DISABLED.
+            table_status (str, optional): The creation state of the inventory table. Valid values: CREATING, BACKFILLING, ACTIVE, FAILED.
             table_name (str, optional): The inventory table name.
             table_arn (str, optional): The ARN of the inventory table.
             encryption_configuration (MetadataTableEncryptionConfiguration, optional): The inventory table encryption settings.
@@ -351,7 +320,7 @@ class MetadataConfigurationResult(serde.Model):
     """The container that stores bucket metadata table configuration details."""
 
     _attribute_map = {
-        'destination_result': {'tag': 'xml', 'rename': 'DestinationResult', 'type': 'DestinationResult,xml'},
+        'destination_result': {'tag': 'xml', 'rename': 'DestinationResult', 'type': 'MetadataTableDestinationResult,xml'},
         'journal_table_configuration_result': {'tag': 'xml', 'rename': 'JournalTableConfigurationResult', 'type': 'JournalTableConfigurationResult,xml'},
         'inventory_table_configuration_result': {'tag': 'xml', 'rename': 'InventoryTableConfigurationResult', 'type': 'InventoryTableConfigurationResult,xml'},
     }
@@ -361,21 +330,21 @@ class MetadataConfigurationResult(serde.Model):
     }
 
     _dependency_map = {
-        'DestinationResult': {'new': lambda: DestinationResult()},
+        'MetadataTableDestinationResult': {'new': lambda: MetadataTableDestinationResult()},
         'JournalTableConfigurationResult': {'new': lambda: JournalTableConfigurationResult()},
         'InventoryTableConfigurationResult': {'new': lambda: InventoryTableConfigurationResult()},
     }
 
     def __init__(
         self,
-        destination_result: Optional[DestinationResult] = None,
+        destination_result: Optional[MetadataTableDestinationResult] = None,
         journal_table_configuration_result: Optional[JournalTableConfigurationResult] = None,
         inventory_table_configuration_result: Optional[InventoryTableConfigurationResult] = None,
         **kwargs: Any
     ) -> None:
         """
         Args:
-            destination_result (DestinationResult, optional): The metadata table destination.
+            destination_result (MetadataTableDestinationResult, optional): The metadata table destination.
             journal_table_configuration_result (JournalTableConfigurationResult, optional): The journal metadata table details.
             inventory_table_configuration_result (InventoryTableConfigurationResult, optional): The inventory metadata table details.
         """

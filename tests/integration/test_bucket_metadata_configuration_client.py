@@ -21,13 +21,13 @@ class TestBucketMetadataConfiguration(TestIntegration):
                     bucket=self.bucket_name,
                     metadata_configuration=oss.MetadataConfiguration(
                         journal_table_configuration=oss.JournalTableConfiguration(
-                            record_expiration=oss.RecordExpiration(
-                                expiration=oss.RecordExpirationType.ENABLED,
+                            record_expiration=oss.MetadataTableRecordExpiration(
+                                expiration='ENABLED',
                                 days=7,
                             ),
                         ),
                         inventory_table_configuration=oss.InventoryTableConfiguration(
-                            configuration_state=oss.ConfigurationStateType.DISABLED,
+                            configuration_state='DISABLED',
                         ),
                     ),
                 )
@@ -44,14 +44,14 @@ class TestBucketMetadataConfiguration(TestIntegration):
                 )
                 self.assertEqual(200, result.status_code)
                 configuration = result.metadata_configuration_result
-                if configuration.journal_table_configuration_result.table_status == oss.TableStatusType.ACTIVE:
+                if configuration.journal_table_configuration_result.table_status == 'ACTIVE':
                     break
                 time.sleep(5)
 
             self.assertIsNotNone(configuration)
             self.assertEqual('oss', configuration.destination_result.table_bucket_type)
             self.assertEqual('journal', configuration.journal_table_configuration_result.table_name)
-            self.assertEqual(oss.TableStatusType.ACTIVE,
+            self.assertEqual('ACTIVE',
                              configuration.journal_table_configuration_result.table_status)
 
             # update bucket metadata journal table configuration
@@ -59,8 +59,8 @@ class TestBucketMetadataConfiguration(TestIntegration):
                 oss.UpdateBucketMetadataJournalTableConfigurationRequest(
                     bucket=self.bucket_name,
                     journal_table_configuration=oss.JournalTableConfiguration(
-                        record_expiration=oss.RecordExpiration(
-                            expiration=oss.RecordExpirationType.DISABLED,
+                        record_expiration=oss.MetadataTableRecordExpiration(
+                            expiration='DISABLED',
                         ),
                     ),
                 )
@@ -72,7 +72,7 @@ class TestBucketMetadataConfiguration(TestIntegration):
                 oss.UpdateBucketMetadataInventoryTableConfigurationRequest(
                     bucket=self.bucket_name,
                     inventory_table_configuration=oss.InventoryTableConfiguration(
-                        configuration_state=oss.ConfigurationStateType.ENABLED,
+                        configuration_state='ENABLED',
                     ),
                 )
             )
@@ -84,9 +84,9 @@ class TestBucketMetadataConfiguration(TestIntegration):
             )
             self.assertEqual(200, result.status_code)
             configuration = result.metadata_configuration_result
-            self.assertEqual(oss.RecordExpirationType.DISABLED,
+            self.assertEqual('DISABLED',
                              configuration.journal_table_configuration_result.record_expiration.expiration)
-            self.assertEqual(oss.ConfigurationStateType.ENABLED,
+            self.assertEqual('ENABLED',
                              configuration.inventory_table_configuration_result.configuration_state)
         finally:
             if created:
@@ -104,8 +104,8 @@ class TestBucketMetadataConfiguration(TestIntegration):
                     bucket=self.bucket_name,
                     metadata_configuration=oss.MetadataConfiguration(
                         journal_table_configuration=oss.JournalTableConfiguration(
-                            record_expiration=oss.RecordExpiration(
-                                expiration=oss.RecordExpirationType.DISABLED,
+                            record_expiration=oss.MetadataTableRecordExpiration(
+                                expiration='DISABLED',
                             ),
                         ),
                     ),

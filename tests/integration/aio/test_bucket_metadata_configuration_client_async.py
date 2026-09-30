@@ -36,13 +36,13 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
                     bucket=self.bucket_name,
                     metadata_configuration=oss.MetadataConfiguration(
                         journal_table_configuration=oss.JournalTableConfiguration(
-                            record_expiration=oss.RecordExpiration(
-                                expiration=oss.RecordExpirationType.ENABLED,
+                            record_expiration=oss.MetadataTableRecordExpiration(
+                                expiration='ENABLED',
                                 days=7,
                             ),
                         ),
                         inventory_table_configuration=oss.InventoryTableConfiguration(
-                            configuration_state=oss.ConfigurationStateType.DISABLED,
+                            configuration_state='DISABLED',
                         ),
                     ),
                 )
@@ -57,12 +57,12 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
                     oss.GetBucketMetadataConfigurationRequest(bucket=self.bucket_name)
                 )
                 configuration = result.metadata_configuration_result
-                if configuration.journal_table_configuration_result.table_status == oss.TableStatusType.ACTIVE:
+                if configuration.journal_table_configuration_result.table_status == 'ACTIVE':
                     break
                 await asyncio.sleep(5)
 
             self.assertIsNotNone(configuration)
-            self.assertEqual(oss.TableStatusType.ACTIVE,
+            self.assertEqual('ACTIVE',
                              configuration.journal_table_configuration_result.table_status)
 
             # update bucket metadata journal table configuration
@@ -70,8 +70,8 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
                 oss.UpdateBucketMetadataJournalTableConfigurationRequest(
                     bucket=self.bucket_name,
                     journal_table_configuration=oss.JournalTableConfiguration(
-                        record_expiration=oss.RecordExpiration(
-                            expiration=oss.RecordExpirationType.DISABLED,
+                        record_expiration=oss.MetadataTableRecordExpiration(
+                            expiration='DISABLED',
                         ),
                     ),
                 )
@@ -83,7 +83,7 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
                 oss.UpdateBucketMetadataInventoryTableConfigurationRequest(
                     bucket=self.bucket_name,
                     inventory_table_configuration=oss.InventoryTableConfiguration(
-                        configuration_state=oss.ConfigurationStateType.ENABLED,
+                        configuration_state='ENABLED',
                     ),
                 )
             )
@@ -95,9 +95,9 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
             )
             self.assertEqual(200, result.status_code)
             configuration = result.metadata_configuration_result
-            self.assertEqual(oss.RecordExpirationType.DISABLED,
+            self.assertEqual('DISABLED',
                              configuration.journal_table_configuration_result.record_expiration.expiration)
-            self.assertEqual(oss.ConfigurationStateType.ENABLED,
+            self.assertEqual('ENABLED',
                              configuration.inventory_table_configuration_result.configuration_state)
         finally:
             if created:

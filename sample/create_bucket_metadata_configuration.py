@@ -27,13 +27,13 @@ def main():
             bucket=args.bucket,
             metadata_configuration=oss.MetadataConfiguration(
                 journal_table_configuration=oss.JournalTableConfiguration(
-                    record_expiration=oss.RecordExpiration(
-                        expiration=oss.RecordExpirationType.ENABLED,
+                    record_expiration=oss.MetadataTableRecordExpiration(
+                        expiration='ENABLED',
                         days=30,
                     ),
                 ),
                 inventory_table_configuration=oss.InventoryTableConfiguration(
-                    configuration_state=oss.ConfigurationStateType.DISABLED,
+                    configuration_state='DISABLED',
                 ),
             ),
     ))

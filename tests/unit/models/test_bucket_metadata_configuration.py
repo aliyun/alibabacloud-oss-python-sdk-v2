@@ -21,26 +21,26 @@ class TestCreateBucketMetadataConfiguration(unittest.TestCase):
             bucket='bucketexampletest',
             metadata_configuration=model.MetadataConfiguration(
                 journal_table_configuration=model.JournalTableConfiguration(
-                    record_expiration=model.RecordExpiration(
-                        expiration=model.RecordExpirationType.ENABLED,
+                    record_expiration=model.MetadataTableRecordExpiration(
+                        expiration='ENABLED',
                         days=30,
                     ),
                     encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                        sse_algorithm=model.SseAlgorithmType.AES256,
+                        sse_algorithm='AES256',
                     ),
                 ),
                 inventory_table_configuration=model.InventoryTableConfiguration(
-                    configuration_state=model.ConfigurationStateType.DISABLED,
+                    configuration_state='DISABLED',
                 ),
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(model.RecordExpirationType.ENABLED,
+        self.assertEqual('ENABLED',
                          request.metadata_configuration.journal_table_configuration.record_expiration.expiration)
         self.assertEqual(30, request.metadata_configuration.journal_table_configuration.record_expiration.days)
-        self.assertEqual(model.SseAlgorithmType.AES256,
+        self.assertEqual('AES256',
                          request.metadata_configuration.journal_table_configuration.encryption_configuration.sse_algorithm)
-        self.assertEqual(model.ConfigurationStateType.DISABLED,
+        self.assertEqual('DISABLED',
                          request.metadata_configuration.inventory_table_configuration.configuration_state)
 
     def test_xml_builder(self):
@@ -72,16 +72,16 @@ class TestCreateBucketMetadataConfiguration(unittest.TestCase):
         # Build and serialize the request.
         configuration = model.MetadataConfiguration(
             journal_table_configuration=model.JournalTableConfiguration(
-                record_expiration=model.RecordExpiration(
-                    expiration=model.RecordExpirationType.ENABLED,
+                record_expiration=model.MetadataTableRecordExpiration(
+                    expiration='ENABLED',
                     days=30,
                 ),
                 encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                    sse_algorithm=model.SseAlgorithmType.AES256,
+                    sse_algorithm='AES256',
                 ),
             ),
             inventory_table_configuration=model.InventoryTableConfiguration(
-                configuration_state=model.ConfigurationStateType.DISABLED,
+                configuration_state='DISABLED',
             ),
         )
         request = model.CreateBucketMetadataConfigurationRequest(
@@ -171,7 +171,6 @@ class TestGetBucketMetadataConfiguration(unittest.TestCase):
         self.assertEqual('b_bucketexampletest', metadata.destination_result.table_namespace)
         # JournalTableConfigurationResult
         self.assertEqual('ACTIVE', metadata.journal_table_configuration_result.table_status)
-        self.assertEqual(model.TableStatusType.ACTIVE, metadata.journal_table_configuration_result.table_status)
         self.assertEqual('journal', metadata.journal_table_configuration_result.table_name)
         self.assertEqual('acs:ots:cn-hangzhou:1234567890123456:instance/table/journal',
                          metadata.journal_table_configuration_result.table_arn)
@@ -181,13 +180,10 @@ class TestGetBucketMetadataConfiguration(unittest.TestCase):
         # InventoryTableConfigurationResult
         self.assertEqual('ENABLED', metadata.inventory_table_configuration_result.configuration_state)
         self.assertEqual('BACKFILLING', metadata.inventory_table_configuration_result.table_status)
-        self.assertEqual(model.TableStatusType.BACKFILLING, metadata.inventory_table_configuration_result.table_status)
         self.assertEqual('inventory', metadata.inventory_table_configuration_result.table_name)
         self.assertEqual('acs:ots:cn-hangzhou:1234567890123456:instance/table/inventory',
                          metadata.inventory_table_configuration_result.table_arn)
         self.assertEqual('oss:kms', metadata.inventory_table_configuration_result.encryption_configuration.sse_algorithm)
-        self.assertEqual(model.SseAlgorithmType.OSS_KMS,
-                         metadata.inventory_table_configuration_result.encryption_configuration.sse_algorithm)
         self.assertEqual('acs:kms:cn-hangzhou:1234567890123456:key/example-key',
                          metadata.inventory_table_configuration_result.encryption_configuration.kms_key_arn)
         self.assertEqual('ExampleError', metadata.inventory_table_configuration_result.error.error_code)
@@ -231,17 +227,17 @@ class TestUpdateBucketMetadataInventoryTableConfiguration(unittest.TestCase):
         request = model.UpdateBucketMetadataInventoryTableConfigurationRequest(
             bucket='bucketexampletest',
             inventory_table_configuration=model.InventoryTableConfiguration(
-                configuration_state=model.ConfigurationStateType.ENABLED,
+                configuration_state='ENABLED',
                 encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                    sse_algorithm=model.SseAlgorithmType.OSS_KMS,
+                    sse_algorithm='oss:kms',
                     kms_key_arn='acs:kms:cn-hangzhou:1234567890123456:key/example-key',
                 ),
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(model.ConfigurationStateType.ENABLED,
+        self.assertEqual('ENABLED',
                          request.inventory_table_configuration.configuration_state)
-        self.assertEqual(model.SseAlgorithmType.OSS_KMS,
+        self.assertEqual('oss:kms',
                          request.inventory_table_configuration.encryption_configuration.sse_algorithm)
         self.assertEqual('acs:kms:cn-hangzhou:1234567890123456:key/example-key',
                          request.inventory_table_configuration.encryption_configuration.kms_key_arn)
@@ -267,9 +263,9 @@ class TestUpdateBucketMetadataInventoryTableConfiguration(unittest.TestCase):
 
         # Build and serialize the request.
         configuration = model.InventoryTableConfiguration(
-            configuration_state=model.ConfigurationStateType.ENABLED,
+            configuration_state='ENABLED',
             encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                sse_algorithm=model.SseAlgorithmType.OSS_KMS,
+                sse_algorithm='oss:kms',
                 kms_key_arn='acs:kms:cn-hangzhou:1234567890123456:key/example-key',
             ),
         )
@@ -308,20 +304,20 @@ class TestUpdateBucketMetadataJournalTableConfiguration(unittest.TestCase):
         request = model.UpdateBucketMetadataJournalTableConfigurationRequest(
             bucket='bucketexampletest',
             journal_table_configuration=model.JournalTableConfiguration(
-                record_expiration=model.RecordExpiration(
-                    expiration=model.RecordExpirationType.DISABLED,
+                record_expiration=model.MetadataTableRecordExpiration(
+                    expiration='DISABLED',
                 ),
                 encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                    sse_algorithm=model.SseAlgorithmType.OSS_KMS,
+                    sse_algorithm='oss:kms',
                     kms_key_arn='acs:kms:cn-hangzhou:1234567890123456:key/example-key',
                 ),
             ),
         )
         self.assertEqual('bucketexampletest', request.bucket)
-        self.assertEqual(model.RecordExpirationType.DISABLED,
+        self.assertEqual('DISABLED',
                          request.journal_table_configuration.record_expiration.expiration)
         self.assertIsNone(request.journal_table_configuration.record_expiration.days)
-        self.assertEqual(model.SseAlgorithmType.OSS_KMS,
+        self.assertEqual('oss:kms',
                          request.journal_table_configuration.encryption_configuration.sse_algorithm)
         self.assertEqual('acs:kms:cn-hangzhou:1234567890123456:key/example-key',
                          request.journal_table_configuration.encryption_configuration.kms_key_arn)
@@ -349,11 +345,11 @@ class TestUpdateBucketMetadataJournalTableConfiguration(unittest.TestCase):
 
         # Build and serialize the request.
         configuration = model.JournalTableConfiguration(
-            record_expiration=model.RecordExpiration(
-                expiration=model.RecordExpirationType.DISABLED,
+            record_expiration=model.MetadataTableRecordExpiration(
+                expiration='DISABLED',
             ),
             encryption_configuration=model.MetadataTableEncryptionConfiguration(
-                sse_algorithm=model.SseAlgorithmType.OSS_KMS,
+                sse_algorithm='oss:kms',
                 kms_key_arn='acs:kms:cn-hangzhou:1234567890123456:key/example-key',
             ),
         )
@@ -378,24 +374,3 @@ class TestUpdateBucketMetadataJournalTableConfiguration(unittest.TestCase):
     def test_empty_result_constructor(self):
         result = model.UpdateBucketMetadataJournalTableConfigurationResult()
         self.assertIsInstance(result, serde.ResultModel)
-
-
-class TestBucketMetadataConfigurationEnums(unittest.TestCase):
-
-    def test_configuration_state_type(self):
-        self.assertEqual('ENABLED', model.ConfigurationStateType.ENABLED)
-        self.assertEqual('DISABLED', model.ConfigurationStateType.DISABLED)
-
-    def test_record_expiration_type(self):
-        self.assertEqual('ENABLED', model.RecordExpirationType.ENABLED)
-        self.assertEqual('DISABLED', model.RecordExpirationType.DISABLED)
-
-    def test_table_status_type(self):
-        self.assertEqual('CREATING', model.TableStatusType.CREATING)
-        self.assertEqual('BACKFILLING', model.TableStatusType.BACKFILLING)
-        self.assertEqual('ACTIVE', model.TableStatusType.ACTIVE)
-        self.assertEqual('FAILED', model.TableStatusType.FAILED)
-
-    def test_sse_algorithm_type(self):
-        self.assertEqual('AES256', model.SseAlgorithmType.AES256)
-        self.assertEqual('oss:kms', model.SseAlgorithmType.OSS_KMS)

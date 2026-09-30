@@ -28,7 +28,7 @@ def main():
     result = client.update_bucket_metadata_journal_table_configuration(oss.UpdateBucketMetadataJournalTableConfigurationRequest(
             bucket=args.bucket,
             journal_table_configuration=oss.JournalTableConfiguration(
-                record_expiration=oss.RecordExpiration(
+                record_expiration=oss.MetadataTableRecordExpiration(
                     expiration=args.expiration,
                     days=args.days if args.expiration == 'ENABLED' else None,
                 ),
