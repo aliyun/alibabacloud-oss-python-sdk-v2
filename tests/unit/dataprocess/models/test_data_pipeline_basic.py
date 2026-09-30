@@ -892,15 +892,15 @@ class TestDataPipelineV2(unittest.TestCase):
             destination=model.DataPipelineDestination(
                 object_tag_to_metadata=['category'],
                 usermeta_to_metadata=['x-oss-meta-source'],
-                image_embedding=model.DataPipelineDestinationImageEmbedding(
+                image_embedding=model.ImageEmbedding(
                     bucket='vector-bucket', index_name='image', prefix='v2'),
-                image_text_embedding=model.DataPipelineDestinationImageTextEmbedding(
+                image_text_embedding=model.ImageTextEmbedding(
                     bucket='vector-bucket', index_name='image-text', prefix='v2'),
-                video_frame_embedding=model.DataPipelineDestinationVideoFrameEmbedding(
+                video_frame_embedding=model.VideoFrameEmbedding(
                     bucket='vector-bucket', index_name='video-frame', prefix='v2'),
-                video_text_embedding=model.DataPipelineDestinationVideoTextEmbedding(
+                video_text_embedding=model.VideoTextEmbedding(
                     bucket='vector-bucket', index_name='video-text', prefix='v2'),
-                document_chunk_embedding=model.DataPipelineDestinationDocumentChunkEmbedding(
+                document_chunk_embedding=model.DocumentChunkEmbedding(
                     bucket='vector-bucket', index_name='document', prefix='v2'),
             ),
             data_pipeline_error=model.DataPipelineError(
@@ -912,13 +912,13 @@ class TestDataPipelineV2(unittest.TestCase):
             data_pipeline_data_process_configuration=model.DataPipelineDataProcessConfiguration(
                 search_mode='balanced',
                 insights=model.DataPipelineInsights(
-                    image=model.DataPipelineInsightsImage(
-                        caption=model.DataPipelineInsightsCaption(prompt='Describe the image.'),
+                    image=model.InsightsImage(
+                        caption=model.InsightsCaption(prompt='Describe the image.'),
                     ),
-                    video=model.DataPipelineInsightsVideo(
-                        caption=model.DataPipelineInsightsCaption(prompt='Describe each video scene.'),
-                        frame_embedding=model.DataPipelineInsightsFrameEmbedding(
-                            snapshot=model.DataPipelineInsightsSnapshot(
+                    video=model.InsightsVideo(
+                        caption=model.InsightsCaption(prompt='Describe each video scene.'),
+                        frame_embedding=model.InsightsFrameEmbedding(
+                            snapshot=model.InsightsSnapshot(
                                 mode='interval', interval=1.0),
                         ),
                     ),
@@ -975,9 +975,9 @@ class TestDataPipelineV2(unittest.TestCase):
             data_pipeline_data_process_configuration=model.DataPipelineDataProcessConfiguration(
                 search_mode='fast',
                 insights=model.DataPipelineInsights(
-                    video=model.DataPipelineInsightsVideo(
-                        frame_embedding=model.DataPipelineInsightsFrameEmbedding(
-                            snapshot=model.DataPipelineInsightsSnapshot(
+                    video=model.InsightsVideo(
+                        frame_embedding=model.InsightsFrameEmbedding(
+                            snapshot=model.InsightsSnapshot(
                                 mode='dhash',
                                 number=20,
                             ),
@@ -986,7 +986,7 @@ class TestDataPipelineV2(unittest.TestCase):
                 ),
             ),
             destination=model.DataPipelineDestination(
-                video_frame_embedding=model.DataPipelineDestinationVideoFrameEmbedding(
+                video_frame_embedding=model.VideoFrameEmbedding(
                     bucket='vector-bucket',
                     index_name='video-frame',
                 ),

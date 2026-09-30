@@ -300,13 +300,13 @@ class TestDataPipeline(TestBaseDataProcess):
     def test_v2_data_pipeline_lifecycle_and_validation(self):
         client = self.dp_client
         vectors_client = get_vectors_client()
-        suffix = str(int(time.time() * 1000))
-        pipeline_name = 'test-v2-' + suffix
-        invalid_pipeline_name = 'test-v2-invalid-' + suffix
+        suffix = str(int(time.time() * 10))
+        pipeline_name = 'v2' + suffix
+        invalid_pipeline_name = 'v2Invalid' + suffix
         vector_bucket_name = (
-            'test-v2-vector-' + suffix + '-' + str(random.randint(0, 9999))
+            'v2-vector-' + suffix + '-' + str(random.randint(0, 99))
         )
-        index_name = 'video-frame-' + suffix
+        index_name = 'videoFrame' + suffix
 
         source = oss_dataprocess.models.DataPipelineSource(
             input_bucket=self.dp_bucket,
@@ -316,9 +316,9 @@ class TestDataPipeline(TestBaseDataProcess):
             ),
         )
         insights = oss_dataprocess.models.DataPipelineInsights(
-            video=oss_dataprocess.models.DataPipelineInsightsVideo(
-                frame_embedding=oss_dataprocess.models.DataPipelineInsightsFrameEmbedding(
-                    snapshot=oss_dataprocess.models.DataPipelineInsightsSnapshot(
+            video=oss_dataprocess.models.InsightsVideo(
+                frame_embedding=oss_dataprocess.models.InsightsFrameEmbedding(
+                    snapshot=oss_dataprocess.models.InsightsSnapshot(
                         mode='interval',
                         interval=1.0,
                     ),
@@ -327,7 +327,7 @@ class TestDataPipeline(TestBaseDataProcess):
         )
         destination = oss_dataprocess.models.DataPipelineDestination(
             video_frame_embedding=(
-                oss_dataprocess.models.DataPipelineDestinationVideoFrameEmbedding(
+                oss_dataprocess.models.VideoFrameEmbedding(
                     bucket=vector_bucket_name,
                     index_name=index_name,
                     prefix='v2',

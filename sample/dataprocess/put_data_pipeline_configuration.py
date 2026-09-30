@@ -44,30 +44,30 @@ def main():
     #     data_pipeline_data_process_configuration=oss_dataprocess.models.DataPipelineDataProcessConfiguration(
     #         search_mode='balanced',
     #         insights=oss_dataprocess.models.DataPipelineInsights(
-    #             image=oss_dataprocess.models.DataPipelineInsightsImage(
-    #                 caption=oss_dataprocess.models.DataPipelineInsightsCaption(
+    #             image=oss_dataprocess.models.InsightsImage(
+    #                 caption=oss_dataprocess.models.InsightsCaption(
     #                     prompt='Describe the image.'),
     #             ),
-    #             video=oss_dataprocess.models.DataPipelineInsightsVideo(
-    #                 caption=oss_dataprocess.models.DataPipelineInsightsCaption(
+    #             video=oss_dataprocess.models.InsightsVideo(
+    #                 caption=oss_dataprocess.models.InsightsCaption(
     #                     prompt='Describe each video scene.'),
-    #                 frame_embedding=oss_dataprocess.models.DataPipelineInsightsFrameEmbedding(
-    #                     snapshot=oss_dataprocess.models.DataPipelineInsightsSnapshot(
+    #                 frame_embedding=oss_dataprocess.models.InsightsFrameEmbedding(
+    #                     snapshot=oss_dataprocess.models.InsightsSnapshot(
     #                         mode='interval', interval=1.0),
     #                 ),
     #             ),
     #         ),
     #     ),
     #     destination=oss_dataprocess.models.DataPipelineDestination(
-    #         image_embedding=oss_dataprocess.models.DataPipelineDestinationImageEmbedding(
+    #         image_embedding=oss_dataprocess.models.ImageEmbedding(
     #             bucket='vector-bucket', index_name='image', prefix='v2'),
-    #         image_text_embedding=oss_dataprocess.models.DataPipelineDestinationImageTextEmbedding(
+    #         image_text_embedding=oss_dataprocess.models.ImageTextEmbedding(
     #             bucket='vector-bucket', index_name='image-text', prefix='v2'),
-    #         video_frame_embedding=oss_dataprocess.models.DataPipelineDestinationVideoFrameEmbedding(
+    #         video_frame_embedding=oss_dataprocess.models.VideoFrameEmbedding(
     #             bucket='vector-bucket', index_name='video-frame', prefix='v2'),
-    #         video_text_embedding=oss_dataprocess.models.DataPipelineDestinationVideoTextEmbedding(
+    #         video_text_embedding=oss_dataprocess.models.VideoTextEmbedding(
     #             bucket='vector-bucket', index_name='video-text', prefix='v2'),
-    #         document_chunk_embedding=oss_dataprocess.models.DataPipelineDestinationDocumentChunkEmbedding(
+    #         document_chunk_embedding=oss_dataprocess.models.DocumentChunkEmbedding(
     #             bucket='vector-bucket', index_name='document', prefix='v2'),
     #     ),
     # )

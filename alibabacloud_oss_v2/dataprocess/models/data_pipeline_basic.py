@@ -100,7 +100,7 @@ class DataPipelineVectorDestination(serde.Model):
         self.prefix = prefix
 
 
-class DataPipelineDestinationImageEmbedding(DataPipelineVectorDestination):
+class ImageEmbedding(DataPipelineVectorDestination):
     """Destination for image embeddings."""
 
     _xml_map = {
@@ -108,7 +108,7 @@ class DataPipelineDestinationImageEmbedding(DataPipelineVectorDestination):
     }
 
 
-class DataPipelineDestinationImageTextEmbedding(DataPipelineVectorDestination):
+class ImageTextEmbedding(DataPipelineVectorDestination):
     """Destination for image text embeddings."""
 
     _xml_map = {
@@ -116,7 +116,7 @@ class DataPipelineDestinationImageTextEmbedding(DataPipelineVectorDestination):
     }
 
 
-class DataPipelineDestinationVideoFrameEmbedding(DataPipelineVectorDestination):
+class VideoFrameEmbedding(DataPipelineVectorDestination):
     """Destination for video frame embeddings."""
 
     _xml_map = {
@@ -124,7 +124,7 @@ class DataPipelineDestinationVideoFrameEmbedding(DataPipelineVectorDestination):
     }
 
 
-class DataPipelineDestinationVideoTextEmbedding(DataPipelineVectorDestination):
+class VideoTextEmbedding(DataPipelineVectorDestination):
     """Destination for video text embeddings."""
 
     _xml_map = {
@@ -132,7 +132,7 @@ class DataPipelineDestinationVideoTextEmbedding(DataPipelineVectorDestination):
     }
 
 
-class DataPipelineDestinationDocumentChunkEmbedding(DataPipelineVectorDestination):
+class DocumentChunkEmbedding(DataPipelineVectorDestination):
     """Destination for document chunk embeddings."""
 
     _xml_map = {
@@ -142,7 +142,7 @@ class DataPipelineDestinationDocumentChunkEmbedding(DataPipelineVectorDestinatio
 
 
 
-class DataPipelineInsightsCaption(serde.Model):
+class InsightsCaption(serde.Model):
     """Caption prompt configuration for V2 data pipeline insights."""
 
     _attribute_map = {
@@ -166,7 +166,7 @@ class DataPipelineInsightsCaption(serde.Model):
         self.prompt = prompt
 
 
-class DataPipelineInsightsSnapshot(serde.Model):
+class InsightsSnapshot(serde.Model):
     """Video snapshot configuration for V2 data pipeline insights."""
 
     _attribute_map = {
@@ -198,11 +198,11 @@ class DataPipelineInsightsSnapshot(serde.Model):
         self.number = number
 
 
-class DataPipelineInsightsFrameEmbedding(serde.Model):
+class InsightsFrameEmbedding(serde.Model):
     """Video frame embedding configuration for V2 data pipeline insights."""
 
     _attribute_map = {
-        'snapshot': {'tag': 'xml', 'rename': 'Snapshot', 'type': 'DataPipelineInsightsSnapshot'},
+        'snapshot': {'tag': 'xml', 'rename': 'Snapshot', 'type': 'InsightsSnapshot'},
     }
 
     _xml_map = {
@@ -211,22 +211,22 @@ class DataPipelineInsightsFrameEmbedding(serde.Model):
 
     def __init__(
             self,
-            snapshot: Optional[DataPipelineInsightsSnapshot] = None,
+            snapshot: Optional[InsightsSnapshot] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
-            snapshot (DataPipelineInsightsSnapshot, optional): The video snapshot configuration.
+            snapshot (InsightsSnapshot, optional): The video snapshot configuration.
         """
         super().__init__(**kwargs)
         self.snapshot = snapshot
 
 
-class DataPipelineInsightsImage(serde.Model):
+class InsightsImage(serde.Model):
     """Image configuration for V2 data pipeline insights."""
 
     _attribute_map = {
-        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'DataPipelineInsightsCaption'},
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'InsightsCaption'},
     }
 
     _xml_map = {
@@ -235,23 +235,23 @@ class DataPipelineInsightsImage(serde.Model):
 
     def __init__(
             self,
-            caption: Optional[DataPipelineInsightsCaption] = None,
+            caption: Optional[InsightsCaption] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
-            caption (DataPipelineInsightsCaption, optional): The image caption configuration.
+            caption (InsightsCaption, optional): The image caption configuration.
         """
         super().__init__(**kwargs)
         self.caption = caption
 
 
-class DataPipelineInsightsVideo(serde.Model):
+class InsightsVideo(serde.Model):
     """Video configuration for V2 data pipeline insights."""
 
     _attribute_map = {
-        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'DataPipelineInsightsCaption'},
-        'frame_embedding': {'tag': 'xml', 'rename': 'FrameEmbedding', 'type': 'DataPipelineInsightsFrameEmbedding'},
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'InsightsCaption'},
+        'frame_embedding': {'tag': 'xml', 'rename': 'FrameEmbedding', 'type': 'InsightsFrameEmbedding'},
     }
 
     _xml_map = {
@@ -260,14 +260,14 @@ class DataPipelineInsightsVideo(serde.Model):
 
     def __init__(
             self,
-            caption: Optional[DataPipelineInsightsCaption] = None,
-            frame_embedding: Optional[DataPipelineInsightsFrameEmbedding] = None,
+            caption: Optional[InsightsCaption] = None,
+            frame_embedding: Optional[InsightsFrameEmbedding] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
-            caption (DataPipelineInsightsCaption, optional): The video caption configuration.
-            frame_embedding (DataPipelineInsightsFrameEmbedding, optional): The video frame embedding configuration.
+            caption (InsightsCaption, optional): The video caption configuration.
+            frame_embedding (InsightsFrameEmbedding, optional): The video frame embedding configuration.
         """
         super().__init__(**kwargs)
         self.caption = caption
@@ -278,8 +278,8 @@ class DataPipelineInsights(serde.Model):
     """Insights configuration for a V2 data pipeline."""
 
     _attribute_map = {
-        'image': {'tag': 'xml', 'rename': 'Image', 'type': 'DataPipelineInsightsImage'},
-        'video': {'tag': 'xml', 'rename': 'Video', 'type': 'DataPipelineInsightsVideo'},
+        'image': {'tag': 'xml', 'rename': 'Image', 'type': 'InsightsImage'},
+        'video': {'tag': 'xml', 'rename': 'Video', 'type': 'InsightsVideo'},
     }
 
     _xml_map = {
@@ -288,14 +288,14 @@ class DataPipelineInsights(serde.Model):
 
     def __init__(
             self,
-            image: Optional[DataPipelineInsightsImage] = None,
-            video: Optional[DataPipelineInsightsVideo] = None,
+            image: Optional[InsightsImage] = None,
+            video: Optional[InsightsVideo] = None,
             **kwargs: Any
     ) -> None:
         """
         Args:
-            image (DataPipelineInsightsImage, optional): The image insights configuration.
-            video (DataPipelineInsightsVideo, optional): The video insights configuration.
+            image (InsightsImage, optional): The image insights configuration.
+            video (InsightsVideo, optional): The video insights configuration.
         """
         super().__init__(**kwargs)
         self.image = image
@@ -339,11 +339,11 @@ class DataPipelineDestination(serde.Model):
         'vector_index_names': {'tag': 'xml', 'rename': 'VectorIndexNames', 'type': '[str]'},
         'object_tag_to_metadata': {'tag': 'xml', 'rename': 'ObjectTagToMetadata', 'type': '[str]'},
         'usermeta_to_metadata': {'tag': 'xml', 'rename': 'UsermetaToMetadata', 'type': '[str]'},
-        'image_embedding': {'tag': 'xml', 'rename': 'ImageEmbedding', 'type': 'DataPipelineDestinationImageEmbedding'},
-        'image_text_embedding': {'tag': 'xml', 'rename': 'ImageTextEmbedding', 'type': 'DataPipelineDestinationImageTextEmbedding'},
-        'video_frame_embedding': {'tag': 'xml', 'rename': 'VideoFrameEmbedding', 'type': 'DataPipelineDestinationVideoFrameEmbedding'},
-        'video_text_embedding': {'tag': 'xml', 'rename': 'VideoTextEmbedding', 'type': 'DataPipelineDestinationVideoTextEmbedding'},
-        'document_chunk_embedding': {'tag': 'xml', 'rename': 'DocumentChunkEmbedding', 'type': 'DataPipelineDestinationDocumentChunkEmbedding'},
+        'image_embedding': {'tag': 'xml', 'rename': 'ImageEmbedding', 'type': 'ImageEmbedding'},
+        'image_text_embedding': {'tag': 'xml', 'rename': 'ImageTextEmbedding', 'type': 'ImageTextEmbedding'},
+        'video_frame_embedding': {'tag': 'xml', 'rename': 'VideoFrameEmbedding', 'type': 'VideoFrameEmbedding'},
+        'video_text_embedding': {'tag': 'xml', 'rename': 'VideoTextEmbedding', 'type': 'VideoTextEmbedding'},
+        'document_chunk_embedding': {'tag': 'xml', 'rename': 'DocumentChunkEmbedding', 'type': 'DocumentChunkEmbedding'},
     }
 
     _xml_map = {
@@ -357,11 +357,11 @@ class DataPipelineDestination(serde.Model):
             vector_index_names: Optional[List[str]] = None,
             object_tag_to_metadata: Optional[List[str]] = None,
             usermeta_to_metadata: Optional[List[str]] = None,
-            image_embedding: Optional[DataPipelineDestinationImageEmbedding] = None,
-            image_text_embedding: Optional[DataPipelineDestinationImageTextEmbedding] = None,
-            video_frame_embedding: Optional[DataPipelineDestinationVideoFrameEmbedding] = None,
-            video_text_embedding: Optional[DataPipelineDestinationVideoTextEmbedding] = None,
-            document_chunk_embedding: Optional[DataPipelineDestinationDocumentChunkEmbedding] = None,
+            image_embedding: Optional[ImageEmbedding] = None,
+            image_text_embedding: Optional[ImageTextEmbedding] = None,
+            video_frame_embedding: Optional[VideoFrameEmbedding] = None,
+            video_text_embedding: Optional[VideoTextEmbedding] = None,
+            document_chunk_embedding: Optional[DocumentChunkEmbedding] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -371,11 +371,11 @@ class DataPipelineDestination(serde.Model):
             vector_index_names (List[str], optional): The list of vector index names.
             object_tag_to_metadata (List[str], optional): The list of object tag to metadata mappings.
             usermeta_to_metadata (List[str], optional): The list of user meta to metadata mappings.
-            image_embedding (DataPipelineDestinationImageEmbedding, optional): The image embedding destination.
-            image_text_embedding (DataPipelineDestinationImageTextEmbedding, optional): The image text embedding destination.
-            video_frame_embedding (DataPipelineDestinationVideoFrameEmbedding, optional): The video frame embedding destination.
-            video_text_embedding (DataPipelineDestinationVideoTextEmbedding, optional): The video text embedding destination.
-            document_chunk_embedding (DataPipelineDestinationDocumentChunkEmbedding, optional): The document chunk embedding destination.
+            image_embedding (ImageEmbedding, optional): The image embedding destination.
+            image_text_embedding (ImageTextEmbedding, optional): The image text embedding destination.
+            video_frame_embedding (VideoFrameEmbedding, optional): The video frame embedding destination.
+            video_text_embedding (VideoTextEmbedding, optional): The video text embedding destination.
+            document_chunk_embedding (DocumentChunkEmbedding, optional): The document chunk embedding destination.
         """
         super().__init__(**kwargs)
         self.vector_bucket_name = vector_bucket_name

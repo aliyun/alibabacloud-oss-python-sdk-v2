@@ -286,7 +286,7 @@ class TestDataPipelineOperations(unittest.TestCase):
                 search_mode='fast',
             ),
             destination=models.DataPipelineDestination(
-                image_embedding=models.DataPipelineDestinationImageEmbedding(
+                image_embedding=models.ImageEmbedding(
                     bucket='vector-bucket',
                     index_name='image-index',
                 ),
