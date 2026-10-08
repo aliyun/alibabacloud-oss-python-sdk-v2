@@ -5,5 +5,6 @@ from .bucket_basic import *
 from .object_basic import *
 from .bucket_tags import *
 from .bucket_object_worm_configuration import *
+from .bucket_metadata_configuration import *
 from .object_worm import *
 from .data_process import *
