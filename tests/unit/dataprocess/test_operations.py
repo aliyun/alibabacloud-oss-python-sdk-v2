@@ -270,6 +270,84 @@ class TestDataPipelineOperations(unittest.TestCase):
         ))
         self.assertEqual('p1', result.configuration.data_pipeline_name)
 
+    def test_put_data_pipeline_configuration_v2(self):
+        requests = []
+        client = mock_client(
+            request_fn=lambda request: requests.append(request),
+            response_fn=lambda: MockHttpResponse(
+                status_code=200,
+                headers={'x-oss-request-id': 'test-request-id'},
+                body=None,
+            ),
+        )
+        config = models.PutDataPipelineConfigurationConfiguration(
+            model_tier='standard',
+            data_pipeline_data_process_configuration=models.DataPipelineDataProcessConfiguration(
+                search_mode='fast',
+            ),
+            destination=models.DataPipelineDestination(
+                image_embedding=models.ImageEmbedding(
+                    bucket='vector-bucket',
+                    index_name='image-index',
+                ),
+            ),
+        )
+
+        result = operations.put_data_pipeline_configuration(
+            client,
+            models.PutDataPipelineConfigurationRequest(
+                data_pipeline_name='p1',
+                configuration=config,
+            ),
+        )
+
+        self.assertEqual(200, result.status_code)
+        self.assertEqual(1, len(requests))
+        self.assertEqual('POST', requests[0].method)
+        self.assertEqual('application/xml', requests[0].headers.get('Content-Type'))
+        self.assertIsNotNone(requests[0].headers.get('Content-MD5'))
+        self.assertIn('dataPipelineName=p1', requests[0].url)
+        self.assertIn('action=putDataPipelineConfiguration', requests[0].url)
+        self.assertIn(b'<ModelTier>standard</ModelTier>', requests[0].body)
+        self.assertIn(b'<SearchMode>fast</SearchMode>', requests[0].body)
+        self.assertIn(b'<ImageEmbedding>', requests[0].body)
+
+    def test_get_data_pipeline_configuration_v2(self):
+        xml = (
+            b'<DataPipelineConfiguration>'
+            b'<DataPipelineName>p1</DataPipelineName>'
+            b'<Status>Running</Status><Phase>IncrementalScanning</Phase>'
+            b'<Sources><InputBucket>source-bucket</InputBucket>'
+            b'<IgnoreDelete>false</IgnoreDelete></Sources>'
+            b'<ModelTier>standard</ModelTier>'
+            b'<DataPipelineDataProcessConfiguration><SearchMode>fast</SearchMode>'
+            b'<Insights><Video><FrameEmbedding><Snapshot><Mode>dhash</Mode>'
+            b'<Number>20</Number></Snapshot></FrameEmbedding></Video></Insights>'
+            b'</DataPipelineDataProcessConfiguration>'
+            b'<Destination><ImageEmbedding><Bucket>vector-bucket</Bucket>'
+            b'<IndexName>image-index</IndexName><Prefix>v2</Prefix>'
+            b'</ImageEmbedding></Destination>'
+            b'</DataPipelineConfiguration>'
+        )
+        client = _make_client_with_body(xml)
+
+        result = operations.get_data_pipeline_configuration(
+            client,
+            models.GetDataPipelineConfigurationRequest(data_pipeline_name='p1'),
+        )
+
+        self.assertEqual('standard', result.configuration.model_tier)
+        self.assertEqual('Running', result.configuration.status)
+        self.assertEqual('IncrementalScanning', result.configuration.phase)
+        self.assertFalse(result.configuration.sources[0].ignore_delete)
+        process_config = result.configuration.data_pipeline_data_process_configuration
+        self.assertEqual('fast', process_config.search_mode)
+        snapshot = process_config.insights.video.frame_embedding.snapshot
+        self.assertEqual('dhash', snapshot.mode)
+        self.assertEqual(20, snapshot.number)
+        self.assertEqual('image-index', result.configuration.destination.image_embedding.index_name)
+        self.assertEqual('v2', result.configuration.destination.image_embedding.prefix)
+
     def test_delete_data_pipeline_configuration(self):
         client = _make_empty_client()
         result = operations.delete_data_pipeline_configuration(client, models.DeleteDataPipelineConfigurationRequest(
@@ -278,6 +356,7 @@ class TestDataPipelineOperations(unittest.TestCase):
         self.assertEqual(200, result.status_code)
 
     def test_list_data_pipeline_configurations(self):
+        requests = []
         xml = (
             b'<?xml version="1.0" encoding="UTF-8"?>'
             b'<ListDataPipelineConfigurationsResult>'
@@ -285,10 +364,65 @@ class TestDataPipelineOperations(unittest.TestCase):
             b'<NextToken>tok</NextToken>'
             b'</ListDataPipelineConfigurationsResult>'
         )
-        client = _make_client_with_body(xml)
-        result = operations.list_data_pipeline_configurations(client, models.ListDataPipelineConfigurationsRequest())
+        client = mock_client(
+            request_fn=lambda request: requests.append(request),
+            response_fn=lambda: MockHttpResponse(
+                status_code=200,
+                headers={'x-oss-request-id': 'test-request-id'},
+                body=xml,
+            ),
+        )
+        result = operations.list_data_pipeline_configurations(
+            client,
+            models.ListDataPipelineConfigurationsRequest(input_bucket='source-bucket'),
+        )
         self.assertEqual(1, len(result.data_pipeline_configurations.data_pipeline_configuration))
         self.assertEqual('tok', result.next_token)
+        self.assertEqual(1, len(requests))
+        self.assertIn('inputBucket=source-bucket', requests[0].url)
+
+    def test_list_data_pipeline_configurations_v2(self):
+        xml = (
+            b'<ListDataPipelineConfigurationsResult>'
+            b'<DataPipelineConfigurations><DataPipelineConfiguration>'
+            b'<DataPipelineName>p1</DataPipelineName>'
+            b'<Status>Running</Status><Phase>IncrementalScanning</Phase>'
+            b'<Sources><InputBucket>source-bucket</InputBucket>'
+            b'<IgnoreDelete>false</IgnoreDelete></Sources>'
+            b'<ModelTier>standard</ModelTier>'
+            b'<DataPipelineDataProcessConfiguration><SearchMode>balanced</SearchMode>'
+            b'<Insights><Image><Caption><Prompt>Describe the image.</Prompt>'
+            b'</Caption></Image></Insights></DataPipelineDataProcessConfiguration>'
+            b'<Destination><ImageEmbedding><Bucket>vector-bucket</Bucket>'
+            b'<IndexName>image-index</IndexName><Prefix>v2</Prefix>'
+            b'</ImageEmbedding></Destination>'
+            b'</DataPipelineConfiguration></DataPipelineConfigurations>'
+            b'<NextToken>next</NextToken>'
+            b'</ListDataPipelineConfigurationsResult>'
+        )
+        client = _make_client_with_body(xml)
+
+        result = operations.list_data_pipeline_configurations(
+            client,
+            models.ListDataPipelineConfigurationsRequest(input_bucket='source-bucket'),
+        )
+
+        self.assertEqual('next', result.next_token)
+        configurations = result.data_pipeline_configurations.data_pipeline_configuration
+        self.assertEqual(1, len(configurations))
+        config = configurations[0]
+        self.assertEqual('p1', config.data_pipeline_name)
+        self.assertEqual('standard', config.model_tier)
+        self.assertFalse(config.sources[0].ignore_delete)
+        self.assertEqual(
+            'Describe the image.',
+            config.data_pipeline_data_process_configuration.insights.image.caption.prompt,
+        )
+        self.assertEqual('image-index', config.destination.image_embedding.index_name)
+        self.assertIsNone(config.destination.image_text_embedding)
+        self.assertIsNone(config.destination.video_frame_embedding)
+        self.assertIsNone(config.destination.video_text_embedding)
+        self.assertIsNone(config.destination.document_chunk_embedding)
 
     def test_pause_data_pipeline(self):
         client = _make_empty_client()

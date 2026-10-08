@@ -72,6 +72,264 @@ class DataPipelineSource(serde.Model):
         self.filter_configuration = filter_configuration
 
 
+class DataPipelineVectorDestination(serde.Model):
+    """Vector destination for a V2 data pipeline output."""
+
+    _attribute_map = {
+        'bucket': {'tag': 'xml', 'rename': 'Bucket', 'type': 'str'},
+        'index_name': {'tag': 'xml', 'rename': 'IndexName', 'type': 'str'},
+        'prefix': {'tag': 'xml', 'rename': 'Prefix', 'type': 'str'},
+    }
+
+    def __init__(
+            self,
+            bucket: Optional[str] = None,
+            index_name: Optional[str] = None,
+            prefix: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            bucket (str, optional): The vector bucket name.
+            index_name (str, optional): The vector index name.
+            prefix (str, optional): The vector key prefix.
+        """
+        super().__init__(**kwargs)
+        self.bucket = bucket
+        self.index_name = index_name
+        self.prefix = prefix
+
+
+class ImageEmbedding(DataPipelineVectorDestination):
+    """Destination for image embeddings."""
+
+    _xml_map = {
+        'name': 'ImageEmbedding'
+    }
+
+
+class ImageTextEmbedding(DataPipelineVectorDestination):
+    """Destination for image text embeddings."""
+
+    _xml_map = {
+        'name': 'ImageTextEmbedding'
+    }
+
+
+class VideoFrameEmbedding(DataPipelineVectorDestination):
+    """Destination for video frame embeddings."""
+
+    _xml_map = {
+        'name': 'VideoFrameEmbedding'
+    }
+
+
+class VideoTextEmbedding(DataPipelineVectorDestination):
+    """Destination for video text embeddings."""
+
+    _xml_map = {
+        'name': 'VideoTextEmbedding'
+    }
+
+
+class DocumentChunkEmbedding(DataPipelineVectorDestination):
+    """Destination for document chunk embeddings."""
+
+    _xml_map = {
+        'name': 'DocumentChunkEmbedding'
+    }
+
+
+
+
+class InsightsCaption(serde.Model):
+    """Caption prompt configuration for V2 data pipeline insights."""
+
+    _attribute_map = {
+        'prompt': {'tag': 'xml', 'rename': 'Prompt', 'type': 'str'},
+    }
+
+    _xml_map = {
+        'name': 'Caption'
+    }
+
+    def __init__(
+            self,
+            prompt: Optional[str] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            prompt (str, optional): The prompt used to generate captions.
+        """
+        super().__init__(**kwargs)
+        self.prompt = prompt
+
+
+class InsightsSnapshot(serde.Model):
+    """Video snapshot configuration for V2 data pipeline insights."""
+
+    _attribute_map = {
+        'mode': {'tag': 'xml', 'rename': 'Mode', 'type': 'str'},
+        'interval': {'tag': 'xml', 'rename': 'Interval', 'type': 'float'},
+        'number': {'tag': 'xml', 'rename': 'Number', 'type': 'int'},
+    }
+
+    _xml_map = {
+        'name': 'Snapshot'
+    }
+
+    def __init__(
+            self,
+            mode: Optional[str] = None,
+            interval: Optional[float] = None,
+            number: Optional[int] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            mode (str, optional): The snapshot mode, interval or dhash.
+            interval (float, optional): The snapshot interval in seconds.
+            number (int, optional): The maximum number of snapshots.
+        """
+        super().__init__(**kwargs)
+        self.mode = mode
+        self.interval = interval
+        self.number = number
+
+
+class InsightsFrameEmbedding(serde.Model):
+    """Video frame embedding configuration for V2 data pipeline insights."""
+
+    _attribute_map = {
+        'snapshot': {'tag': 'xml', 'rename': 'Snapshot', 'type': 'InsightsSnapshot'},
+    }
+
+    _xml_map = {
+        'name': 'FrameEmbedding'
+    }
+
+    def __init__(
+            self,
+            snapshot: Optional[InsightsSnapshot] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            snapshot (InsightsSnapshot, optional): The video snapshot configuration.
+        """
+        super().__init__(**kwargs)
+        self.snapshot = snapshot
+
+
+class InsightsImage(serde.Model):
+    """Image configuration for V2 data pipeline insights."""
+
+    _attribute_map = {
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'InsightsCaption'},
+    }
+
+    _xml_map = {
+        'name': 'Image'
+    }
+
+    def __init__(
+            self,
+            caption: Optional[InsightsCaption] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            caption (InsightsCaption, optional): The image caption configuration.
+        """
+        super().__init__(**kwargs)
+        self.caption = caption
+
+
+class InsightsVideo(serde.Model):
+    """Video configuration for V2 data pipeline insights."""
+
+    _attribute_map = {
+        'caption': {'tag': 'xml', 'rename': 'Caption', 'type': 'InsightsCaption'},
+        'frame_embedding': {'tag': 'xml', 'rename': 'FrameEmbedding', 'type': 'InsightsFrameEmbedding'},
+    }
+
+    _xml_map = {
+        'name': 'Video'
+    }
+
+    def __init__(
+            self,
+            caption: Optional[InsightsCaption] = None,
+            frame_embedding: Optional[InsightsFrameEmbedding] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            caption (InsightsCaption, optional): The video caption configuration.
+            frame_embedding (InsightsFrameEmbedding, optional): The video frame embedding configuration.
+        """
+        super().__init__(**kwargs)
+        self.caption = caption
+        self.frame_embedding = frame_embedding
+
+
+class DataPipelineInsights(serde.Model):
+    """Insights configuration for a V2 data pipeline."""
+
+    _attribute_map = {
+        'image': {'tag': 'xml', 'rename': 'Image', 'type': 'InsightsImage'},
+        'video': {'tag': 'xml', 'rename': 'Video', 'type': 'InsightsVideo'},
+    }
+
+    _xml_map = {
+        'name': 'Insights'
+    }
+
+    def __init__(
+            self,
+            image: Optional[InsightsImage] = None,
+            video: Optional[InsightsVideo] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            image (InsightsImage, optional): The image insights configuration.
+            video (InsightsVideo, optional): The video insights configuration.
+        """
+        super().__init__(**kwargs)
+        self.image = image
+        self.video = video
+
+
+class DataPipelineDataProcessConfiguration(serde.Model):
+    """Data process configuration for a V2 data pipeline."""
+
+    _attribute_map = {
+        'search_mode': {'tag': 'xml', 'rename': 'SearchMode', 'type': 'str'},
+        'insights': {'tag': 'xml', 'rename': 'Insights', 'type': 'DataPipelineInsights'},
+    }
+
+    _xml_map = {
+        'name': 'DataPipelineDataProcessConfiguration'
+    }
+
+    def __init__(
+            self,
+            search_mode: Optional[str] = None,
+            insights: Optional[DataPipelineInsights] = None,
+            **kwargs: Any
+    ) -> None:
+        """
+        Args:
+            search_mode (str, optional): The search mode, fast or balanced.
+            insights (DataPipelineInsights, optional): The insights configuration.
+        """
+        super().__init__(**kwargs)
+        self.search_mode = search_mode
+        self.insights = insights
+
+
 class DataPipelineDestination(serde.Model):
     """Destination configuration for data pipeline."""
 
@@ -81,6 +339,11 @@ class DataPipelineDestination(serde.Model):
         'vector_index_names': {'tag': 'xml', 'rename': 'VectorIndexNames', 'type': '[str]'},
         'object_tag_to_metadata': {'tag': 'xml', 'rename': 'ObjectTagToMetadata', 'type': '[str]'},
         'usermeta_to_metadata': {'tag': 'xml', 'rename': 'UsermetaToMetadata', 'type': '[str]'},
+        'image_embedding': {'tag': 'xml', 'rename': 'ImageEmbedding', 'type': 'ImageEmbedding'},
+        'image_text_embedding': {'tag': 'xml', 'rename': 'ImageTextEmbedding', 'type': 'ImageTextEmbedding'},
+        'video_frame_embedding': {'tag': 'xml', 'rename': 'VideoFrameEmbedding', 'type': 'VideoFrameEmbedding'},
+        'video_text_embedding': {'tag': 'xml', 'rename': 'VideoTextEmbedding', 'type': 'VideoTextEmbedding'},
+        'document_chunk_embedding': {'tag': 'xml', 'rename': 'DocumentChunkEmbedding', 'type': 'DocumentChunkEmbedding'},
     }
 
     _xml_map = {
@@ -94,6 +357,11 @@ class DataPipelineDestination(serde.Model):
             vector_index_names: Optional[List[str]] = None,
             object_tag_to_metadata: Optional[List[str]] = None,
             usermeta_to_metadata: Optional[List[str]] = None,
+            image_embedding: Optional[ImageEmbedding] = None,
+            image_text_embedding: Optional[ImageTextEmbedding] = None,
+            video_frame_embedding: Optional[VideoFrameEmbedding] = None,
+            video_text_embedding: Optional[VideoTextEmbedding] = None,
+            document_chunk_embedding: Optional[DocumentChunkEmbedding] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -103,6 +371,11 @@ class DataPipelineDestination(serde.Model):
             vector_index_names (List[str], optional): The list of vector index names.
             object_tag_to_metadata (List[str], optional): The list of object tag to metadata mappings.
             usermeta_to_metadata (List[str], optional): The list of user meta to metadata mappings.
+            image_embedding (ImageEmbedding, optional): The image embedding destination.
+            image_text_embedding (ImageTextEmbedding, optional): The image text embedding destination.
+            video_frame_embedding (VideoFrameEmbedding, optional): The video frame embedding destination.
+            video_text_embedding (VideoTextEmbedding, optional): The video text embedding destination.
+            document_chunk_embedding (DocumentChunkEmbedding, optional): The document chunk embedding destination.
         """
         super().__init__(**kwargs)
         self.vector_bucket_name = vector_bucket_name
@@ -110,6 +383,11 @@ class DataPipelineDestination(serde.Model):
         self.vector_index_names = vector_index_names
         self.object_tag_to_metadata = object_tag_to_metadata
         self.usermeta_to_metadata = usermeta_to_metadata
+        self.image_embedding = image_embedding
+        self.image_text_embedding = image_text_embedding
+        self.video_frame_embedding = video_frame_embedding
+        self.video_text_embedding = video_text_embedding
+        self.document_chunk_embedding = document_chunk_embedding
 
 
 class DataPipelineEmbeddingConfiguration(serde.Model):
@@ -194,6 +472,8 @@ class DataPipelineConfiguration(serde.Model):
         'data_pipeline_error': {'tag': 'xml', 'rename': 'DataPipelineError', 'type': 'DataPipelineError'},
         'create_time': {'tag': 'xml', 'rename': 'CreateTime', 'type': 'str'},
         'sources': {'tag': 'xml', 'rename': 'Sources', 'type': '[DataPipelineSource]'},
+        'model_tier': {'tag': 'xml', 'rename': 'ModelTier', 'type': 'str'},
+        'data_pipeline_data_process_configuration': {'tag': 'xml', 'rename': 'DataPipelineDataProcessConfiguration', 'type': 'DataPipelineDataProcessConfiguration'},
     }
 
     _xml_map = {
@@ -212,6 +492,8 @@ class DataPipelineConfiguration(serde.Model):
             data_pipeline_error: Optional[DataPipelineError] = None,
             create_time: Optional[str] = None,
             sources: Optional[List[DataPipelineSource]] = None,
+            model_tier: Optional[str] = None,
+            data_pipeline_data_process_configuration: Optional[DataPipelineDataProcessConfiguration] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -226,6 +508,8 @@ class DataPipelineConfiguration(serde.Model):
             data_pipeline_error (DataPipelineError, optional): The error configuration.
             create_time (str, optional): The time when the data pipeline was created.
             sources (List[DataPipelineSource], optional): The list of data sources.
+            model_tier (str, optional): The V2 model tier. Currently only standard is supported.
+            data_pipeline_data_process_configuration (DataPipelineDataProcessConfiguration, optional): The V2 data process configuration.
         """
         super().__init__(**kwargs)
         self.data_pipeline_name = data_pipeline_name
@@ -238,6 +522,8 @@ class DataPipelineConfiguration(serde.Model):
         self.data_pipeline_error = data_pipeline_error
         self.create_time = create_time
         self.sources = sources
+        self.model_tier = model_tier
+        self.data_pipeline_data_process_configuration = data_pipeline_data_process_configuration
 
 
 class DataPipelineConfigurations(serde.Model):
@@ -273,6 +559,8 @@ class PutDataPipelineConfigurationConfiguration(serde.Model):
         'data_pipeline_embedding_configuration': {'tag': 'xml', 'rename': 'DataPipelineEmbeddingConfiguration', 'type': 'DataPipelineEmbeddingConfiguration'},
         'destination': {'tag': 'xml', 'rename': 'Destination', 'type': 'DataPipelineDestination'},
         'data_pipeline_error': {'tag': 'xml', 'rename': 'DataPipelineError', 'type': 'DataPipelineError'},
+        'model_tier': {'tag': 'xml', 'rename': 'ModelTier', 'type': 'str'},
+        'data_pipeline_data_process_configuration': {'tag': 'xml', 'rename': 'DataPipelineDataProcessConfiguration', 'type': 'DataPipelineDataProcessConfiguration'},
     }
 
     _xml_map = {
@@ -286,6 +574,8 @@ class PutDataPipelineConfigurationConfiguration(serde.Model):
             data_pipeline_embedding_configuration: Optional[DataPipelineEmbeddingConfiguration] = None,
             destination: Optional[DataPipelineDestination] = None,
             data_pipeline_error: Optional[DataPipelineError] = None,
+            model_tier: Optional[str] = None,
+            data_pipeline_data_process_configuration: Optional[DataPipelineDataProcessConfiguration] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -295,6 +585,8 @@ class PutDataPipelineConfigurationConfiguration(serde.Model):
             data_pipeline_embedding_configuration (DataPipelineEmbeddingConfiguration, optional): The embedding configuration.
             destination (DataPipelineDestination, optional): The destination configuration.
             data_pipeline_error (DataPipelineError, optional): The error information.
+            model_tier (str, optional): The V2 model tier. Currently only standard is supported.
+            data_pipeline_data_process_configuration (DataPipelineDataProcessConfiguration, optional): The V2 data process configuration.
         """
         super().__init__(**kwargs)
         self.data_pipeline_description = data_pipeline_description
@@ -302,6 +594,8 @@ class PutDataPipelineConfigurationConfiguration(serde.Model):
         self.data_pipeline_embedding_configuration = data_pipeline_embedding_configuration
         self.destination = destination
         self.data_pipeline_error = data_pipeline_error
+        self.model_tier = model_tier
+        self.data_pipeline_data_process_configuration = data_pipeline_data_process_configuration
 
 
 class PutDataPipelineConfigurationRequest(RequestModel):
@@ -408,6 +702,7 @@ class ListDataPipelineConfigurationsRequest(RequestModel):
         'max_results': {'tag': 'input', 'position': 'query', 'rename': 'maxResults', 'type': 'int'},
         'prefix': {'tag': 'input', 'position': 'query', 'rename': 'prefix', 'type': 'str'},
         'next_token': {'tag': 'input', 'position': 'query', 'rename': 'nextToken', 'type': 'str'},
+        'input_bucket': {'tag': 'input', 'position': 'query', 'rename': 'inputBucket', 'type': 'str'},
     }
 
     def __init__(
@@ -415,6 +710,7 @@ class ListDataPipelineConfigurationsRequest(RequestModel):
             max_results: Optional[int] = None,
             prefix: Optional[str] = None,
             next_token: Optional[str] = None,
+            input_bucket: Optional[str] = None,
             **kwargs: Any
     ) -> None:
         """
@@ -422,11 +718,13 @@ class ListDataPipelineConfigurationsRequest(RequestModel):
             max_results (int, optional): The maximum number of results to return.
             prefix (str, optional): The prefix filter for data pipeline names.
             next_token (str, optional): The token for the next page of results.
+            input_bucket (str, optional): The source bucket name used to filter data pipelines.
         """
         super().__init__(**kwargs)
         self.max_results = max_results
         self.prefix = prefix
         self.next_token = next_token
+        self.input_bucket = input_bucket
 
 
 class ListDataPipelineConfigurationsResponseBody(serde.Model):
