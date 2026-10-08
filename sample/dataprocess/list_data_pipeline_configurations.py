@@ -23,6 +23,8 @@ def main():
         max_results=args.max_results,
         prefix=args.prefix,
         next_token=args.next_token,
+        # Set input_bucket to filter by the complete source bucket name.
+        # input_bucket='source-bucket',
     ))
     print(f'status code: {result.status_code}, request id: {result.request_id}, next token: {result.next_token}')
     if result.data_pipeline_configurations and result.data_pipeline_configurations.data_pipeline_configuration:

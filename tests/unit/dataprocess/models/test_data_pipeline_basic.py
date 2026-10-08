@@ -63,6 +63,11 @@ class TestDataPipelineDestination(unittest.TestCase):
         self.assertIsNone(dest.vector_index_names)
         self.assertIsNone(dest.object_tag_to_metadata)
         self.assertIsNone(dest.usermeta_to_metadata)
+        self.assertIsNone(dest.image_embedding)
+        self.assertIsNone(dest.image_text_embedding)
+        self.assertIsNone(dest.video_frame_embedding)
+        self.assertIsNone(dest.video_text_embedding)
+        self.assertIsNone(dest.document_chunk_embedding)
 
     def test_full_constructor(self):
         dest = model.DataPipelineDestination(
@@ -131,6 +136,8 @@ class TestDataPipelineConfiguration(unittest.TestCase):
         self.assertIsNone(config.data_pipeline_error)
         self.assertIsNone(config.create_time)
         self.assertIsNone(config.sources)
+        self.assertIsNone(config.model_tier)
+        self.assertIsNone(config.data_pipeline_data_process_configuration)
 
     def test_full_constructor(self):
         config = model.DataPipelineConfiguration(
@@ -179,6 +186,8 @@ class TestPutDataPipelineConfigurationConfiguration(unittest.TestCase):
         self.assertIsNone(config.data_pipeline_embedding_configuration)
         self.assertIsNone(config.destination)
         self.assertIsNone(config.data_pipeline_error)
+        self.assertIsNone(config.model_tier)
+        self.assertIsNone(config.data_pipeline_data_process_configuration)
 
     def test_full_constructor(self):
         config = model.PutDataPipelineConfigurationConfiguration(
@@ -596,16 +605,19 @@ class TestListDataPipelineConfigurationsRequest(unittest.TestCase):
         self.assertIsNone(request.max_results)
         self.assertIsNone(request.prefix)
         self.assertIsNone(request.next_token)
+        self.assertIsNone(request.input_bucket)
 
     def test_full_constructor(self):
         request = model.ListDataPipelineConfigurationsRequest(
             max_results=50,
             prefix='xml-prefix',
             next_token='xml-token',
+            input_bucket='source-bucket',
         )
         self.assertEqual(50, request.max_results)
         self.assertEqual('xml-prefix', request.prefix)
         self.assertEqual('xml-token', request.next_token)
+        self.assertEqual('source-bucket', request.input_bucket)
 
     def test_xml_builder(self):
         # Reference: Java ListDataPipelineConfigurationsRequestTest.xmlBuilder
@@ -613,6 +625,7 @@ class TestListDataPipelineConfigurationsRequest(unittest.TestCase):
             max_results=50,
             prefix='xml-prefix',
             next_token='xml-token',
+            input_bucket='source-bucket',
         )
 
         op_input = serde.serialize_input(request, OperationInput(
@@ -624,6 +637,7 @@ class TestListDataPipelineConfigurationsRequest(unittest.TestCase):
         self.assertEqual('50', op_input.parameters.get('maxResults'))
         self.assertEqual('xml-prefix', op_input.parameters.get('prefix'))
         self.assertEqual('xml-token', op_input.parameters.get('nextToken'))
+        self.assertEqual('source-bucket', op_input.parameters.get('inputBucket'))
 
 
 class TestListDataPipelineConfigurationsResult(unittest.TestCase):
@@ -860,6 +874,139 @@ class TestRestartDataPipelineResult(unittest.TestCase):
         )
         self.assertIsNotNone(result)
         self.assertEqual(200, result.status_code)
+
+
+class TestDataPipelineV2(unittest.TestCase):
+    def _make_v2_configuration(self):
+        return model.PutDataPipelineConfigurationConfiguration(
+            data_pipeline_description='multimedia semantic vectors',
+            sources=[model.DataPipelineSource(
+                input_bucket='source-bucket',
+                input_data_scope='All',
+                ignore_delete=False,
+                filter_configuration=model.DataPipelineSourceFilterConfiguration(
+                    prefix_set=['media/'],
+                    object_media_types=['image', 'video', 'text'],
+                ),
+            )],
+            destination=model.DataPipelineDestination(
+                object_tag_to_metadata=['category'],
+                usermeta_to_metadata=['x-oss-meta-source'],
+                image_embedding=model.ImageEmbedding(
+                    bucket='vector-bucket', index_name='image', prefix='v2'),
+                image_text_embedding=model.ImageTextEmbedding(
+                    bucket='vector-bucket', index_name='image-text', prefix='v2'),
+                video_frame_embedding=model.VideoFrameEmbedding(
+                    bucket='vector-bucket', index_name='video-frame', prefix='v2'),
+                video_text_embedding=model.VideoTextEmbedding(
+                    bucket='vector-bucket', index_name='video-text', prefix='v2'),
+                document_chunk_embedding=model.DocumentChunkEmbedding(
+                    bucket='vector-bucket', index_name='document', prefix='v2'),
+            ),
+            data_pipeline_error=model.DataPipelineError(
+                error_mode='ignoreAndRecord',
+                error_bucket='error-bucket',
+                error_prefix='v2/',
+            ),
+            model_tier='standard',
+            data_pipeline_data_process_configuration=model.DataPipelineDataProcessConfiguration(
+                search_mode='balanced',
+                insights=model.DataPipelineInsights(
+                    image=model.InsightsImage(
+                        caption=model.InsightsCaption(prompt='Describe the image.'),
+                    ),
+                    video=model.InsightsVideo(
+                        caption=model.InsightsCaption(prompt='Describe each video scene.'),
+                        frame_embedding=model.InsightsFrameEmbedding(
+                            snapshot=model.InsightsSnapshot(
+                                mode='interval', interval=1.0),
+                        ),
+                    ),
+                ),
+            ),
+        )
+
+    def test_v2_constructor(self):
+        config = self._make_v2_configuration()
+
+        self.assertEqual('standard', config.model_tier)
+        self.assertEqual('balanced', config.data_pipeline_data_process_configuration.search_mode)
+        self.assertEqual('Describe the image.',
+                         config.data_pipeline_data_process_configuration.insights.image.caption.prompt)
+        self.assertEqual('interval',
+                         config.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot.mode)
+        self.assertEqual('image', config.destination.image_embedding.index_name)
+        self.assertEqual('document', config.destination.document_chunk_embedding.index_name)
+
+    def test_v2_xml_round_trip(self):
+        config = self._make_v2_configuration()
+        xml_data = serde.serialize_xml(config, root='DataPipelineConfiguration')
+        xml_content = xml_data.decode('utf-8')
+
+        self.assertIn('<ModelTier>standard</ModelTier>', xml_content)
+        self.assertIn('<SearchMode>balanced</SearchMode>', xml_content)
+        self.assertIn('<ImageEmbedding><Bucket>vector-bucket</Bucket><IndexName>image</IndexName><Prefix>v2</Prefix></ImageEmbedding>', xml_content)
+        self.assertIn('<ImageTextEmbedding><Bucket>vector-bucket</Bucket><IndexName>image-text</IndexName><Prefix>v2</Prefix></ImageTextEmbedding>', xml_content)
+        self.assertIn('<VideoFrameEmbedding><Bucket>vector-bucket</Bucket><IndexName>video-frame</IndexName><Prefix>v2</Prefix></VideoFrameEmbedding>', xml_content)
+        self.assertIn('<VideoTextEmbedding><Bucket>vector-bucket</Bucket><IndexName>video-text</IndexName><Prefix>v2</Prefix></VideoTextEmbedding>', xml_content)
+        self.assertIn('<DocumentChunkEmbedding><Bucket>vector-bucket</Bucket><IndexName>document</IndexName><Prefix>v2</Prefix></DocumentChunkEmbedding>', xml_content)
+        self.assertIn('<Snapshot><Mode>interval</Mode><Interval>1.0</Interval></Snapshot>', xml_content)
+
+        deserialized = model.DataPipelineConfiguration()
+        serde.deserialize_xml(xml_data, deserialized, expect_tag='DataPipelineConfiguration')
+
+        self.assertFalse(deserialized.sources[0].ignore_delete)
+        self.assertEqual('standard', deserialized.model_tier)
+        self.assertEqual('balanced', deserialized.data_pipeline_data_process_configuration.search_mode)
+        self.assertEqual('Describe each video scene.',
+                         deserialized.data_pipeline_data_process_configuration.insights.video.caption.prompt)
+        self.assertEqual(1.0,
+                         deserialized.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot.interval)
+        self.assertEqual('video-text', deserialized.destination.video_text_embedding.index_name)
+
+    def test_v2_dhash_snapshot_and_optional_fields(self):
+        config = model.PutDataPipelineConfigurationConfiguration(
+            sources=[model.DataPipelineSource(
+                input_bucket='source-bucket',
+                filter_configuration=model.DataPipelineSourceFilterConfiguration(
+                    object_media_types=['video'],
+                ),
+            )],
+            data_pipeline_data_process_configuration=model.DataPipelineDataProcessConfiguration(
+                search_mode='fast',
+                insights=model.DataPipelineInsights(
+                    video=model.InsightsVideo(
+                        frame_embedding=model.InsightsFrameEmbedding(
+                            snapshot=model.InsightsSnapshot(
+                                mode='dhash',
+                                number=20,
+                            ),
+                        ),
+                    ),
+                ),
+            ),
+            destination=model.DataPipelineDestination(
+                video_frame_embedding=model.VideoFrameEmbedding(
+                    bucket='vector-bucket',
+                    index_name='video-frame',
+                ),
+            ),
+        )
+
+        xml_content = serde.serialize_xml(
+            config,
+            root='DataPipelineConfiguration',
+        ).decode('utf-8')
+
+        self.assertIn('<SearchMode>fast</SearchMode>', xml_content)
+        self.assertIn(
+            '<Snapshot><Mode>dhash</Mode><Number>20</Number></Snapshot>',
+            xml_content,
+        )
+        self.assertNotIn('<Interval>', xml_content)
+        self.assertNotIn('<Prefix>', xml_content)
+        self.assertNotIn('<ModelTier>', xml_content)
+        self.assertNotIn('<Caption>', xml_content)
 
 
 if __name__ == '__main__':
