@@ -23,6 +23,14 @@ metadata_copied = {
     "expires": None,
 }
 
+def is_entity_too_large_error(err: Optional[Exception]) -> bool:
+    """Checks whether the error is an EntityTooLarge service error."""
+    while err is not None:
+        if isinstance(err, exceptions.ServiceError):
+            return err.code == 'EntityTooLarge'
+        err = err.__cause__ or err.__context__
+    return False
+
 class CopyAPIClient(abc.ABC):
     """Abstract base class for copier client."""
 
@@ -348,12 +356,13 @@ class _CopierDelegate:
         return ret
 
     def _shallow_copy(self) -> (CopyResult):
-        # use signle copy first, if meets timeout, use multiCopy
+        # use single copy first; fall back to multipart copy on timeout or EntityTooLarge
         starttime = datetime.datetime.now()
         try:
             result = self._client.copy_object(self._request, readwrite_timeout=10, operation_timeout=30)
         except Exception as err:
-            if (datetime.datetime.now() > starttime + datetime.timedelta(seconds=30)):
+            if is_entity_too_large_error(err) or (
+                    datetime.datetime.now() > starttime + datetime.timedelta(seconds=30)):
                 return self._multipart_copy()
             raise
 
