@@ -2,7 +2,7 @@
 """Unit tests for alibabacloud_oss_v2.copier."""
 import unittest
 
-from alibabacloud_oss_v2 import models, defaults
+from alibabacloud_oss_v2 import models, defaults, exceptions
 from alibabacloud_oss_v2.copier import Copier, CopyAPIClient, CopyError
 
 
@@ -19,11 +19,15 @@ class _MockCopyClient(CopyAPIClient):
     """Mock client for testing Copier."""
 
     def __init__(self, source_size=1024, fail_copy_part_after=None,
-                 server_side_encryption=None, tagging_count=0):
+                 server_side_encryption=None, tagging_count=0,
+                 copy_entity_too_large=False, fail_initiate=False, copy_error=False):
         self._source_size = source_size
         self._fail_copy_part_after = fail_copy_part_after
         self._server_side_encryption = server_side_encryption
         self._tagging_count = tagging_count
+        self._copy_entity_too_large = copy_entity_too_large
+        self._fail_initiate = fail_initiate
+        self._copy_error = copy_error
 
         self.head_calls = 0
         self.copy_calls = 0
@@ -37,6 +41,14 @@ class _MockCopyClient(CopyAPIClient):
 
     def copy_object(self, request, **kwargs):
         self.copy_calls += 1
+        if self._copy_entity_too_large:
+            raise exceptions.ServiceError(
+                status_code=400, code='EntityTooLarge', request_id='req-copy-fail',
+                message='Entity Too Large', ec='', timestamp='', request_target='')
+        if self._copy_error:
+            raise exceptions.ServiceError(
+                status_code=403, code='AccessDenied', request_id='req-copy-denied',
+                message='Access Denied', ec='', timestamp='', request_target='')
         return _make_result(
             models.CopyObjectResult,
             etag='"copy-etag"',
@@ -58,6 +70,10 @@ class _MockCopyClient(CopyAPIClient):
 
     def initiate_multipart_upload(self, request, **kwargs):
         self.initiate_calls += 1
+        if self._fail_initiate:
+            raise exceptions.ServiceError(
+                status_code=403, code='AccessDenied', request_id='req-init-fail',
+                message='Access Denied', ec='', timestamp='', request_target='')
         return _make_result(
             models.InitiateMultipartUploadResult,
             bucket=request.bucket,
@@ -223,6 +239,72 @@ class TestCopierMultipartCopy(unittest.TestCase):
 
         self.assertEqual('"final-copy-etag"', result.etag)
         self.assertEqual(1, client.get_tagging_calls)
+
+
+class TestCopierShallowCopyEntityTooLarge(unittest.TestCase):
+    """Tests shallow copy fallback to multipart copy on EntityTooLarge."""
+
+    def _make_copier(self, client):
+        return Copier(
+            client,
+            part_size=100,
+            parallel_num=1,
+            multipart_copy_threshold=200,
+        )
+
+    def test_entity_too_large_falls_back_to_multipart(self):
+        """Shallow copy hits EntityTooLarge and falls back to multipart copy."""
+        client = _MockCopyClient(source_size=500, copy_entity_too_large=True)
+        copier = self._make_copier(client)
+
+        request = models.CopyObjectRequest(
+            bucket='dst-bucket',
+            key='dst-key',
+            source_key='src-key',
+        )
+        result = copier.copy(request)
+
+        self.assertEqual('"final-copy-etag"', result.etag)
+        self.assertEqual('mock-copy-upload-id', result.upload_id)
+        self.assertEqual(1, client.copy_calls)  # shallow copy attempted
+        self.assertEqual(1, client.initiate_calls)  # fell back to multipart
+        self.assertEqual(5, client.upload_part_copy_calls)
+        self.assertEqual(1, client.complete_calls)
+
+    def test_entity_too_large_fallback_multipart_fails(self):
+        """Fallback multipart copy fails and surfaces the error."""
+        client = _MockCopyClient(source_size=500, copy_entity_too_large=True, fail_initiate=True)
+        copier = self._make_copier(client)
+
+        request = models.CopyObjectRequest(
+            bucket='dst-bucket',
+            key='dst-key',
+            source_key='src-key',
+        )
+
+        with self.assertRaises(CopyError):
+            copier.copy(request)
+
+        self.assertEqual(1, client.copy_calls)  # shallow copy attempted
+        self.assertEqual(1, client.initiate_calls)  # fallback attempted
+        self.assertEqual(0, client.upload_part_copy_calls)
+
+    def test_no_fallback_on_other_error(self):
+        """Non-EntityTooLarge error must not fall back to multipart copy."""
+        client = _MockCopyClient(source_size=500, copy_error=True)
+        copier = self._make_copier(client)
+
+        request = models.CopyObjectRequest(
+            bucket='dst-bucket',
+            key='dst-key',
+            source_key='src-key',
+        )
+
+        with self.assertRaises(CopyError):
+            copier.copy(request)
+
+        self.assertEqual(1, client.copy_calls)
+        self.assertEqual(0, client.initiate_calls)  # no fallback happened
 
 
 class TestCopierProgressCallback(unittest.TestCase):
