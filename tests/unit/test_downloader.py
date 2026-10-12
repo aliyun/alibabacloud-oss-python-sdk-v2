@@ -182,3 +182,41 @@ class TestDownloaderNoProgressRetry(unittest.TestCase):
         self.assertGreater(len(progress_data), 0)
         # Last entry should have written == total
         self.assertEqual(progress_data[-1][1], len(data))
+
+
+class TestDownloaderTempSymlink(unittest.TestCase):
+    """Tests that an existing symlink at the temporary path is removed."""
+
+    def test_temp_symlink_removed(self):
+        data = b'\xab' * 2048
+        client = _MockDownloadClient(data)
+        downloader = Downloader(client, part_size=6 * 1024 * 1024, parallel_num=1,
+                                use_temp_file=True)
+
+        tmpdir = tempfile.mkdtemp()
+        filepath = os.path.join(tmpdir, 'target.bin')
+        target = os.path.join(tmpdir, 'linktarget.bin')
+        temp_path = filepath + defaults.DEFAULT_TEMP_FILE_SUFFIX
+        with open(target, 'wb') as f:
+            f.write(b'original')
+        try:
+            os.symlink(target, temp_path)
+        except (OSError, NotImplementedError):
+            self.skipTest('symbolic link not supported')
+
+        request = models.GetObjectRequest(bucket='test-bucket', key='test-key')
+        try:
+            result = downloader.download_file(request, filepath)
+            self.assertEqual(len(data), result.written)
+            # The temporary symlink is replaced by a regular file at the final path.
+            self.assertFalse(os.path.islink(filepath))
+            with open(filepath, 'rb') as f:
+                self.assertEqual(data, f.read())
+            # The original symlink target is untouched.
+            with open(target, 'rb') as f:
+                self.assertEqual(b'original', f.read())
+        finally:
+            for path in (filepath, target, temp_path):
+                if os.path.islink(path) or os.path.exists(path):
+                    os.remove(path)
+            os.rmdir(tmpdir)
