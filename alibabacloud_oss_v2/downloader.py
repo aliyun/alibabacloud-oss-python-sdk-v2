@@ -332,6 +332,10 @@ class _DownloaderDelegate:
         self._filepath = absfilepath
         self._temp_filepath = tempfilepath
 
+        # Remove an existing symbolic link at the temporary path before opening it.
+        if self._options.use_temp_file and os.path.islink(self._temp_filepath):
+            os.remove(self._temp_filepath)
+
 
     def adjust_range(self):
         """adjust range
