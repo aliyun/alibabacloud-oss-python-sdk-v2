@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketOverwriteConfig(TestIntegration):
@@ -48,6 +48,8 @@ class TestBucketOverwriteConfig(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get bucket overwrite_config
         result = self.client.get_bucket_overwrite_config(oss.GetBucketOverwriteConfigRequest(

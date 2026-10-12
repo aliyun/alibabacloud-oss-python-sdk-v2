@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketLogging(TestIntegration):
@@ -36,6 +36,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get bucket logging
         result = self.client.get_bucket_logging(oss.GetBucketLoggingRequest(
@@ -72,6 +74,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get user defined log fields config
         result = self.client.get_user_defined_log_fields_config(oss.GetUserDefinedLogFieldsConfigRequest(
@@ -122,6 +126,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
 
+        wait_after_put()
+
         # get bucket logging
         result = self.signv1_client.get_bucket_logging(oss.GetBucketLoggingRequest(
             bucket=bucket_name,
@@ -157,6 +163,8 @@ class TestBucketLogging(TestIntegration):
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.request_id))
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get user defined log fields config
         result = self.signv1_client.get_user_defined_log_fields_config(oss.GetUserDefinedLogFieldsConfigRequest(

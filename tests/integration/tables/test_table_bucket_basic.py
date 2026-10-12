@@ -2,11 +2,14 @@
 
 import alibabacloud_oss_v2.tables as oss_tables
 from . import TestIntegrationTables, REGION
+from .. import wait_after_put
 
 
 class TestTableBucketBasic(TestIntegrationTables):
 
     def test_list_table_buckets(self):
+        wait_after_put()
+
         # List table buckets
         result = self.tables_client.list_table_buckets(
             oss_tables.models.ListTableBucketsRequest(
@@ -18,15 +21,16 @@ class TestTableBucketBasic(TestIntegrationTables):
         self.assertEqual(200, result.status_code)
         self.assertIsNotNone(result.table_buckets)
         self.assertGreater(len(result.table_buckets), 0)
-        self.assertEqual(self.table_bucket_name, result.table_buckets[0].name)
-        self.assertIn("acs:", result.table_buckets[0].arn)
-        self.assertIsNotNone(result.table_buckets[0].type)
-        self.assertIsNotNone(result.table_buckets[0].owner_account_id)
-        self.assertIsNotNone(result.table_buckets[0].table_bucket_id)
-        self.assertIsNotNone(result.table_buckets[0].created_at)
+        bucket_info = next((b for b in result.table_buckets if b.name == self.table_bucket_name), None)
+        self.assertIsNotNone(bucket_info)
+        self.assertEqual(self.table_bucket_name, bucket_info.name)
+        self.assertIn("acs:", bucket_info.arn)
+        self.assertIsNotNone(bucket_info.type)
+        self.assertIsNotNone(bucket_info.owner_account_id)
+        self.assertIsNotNone(bucket_info.table_bucket_id)
+        self.assertIsNotNone(bucket_info.created_at)
 
         # Get table bucket
-        bucket_info = result.table_buckets[0]
         result = self.tables_client.get_table_bucket(
             oss_tables.models.GetTableBucketRequest(
                 table_bucket_arn=bucket_info.arn
