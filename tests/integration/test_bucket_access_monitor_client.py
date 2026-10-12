@@ -2,7 +2,7 @@
 
 from typing import cast
 import alibabacloud_oss_v2 as oss
-from . import TestIntegration, random_bucket_name
+from . import TestIntegration, random_bucket_name, wait_after_put
 
 
 class TestBucketAccessMonitor(TestIntegration):
@@ -32,6 +32,8 @@ class TestBucketAccessMonitor(TestIntegration):
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get bucket access monitor
         result = self.client.get_bucket_access_monitor(oss.GetBucketAccessMonitorRequest(
@@ -67,6 +69,8 @@ class TestBucketAccessMonitor(TestIntegration):
         self.assertEqual(200, result.status_code)
         self.assertEqual('OK', result.status)
         self.assertEqual(24, len(result.headers.get('x-oss-request-id')))
+
+        wait_after_put()
 
         # get bucket access monitor
         result = self.signv1_client.get_bucket_access_monitor(oss.GetBucketAccessMonitorRequest(
