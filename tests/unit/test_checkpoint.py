@@ -179,6 +179,8 @@ class TestCheckpoint(unittest.TestCase):
 
         _remove_slice(dest_filepath)
         self.assertEqual(0, cp.doffset)
+        # Create destination file large enough for the checkpoint offset used below.
+        _write_file(dest_filepath, b'\x00' * 5242880)
         #cpdata = '{"Magic":"92611BED-89E2-46B6-89E5-72F273D4B0A3","MD5":"cc615a3b3fca2766786669a68895f3ed","Data":{"ObjectInfo":{"Name":"oss://bucket/key","VersionId":"","Range":""},"ObjectMeta":{"Size":344606,"LastModified":"Fri, 24 Feb 2012 06:07:48 GMT","ETag":"\\"D41D8CD98F00B204E9800998ECF8****\\""},"FilePath":"gthnjXGQ-no-surfix","PartSize":5242880,"DownloadInfo":{"Offset":5242880,"CRC64":0}}}'
         cpdata = '{"Magic": "92611BED-89E2-46B6-89E5-72F273D4B0A3", "MD5": "cc615a3b3fca2766786669a68895f3ed", "Data": {"ObjectInfo": {"Name": "oss://bucket/key", "VersionId": "", "Range": ""}, "ObjectMeta": {"Size": 344606, "LastModified": "Fri, 24 Feb 2012 06:07:48 GMT", "ETag": "\\"D41D8CD98F00B204E9800998ECF8****\\""}, "FilePath": "gthnjXGQ-no-surfix", "PartSize": 5242880, "DownloadInfo": {"Offset": 5242880, "CRC64": 0}}}'
         _write_file(cp.cp_filepath, cpdata.encode())

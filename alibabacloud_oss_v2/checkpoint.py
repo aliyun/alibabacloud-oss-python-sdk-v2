@@ -168,6 +168,15 @@ class DownloadCheckpoint:
             if remains != 0:
                 return False
 
+            # valid destination path
+            download_len = offset - roffset
+            if download_len > 0:
+                try:
+                    if os.path.getsize(dcpid["FilePath"]) < download_len:
+                        return False
+                except OSError:
+                    return False
+
             #valid data
             if self.verify_data and crc64 != 0:
                 try:

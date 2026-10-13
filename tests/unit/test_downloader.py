@@ -2,11 +2,13 @@
 """Unit tests for alibabacloud_oss_v2.downloader."""
 import io
 import os
+import shutil
 import tempfile
 import unittest
 
 from alibabacloud_oss_v2 import models, defaults
 from alibabacloud_oss_v2.downloader import Downloader, DownloadAPIClient, DownloadError
+from alibabacloud_oss_v2.checkpoint import DownloadCheckpoint
 
 
 def _make_result(cls, **kwargs):
@@ -220,3 +222,58 @@ class TestDownloaderTempSymlink(unittest.TestCase):
                 if os.path.islink(path) or os.path.exists(path):
                     os.remove(path)
             os.rmdir(tmpdir)
+
+
+class TestDownloadCheckpointValidDestinationPath(unittest.TestCase):
+    """Tests that a checkpoint is invalidated when the destination file is missing or too small."""
+
+    def test_size_check(self):
+        part_size = 128
+        offset = 256
+        length = 1234
+
+        tmpdir = tempfile.mkdtemp()
+        filepath = os.path.join(tmpdir, 'dest.bin')
+        headers = {
+            'Content-Length': str(length),
+            'Last-Modified': 'Wed, 01 Jan 2025 00:00:00 GMT',
+            'ETag': '"source-etag"',
+        }
+        request = models.GetObjectRequest(bucket='test-bucket', key='test-key')
+
+        try:
+            # missing destination file
+            cp = DownloadCheckpoint(request=request, filepath=filepath,
+                                    basedir=os.path.join(tmpdir, 'cp'),
+                                    headers=headers, part_size=part_size)
+            cp.doffset = offset
+            cp.dcrc64 = 0
+            cp.dump()
+            cp.load()
+            self.assertFalse(cp.loaded)
+
+            # destination file smaller than offset
+            with open(filepath, 'wb') as f:
+                f.write(b'short')
+            cp = DownloadCheckpoint(request=request, filepath=filepath,
+                                    basedir=os.path.join(tmpdir, 'cp'),
+                                    headers=headers, part_size=part_size)
+            cp.doffset = offset
+            cp.dcrc64 = 0
+            cp.dump()
+            cp.load()
+            self.assertFalse(cp.loaded)
+
+            # destination file large enough
+            with open(filepath, 'wb') as f:
+                f.write(b'\x00' * offset)
+            cp = DownloadCheckpoint(request=request, filepath=filepath,
+                                    basedir=os.path.join(tmpdir, 'cp'),
+                                    headers=headers, part_size=part_size)
+            cp.doffset = offset
+            cp.dcrc64 = 0
+            cp.dump()
+            cp.load()
+            self.assertTrue(cp.loaded)
+        finally:
+            shutil.rmtree(tmpdir, ignore_errors=True)
