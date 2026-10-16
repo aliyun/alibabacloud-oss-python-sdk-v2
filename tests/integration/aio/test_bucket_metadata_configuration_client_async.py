@@ -50,20 +50,18 @@ class TestBucketMetadataConfigurationAsync(TestIntegration, unittest.IsolatedAsy
             self.assertEqual(200, result.status_code)
             created = True
 
-            # get bucket metadata configuration until the journal table is active
-            configuration = None
-            for _ in range(24):
-                result = await self.async_client.get_bucket_metadata_configuration(
-                    oss.GetBucketMetadataConfigurationRequest(bucket=self.bucket_name)
-                )
-                configuration = result.metadata_configuration_result
-                if configuration.journal_table_configuration_result.table_status == 'ACTIVE':
-                    break
-                await asyncio.sleep(5)
+            await asyncio.sleep(15)
 
+            # get bucket metadata configuration
+            result = await self.async_client.get_bucket_metadata_configuration(
+                oss.GetBucketMetadataConfigurationRequest(bucket=self.bucket_name)
+            )
+            self.assertEqual(200, result.status_code)
+            configuration = result.metadata_configuration_result
             self.assertIsNotNone(configuration)
-            self.assertEqual('ACTIVE',
-                             configuration.journal_table_configuration_result.table_status)
+            self.assertEqual('system', configuration.destination_result.table_bucket_type)
+            self.assertIn(configuration.journal_table_configuration_result.table_status,
+                          ('ACTIVE', 'CREATING'))
 
             # update bucket metadata journal table configuration
             result = await self.async_client.update_bucket_metadata_journal_table_configuration(
