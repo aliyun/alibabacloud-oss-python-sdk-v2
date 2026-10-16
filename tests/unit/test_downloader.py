@@ -7,7 +7,7 @@ import tempfile
 import unittest
 
 from alibabacloud_oss_v2 import models, defaults
-from alibabacloud_oss_v2.downloader import Downloader, DownloadAPIClient, DownloadError
+from alibabacloud_oss_v2.downloader import Downloader, DownloadAPIClient, DownloadError, _DownloaderDelegate
 from alibabacloud_oss_v2.checkpoint import DownloadCheckpoint
 
 
@@ -219,6 +219,39 @@ class TestDownloaderTempSymlink(unittest.TestCase):
                 self.assertEqual(b'original', f.read())
         finally:
             for path in (filepath, target, temp_path):
+                if os.path.islink(path) or os.path.exists(path):
+                    os.remove(path)
+            os.rmdir(tmpdir)
+
+
+class TestDownloaderTempRegularFileKept(unittest.TestCase):
+    """Tests that a regular file at the temporary path is not removed by check_destination."""
+
+    def test_temp_regular_file_kept(self):
+        data = b'\xab' * 2048
+        client = _MockDownloadClient(data)
+        downloader = Downloader(client, part_size=6 * 1024 * 1024, parallel_num=1,
+                                use_temp_file=True)
+
+        tmpdir = tempfile.mkdtemp()
+        filepath = os.path.join(tmpdir, 'target.bin')
+        temp_path = filepath + defaults.DEFAULT_TEMP_FILE_SUFFIX
+        original = b'partial-download-content'
+        with open(temp_path, 'wb') as f:
+            f.write(original)
+
+        try:
+            request = models.GetObjectRequest(bucket='test-bucket', key='test-key')
+            delegate = downloader._delegate(request)
+            delegate.check_destination(filepath)
+
+            # A regular file at the temp path must be preserved untouched.
+            self.assertTrue(os.path.exists(temp_path))
+            self.assertFalse(os.path.islink(temp_path))
+            with open(temp_path, 'rb') as f:
+                self.assertEqual(original, f.read())
+        finally:
+            for path in (filepath, temp_path):
                 if os.path.islink(path) or os.path.exists(path):
                     os.remove(path)
             os.rmdir(tmpdir)
