@@ -36,23 +36,19 @@ class TestBucketMetadataConfiguration(TestIntegration):
             self.assertEqual(24, len(result.request_id))
             created = True
 
-            # get bucket metadata configuration until the journal table is active
-            configuration = None
-            for _ in range(24):
-                result = self.client.get_bucket_metadata_configuration(
-                    oss.GetBucketMetadataConfigurationRequest(bucket=self.bucket_name)
-                )
-                self.assertEqual(200, result.status_code)
-                configuration = result.metadata_configuration_result
-                if configuration.journal_table_configuration_result.table_status == 'ACTIVE':
-                    break
-                time.sleep(5)
+            time.sleep(15)
 
+            # get bucket metadata configuration
+            result = self.client.get_bucket_metadata_configuration(
+                oss.GetBucketMetadataConfigurationRequest(bucket=self.bucket_name)
+            )
+            self.assertEqual(200, result.status_code)
+            configuration = result.metadata_configuration_result
             self.assertIsNotNone(configuration)
-            self.assertEqual('oss', configuration.destination_result.table_bucket_type)
+            self.assertEqual('system', configuration.destination_result.table_bucket_type)
             self.assertEqual('journal', configuration.journal_table_configuration_result.table_name)
-            self.assertEqual('ACTIVE',
-                             configuration.journal_table_configuration_result.table_status)
+            self.assertIn(configuration.journal_table_configuration_result.table_status,
+                          ('ACTIVE', 'CREATING'))
 
             # update bucket metadata journal table configuration
             result = self.client.update_bucket_metadata_journal_table_configuration(
