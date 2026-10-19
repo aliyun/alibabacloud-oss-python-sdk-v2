@@ -1,5 +1,15 @@
 # ChangeLog - Alibaba Cloud OSS SDK for Python v2
 
+## 版本号：1.4.1 日期：2026-10-19
+### 变更内容
+- Feature: Add vector fusion
+- Feature: Add metadata table
+- Feature: Add bucket storage quota
+- Feature: Add MultilingualContent field to dataprocess
+- Feature: Support client-level DefaultRequestHeaders config
+- Update: Fall back to multipart copy on EntityTooLarge error
+- Update: Remove symbolic link at temporary download path
+
 ## 版本号：1.4.0 日期：2026-08-28
 ### 变更内容
 - Feature: Add agentic bucket
