@@ -20,8 +20,12 @@ def main():
         cfg.endpoint = args.endpoint
     client = oss_dataprocess.Client(cfg)
 
+    data_pipeline_error = oss_dataprocess.models.DataPipelineError(
+        error_mode='ignore',
+    )
     configuration = oss_dataprocess.models.PutDataPipelineConfigurationConfiguration(
         data_pipeline_description=args.description,
+        data_pipeline_error=data_pipeline_error,
         sources=[oss_dataprocess.models.DataPipelineSource(
             input_bucket=args.bucket,
             input_data_scope='All',
@@ -32,12 +36,14 @@ def main():
     # The vector buckets and indexes must already exist and match the required dimensions.
     # configuration = oss_dataprocess.models.PutDataPipelineConfigurationConfiguration(
     #     data_pipeline_description=args.description,
+    #     data_pipeline_error=data_pipeline_error,
     #     sources=[oss_dataprocess.models.DataPipelineSource(
     #         input_bucket=args.bucket,
     #         input_data_scope='All',
     #         ignore_delete=False,
     #         filter_configuration=oss_dataprocess.models.DataPipelineSourceFilterConfiguration(
-    #             object_media_types=['image', 'video', 'text'],
+    #             prefix_set=['media/'],
+    #             object_media_types=['image', 'video', 'document'],
     #         ),
     #     )],
     #     model_tier='standard',

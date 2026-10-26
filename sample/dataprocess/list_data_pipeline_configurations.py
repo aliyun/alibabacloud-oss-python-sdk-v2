@@ -8,6 +8,7 @@ parser.add_argument('--endpoint', help='The endpoint of OSS.')
 parser.add_argument('--max-results', type=int, help='The maximum number of configurations to return.')
 parser.add_argument('--prefix', help='The prefix to filter configurations.')
 parser.add_argument('--next-token', help='The next token for pagination.')
+parser.add_argument('--input-bucket', help='Filter by the complete source bucket name.')
 
 def main():
     args = parser.parse_args()
@@ -23,13 +24,13 @@ def main():
         max_results=args.max_results,
         prefix=args.prefix,
         next_token=args.next_token,
-        # Set input_bucket to filter by the complete source bucket name.
-        # input_bucket='source-bucket',
+        input_bucket=args.input_bucket,
     ))
     print(f'status code: {result.status_code}, request id: {result.request_id}, next token: {result.next_token}')
     if result.data_pipeline_configurations and result.data_pipeline_configurations.data_pipeline_configuration:
         for i, c in enumerate(result.data_pipeline_configurations.data_pipeline_configuration):
-            print(f'configuration {i + 1}: name={c.data_pipeline_name}, description={c.data_pipeline_description}, status={c.status}')
+            print(f'configuration {i + 1}: name={c.data_pipeline_name}, description={c.data_pipeline_description}, '
+                  f'status={c.status}, role={c.data_pipeline_role}, create time={c.create_time}')
 
 if __name__ == "__main__":
     main()
