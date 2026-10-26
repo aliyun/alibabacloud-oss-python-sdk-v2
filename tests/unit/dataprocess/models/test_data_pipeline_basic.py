@@ -879,14 +879,13 @@ class TestRestartDataPipelineResult(unittest.TestCase):
 class TestDataPipelineV2(unittest.TestCase):
     def _make_v2_configuration(self):
         return model.PutDataPipelineConfigurationConfiguration(
-            data_pipeline_description='multimedia semantic vectors',
+            data_pipeline_description='多媒体语义向量',
             sources=[model.DataPipelineSource(
                 input_bucket='source-bucket',
                 input_data_scope='All',
-                ignore_delete=False,
                 filter_configuration=model.DataPipelineSourceFilterConfiguration(
                     prefix_set=['media/'],
-                    object_media_types=['image', 'video', 'text'],
+                    object_media_types=['image', 'video', 'document'],
                 ),
             )],
             destination=model.DataPipelineDestination(
@@ -926,17 +925,104 @@ class TestDataPipelineV2(unittest.TestCase):
             ),
         )
 
+    def _assert_v2_configuration(self, config, ignore_delete=None):
+        self.assertEqual('多媒体语义向量', config.data_pipeline_description)
+        self.assertEqual('standard', config.model_tier)
+        self.assertIsNone(config.data_pipeline_embedding_configuration)
+        self.assertEqual(1, len(config.sources))
+        source = config.sources[0]
+        self.assertIsInstance(source, model.DataPipelineSource)
+        self.assertEqual('source-bucket', source.input_bucket)
+        self.assertEqual('All', source.input_data_scope)
+        self.assertIs(ignore_delete, source.ignore_delete)
+        self.assertIsInstance(source.filter_configuration, model.DataPipelineSourceFilterConfiguration)
+        self.assertEqual(['media/'], source.filter_configuration.prefix_set)
+        self.assertEqual(['image', 'video', 'document'], source.filter_configuration.object_media_types)
+        process = config.data_pipeline_data_process_configuration
+        self.assertIsInstance(process, model.DataPipelineDataProcessConfiguration)
+        self.assertEqual('balanced', process.search_mode)
+        insights = process.insights
+        self.assertIsInstance(insights, model.DataPipelineInsights)
+        self.assertIsInstance(insights.image, model.InsightsImage)
+        self.assertIsInstance(insights.image.caption, model.InsightsCaption)
+        self.assertEqual('Describe the image.', insights.image.caption.prompt)
+        self.assertIsInstance(insights.video, model.InsightsVideo)
+        self.assertIsInstance(insights.video.caption, model.InsightsCaption)
+        self.assertEqual('Describe each video scene.', insights.video.caption.prompt)
+        self.assertIsInstance(insights.video.frame_embedding, model.InsightsFrameEmbedding)
+        snapshot = insights.video.frame_embedding.snapshot
+        self.assertIsInstance(snapshot, model.InsightsSnapshot)
+        self.assertEqual('interval', snapshot.mode)
+        self.assertEqual(1.0, snapshot.interval)
+        self.assertIsInstance(snapshot.interval, float)
+        self.assertIsNone(snapshot.number)
+        destination = config.destination
+        self.assertIsInstance(destination, model.DataPipelineDestination)
+        for attribute, destination_type, index_name in (
+            ('image_embedding', model.ImageEmbedding, 'image'),
+            ('image_text_embedding', model.ImageTextEmbedding, 'image-text'),
+            ('video_frame_embedding', model.VideoFrameEmbedding, 'video-frame'),
+            ('video_text_embedding', model.VideoTextEmbedding, 'video-text'),
+            ('document_chunk_embedding', model.DocumentChunkEmbedding, 'document'),
+        ):
+            with self.subTest(destination=attribute):
+                value = getattr(destination, attribute)
+                self.assertIsInstance(value, destination_type)
+                self.assertEqual('vector-bucket', value.bucket)
+                self.assertEqual(index_name, value.index_name)
+                self.assertEqual('v2', value.prefix)
+        self.assertIsNone(destination.vector_bucket_name)
+        self.assertIsNone(destination.vector_index_names)
+        self.assertIsNone(destination.vector_key_prefix)
+        self.assertEqual(['category'], destination.object_tag_to_metadata)
+        self.assertEqual(['x-oss-meta-source'], destination.usermeta_to_metadata)
+        self.assertIsInstance(config.data_pipeline_error, model.DataPipelineError)
+        self.assertEqual('ignoreAndRecord', config.data_pipeline_error.error_mode)
+        self.assertEqual('error-bucket', config.data_pipeline_error.error_bucket)
+        self.assertEqual('v2/', config.data_pipeline_error.error_prefix)
+
+    def _v2_request_example_xml(self):
+        return (
+            '<DataPipelineConfiguration>'
+            '<DataPipelineDescription>多媒体语义向量</DataPipelineDescription>'
+            '<Sources><InputBucket>source-bucket</InputBucket><InputDataScope>All</InputDataScope>'
+            '<FilterConfiguration><PrefixSet>media/</PrefixSet>'
+            '<ObjectMediaTypes>image</ObjectMediaTypes><ObjectMediaTypes>video</ObjectMediaTypes>'
+            '<ObjectMediaTypes>document</ObjectMediaTypes></FilterConfiguration></Sources>'
+            '<ModelTier>standard</ModelTier>'
+            '<DataPipelineDataProcessConfiguration><SearchMode>balanced</SearchMode><Insights>'
+            '<Image><Caption><Prompt>Describe the image.</Prompt></Caption></Image>'
+            '<Video><Caption><Prompt>Describe each video scene.</Prompt></Caption>'
+            '<FrameEmbedding><Snapshot><Mode>interval</Mode><Interval>1.0</Interval></Snapshot>'
+            '</FrameEmbedding></Video></Insights></DataPipelineDataProcessConfiguration>'
+            '<Destination>'
+            '<ImageEmbedding><Bucket>vector-bucket</Bucket><IndexName>image</IndexName><Prefix>v2</Prefix></ImageEmbedding>'
+            '<ImageTextEmbedding><Bucket>vector-bucket</Bucket><IndexName>image-text</IndexName><Prefix>v2</Prefix></ImageTextEmbedding>'
+            '<VideoFrameEmbedding><Bucket>vector-bucket</Bucket><IndexName>video-frame</IndexName><Prefix>v2</Prefix></VideoFrameEmbedding>'
+            '<VideoTextEmbedding><Bucket>vector-bucket</Bucket><IndexName>video-text</IndexName><Prefix>v2</Prefix></VideoTextEmbedding>'
+            '<DocumentChunkEmbedding><Bucket>vector-bucket</Bucket><IndexName>document</IndexName><Prefix>v2</Prefix></DocumentChunkEmbedding>'
+            '<ObjectTagToMetadata>category</ObjectTagToMetadata>'
+            '<UsermetaToMetadata>x-oss-meta-source</UsermetaToMetadata></Destination>'
+            '<DataPipelineError><ErrorMode>ignoreAndRecord</ErrorMode><ErrorBucket>error-bucket</ErrorBucket>'
+            '<ErrorPrefix>v2/</ErrorPrefix></DataPipelineError>'
+            '</DataPipelineConfiguration>'
+        )
+
+    def _deserialize_result(self, result, xml_data):
+        headers = CaseInsensitiveDict({'x-oss-request-id': 'req-v2', 'Content-Type': 'application/xml'})
+        return serde.deserialize_output(
+            result,
+            OperationOutput(
+                status='OK', status_code=200, headers=headers,
+                http_response=MockHttpResponse(status_code=200, headers=headers, body=xml_data),
+            ),
+            custom_deserializer=[serde.deserialize_output_xmlbody],
+        )
+
     def test_v2_constructor(self):
         config = self._make_v2_configuration()
-
-        self.assertEqual('standard', config.model_tier)
-        self.assertEqual('balanced', config.data_pipeline_data_process_configuration.search_mode)
-        self.assertEqual('Describe the image.',
-                         config.data_pipeline_data_process_configuration.insights.image.caption.prompt)
-        self.assertEqual('interval',
-                         config.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot.mode)
-        self.assertEqual('image', config.destination.image_embedding.index_name)
-        self.assertEqual('document', config.destination.document_chunk_embedding.index_name)
+        self.assertIsInstance(config, model.PutDataPipelineConfigurationConfiguration)
+        self._assert_v2_configuration(config)
 
     def test_v2_xml_round_trip(self):
         config = self._make_v2_configuration()
@@ -955,19 +1041,122 @@ class TestDataPipelineV2(unittest.TestCase):
         deserialized = model.DataPipelineConfiguration()
         serde.deserialize_xml(xml_data, deserialized, expect_tag='DataPipelineConfiguration')
 
-        self.assertFalse(deserialized.sources[0].ignore_delete)
-        self.assertEqual('standard', deserialized.model_tier)
-        self.assertEqual('balanced', deserialized.data_pipeline_data_process_configuration.search_mode)
-        self.assertEqual('Describe each video scene.',
-                         deserialized.data_pipeline_data_process_configuration.insights.video.caption.prompt)
-        self.assertEqual(1.0,
-                         deserialized.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot.interval)
-        self.assertEqual('video-text', deserialized.destination.video_text_embedding.index_name)
+        self._assert_v2_configuration(deserialized)
+        expected = model.PutDataPipelineConfigurationConfiguration()
+        serde.deserialize_xml(self._v2_request_example_xml().encode('utf-8'), expected,
+                              expect_tag='DataPipelineConfiguration')
+        self.assertEqual(serde.serialize_xml(expected, root='DataPipelineConfiguration'), xml_data)
+        self.assertNotIn('<IgnoreDelete>', xml_content)
+        self.assertNotIn('<DataPipelineEmbeddingConfiguration>', xml_content)
+        self.assertNotIn('<VectorBucketName>', xml_content)
+        self.assertNotIn('<VectorIndexNames>', xml_content)
+        role = 'acs:ram::1234567890123456:role/AliyunOSSDataPipelineRole'
+        request = model.PutDataPipelineConfigurationRequest(
+            data_pipeline_name='media-pipeline', role=role, configuration=config,
+        )
+        op_input = serde.serialize_input(request, OperationInput(
+            op_name='PutDataPipelineConfiguration', method='POST',
+            headers=CaseInsensitiveDict({'Content-Type': 'application/xml'}),
+            parameters={'dataPipeline': '', 'action': 'putDataPipelineConfiguration'},
+        ))
+        self.assertEqual('POST', op_input.method)
+        self.assertEqual('application/xml', op_input.headers.get('Content-Type'))
+        self.assertEqual('', op_input.parameters.get('dataPipeline'))
+        self.assertEqual('putDataPipelineConfiguration', op_input.parameters.get('action'))
+        self.assertEqual('media-pipeline', op_input.parameters.get('dataPipelineName'))
+        self.assertEqual(role, op_input.parameters.get('role'))
+
+    def test_v2_explicit_ignore_delete_false(self):
+        config = self._make_v2_configuration()
+        self.assertIsNone(config.sources[0].ignore_delete)
+        config.sources[0].ignore_delete = False
+        xml_data = serde.serialize_xml(config, root='DataPipelineConfiguration')
+        self.assertIn(b'<IgnoreDelete>false</IgnoreDelete>', xml_data)
+        deserialized = model.DataPipelineConfiguration()
+        serde.deserialize_xml(xml_data, deserialized, expect_tag='DataPipelineConfiguration')
+        self._assert_v2_configuration(deserialized, ignore_delete=False)
+
+    def test_get_v2_document_example(self):
+        xml = self._v2_request_example_xml().replace(
+            '<DataPipelineConfiguration>',
+            '<DataPipelineConfiguration><DataPipelineName>media-pipeline</DataPipelineName>'
+            '<DataPipelineRole>acs:ram::1234567890123456:role/AliyunOSSDataPipelineRole</DataPipelineRole>'
+            '<Status>Running</Status><Phase>IncrementalScanning</Phase>',
+        ).replace(
+            '<InputDataScope>All</InputDataScope>',
+            '<InputDataScope>All</InputDataScope><IgnoreDelete>false</IgnoreDelete>',
+        ).replace(
+            '</DataPipelineConfiguration>',
+            '<CreateTime>2026-08-12T08:00:00Z</CreateTime></DataPipelineConfiguration>',
+        )
+        result = self._deserialize_result(model.GetDataPipelineConfigurationResult(), xml.encode('utf-8'))
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('req-v2', result.request_id)
+        self.assertIsInstance(result.configuration, model.DataPipelineConfiguration)
+        self._assert_v2_configuration(result.configuration, ignore_delete=False)
+        self.assertEqual('media-pipeline', result.configuration.data_pipeline_name)
+        self.assertEqual('acs:ram::1234567890123456:role/AliyunOSSDataPipelineRole',
+                         result.configuration.data_pipeline_role)
+        self.assertEqual('Running', result.configuration.status)
+        self.assertEqual('IncrementalScanning', result.configuration.phase)
+        self.assertEqual('2026-08-12T08:00:00Z', result.configuration.create_time)
+
+    def test_list_v2_fast_response_fields(self):
+        xml = (
+            b'<ListDataPipelineConfigurationsResult><DataPipelineConfigurations>'
+            b'<DataPipelineConfiguration><DataPipelineName>media-pipeline</DataPipelineName>'
+            b'<DataPipelineRole>acs:ram::1234567890123456:role/AliyunOSSDataPipelineRole</DataPipelineRole>'
+            b'<Status>Running</Status><Phase>IncrementalScanning</Phase>'
+            b'<Sources><InputBucket>source-bucket</InputBucket><IgnoreDelete>false</IgnoreDelete>'
+            b'<FilterConfiguration><ObjectMediaTypes>image</ObjectMediaTypes></FilterConfiguration></Sources>'
+            b'<ModelTier>standard</ModelTier>'
+            b'<DataPipelineDataProcessConfiguration><SearchMode>fast</SearchMode><Insights>'
+            b'<Image><Caption><Prompt>Describe the image.</Prompt></Caption></Image>'
+            b'</Insights></DataPipelineDataProcessConfiguration>'
+            b'<Destination><ImageEmbedding><Bucket>vector-bucket</Bucket><IndexName>image</IndexName>'
+            b'<Prefix>v2</Prefix></ImageEmbedding></Destination>'
+            b'<CreateTime>2026-08-12T08:00:00Z</CreateTime>'
+            b'</DataPipelineConfiguration></DataPipelineConfigurations><NextToken>next</NextToken>'
+            b'</ListDataPipelineConfigurationsResult>'
+        )
+        result = self._deserialize_result(model.ListDataPipelineConfigurationsResult(), xml)
+        self.assertEqual(200, result.status_code)
+        self.assertEqual('req-v2', result.request_id)
+        self.assertEqual('next', result.next_token)
+        configurations = result.data_pipeline_configurations.data_pipeline_configuration
+        self.assertEqual(1, len(configurations))
+        config = configurations[0]
+        self.assertIsInstance(config, model.DataPipelineConfiguration)
+        self.assertEqual('media-pipeline', config.data_pipeline_name)
+        self.assertEqual('acs:ram::1234567890123456:role/AliyunOSSDataPipelineRole', config.data_pipeline_role)
+        self.assertEqual('Running', config.status)
+        self.assertEqual('IncrementalScanning', config.phase)
+        self.assertEqual('2026-08-12T08:00:00Z', config.create_time)
+        self.assertEqual('standard', config.model_tier)
+        self.assertEqual(1, len(config.sources))
+        self.assertEqual('source-bucket', config.sources[0].input_bucket)
+        self.assertIs(False, config.sources[0].ignore_delete)
+        self.assertEqual(['image'], config.sources[0].filter_configuration.object_media_types)
+        process = config.data_pipeline_data_process_configuration
+        self.assertEqual('fast', process.search_mode)
+        self.assertIsInstance(process.insights.image, model.InsightsImage)
+        self.assertIsInstance(process.insights.image.caption, model.InsightsCaption)
+        self.assertEqual('Describe the image.', process.insights.image.caption.prompt)
+        destination = config.destination
+        self.assertIsInstance(destination.image_embedding, model.ImageEmbedding)
+        self.assertEqual('vector-bucket', destination.image_embedding.bucket)
+        self.assertEqual('image', destination.image_embedding.index_name)
+        self.assertEqual('v2', destination.image_embedding.prefix)
+        self.assertIsNone(destination.image_text_embedding)
+        self.assertIsNone(destination.video_frame_embedding)
+        self.assertIsNone(destination.video_text_embedding)
+        self.assertIsNone(destination.document_chunk_embedding)
 
     def test_v2_dhash_snapshot_and_optional_fields(self):
         config = model.PutDataPipelineConfigurationConfiguration(
             sources=[model.DataPipelineSource(
                 input_bucket='source-bucket',
+                input_data_scope='All',
                 filter_configuration=model.DataPipelineSourceFilterConfiguration(
                     object_media_types=['video'],
                 ),
@@ -991,6 +1180,7 @@ class TestDataPipelineV2(unittest.TestCase):
                     index_name='video-frame',
                 ),
             ),
+            data_pipeline_error=model.DataPipelineError(error_mode='ignore'),
         )
 
         xml_content = serde.serialize_xml(
@@ -1007,6 +1197,40 @@ class TestDataPipelineV2(unittest.TestCase):
         self.assertNotIn('<Prefix>', xml_content)
         self.assertNotIn('<ModelTier>', xml_content)
         self.assertNotIn('<Caption>', xml_content)
+        self.assertNotIn('<IgnoreDelete>', xml_content)
+        self.assertNotIn('<ErrorBucket>', xml_content)
+        self.assertNotIn('<ErrorPrefix>', xml_content)
+        expected_xml = (
+            b'<DataPipelineConfiguration><Sources><InputBucket>source-bucket</InputBucket>'
+            b'<InputDataScope>All</InputDataScope>'
+            b'<FilterConfiguration><ObjectMediaTypes>video</ObjectMediaTypes></FilterConfiguration></Sources>'
+            b'<DataPipelineDataProcessConfiguration><SearchMode>fast</SearchMode><Insights><Video>'
+            b'<FrameEmbedding><Snapshot><Mode>dhash</Mode><Number>20</Number></Snapshot></FrameEmbedding>'
+            b'</Video></Insights></DataPipelineDataProcessConfiguration><Destination>'
+            b'<VideoFrameEmbedding><Bucket>vector-bucket</Bucket><IndexName>video-frame</IndexName>'
+            b'</VideoFrameEmbedding></Destination>'
+            b'<DataPipelineError><ErrorMode>ignore</ErrorMode></DataPipelineError>'
+            b'</DataPipelineConfiguration>'
+        )
+        expected = model.PutDataPipelineConfigurationConfiguration()
+        serde.deserialize_xml(expected_xml, expected, expect_tag='DataPipelineConfiguration')
+        self.assertEqual(serde.serialize_xml(expected, root='DataPipelineConfiguration').decode('utf-8'),
+                         xml_content)
+        self.assertIsNone(config.sources[0].ignore_delete)
+        snapshot = config.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot
+        self.assertEqual('dhash', snapshot.mode)
+        self.assertIsNone(snapshot.interval)
+        self.assertEqual(20, snapshot.number)
+        self.assertIsInstance(snapshot.number, int)
+        deserialized = model.DataPipelineConfiguration()
+        serde.deserialize_xml(xml_content.encode('utf-8'), deserialized, expect_tag='DataPipelineConfiguration')
+        snapshot = deserialized.data_pipeline_data_process_configuration.insights.video.frame_embedding.snapshot
+        self.assertIsInstance(snapshot, model.InsightsSnapshot)
+        self.assertEqual('dhash', snapshot.mode)
+        self.assertIsNone(snapshot.interval)
+        self.assertEqual(20, snapshot.number)
+        self.assertIsInstance(snapshot.number, int)
+        self.assertEqual('ignore', deserialized.data_pipeline_error.error_mode)
 
 
 if __name__ == '__main__':
