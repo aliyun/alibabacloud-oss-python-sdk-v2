@@ -20,7 +20,8 @@ class _MockCopyClient(CopyAPIClient):
 
     def __init__(self, source_size=1024, fail_copy_part_after=None,
                  server_side_encryption=None, tagging_count=0,
-                 copy_entity_too_large=False, fail_initiate=False, copy_error=False):
+                 copy_entity_too_large=False, fail_initiate=False, copy_error=False,
+                 tags=None):
         self._source_size = source_size
         self._fail_copy_part_after = fail_copy_part_after
         self._server_side_encryption = server_side_encryption
@@ -28,6 +29,7 @@ class _MockCopyClient(CopyAPIClient):
         self._copy_entity_too_large = copy_entity_too_large
         self._fail_initiate = fail_initiate
         self._copy_error = copy_error
+        self._tags = tags
 
         self.head_calls = 0
         self.copy_calls = 0
@@ -38,6 +40,7 @@ class _MockCopyClient(CopyAPIClient):
         self.get_tagging_calls = 0
 
         self.last_abort_request = None
+        self.last_initiate_request = None
 
     def copy_object(self, request, **kwargs):
         self.copy_calls += 1
@@ -70,6 +73,7 @@ class _MockCopyClient(CopyAPIClient):
 
     def initiate_multipart_upload(self, request, **kwargs):
         self.initiate_calls += 1
+        self.last_initiate_request = request
         if self._fail_initiate:
             raise exceptions.ServiceError(
                 status_code=403, code='AccessDenied', request_id='req-init-fail',
@@ -120,11 +124,12 @@ class _MockCopyClient(CopyAPIClient):
 
     def get_object_tagging(self, request, **kwargs):
         self.get_tagging_calls += 1
+        tags = self._tags if self._tags is not None else [
+            models.Tag(key='env', value='test'),
+        ]
         return _make_result(
             models.GetObjectTaggingResult,
-            tag_set=models.TagSet(tags=[
-                models.Tag(key='env', value='test'),
-            ]),
+            tag_set=models.TagSet(tags=tags),
         )
 
 
@@ -239,6 +244,42 @@ class TestCopierMultipartCopy(unittest.TestCase):
 
         self.assertEqual('"final-copy-etag"', result.etag)
         self.assertEqual(1, client.get_tagging_calls)
+
+    def test_multipart_copy_with_tags_url_encoded(self):
+        """Tag keys and values are URL-encoded in the x-oss-tagging header."""
+        part_size = 1024
+        threshold = 2048
+        source_size = 3000
+        client = _MockCopyClient(
+            source_size=source_size,
+            tagging_count=2,
+            tags=[
+                models.Tag(key='a=b', value='c+d'),
+                models.Tag(key='key with space', value='value+with=special'),
+            ],
+        )
+        copier = Copier(
+            client,
+            part_size=part_size,
+            parallel_num=1,
+            multipart_copy_threshold=threshold,
+            disable_shallow_copy=True,
+        )
+
+        request = models.CopyObjectRequest(
+            bucket='dst-bucket',
+            key='dst-key',
+            source_key='src-key',
+        )
+        result = copier.copy(request)
+
+        self.assertEqual('"final-copy-etag"', result.etag)
+        self.assertEqual(1, client.get_tagging_calls)
+        self.assertIsNotNone(client.last_initiate_request)
+        self.assertEqual(
+            'a%3Db=c%2Bd&key%20with%20space=value%2Bwith%3Dspecial',
+            client.last_initiate_request.tagging,
+        )
 
 
 class TestCopierShallowCopyEntityTooLarge(unittest.TestCase):

@@ -6,6 +6,7 @@ import datetime
 import concurrent.futures
 import threading
 from typing import Any, Optional, IO, MutableMapping, List
+from urllib.parse import quote
 from . import exceptions, HeadObjectResult, GetObjectTaggingResult
 from . import models
 from . import validation
@@ -602,7 +603,9 @@ class _CopierDelegate:
             if self._tag_prop is not None and self._tag_prop.tag_set is not None:
                 tags = []
                 for t in self._tag_prop.tag_set.tags:
-                    tags.append(f"{str(t.key)}={str(t.value)}")
+                    key = '' if t.key is None else str(t.key)
+                    value = '' if t.value is None else str(t.value)
+                    tags.append(f"{quote(key, safe='')}={quote(value, safe='')}")
                 if tags:
                     im_request.tagging = '&'.join(tags)
 

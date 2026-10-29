@@ -3102,6 +3102,72 @@ class TestCopier(TestIntegration):
             tags_str = '&'.join(tags)
         self.assertEqual("TagA=A&TagB=B", tags_str)
 
+    def test_multipart_copy_with_special_character_tagging(self):
+        length = 200 * 1024 + 1234
+        src_data = random_str(length)
+        src_key = OBJECTNAME_PREFIX + random_str(16)
+        src_bucket_name = self.bucket_name
+
+        result = self.client.put_object(oss.PutObjectRequest(
+            bucket=self.bucket_name,
+            key=src_key,
+            body=src_data,
+        ))
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+
+        # Source tags contain =, + and spaces. The Copier must URL-encode each
+        # key/value when it builds the x-oss-tagging header for multipart copy.
+        self.client.put_object_tagging(oss.PutObjectTaggingRequest(
+            bucket=src_bucket_name,
+            key=src_key,
+            tagging=oss.Tagging(
+                tag_set=oss.TagSet(tags=[
+                    oss.Tag(key='a=b', value='c+d'),
+                    oss.Tag(key='key with space', value='value+with=special'),
+                ])
+            ),
+        ))
+
+        src_result = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=src_bucket_name,
+            key=src_key,
+        ))
+        self.assertEqual(2, len(src_result.tag_set.tags))
+        self.assertEqual('a=b', src_result.tag_set.tags[0].key)
+        self.assertEqual('c+d', src_result.tag_set.tags[0].value)
+        self.assertEqual('key with space', src_result.tag_set.tags[1].key)
+        self.assertEqual('value+with=special', src_result.tag_set.tags[1].value)
+
+        copier = self.client.copier()
+
+        dst_key = 'multipart_special_tag_key'
+        result = copier.copy(oss.CopyObjectRequest(
+            bucket=src_bucket_name,
+            key=dst_key,
+            source_bucket=src_bucket_name,
+            source_key=src_key,
+        ), multipart_copy_threshold=100*1024, disable_shallow_copy=True)
+        self.assertIsNotNone(result)
+        self.assertEqual(200, result.status_code)
+        self.assertIsNotNone(result.upload_id)
+
+        hresult = self.client.head_object(oss.HeadObjectRequest(
+            bucket=src_bucket_name,
+            key=dst_key,
+        ))
+        self.assertEqual('Multipart', hresult.object_type)
+
+        dst_result = self.client.get_object_tagging(oss.GetObjectTaggingRequest(
+            bucket=src_bucket_name,
+            key=dst_key,
+        ))
+        self.assertEqual(2, len(dst_result.tag_set.tags))
+        self.assertEqual('a=b', dst_result.tag_set.tags[0].key)
+        self.assertEqual('c+d', dst_result.tag_set.tags[0].value)
+        self.assertEqual('key with space', dst_result.tag_set.tags[1].key)
+        self.assertEqual('value+with=special', dst_result.tag_set.tags[1].value)
+
     def test_metadata_tagging_directive_copy(self):
         length = 200 * 1024 + 1234
         src_data = random_str(length)
