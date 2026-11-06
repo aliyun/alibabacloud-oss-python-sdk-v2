@@ -182,6 +182,7 @@ class IcebergMetadata(serde.Model):
         "partition_spec": {"tag": "json", "rename": "partitionSpec", "type": "IcebergPartitionSpec"},
         "sort_order": {"tag": "json", "rename": "sortOrder", "type": "IcebergSortOrder"},
         "properties": {"tag": "json", "rename": "properties", "type": "dict"},
+        "schema_v2": {"tag": "json", "rename": "schemaV2", "type": "dict"},
     }
 
     _dependency_map = {
@@ -196,6 +197,7 @@ class IcebergMetadata(serde.Model):
         partition_spec: Optional[IcebergPartitionSpec] = None,
         sort_order: Optional[IcebergSortOrder] = None,
         properties: Optional[Dict[str, str]] = None,
+        schema_v2: Optional[Dict[str, Any]] = None,
         **kwargs: Any
     ) -> None:
         """
@@ -204,12 +206,21 @@ class IcebergMetadata(serde.Model):
             partition_spec (IcebergPartitionSpec, optional): The partition specification.
             sort_order (IcebergSortOrder, optional): The sort order.
             properties (Dict[str, str], optional): The properties map.
+            schema_v2 (Dict[str, Any], optional): The Iceberg JSON schema. Do not set it with schema.
+                The root contains type="struct" and fields, with optional schema-id
+                and identifier-field-ids. Each field contains id, name, and type,
+                with optional required (defaults to false) and doc.
+                Types can be primitive strings or recursively nested struct, list, or map objects.
+                Structs use fields; lists use element-id, element, and element-required;
+                maps use key-id, key, value-id, value, and value-required.
+                required, element-required, and value-required control nullability at each level.
         """
         super().__init__(**kwargs)
         self.schema = schema
         self.partition_spec = partition_spec
         self.sort_order = sort_order
         self.properties = properties
+        self.schema_v2 = schema_v2
 
 
 class TableMetadata(serde.Model):
