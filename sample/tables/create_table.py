@@ -49,6 +49,37 @@ def main():
         partition_spec=partition_spec,
     )
 
+    # Optional: uncomment the code below to replace iceberg_metadata above with schemaV2.
+    # Do not use schema and schemaV2 together; this example omits the legacy partition_spec.
+    # iceberg_metadata = oss_tables.models.IcebergMetadata(
+    #     schema_v2={
+    #         "type": "struct",
+    #         "schema-id": 0,
+    #         "identifier-field-ids": [10],
+    #         "fields": [
+    #             {"id": 10, "name": "order_id", "type": "long", "required": True, "doc": "Order ID"},
+    #             {
+    #                 "id": 20, "name": "customer", "required": False,
+    #                 "type": {"type": "struct", "fields": [
+    #                     {"id": 21, "name": "name", "type": "string", "required": False},
+    #                     {"id": 22, "name": "level", "type": "int", "required": False},
+    #                 ]},
+    #             },
+    #             {
+    #                 "id": 30, "name": "tags", "required": False,
+    #                 "type": {"type": "list", "element-id": 31,
+    #                          "element": "string", "element-required": False},
+    #             },
+    #             {
+    #                 "id": 40, "name": "attributes", "required": False,
+    #                 "type": {"type": "map", "key-id": 41, "key": "string",
+    #                          "value-id": 42, "value": "string", "value-required": False},
+    #             },
+    #         ],
+    #     },
+    #     properties={"format-version": "2"},
+    # )
+
     # Set metadata
     metadata = oss_tables.models.TableMetadata(iceberg=iceberg_metadata)
 

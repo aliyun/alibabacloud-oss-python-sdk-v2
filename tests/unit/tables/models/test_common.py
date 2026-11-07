@@ -70,6 +70,31 @@ class TestIcebergMetadata(unittest.TestCase):
         self.assertIsNone(metadata.partition_spec)
         self.assertIsNone(metadata.sort_order)
         self.assertIsNone(metadata.properties)
+        self.assertIsNone(metadata.schema_v2)
+
+    def test_init_with_schema_v2(self):
+        schema_v2 = {
+            "type": "struct",
+            "schema-id": 0,
+            "identifier-field-ids": [10],
+            "fields": [{"id": 10, "name": "order_id", "type": "long", "required": True}],
+        }
+        metadata = IcebergMetadata(schema_v2=schema_v2, properties={"format-version": "2"})
+        self.assertIs(metadata.schema_v2, schema_v2)
+        self.assertIsNone(metadata.schema)
+        self.assertEqual(metadata.properties, {"format-version": "2"})
+
+    def test_legacy_positional_arguments(self):
+        schema = IcebergSchema(fields=[SchemaField(name="id", type="long", required=True)])
+        partition_spec = IcebergPartitionSpec(spec_id=0)
+        sort_order = IcebergSortOrder(fields=[])
+        properties = {"format-version": "2"}
+        metadata = IcebergMetadata(schema, partition_spec, sort_order, properties)
+        self.assertIs(metadata.schema, schema)
+        self.assertIs(metadata.partition_spec, partition_spec)
+        self.assertIs(metadata.sort_order, sort_order)
+        self.assertIs(metadata.properties, properties)
+        self.assertIsNone(metadata.schema_v2)
 
     def test_init_with_schema(self):
         """Test initialization with schema."""
@@ -151,6 +176,8 @@ class TestIcebergMetadata(unittest.TestCase):
         self.assertIn("sort_order", IcebergMetadata._attribute_map)
         self.assertIn("properties", IcebergMetadata._attribute_map)
         self.assertEqual(IcebergMetadata._attribute_map["properties"]["rename"], "properties")
+        self.assertEqual(IcebergMetadata._attribute_map["schema_v2"]["rename"], "schemaV2")
+        self.assertEqual(IcebergMetadata._attribute_map["schema_v2"]["type"], "dict")
 
 
 class TestTableMetadata(unittest.TestCase):

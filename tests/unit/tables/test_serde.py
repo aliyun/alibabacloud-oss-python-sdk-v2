@@ -2,9 +2,15 @@
 import unittest
 import json
 import datetime
+import base64
+import copy
+import hashlib
+from unittest.mock import patch
 from enum import Enum
 from typing import Optional, List, Dict, Any
 
+import alibabacloud_oss_v2 as oss
+import alibabacloud_oss_v2.tables as oss_tables
 from alibabacloud_oss_v2 import serde
 from alibabacloud_oss_v2.tables.operations._serde import (
     serialize_input_tables_json_model,
@@ -1355,6 +1361,204 @@ class TestIntegrationTablesSerialization(unittest.TestCase):
         self.assertEqual(result.table_arn, "arn:oss:table:456")
         self.assertEqual(result.format, "parquet")
         self.assertEqual(result.created_at, "2024-01-15T10:30:00Z")
+
+
+class TestCreateTableSchemaV2(unittest.TestCase):
+    """Verify the schemaV2 JSON structure, compatibility, and client calls."""
+
+    @staticmethod
+    def schema_v2():
+        return {
+            "type": "struct",
+            "schema-id": 0,
+            "identifier-field-ids": [10],
+            "fields": [
+                {"id": 10, "name": "order_id", "type": "long", "required": True},
+                {
+                    "id": 20, "name": "customer", "required": False,
+                    "type": {
+                        "type": "struct",
+                        "fields": [
+                            {"id": 21, "name": "name", "type": "string", "required": False},
+                            {"id": 22, "name": "level", "type": "int", "required": False},
+                        ],
+                    },
+                },
+                {
+                    "id": 30, "name": "tags", "required": False,
+                    "type": {
+                        "type": "list", "element-id": 31,
+                        "element": "string", "element-required": False,
+                    },
+                },
+                {
+                    "id": 40, "name": "attributes", "required": False,
+                    "type": {
+                        "type": "map", "key-id": 41, "key": "string",
+                        "value-id": 42, "value": "string", "value-required": False,
+                    },
+                },
+            ],
+        }
+
+    @staticmethod
+    def request(metadata=None):
+        return oss_tables.models.CreateTableRequest(
+            table_bucket_arn="acs:osstables:cn-hangzhou:123456789012:bucket/test-bucket",
+            namespace="orders", name="orders_nested", format="ICEBERG", metadata=metadata,
+        )
+
+    @staticmethod
+    def client():
+        cfg = oss.config.load_default()
+        cfg.region = "cn-hangzhou"
+        cfg.credentials_provider = oss.credentials.AnonymousCredentialsProvider()
+        return oss_tables.Client(cfg)
+
+    def test_schema_v2_model_serialization(self):
+        schema_v2 = self.schema_v2()
+        original = copy.deepcopy(schema_v2)
+        metadata = oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(
+            schema_v2=schema_v2, properties={"format-version": "2"},
+        ))
+        op_input = serialize_input_tables_json_model(self.request(metadata), create_op_input())
+        self.assertEqual(json.loads(op_input.body), {
+            "name": "orders_nested", "format": "ICEBERG",
+            "metadata": {"iceberg": {"schemaV2": original, "properties": {"format-version": "2"}}},
+        })
+        self.assertEqual(schema_v2, original)
+        self.assertEqual(op_input.parameters["namespace"], "orders")
+
+    def test_schema_v2_dict_serialization(self):
+        metadata = {"iceberg": {"schemaV2": self.schema_v2(), "properties": {"format-version": "2"}}}
+        op_input = serialize_input_tables_json_model(self.request(metadata), create_op_input())
+        self.assertEqual(json.loads(op_input.body)["metadata"], metadata)
+
+    def test_optional_fields_and_empty_values(self):
+        schema_v2 = {
+            "type": "struct", "schema-id": 0, "identifier-field-ids": [],
+            "fields": [
+                {"id": 0, "name": "optional", "type": "string", "doc": ""},
+                {"id": 1, "name": "nullable", "type": "string", "required": False, "doc": "字段说明"},
+            ],
+        }
+        metadata = oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(schema_v2=schema_v2))
+        op_input = serialize_input_tables_json_model(self.request(metadata), create_op_input())
+        actual = json.loads(op_input.body)["metadata"]["iceberg"]["schemaV2"]
+        self.assertEqual(actual, schema_v2)
+        self.assertNotIn("required", actual["fields"][0])
+        self.assertIs(actual["fields"][1]["required"], False)
+
+    def test_recursive_complex_types(self):
+        leaf = {"type": "struct", "fields": [{"id": 100, "name": "leaf", "type": "string"}]}
+        nested_list = {"type": "list", "element-id": 90, "element": leaf, "element-required": True}
+        nested_map = {
+            "type": "map", "key-id": 80, "key": "string",
+            "value-id": 81, "value": nested_list, "value-required": False,
+        }
+        for complex_type in (
+            {"type": "struct", "fields": [{"id": 70, "name": "child", "type": nested_map}]},
+            {"type": "list", "element-id": 70, "element": nested_map, "element-required": False},
+            {"type": "map", "key-id": 70, "key": leaf, "value-id": 71, "value": nested_map},
+        ):
+            with self.subTest(type=complex_type["type"]):
+                schema_v2 = {"type": "struct", "fields": [{"id": 10, "name": "nested", "type": complex_type}]}
+                metadata = oss_tables.models.TableMetadata(
+                    iceberg=oss_tables.models.IcebergMetadata(schema_v2=schema_v2))
+                op_input = serialize_input_tables_json_model(self.request(metadata), create_op_input())
+                self.assertEqual(json.loads(op_input.body)["metadata"]["iceberg"]["schemaV2"], schema_v2)
+
+    def test_legacy_schema_serialization(self):
+        metadata = oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(
+            schema=oss_tables.models.IcebergSchema(fields=[
+                oss_tables.models.SchemaField(name="id", type="long", required=True),
+                oss_tables.models.SchemaField(name="name", type="string", required=False),
+            ]),
+        ))
+        op_input = serialize_input_tables_json_model(self.request(metadata), create_op_input())
+        self.assertEqual(json.loads(op_input.body)["metadata"]["iceberg"], {
+            "schema": {"fields": [
+                {"name": "id", "type": "long", "required": True},
+                {"name": "name", "type": "string", "required": False},
+            ]},
+        })
+
+    def test_create_table_client_schema_v2(self):
+        client = self.client()
+        metadata = oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(
+            schema_v2=self.schema_v2(), properties={"format-version": "2"},
+        ))
+        output = create_op_output(HttpResponseStub(b'{"tableARN":"table-arn","versionToken":"token"}'))
+        request = self.request(metadata)
+        with patch.object(client._client, "invoke_operation", return_value=output) as invoke:
+            result = client.create_table(request, read_timeout=15)
+            invoke.assert_called_once()
+        op_input = invoke.call_args.args[0]
+        self.assertEqual(op_input.op_name, "CreateTable")
+        self.assertEqual(op_input.method, "PUT")
+        self.assertEqual(op_input.bucket, "acs:osstables:cn-hangzhou:123456789012:bucket/test-bucket")
+        self.assertEqual(op_input.key,
+                         "tables/acs%3Aosstables%3Acn-hangzhou%3A123456789012%3Abucket%2Ftest-bucket/orders")
+        self.assertEqual(op_input.parameters, {"namespace": "orders"})
+        self.assertEqual(op_input.op_metadata, {"is_bucket_arn": True})
+        self.assertEqual(request.table_bucket_arn, op_input.bucket)
+        self.assertEqual(request.namespace, "orders")
+        self.assertEqual(request.name, "orders_nested")
+        self.assertEqual(request.format, "ICEBERG")
+        self.assertEqual(request.metadata.iceberg.schema_v2, self.schema_v2())
+        self.assertEqual(request.metadata.iceberg.properties, {"format-version": "2"})
+        self.assertIsNone(request.metadata.iceberg.schema)
+        self.assertIsNone(request.encryption_configuration)
+        self.assertEqual(op_input.headers["Content-Type"], "application/json")
+        self.assertEqual(op_input.headers["Content-MD5"],
+                         base64.b64encode(hashlib.md5(op_input.body).digest()).decode())
+        self.assertEqual(json.loads(op_input.body), {
+            "name": "orders_nested", "format": "ICEBERG",
+            "metadata": {"iceberg": {"properties": {"format-version": "2"}, "schemaV2": self.schema_v2()}},
+        })
+        self.assertEqual(invoke.call_args.kwargs, {"read_timeout": 15})
+        self.assertEqual(result.status_code, 200)
+        self.assertEqual(result.table_arn, "table-arn")
+        self.assertEqual(result.version_token, "token")
+
+    def test_schema_and_schema_v2_forwarded_without_validation(self):
+        client = self.client()
+        output = create_op_output(HttpResponseStub(b'{"tableARN":"table-arn"}'))
+        for schema in ({}, {"fields": []}):
+            for schema_v2 in ({}, self.schema_v2()):
+                for metadata in (
+                    oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(
+                        schema=schema, schema_v2=schema_v2)),
+                    {"iceberg": {"schema": schema, "schemaV2": schema_v2}},
+                    oss_tables.models.TableMetadata(iceberg={"schema": schema, "schemaV2": schema_v2}),
+                ):
+                    with self.subTest(metadata=metadata):
+                        with patch.object(client._client, "invoke_operation", return_value=output) as invoke:
+                            client.create_table(self.request(metadata))
+                            invoke.assert_called_once()
+                            op_input = invoke.call_args.args[0]
+                            self.assertEqual(json.loads(op_input.body)["metadata"]["iceberg"], {
+                                "schema": schema, "schemaV2": schema_v2,
+                            })
+
+    def test_single_schema_or_no_schema_still_allowed(self):
+        client = self.client()
+        output = create_op_output(HttpResponseStub(b'{"tableARN":"table-arn"}'))
+        for metadata in (
+            None,
+            {"iceberg": {"schema": {"fields": []}}},
+            {"iceberg": {"schema": None, "schemaV2": self.schema_v2()}},
+            {"iceberg": {"schema": {"fields": []}, "schemaV2": None}},
+            {"iceberg": {"schemaV2": self.schema_v2()}},
+            oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(schema_v2=self.schema_v2())),
+            oss_tables.models.TableMetadata(iceberg=oss_tables.models.IcebergMetadata(
+                schema=oss_tables.models.IcebergSchema(fields=[]))),
+        ):
+            with self.subTest(metadata=metadata):
+                with patch.object(client._client, "invoke_operation", return_value=output) as invoke:
+                    result = client.create_table(self.request(metadata))
+                    invoke.assert_called_once()
+                    self.assertEqual(result.status_code, 200)
 
 
 if __name__ == '__main__':

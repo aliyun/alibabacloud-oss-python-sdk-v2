@@ -197,6 +197,9 @@ class Client:
         """
         Creates a table.
 
+        Set metadata.iceberg.schema_v2 to define a schema with nested complex types.
+        Use schemaV2 in JSON dictionaries. Do not set it together with the legacy schema.
+
         Args:
             request (CreateTableRequest): The request for the CreateTable operation.
 

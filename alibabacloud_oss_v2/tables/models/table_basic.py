@@ -40,7 +40,9 @@ class CreateTableRequest(serde.RequestModel):
             namespace (str, required): The namespace.
             name (str, optional): The name of the table.
             format (str, optional): The format of the table.
-            metadata (TableMetadata, optional): The metadata of the table.
+            metadata (TableMetadata or Dict, optional): The table metadata. In iceberg, set either
+                schema or schemaV2, which supports primitive types and nested structs, lists,
+                and maps. Do not set both.
             encryption_configuration (EncryptionConfiguration, optional): The encryption configuration.
         """
         super().__init__(**kwargs)
